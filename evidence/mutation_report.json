@@ -23,7 +23,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.3
+  "seconds": 10.6
  },
  {
   "rule": "Raw row counts are as published",
@@ -36,12 +36,12 @@
   },
   "baseline": [
    [
-    "dbt_expectations_source_expect_table_row_count_to_equal_olist_raw_olist_orders_dataset_99441",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
     "pass",
     0
    ],
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
+    "dbt_expectations_source_expect_table_row_count_to_equal_olist_raw_olist_orders_dataset_99441",
     "pass",
     0
    ]
@@ -59,7 +59,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.1
+  "seconds": 10.0
  },
  {
   "rule": "Staging keeps every raw row",
@@ -71,12 +71,12 @@
   },
   "baseline": [
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_delivery_ref_stg_orders_",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
     "pass",
     0
    ],
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_delivery_ref_stg_orders_",
     "pass",
     0
    ],
@@ -98,12 +98,12 @@
     1
    ],
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_fct_orders_ref_stg_orders_",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
     "fail",
     1
    ],
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_fct_orders_ref_stg_orders_",
     "fail",
     1
    ],
@@ -114,7 +114,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.4
+  "seconds": 10.5
  },
  {
   "rule": "Modeling never creates or loses money (no fan-out)",
@@ -139,7 +139,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 8.9
+  "seconds": 10.0
  },
  {
   "rule": "Repeat metrics count people, not per-order ids",
@@ -164,7 +164,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.2
+  "seconds": 9.7
  },
  {
   "rule": "A multi-seller order is never treated as a single observed parcel",
@@ -189,7 +189,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.7
+  "seconds": 9.5
  },
  {
   "rule": "A review dated before delivery is flagged",
@@ -214,7 +214,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 8.9
+  "seconds": 9.5
  },
  {
   "rule": "Paid equals items + freight, or the order is labeled",
@@ -239,7 +239,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.1
+  "seconds": 9.4
  },
  {
   "rule": "Real payment gaps stay under 0.5% of orders",
@@ -266,7 +266,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.0
+  "seconds": 9.5
  },
  {
   "rule": "Only full months are in the analysis window",
@@ -291,7 +291,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 8.9
+  "seconds": 9.6
  },
  {
   "rule": "Delivery state agrees with status and dates",
@@ -341,7 +341,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 8.5
+  "seconds": 8.9
  },
  {
   "rule": "Exactly one chosen review per reviewed order",
@@ -363,6 +363,81 @@
     "test.olist_ecommerce_analytics.assert_one_chosen_review_per_reviewed_order",
     "fail",
     1
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 9.6
+ },
+ {
+  "rule": "Every order's purchase date exists in dim_date",
+  "selector": "fct_orders,test_name:relationships",
+  "mutation": {
+   "sql": [
+    "delete from marts.dim_date where date_day >= date '2018-10-01'"
+   ]
+  },
+  "baseline": [
+   [
+    "relationships_fct_orders_purchase_date__date_day__ref_dim_date_",
+    "pass",
+    0
+   ],
+   [
+    "relationships_fct_orders_customer_unique_id__customer_unique_id__ref_dim_customer_",
+    "pass",
+    0
+   ],
+   [
+    "relationships_fct_payments_order_id__order_id__ref_fct_orders_",
+    "pass",
+    0
+   ],
+   [
+    "relationships_fct_order_items_order_id__order_id__ref_fct_orders_",
+    "pass",
+    0
+   ],
+   [
+    "relationships_fct_reviews_order_id__order_id__ref_fct_orders_",
+    "pass",
+    0
+   ],
+   [
+    "relationships_metric_late_rate_orders_order_id__order_id__ref_fct_orders_",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "relationships_fct_orders_purchase_date__date_day__ref_dim_date_",
+    "fail",
+    4
+   ],
+   [
+    "relationships_fct_payments_order_id__order_id__ref_fct_orders_",
+    "pass",
+    0
+   ],
+   [
+    "relationships_fct_order_items_order_id__order_id__ref_fct_orders_",
+    "pass",
+    0
+   ],
+   [
+    "relationships_fct_orders_customer_unique_id__customer_unique_id__ref_dim_customer_",
+    "pass",
+    0
+   ],
+   [
+    "relationships_fct_reviews_order_id__order_id__ref_fct_orders_",
+    "pass",
+    0
+   ],
+   [
+    "relationships_metric_late_rate_orders_order_id__order_id__ref_fct_orders_",
+    "pass",
+    0
    ]
   ],
   "verdict": "PROVEN",
@@ -391,14 +466,14 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 8.9
+  "seconds": 9.0
  },
  {
   "rule": "Zip locations are inside Brazil",
   "selector": "int_geo_zip,test_name:expect_column_values_to_be_between",
   "mutation": {
    "sql": [
-    "update intermediate.int_geo_zip set lat = 40.7 where zip_code_prefix in (select zip_code_prefix from intermediate.int_geo_zip limit 1)"
+    "update intermediate.int_geo_zip set lat = 40.7 where zip_code_prefix in (select zip_code_prefix from intermediate.int_geo_zip where lat is not null limit 1)"
    ]
   },
   "baseline": [
@@ -426,7 +501,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.2
+  "seconds": 9.5
  },
  {
   "rule": "Payment types are known values",
@@ -451,7 +526,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.1
+  "seconds": 9.0
  },
  {
   "rule": "Trend metrics never include a partial month",

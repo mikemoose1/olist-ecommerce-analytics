@@ -160,14 +160,14 @@
   "part": "B",
   "metric": "review_score",
   "mart": {
-   "num": 393576,
-   "den": 94302,
-   "value": 4.174
+   "num": 397176,
+   "den": 95560,
+   "value": 4.156
   },
   "independent": {
-   "num": 393576,
-   "den": 94302,
-   "value": 4.174
+   "num": 397176,
+   "den": 95560,
+   "value": 4.156
   },
   "first_pass": null,
   "tolerance": 0,

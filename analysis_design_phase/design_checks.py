@@ -1,6 +1,6 @@
-# Design-phase grounding checks on the raw Olist CSVs (read-only). Output: scratch/design_checks.json
+# Design-phase grounding checks on the raw Olist CSVs (read-only). Output: analysis_design_phase/design_checks.json
 import duckdb, json
-D="/workspace/olist-eda/data"
+import os; D=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"data","raw")
 con=duckdb.connect()
 T={"orders":"olist_orders_dataset","items":"olist_order_items_dataset","payments":"olist_order_payments_dataset",
    "reviews":"olist_order_reviews_dataset","customers":"olist_customers_dataset","sellers":"olist_sellers_dataset",
@@ -80,5 +80,5 @@ R["products_null_category"]=v("select count(*) from products where product_categ
 R["product_categories_untranslated"]=q("select distinct product_category_name from products p where product_category_name is not null and not exists(select 1 from cat_tr t where t.product_category_name=p.product_category_name)")
 R["products_cols"]=q("select column_name from (describe products)")
 R["sellers_with_no_items"]=v("select count(*) from sellers s where not exists(select 1 from items i where i.seller_id=s.seller_id)")
-json.dump(R,open("/workspace/olist-dbt/scratch/design_checks.json","w"),indent=1,default=str)
+json.dump(R,open(os.path.join(os.path.dirname(os.path.abspath(__file__)),"design_checks.json"),"w"),indent=1,default=str)
 print(json.dumps(R,indent=1,default=str))

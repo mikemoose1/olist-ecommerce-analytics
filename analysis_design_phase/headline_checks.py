@@ -1,6 +1,6 @@
 # Recompute EDA headline numbers directly from raw CSVs in DuckDB (no pandas), to pin metric definitions.
 import duckdb, json
-D="/workspace/olist-eda/data"; con=duckdb.connect()
+import os; D=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"data","raw"); con=duckdb.connect()
 for k,v in {"orders":"olist_orders_dataset","items":"olist_order_items_dataset","reviews":"olist_order_reviews_dataset","customers":"olist_customers_dataset"}.items():
     con.execute(f"create view {k} as select * from read_csv_auto('{D}/{v}.csv', header=true)")
 con.execute("""create table ia as select order_id, count(distinct seller_id) n_sellers from items group by 1;
@@ -40,9 +40,9 @@ R["repeat_90d_any_later_order_diff_day"]=con.execute(f"""select round(100*avg(hi
   select f.cu, bool_or(co.ts::date > f.first_ts::date and co.ts <= f.first_ts + interval 90 day) hit
   from cf f join co using(cu) where f.first_ts <= timestamp '{last}' - interval 90 day group by 1)""").fetchone()
 R["same_day_second_pct"]=con.execute("select round(100*avg((date_diff('second',f.first_ts,c2.second_ts)<86400)::int),2), count(*) from c2 join cf f using(cu)").fetchone()
-print(json.dumps(R,indent=1,default=str)); json.dump(R,open("scratch/headline_checks.json","w"),indent=1,default=str)
+print(json.dumps(R,indent=1,default=str)); json.dump(R,open(os.path.join(os.path.dirname(os.path.abspath(__file__)),"headline_checks.json"),"w"),indent=1,default=str)
 R["repeat_90d_any_later_order_ge24h"]=con.execute(f"""select round(100*avg(hit::int),2), sum(hit::int) from (
   select f.cu, bool_or(co.ts >= f.first_ts + interval 1 day and co.ts <= f.first_ts + interval 90 day) hit
   from cf f join co using(cu) where f.first_ts <= timestamp '{last}' - interval 90 day group by 1)""").fetchone()
 R["repeat_90d_k2_counts"]=con.execute(f"""select sum(coalesce(date_diff('second',f.first_ts,c2.second_ts)/86400.0 between 1 and 90,false)::int) from cf f left join c2 using(cu) where f.first_ts <= timestamp '{last}' - interval 90 day""").fetchone()
-print(R["repeat_90d_any_later_order_ge24h"], R["repeat_90d_k2_counts"]); json.dump(R,open("scratch/headline_checks.json","w"),indent=1,default=str)
+print(R["repeat_90d_any_later_order_ge24h"], R["repeat_90d_k2_counts"]); json.dump(R,open(os.path.join(os.path.dirname(os.path.abspath(__file__)),"headline_checks.json"),"w"),indent=1,default=str)

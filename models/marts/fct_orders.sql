@@ -31,10 +31,11 @@ select
     rv.review_id,
     rv.review_score,
     rv.review_before_delivery,
-    dt.in_analysis_window
+    coalesce(dt.in_analysis_window, false) as in_analysis_window
 from {{ ref('int_order_delivery') }} d
 join {{ ref('int_customer_orders') }} co using (order_id)
 join {{ ref('int_order_payment_recon') }} r using (order_id)
 left join {{ ref('int_order_review') }} rv on rv.order_id = d.order_id and rv.is_chosen_for_order
 left join {{ ref('int_geo_zip') }} g on g.zip_code_prefix = co.ship_to_zip_code_prefix
-join {{ ref('dim_date') }} dt on dt.date_day = cast(d.purchased_at as date)
+-- left join so a purchase date missing from dim_date surfaces in the relationships test instead of dropping the order
+left join {{ ref('dim_date') }} dt on dt.date_day = cast(d.purchased_at as date)

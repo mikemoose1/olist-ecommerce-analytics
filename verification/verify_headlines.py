@@ -36,11 +36,12 @@ def independent(rules):
     raw.execute(f"""
     create table ia as select order_id, count(*) n_items, count(distinct seller_id) n_sellers from items group by 1;
     create table rev1 as select * from (select *, row_number() over (partition by order_id order by review_answer_timestamp desc, review_id) rn from reviews) where rn = 1;
-    create table pop as
-     select o.order_id, (o.order_delivered_customer_date::date > o.order_estimated_delivery_date::date) late, r.review_score
+    create table pop_all as
+     select o.order_id, ia.n_sellers, (o.order_delivered_customer_date::date > o.order_estimated_delivery_date::date) late, r.review_score
      from orders o join ia using(order_id) left join rev1 r using(order_id)
      where o.order_status = 'delivered' and o.order_delivered_customer_date is not null
-       and o.order_purchase_timestamp >= '2017-01-01' and o.order_purchase_timestamp < '2018-09-01' {multi};
+       and o.order_purchase_timestamp >= '2017-01-01' and o.order_purchase_timestamp < '2018-09-01';
+    create table pop as select * from pop_all where true {multi};
     create table q as
      select c.customer_unique_id cu, o.order_purchase_timestamp ts,
             row_number() over (partition by c.customer_unique_id order by o.order_purchase_timestamp, o.order_id) k
@@ -49,7 +50,7 @@ def independent(rules):
     out = {}
     n, k = raw.execute("select count(*), sum(late::int) from pop").fetchone()
     out["late_rate"] = {"num": int(k), "den": int(n), "value": round(100 * k / n, 2)}
-    s, n = raw.execute("select sum(review_score), count(review_score) from pop").fetchone()
+    s, n = raw.execute("select sum(review_score), count(review_score) from pop_all").fetchone()
     out["review_score"] = {"num": int(s), "den": int(n), "value": round(s / n, 3)}
     out["late_review_gap_raw"] = {"value": round(raw.execute(
         "select avg(review_score) filter (where not late) - avg(review_score) filter (where late) from pop").fetchone()[0], 3)}

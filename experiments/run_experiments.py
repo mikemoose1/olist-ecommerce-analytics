@@ -77,8 +77,10 @@ for arm in ["timestamp", "calendar_day"]:
          from marts.fct_reviews r join marts.fct_orders o using(order_id) where r.is_chosen_for_order and o.order_status='delivered' and o.delivered_to_customer_at is not null""").fetchone()
     same_day = con.execute("""select count(*) from marts.fct_reviews r join marts.fct_orders o using(order_id)
          where r.is_chosen_for_order and r.review_before_delivery and r.review_created_on = cast(o.delivered_to_customer_at as date)""").fetchone()[0]
-    keep = con.execute("select round(avg(review_score),3), count(*) from metrics.metric_late_rate_orders where review_score is not null").fetchone()
-    excl = con.execute("select round(avg(review_score),3), count(*) from metrics.metric_late_rate_orders where review_score is not null and not coalesce(review_before_delivery,false)").fetchone()
+    rs_pop = ("from marts.fct_orders where delivery_state in ('delivered_on_time','delivered_late') and n_items > 0 "
+              "and in_analysis_window and review_score is not null")
+    keep = con.execute(f"select round(avg(review_score),3), count(*) {rs_pop}").fetchone()
+    excl = con.execute(f"select round(avg(review_score),3), count(*) {rs_pop} and not coalesce(review_before_delivery,false)").fetchone()
     late_share_flagged = con.execute("select round(100*avg(is_late::int),2) from metrics.metric_late_rate_orders where review_before_delivery").fetchone()[0]
     R["C2"][arm] = {"flagged": flagged[0], "of": flagged[1], "flagged_pct": round(100 * flagged[0] / flagged[1], 2),
                     "flagged_avg_score": flagged[2], "unflagged_avg_score": flagged[3], "flagged_same_calendar_day_as_delivery": same_day,

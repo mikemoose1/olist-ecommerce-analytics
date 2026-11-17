@@ -13,7 +13,7 @@
 | B | repeat_rate_90d (HEADLINE) | 1.28 (991/77560) | 1.28 (991/77560) | - | **VERIFIED** |
 | B | repeat_rate_ever (secondary) | 3.04 (2887/94983) | 3.04 (2887/94983) | - | **VERIFIED** |
 | B | late_rate | 6.87 (6518/94931) | 6.87 (6518/94931) | - | **VERIFIED** |
-| B | review_score | 4.174 (393576/94302) | 4.174 (393576/94302) | - | **VERIFIED** |
+| B | review_score | 4.156 (397176/95560) | 4.156 (397176/95560) | - | **VERIFIED** |
 | B | late_review_gap_raw | 2.04 | 2.04 | - | **VERIFIED** |
 | B | late_penalty_controlled (OLS) | -2.012 CI [-2.042, -1.982] | - | - | **REPORTED** |
 

@@ -35,6 +35,9 @@ models:
     data_tests:
       - dbt_utils.unique_combination_of_columns: {arguments: {combination_of_columns: [review_id, order_id]}}
   - name: int_geo_zip
+    data_tests:
+      - dbt_expectations.expect_table_row_count_to_equal:
+          arguments: {value: 19015}
     columns:
       - name: zip_code_prefix
         data_tests: [unique, not_null]
