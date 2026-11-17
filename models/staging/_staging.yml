@@ -1,0 +1,90 @@
+version: 2
+
+# Every staging model must keep exactly the raw row count (no rows dropped or duplicated).
+models:
+  - name: stg_orders
+    description: One row per order, typed.
+    data_tests:
+      - dbt_expectations.expect_table_row_count_to_equal_other_table: {arguments: {compare_model: "source('olist_raw', 'olist_orders_dataset')"}}
+    columns:
+      - name: order_id
+        data_tests: [unique, not_null]
+      - name: customer_id
+        data_tests: [unique, not_null]
+      - name: order_status
+        data_tests:
+          - accepted_values:
+              arguments: {values: [delivered, shipped, canceled, unavailable, invoiced, processing, created, approved]}
+      - name: purchased_at
+        data_tests: [not_null]
+  - name: stg_order_items
+    description: One row per item line.
+    data_tests:
+      - dbt_expectations.expect_table_row_count_to_equal_other_table: {arguments: {compare_model: "source('olist_raw', 'olist_order_items_dataset')"}}
+      - dbt_utils.unique_combination_of_columns: {arguments: {combination_of_columns: [order_id, order_item_id]}}
+    columns:
+      - name: order_id
+        data_tests:
+          - relationships: {arguments: {to: ref('stg_orders'), field: order_id}}
+      - name: price
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between: {arguments: {min_value: 0, strictly: true}}
+      - name: freight_value
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between: {arguments: {min_value: 0}}
+  - name: stg_payments
+    description: One row per payment instrument.
+    data_tests:
+      - dbt_expectations.expect_table_row_count_to_equal_other_table: {arguments: {compare_model: "source('olist_raw', 'olist_order_payments_dataset')"}}
+      - dbt_utils.unique_combination_of_columns: {arguments: {combination_of_columns: [order_id, payment_sequential]}}
+    columns:
+      - name: payment_type
+        data_tests:
+          - accepted_values: {arguments: {values: [credit_card, boleto, voucher, debit_card, not_defined]}}
+      - name: payment_installments
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between: {arguments: {min_value: 0, max_value: 24}}
+      - name: payment_value
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between: {arguments: {min_value: 0}}
+  - name: stg_reviews
+    description: One row per review-on-order. review_id alone is not unique.
+    data_tests:
+      - dbt_expectations.expect_table_row_count_to_equal_other_table: {arguments: {compare_model: "source('olist_raw', 'olist_order_reviews_dataset')"}}
+      - dbt_utils.unique_combination_of_columns: {arguments: {combination_of_columns: [review_id, order_id]}}
+    columns:
+      - name: review_score
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between: {arguments: {min_value: 1, max_value: 5}}
+  - name: stg_customers
+    description: One row per customer_id (a per-order surrogate).
+    data_tests:
+      - dbt_expectations.expect_table_row_count_to_equal_other_table: {arguments: {compare_model: "source('olist_raw', 'olist_customers_dataset')"}}
+    columns:
+      - name: customer_id
+        data_tests: [unique, not_null]
+      - name: customer_unique_id
+        data_tests: [not_null]
+      - name: zip_code_prefix
+        data_tests:
+          - dbt_expectations.expect_column_value_lengths_to_equal: {arguments: {value: 5}}
+  - name: stg_sellers
+    data_tests:
+      - dbt_expectations.expect_table_row_count_to_equal_other_table: {arguments: {compare_model: "source('olist_raw', 'olist_sellers_dataset')"}}
+    columns:
+      - name: seller_id
+        data_tests: [unique, not_null]
+  - name: stg_products
+    data_tests:
+      - dbt_expectations.expect_table_row_count_to_equal_other_table: {arguments: {compare_model: "source('olist_raw', 'olist_products_dataset')"}}
+    columns:
+      - name: product_id
+        data_tests: [unique, not_null]
+  - name: stg_category_translation
+    columns:
+      - name: product_category_name
+        data_tests: [unique, not_null]
+  - name: stg_geolocation
+    data_tests:
+      - dbt_expectations.expect_table_row_count_to_equal_other_table: {arguments: {compare_model: "source('olist_raw', 'olist_geolocation_dataset')"}}

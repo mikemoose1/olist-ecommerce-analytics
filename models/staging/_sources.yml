@@ -11,28 +11,28 @@ sources:
     tables:
       - name: olist_orders_dataset
         data_tests:
-          - dbt_expectations.expect_table_row_count_to_equal: {value: 99441}
+          - dbt_expectations.expect_table_row_count_to_equal: {arguments: {value: 99441}}
       - name: olist_order_items_dataset
         data_tests:
-          - dbt_expectations.expect_table_row_count_to_equal: {value: 112650}
+          - dbt_expectations.expect_table_row_count_to_equal: {arguments: {value: 112650}}
       - name: olist_order_payments_dataset
         data_tests:
-          - dbt_expectations.expect_table_row_count_to_equal: {value: 103886}
+          - dbt_expectations.expect_table_row_count_to_equal: {arguments: {value: 103886}}
       - name: olist_order_reviews_dataset
         data_tests:
-          - dbt_expectations.expect_table_row_count_to_equal: {value: 99224}
+          - dbt_expectations.expect_table_row_count_to_equal: {arguments: {value: 99224}}
       - name: olist_customers_dataset
         data_tests:
-          - dbt_expectations.expect_table_row_count_to_equal: {value: 99441}
+          - dbt_expectations.expect_table_row_count_to_equal: {arguments: {value: 99441}}
       - name: olist_sellers_dataset
         data_tests:
-          - dbt_expectations.expect_table_row_count_to_equal: {value: 3095}
+          - dbt_expectations.expect_table_row_count_to_equal: {arguments: {value: 3095}}
       - name: olist_products_dataset
         data_tests:
-          - dbt_expectations.expect_table_row_count_to_equal: {value: 32951}
+          - dbt_expectations.expect_table_row_count_to_equal: {arguments: {value: 32951}}
       - name: product_category_name_translation
         data_tests:
-          - dbt_expectations.expect_table_row_count_to_equal: {value: 71}
+          - dbt_expectations.expect_table_row_count_to_equal: {arguments: {value: 71}}
       - name: olist_geolocation_dataset
         data_tests:
-          - dbt_expectations.expect_table_row_count_to_equal: {value: 1000163}
+          - dbt_expectations.expect_table_row_count_to_equal: {arguments: {value: 1000163}}
