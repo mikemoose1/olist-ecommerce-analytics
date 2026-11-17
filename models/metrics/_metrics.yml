@@ -1,0 +1,15 @@
+version: 2
+models:
+  - name: metrics_headline
+    description: Every published metric, one row each. repeat_rate_90d is the headline.
+    columns:
+      - name: metric_name
+        data_tests: [unique, not_null]
+      - name: value_pct
+        data_tests: [not_null]
+  - name: metric_late_rate_monthly
+    columns:
+      - name: year_month
+        data_tests:
+          - unique
+          - dbt_expectations.expect_column_values_to_be_between: {arguments: {min_value: "'2017-01'", max_value: "'2018-08'"}}
