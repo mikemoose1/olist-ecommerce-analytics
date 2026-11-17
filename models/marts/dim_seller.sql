@@ -1,0 +1,4 @@
+-- Grain: one row per seller. PK: seller_id. Coordinates from int_geo_zip (null when the zip has no point).
+select s.seller_id, s.zip_code_prefix, s.city, s.state, g.lat, g.lng
+from {{ ref('stg_sellers') }} s
+left join {{ ref('int_geo_zip') }} g using (zip_code_prefix)
