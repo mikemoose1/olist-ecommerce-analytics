@@ -1,0 +1,108 @@
+version: 2
+models:
+  - name: int_parcels
+    description: One row per parcel (order x seller). Single owner of seller-level shipping facts.
+    columns:
+      - name: parcel_key
+        data_tests: [unique, not_null]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns: {arguments: {combination_of_columns: [order_id, seller_id]}}
+  - name: int_order_delivery
+    description: One delivery_state and delivery_evidence per order.
+    data_tests:
+      - dbt_expectations.expect_table_row_count_to_equal_other_table: {arguments: {compare_model: "ref('stg_orders')"}}
+    columns:
+      - name: order_id
+        data_tests: [unique, not_null]
+      - name: delivery_state
+        data_tests:
+          - not_null
+          - accepted_values: {arguments: {values: [not_delivered, status_date_conflict, delivered_on_time, delivered_late]}}
+      - name: delivery_evidence
+        data_tests:
+          - accepted_values: {arguments: {values: [order_level_single_parcel, order_level_multi_parcel, no_parcels]}}
+  - name: int_order_payment_recon
+    data_tests:
+      - dbt_expectations.expect_table_row_count_to_equal_other_table: {arguments: {compare_model: "ref('stg_orders')"}}
+    columns:
+      - name: order_id
+        data_tests: [unique, not_null]
+      - name: recon_status
+        data_tests:
+          - not_null
+          - accepted_values: {arguments: {values: [match, minor, overpaid, underpaid, no_items, no_payment]}}
+  - name: int_order_review
+    data_tests:
+      - dbt_utils.unique_combination_of_columns: {arguments: {combination_of_columns: [review_id, order_id]}}
+  - name: int_geo_zip
+    columns:
+      - name: zip_code_prefix
+        data_tests: [unique, not_null]
+      - name: lat
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between: {arguments: {min_value: -33.8, max_value: 5.3}}
+      - name: lng
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between: {arguments: {min_value: -74.0, max_value: -34.7}}
+  - name: int_customer_orders
+    columns:
+      - name: order_id
+        data_tests: [unique, not_null]
+      - name: customer_unique_id
+        data_tests: [not_null]
+
+unit_tests:
+  - name: delivery_state_rules
+    description: >
+      Each order lands in exactly one delivery state. Late is judged by calendar day: a delivery at
+      23:00 on the promised date is on time; any later day is late. Status and date that disagree are
+      a conflict, never late or on time.
+    model: int_order_delivery
+    given:
+      - input: ref('stg_orders')
+        rows:
+          - {order_id: same_day_evening, order_status: delivered, delivered_to_customer_at: "2018-03-10 23:00:00", estimated_delivery_date: "2018-03-10"}
+          - {order_id: next_day, order_status: delivered, delivered_to_customer_at: "2018-03-11 00:30:00", estimated_delivery_date: "2018-03-10"}
+          - {order_id: delivered_no_date, order_status: delivered, delivered_to_customer_at: null, estimated_delivery_date: "2018-03-10"}
+          - {order_id: shipped_with_date, order_status: shipped, delivered_to_customer_at: "2018-03-09 10:00:00", estimated_delivery_date: "2018-03-10"}
+          - {order_id: shipped, order_status: shipped, delivered_to_customer_at: null, estimated_delivery_date: "2018-03-10"}
+      - input: ref('int_parcels')
+        rows:
+          - {order_id: same_day_evening, seller_id: s1}
+          - {order_id: next_day, seller_id: s1}
+          - {order_id: next_day, seller_id: s2}
+    expect:
+      rows:
+        - {order_id: same_day_evening, delivery_state: delivered_on_time, delivery_evidence: order_level_single_parcel}
+        - {order_id: next_day, delivery_state: delivered_late, delivery_evidence: order_level_multi_parcel}
+        - {order_id: delivered_no_date, delivery_state: status_date_conflict, delivery_evidence: no_parcels}
+        - {order_id: shipped_with_date, delivery_state: status_date_conflict, delivery_evidence: no_parcels}
+        - {order_id: shipped, delivery_state: not_delivered, delivery_evidence: no_parcels}
+  - name: payment_recon_rules
+    description: Paid vs items+freight is labeled match within one cent, minor within R$1, else over/underpaid; no items or no payment get their own label.
+    model: int_order_payment_recon
+    given:
+      - input: ref('stg_orders')
+        rows: [{order_id: exact}, {order_id: cents}, {order_id: over}, {order_id: under}, {order_id: empty}, {order_id: unpaid}]
+      - input: ref('stg_order_items')
+        rows:
+          - {order_id: exact, price: 10.00, freight_value: 5.00}
+          - {order_id: cents, price: 10.00, freight_value: 5.00}
+          - {order_id: over, price: 10.00, freight_value: 5.00}
+          - {order_id: under, price: 10.00, freight_value: 5.00}
+          - {order_id: unpaid, price: 10.00, freight_value: 5.00}
+      - input: ref('stg_payments')
+        rows:
+          - {order_id: exact, payment_value: 15.00, payment_type: credit_card, payment_installments: 1}
+          - {order_id: cents, payment_value: 15.50, payment_type: credit_card, payment_installments: 1}
+          - {order_id: over, payment_value: 17.00, payment_type: credit_card, payment_installments: 3}
+          - {order_id: under, payment_value: 12.00, payment_type: voucher, payment_installments: 1}
+          - {order_id: empty, payment_value: 9.00, payment_type: boleto, payment_installments: 1}
+    expect:
+      rows:
+        - {order_id: exact, recon_status: match}
+        - {order_id: cents, recon_status: minor}
+        - {order_id: over, recon_status: overpaid}
+        - {order_id: under, recon_status: underpaid}
+        - {order_id: empty, recon_status: no_items}
+        - {order_id: unpaid, recon_status: no_payment}
