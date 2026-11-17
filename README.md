@@ -1,5 +1,36 @@
 # Olist e-commerce analytics (dbt + DuckDB)
 
+## In plain language
+
+Olist is a Brazilian online marketplace. This project takes about 99,000 of its real orders from 2016 to 2018 and turns nine messy spreadsheets into a set of organized, checked tables that a business can trust. The data had several traps. Every order got a new customer ID, so repeat buyers looked like strangers. Orders with several sellers were marked delivered on one date even though the packages arrive separately. Some reviews were written before the recorded delivery.
+
+The main finding is that late delivery is the biggest driver of bad reviews. Orders that arrive late score about 2 stars lower, and only 6.87% of orders are late. Only 1.28% of customers place a second order within 90 days.
+
+Those numbers only matter if they are right, so each known data problem has an automatic check, and each check was shown to fail when given bad data. A separate recalculation straight from the original files confirms every headline number. One command rebuilds everything from scratch, and GitHub reruns all checks on every change.
+
+Technical readers: the sections below keep the full detail, with the exact tables, tests and definitions.
+
+### Terms used in this document
+
+| Term | Plain meaning |
+|---|---|
+| dbt | A tool that builds tables from SQL queries and runs checks on them. |
+| DuckDB | A database that runs on one laptop, with no server. |
+| Raw, staging, intermediate, mart, metrics | The five steps from original files to final numbers. Raw is the files as published. Staging cleans types and names. Intermediate applies business rules. Marts are the tables analysts query. Metrics are the final numbers, each defined once. |
+| Grain | What one row in a table stands for, such as one order or one item line. |
+| Star schema | A way to arrange tables: fact tables record events (orders, payments), and dimension tables describe the things involved (customer, seller, product, date). |
+| Key, unique key | A column that identifies a row. A unique key never repeats. |
+| Fan-out | A table join that accidentally repeats rows, which can inflate counts or money. |
+| Hash (sha256) | A fingerprint of a file. If one byte changes, the fingerprint changes. |
+| CI (continuous integration) | GitHub automatically rebuilding the project and rerunning every check each time the code changes. |
+| Lineage | The map of which table is built from which. |
+| Confidence interval (CI in the headline table) | The range the true value probably falls in. A narrow range means a more reliable number. |
+| OLS regression | A statistical method that estimates one factor's effect, such as lateness, while holding others (state, product category) fixed. |
+| Late rate | The share of delivered orders that arrived on a later calendar day than promised. |
+| Repeat rate | The share of customers who ordered again. |
+
+# Technical overview
+
 An analytics-engineering build of the public [Olist Brazilian e-commerce dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
 (~99k orders, 2016-2018): raw CSVs pinned by hash, a tested star schema, one metric layer, and a script that
 reconciles every headline number to an independent recomputation.
@@ -7,12 +38,14 @@ reconciles every headline number to an independent recomputation.
 ```bash
 make            # or, without make:  bash scripts/reproduce.sh
 ```
-That one command creates `.venv`, downloads the nine CSVs from the
+That one command (it starts a script that does everything below) creates `.venv`, downloads the nine CSVs from the
 [Hugging Face mirror](https://huggingface.co/datasets/bulutttt/olist-raw-data) and checks their sha256, builds and tests every layer
 (`dbt build`), reconciles the headline numbers, and generates dbt docs plus [the lineage graph](docs/LINEAGE.md).
 About a minute on a laptop. Needs Python 3.12+, `curl`, and network access.
 
 ## Headline numbers
+
+These are the five numbers the project reports. Each row says what the number is and how it is counted.
 
 | Metric | Value | Definition |
 |---|---|---|
@@ -20,13 +53,15 @@ About a minute on a laptop. Needs Python 3.12+, `curl`, and network access.
 | Ever-reordered rate (secondary) | 3.04% (2,887 / 94,983) | People with a second qualifying order at any time, same-day included |
 | Late rate | 6.87% (6,518 / 94,931) | Delivered orders (2017-01 to 2018-08) that arrived on a later calendar day than promised; multi-seller orders excluded (their parcels' arrival isn't observable) |
 | Review score | 4.156 (95,560 orders) | Mean of the one chosen review per delivered order |
-| Late penalty, controlled | -2.01 stars (CI -2.04 to -1.98) | OLS: review ~ late + customer state + top-30 category |
+| Late penalty, controlled for state and category | -2.01 stars (CI -2.04 to -1.98) | How many stars lower late orders score, comparing orders from the same state and the same product category. Method: OLS regression, review ~ late + customer state + top-30 category |
 
-A qualifying order is one that was not canceled or unavailable and has at least one item. Every number above is VERIFIED by
+A qualifying order is one that was not canceled or unavailable and has at least one item. Every number above is marked VERIFIED, meaning it matches a separate recalculation straight from the raw files, by
 `make verify` (see [evidence/verification_report.md](evidence/verification_report.md)), which also rebuilds the metric layer with the
 first-pass rules and reproduces the first-pass numbers exactly (6.79% late, 3.04% ever-repeat, 1.24% 90-day second-order, 4.156 stars, -1.992 penalty).
 
-## How it's built
+## How the data flows from files to numbers
+
+Each step takes the output of the one before it, does one kind of work, and has its own checks.
 
 ```
 raw (9 CSVs as published, sha256 pinned)  ->  staging (typed, 1:1 with raw)
@@ -43,7 +78,9 @@ raw (9 CSVs as published, sha256 pinned)  ->  staging (typed, 1:1 with raw)
 
 Design doc with every grain, key and rule: [MODELING.md](MODELING.md).
 
-## Data problems found, and the test that guards each
+## Data problems found, and the check that guards each
+
+Each row is a problem in the source data and the automatic test that fails if the problem comes back.
 
 | Problem in the source | Business-rule test |
 |---|---|
@@ -58,13 +95,15 @@ Design doc with every grain, key and rule: [MODELING.md](MODELING.md).
 | 789 review ids sit on several orders; 547 orders have several reviews | `assert_one_chosen_review_per_reviewed_order` |
 | Join fan-out would create money | `assert_item_money_matches_raw` |
 
-**Every one of these tests is proven able to fail.** `make prove-tests` copies the warehouse, injects known-bad rows for each
+**Every one of these tests is proven able to fail.** A check that can never fail proves nothing, so each was tested against bad data. `make prove-tests` copies the warehouse, injects known-bad rows for each
 rule, and requires that rule's tests to pass before and fail after. Result: [evidence/mutation_report.md](evidence/mutation_report.md).
 Two dbt unit tests pin the delivery-state and payment-recon rules on hand-built rows.
 
-## Modeling choices (settled by experiment)
+## Choices we tested before picking
 
-Each choice is a dbt var in `dbt_project.yml`, so every option can be rebuilt and measured. `make experiments` reruns them all
+Where two reasonable options existed, we built both and measured the difference. Each choice is a setting (a dbt var) in `dbt_project.yml`, so every option can be rebuilt and measured. In the table, "C1" to "C6" are just the choice numbers.
+
+`make experiments` reruns them all
 and writes [experiments/results.json](experiments/results.json).
 
 | Choice | Pick | Measured |
@@ -76,7 +115,7 @@ and writes [experiments/results.json](experiments/results.json).
 | C5 customer address | latest on `dim_customer`, order-time on `fct_orders` | 39 people moved state; geography metrics use the order-time address |
 | C6 same-day rule in 90-day repeat | any later order >= 24h | 30 people placed a same-day second order and then came back; "second order only" misses them |
 
-## Repo layout
+## What is in the repository
 
 ```
 models/{staging,intermediate,marts,metrics}   dbt models + YAML tests
@@ -89,7 +128,7 @@ evidence/                                     latest verification and mutation r
 analysis_design_phase/                        raw-data checks run before any SQL was written
 ```
 
-CI (GitHub Actions, [`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs setup, `dbt build`, `make verify`,
+CI (the automatic rebuild and recheck on GitHub, run by GitHub Actions, [`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs setup, `dbt build`, `make verify`,
 `make prove-tests` and `make docs` on every push and pull request, and uploads the docs site and evidence as an artifact.
 
 Data: Olist, published on Kaggle; see the Kaggle page for license terms. Raw files are downloaded, not committed.

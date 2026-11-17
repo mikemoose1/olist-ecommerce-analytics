@@ -1,5 +1,17 @@
 # Olist analytics model: design (phase 1, pre-SQL)
 
+## In plain language
+
+This is the design plan, written before any code. It says what each table in the project holds, how each row is identified, and which business rule fixes each problem found in the raw Olist data. The three terms that appear most:
+
+- **Grain** is what one row in a table stands for, such as one order, one item line or one person.
+- **Key** is the column or columns that identify a row. A key is "unique" when no two rows share it.
+- **Parcel** is the part of an order that one seller ships. An order with two sellers has two parcels.
+
+The most important findings here are that Olist's `customer_id` changes with every order (so the real customer is `customer_unique_id`), and that the data has one delivery date per order, not per parcel. Later sections use more technical words such as fact, dimension and fan-out. The README has a glossary for them.
+
+## Technical design
+
 Status: **design approved and built.** This is the design written before any SQL, updated where the build or the adversarial review corrected it (marked *Update*). Shipped values and the picks for C1-C6 are in the README.
 Every number below comes from DuckDB 2.0.0 queries on the nine raw CSVs in
 `/workspace/olist-eda/data/` (sha256 verified against `data_sha256.txt`, all 9 OK on 2026-11-17).
