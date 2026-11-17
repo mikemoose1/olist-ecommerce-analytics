@@ -1,0 +1,179 @@
+# Olist analytics model: design (phase 1, pre-SQL)
+
+Status: **design only, for review.** No dbt models, no GitHub repo, nothing pushed.
+Every number below comes from DuckDB 2.0.0 queries on the nine raw CSVs in
+`/workspace/olist-eda/data/` (sha256 verified against `data_sha256.txt`, all 9 OK on 2026-11-17).
+The queries are in `scratch/design_checks.py` and `scratch/headline_checks.py`; their output is in
+`scratch/*.json`. Rerun with `.venv/bin/python scratch/design_checks.py`.
+
+> Note: the first-pass `out/*.json` files and the surprise log aren't on disk (`/workspace/olist-eda/out/` doesn't exist).
+> The scripts and `olist.duckdb` are there. So the "known problems" list below was rebuilt by
+> re-querying the raw files. It is not copied from the log.
+
+---
+
+## 1. Core domain types
+
+| Type | What it is | Natural key | Raw rows / distinct keys |
+|---|---|---|---|
+| **Order** | One checkout by one customer | `order_id` | 99,441 / 99,441 |
+| **Parcel** | The seller-level slice of an order (order × seller). It is the unit a seller ships | `(order_id, seller_id)` | 100,010 distinct pairs across 98,666 orders that have items |
+| **Item** | One unit line in an order | `(order_id, order_item_id)` | 112,650 / 112,650 |
+| **Payment** | One payment instrument used on an order | `(order_id, payment_sequential)` | 103,886 / 103,886 |
+| **Review** | A customer survey response | `(review_id, order_id)`, **not** `review_id` alone | 99,224 rows; 98,410 distinct `review_id`; 99,224 distinct pairs |
+| **Customer** | A real person | `customer_unique_id` | 96,096 distinct, across 99,441 `customer_id`s |
+| **Seller** | A marketplace merchant | `seller_id` | 3,095 / 3,095 (all have ≥1 item) |
+| **Product** | A catalog item | `product_id` | 32,951 / 32,951 |
+| **Date** | Calendar day | `date_day` | Purchases run 2016-09-04 21:15 to 2018-10-17 17:30 |
+
+Facts that set the shape:
+- **`customer_id` is a per-order surrogate, not a person.** Each `customer_id` has exactly one order (0 have more than one). Repeat behavior only shows up through `customer_unique_id`.
+- **The parcel is real but not directly observable.** `shipping_limit_date` is constant within every (order, seller) pair: 0 pairs have more than one. In 336 multi-seller orders it differs across sellers. But the source has **no parcel-level delivery date**. `order_delivered_customer_date` exists only once per order.
+- **Reviews aren't unique by `review_id`.** 789 review_ids appear on more than one order, 547 orders have more than one review, and 768 orders have no review.
+
+### Two shapes considered (architect)
+
+- **Shape A: order-centric.** Items fact plus orders fact. Seller-level facts like shipping limit and seller count are recomputed ad hoc wherever they're needed.
+- **Shape B: an explicit parcel entity** (`int_parcels`, grain order × seller). It is the single owner of seller-level ship-by dates, item counts and value. `fct_orders` reads parcel rollups, and `fct_order_items` carries `parcel_key`.
+
+**Pick: B.** Seller-level state gets exactly one owner. The multi-seller problem lives at this grain, and a future parcel-level delivery date has an obvious home. Shape A would spread `count(distinct seller_id) > 1` checks across models, which is the "scattered conditional" smell.
+
+### Delivery state as one enum, not booleans (model-the-domain)
+
+`int_order_delivery` gives each order exactly one `delivery_state`. This replaces `is_delivered` + `is_late` + `has_date` flags that would have to stay in sync:
+
+| `delivery_state` | Rule |
+|---|---|
+| `not_delivered` | status ≠ delivered and no customer delivery date |
+| `status_date_conflict` | status = delivered but no date (8 orders), or status ≠ delivered but a date exists (6 orders) |
+| `delivered_on_time` | delivered with a date, and delivered date ≤ estimated date (calendar day) |
+| `delivered_late` | delivered with a date, and delivered date > estimated date (calendar day) |
+
+Multi-seller orders get the orthogonal attribute `delivery_evidence ∈ {order_level_single_parcel, order_level_multi_parcel}`, so no metric silently treats them as fully observed. See open choice C1.
+
+---
+
+## 2. Layers
+
+```
+raw (9 CSVs as-is, sha256 pinned)
+  -> staging (1:1 with raw: rename, cast, trim; no joins, no filtering of rows)
+    -> intermediate (business logic: parcels, delivery state, payment recon, review choice, geo dedupe)
+      -> marts (star schema: fct_orders, fct_order_items, fct_payments, fct_reviews,
+                dim_customer, dim_seller, dim_product, dim_date)
+        -> metrics (late_rate, repeat_rate_90d, review_score defined once)
+```
+
+Raw: DuckDB reads the CSVs as dbt sources. A `raw_manifest` seed holds the 9 sha256 hashes from
+`data_sha256.txt`, and the build fails if any file's hash differs.
+
+---
+
+## 3. Models: grain, key, sources, and the rule behind each fix
+
+### Staging (1:1 with raw, row counts must equal raw)
+
+| Model | Grain / PK | Rows (must equal) | Fixes |
+|---|---|---|---|
+| `stg_orders` | order / `order_id` | 99,441 | Cast timestamps. `estimated_delivery_date` → DATE (0 of 99,441 rows carry a time part, so it is a date, not a timestamp) |
+| `stg_order_items` | item / `(order_id, order_item_id)` | 112,650 | Cast money to DECIMAL(12,2) |
+| `stg_payments` | payment / `(order_id, payment_sequential)` | 103,886 | `payment_type='not_defined'` (3 rows, R$0.00) kept and labeled, not dropped |
+| `stg_reviews` | review-on-order / `(review_id, order_id)` | 99,224 | `review_creation_date` → DATE (only 85 of 99,224 have a non-midnight time) |
+| `stg_customers` | customer_id / `customer_id` | 99,441 | Carries `customer_unique_id`. Zip kept as a 5-char string |
+| `stg_sellers` | seller / `seller_id` | 3,095 | Zip as a string |
+| `stg_products` | product / `product_id` | 32,951 | Fix source typos `product_name_lenght`, `product_description_lenght` → `_length` |
+| `stg_category_translation` | category / `product_category_name` | 71 | none |
+| `stg_geolocation` | raw geo row (no PK) | 1,000,163 | none (dedupe happens in intermediate) |
+
+### Intermediate
+
+| Model | Grain / PK | Sources | Business rule |
+|---|---|---|---|
+| `int_parcels` | order × seller / `parcel_key = hash(order_id, seller_id)` | stg_order_items | One parcel per seller per order, holding ship-by date, n_items, item value and freight. Expected 100,010 rows |
+| `int_order_delivery` | order / `order_id` | stg_orders, int_parcels | One `delivery_state` per order (enum above). Late is compared at **calendar-day** grain, because the estimate is a date. At timestamp grain the late share would read 8.13% instead of 6.79%, a definitional artifact |
+| `int_order_payment_recon` | order / `order_id` | stg_payments, stg_order_items | `amount_due = Σprice + Σfreight`, `amount_paid = Σpayment_value`. `recon_status ∈ {match (≤R$0.01), minor (≤R$1), overpaid, underpaid, no_items, no_payment}` |
+| `int_order_review` | order / `order_id` | stg_reviews, stg_orders | Picks one review per order (rule: C4). Flags `review_before_delivery` (rule: C2) |
+| `int_geo_zip` | zip prefix / `zip_code_prefix` | stg_geolocation | Dedupe to one point per zip: median lat/lng of rows inside Brazil's bounding box. Expected 19,015 zips |
+| `int_customer_orders` | order / `order_id` | stg_orders, stg_customers | Maps each order to `customer_unique_id`, with order sequence number and days since first order |
+
+### Marts (star schema)
+
+| Model | Grain / PK | FKs | Notes |
+|---|---|---|---|
+| `fct_orders` | order / `order_id` (99,441) | customer_key, purchase_date_key | delivery_state, delivery_evidence, n_parcels, n_items, amount_due/paid, recon_status, review score of the chosen review, `in_analysis_window` |
+| `fct_order_items` | item / `(order_id, order_item_id)` (112,650) | order_id, parcel_key, product_key, seller_key | price, freight |
+| `fct_payments` | payment / `(order_id, payment_sequential)` (103,886) | order_id | type, installments, value |
+| `fct_reviews` | review-on-order / `(review_id, order_id)` (99,224) | order_id | score, created date, answered ts, `is_chosen_for_order`, `review_before_delivery` |
+| `dim_customer` | person / `customer_unique_id` (96,096) | none | Address rule: C5 (250 people have >1 zip, 39 have >1 state) |
+| `dim_seller` | seller / `seller_id` (3,095) | none | Zip, city, state, lat/lng from int_geo_zip (7 seller zips missing from geo → null coords, flagged) |
+| `dim_product` | product / `product_id` (32,951) | none | English category. 610 products with null category → `unknown`. 2 categories missing from the translation table (`pc_gamer`, `portateis_cozinha_e_preparadores_de_alimentos`) → hand-mapped seed |
+| `dim_date` | day / `date_day` | none | 2016-09-01 to 2018-10-31, with `is_partial_month` and `in_analysis_window` |
+
+---
+
+## 4. Known problems, the evidence, and the planned business-rule test
+
+| # | Problem (evidence from raw) | Business-rule test |
+|---|---|---|
+| P1 | `customer_id` is per order: 99,441 ids, 99,441 orders, 0 ids with >1 order; 96,096 real people | "Every repeat-customer metric counts people, not order surrogates": `dim_customer` is unique on `customer_unique_id`, and `fct_orders.customer_key` relationship → dim_customer. Plus a singular test: `count(distinct customer_key) in fct_orders = 96,096` |
+| P2 | Multi-seller orders: 1,278 overall, 1,272 in the delivered analysis set. Only one order-level delivery date exists. Their late rate is 1.02% vs 6.87% for single-seller, yet their avg review is 2.86 vs 4.17. That pattern is consistent with "delivered" being set when the first parcel lands. It is **not directly observable**, because there is no parcel delivery date | "A multi-seller order never counts as fully observed on-time delivery": every order with n_parcels > 1 has `delivery_evidence = 'order_level_multi_parcel'`, and the late-rate metric applies the C1 rule to them. Known-bad fixture: a 2-parcel order labeled single-parcel → test must fail |
+| P3 | Reviews created before the recorded delivery: 8,140 of 95,824 delivered orders' chosen reviews (**8.49%**) by timestamp. By calendar date it's only **5.19%**, because creation dates are midnight-stamped. Those reviews average 2.77 vs 4.29 | "A review dated before its order's delivery date is flagged, never silently mixed in": `review_before_delivery` is non-null for every review on a delivered order, and equals the C2 rule. Fixture: a review one day before delivery that isn't flagged → fail |
+| P4 | Payments vs items+freight: of 98,665 orders with both, 98,278 match to the cent and 387 don't; 249 are off by more than R$1 (232 overpaid, 17 underpaid). 233 of the 249 are no-voucher, multi-installment orders, consistent with installment interest | "Paid equals items plus freight, or the order carries an explained recon_status": no order has `recon_status` null. A `dbt_expectations` threshold makes `overpaid + underpaid` fail above 0.5% of orders (today 0.25%). Fixture: a R$50 gap labeled `match` → fail |
+| P5 | Geolocation duplicates: 1,000,163 rows for 19,015 zips, 261,831 exact duplicate rows, 42 points outside Brazil, 8 zips with more than one state | "One location per zip, inside Brazil": `int_geo_zip` unique on zip, lat/lng within the Brazil bbox (dbt_expectations between). Fixture: a zip twice → fail |
+| P6 | Edge months are partial: 2016-09 (4 orders), 2016-10 (324), 2016-11 (0), 2016-12 (1), 2018-09 (16), 2018-10 (4). The full window is 2017-01 through 2018-08 | "Trend metrics only use full months": `dim_date.in_analysis_window` is true only for 2017-01..2018-08, and every metric filters on it. Fixture: a 2018-09 order counted → fail |
+| P7 | Status vs date conflicts: 8 delivered orders without a delivery date, 6 non-delivered orders with one. Also 1,359 orders where the carrier pickup is before approval, and 23 delivered before carrier pickup | "Every order has exactly one delivery_state": accepted_values plus not_null; the conflict rows land in `status_date_conflict` and not in late-rate |
+| P8 | Orders with no items: 775 (603 unavailable, 164 canceled, 5 created, 2 invoiced, 1 shipped). 1 order has no payment | "Order value metrics only use orders with items": `fct_orders.n_items` not null; `recon_status` in (`no_items`,`no_payment`) for those |
+| P9 | Reviews not unique by `review_id` (789 shared ids; 547 orders with more than one review) | "Exactly one chosen review per reviewed order": unique on `order_id` where `is_chosen_for_order` |
+| P10 | Payment oddities: 3 `not_defined` rows, 9 rows of R$0, 2 rows with 0 installments, 80 orders with gaps in `payment_sequential` | Documented, accepted-values on type. Range test `installments >= 0`, plus a warn-severity test for gaps |
+
+Each custom test gets a known-bad fixture (a seed or unit test) that must make it **fail**. A test that can't fail doesn't count.
+
+---
+
+## 5. Metric definitions (written once, in the metric layer)
+
+**Late rate.** Late orders ÷ delivered orders, where the population is: status `delivered`, customer delivery date present, ≥1 item, purchase month in 2017-01..2018-08. Late = `delivered_date::date > estimated_delivery_date`.
+Grounding: 6,531 / 96,203 = **6.79%**. This matches the first pass exactly. Multi-seller handling follows C1. The baseline keeps them in, as the first pass did.
+
+**Repeat rate (90-day, excluding same-day).** Population: people (`customer_unique_id`) whose first qualifying order (status not canceled/unavailable, ≥1 item) was placed at least 90 days before the last qualifying purchase in the data (2018-09-03 09:06:57). Numerator: people who placed another qualifying order more than 24 hours and at most 90 days after their first.
+Grounding: 77,560 eligible people. Results: **1.28%** (991) under "any later order ≥24h", 1.24% (961) under "second order only", 1.30% under "different calendar day". Without the same-day exclusion it's 2.31%.
+⚠ **This isn't the first-pass 3.04%.** That number is a different metric: *ever* repeat, all time, no window. It is 2,887 of 94,983 people, and 31.04% of those second orders came within 24h of the first. The metric layer will publish both, named `repeat_rate_ever` and `repeat_rate_90d`, and the reconciliation reports each one against its own definition.
+
+**Review score.** Mean `review_score` (1–5) over orders, using one chosen review per order (C4), on the delivered-analysis population. Grounding: **4.156** on that population. The late-minus-on-time raw gap is 2.021 stars. The first pass's **−1.99** is the OLS-controlled coefficient (state, category, value, freight share, multi-seller, distance, promised days). I didn't recompute it in this phase, and the verification phase will reproduce it from the marts.
+
+---
+
+## 6. Build order, and what proves each layer (sequence-verifiable-units)
+
+Each step ends green before the next starts, and each is its own commit.
+
+0. **Scaffold.** dbt project, `profiles.yml` for DuckDB, packages (dbt_utils, dbt_expectations), CI workflow skeleton, `make build`. *Proof:* `dbt debug` and an empty `dbt build` pass in CI.
+1. **Raw.** Sources plus the hash manifest. *Proof:* 9/9 sha256 match, and source row counts equal the §1 table.
+2. **Staging.** *Proof:* each model's row count equals raw exactly, PK unique + not_null tests pass, and the type casts are asserted.
+3. **Intermediate.** *Proof:* int_parcels = 100,010; int_geo_zip = 19,015; delivery_state covers all 99,441 orders with no nulls; recon counts match §4 P4.
+4. **Marts.** *Proof:* PKs unique, relationships pass, and no fan-out (fct_orders = 99,441, dim_customer = 96,096). Σ item price in fct_order_items equals raw.
+5. **Business-rule tests plus known-bad fixtures.** *Proof:* every custom test passes on real data **and fails on its fixture**.
+6. **Metric layer plus reconciliation.** *Proof:* late 6.79%, ever-repeat 3.04%, 90d repeat as defined, review 4.156. Late penalty −1.99 re-derived, or the gap explained (verify-this verdict per number).
+7. **Experiments** for C1–C3. *Proof:* both arms run, deltas recorded in decisions.yaml.
+8. **Ship.** CI `dbt build`, docs + lineage, README one-command reproduce. *Proof:* a fresh clone → `make build` passes.
+
+---
+
+## 7. Open modeling choices (settle by experiment, later)
+
+- **C1: How to mark multi-seller orders as delivered.** (a) Trust the order-level date, as the first pass did. (b) Exclude multi-seller orders from late rate as unobservable. (c) Treat the order as delivered only once the last parcel's ship-by date has passed, plus the median carrier time. *Experiment:* late rate and review gap under each; does the 1.02%-late / 2.86-star anomaly close? 1,272 orders, 1.32% of the population.
+- **C2: Reviews dated before delivery.** (a) Timestamp comparison: 8.49% flagged. (b) Calendar-date comparison: 5.19%. And separately: keep, exclude, or segment these reviews in review-score metrics. *Experiment:* review score and late penalty under each.
+- **C3: Incremental vs full rebuild.** The data is a static 100k-order snapshot. *Experiment:* build time and result equality for full vs `incremental` on fct_orders/fct_order_items.
+
+Smaller choices, also recorded in decisions.yaml:
+- **C4: Which review is the order's review** (latest answer vs earliest creation vs average).
+- **C5: The dim_customer address rule** (latest order's address vs SCD2; affects 250 people).
+- **C6: The repeat-rate "same-day" rule** (≥24h vs different calendar day vs second order only: 1.28 / 1.30 / 1.24%).
+
+---
+
+## 8. Decisions
+
+1. **Public repo name** for when it's published (it'll be built private first).
+2. **How much to show on the portfolio**: the full repo, or the README plus lineage plus findings only. Is the decision trail public?
+3. **Which repeat number to headline**: the first-pass "3.04% ever reordered" or the 90-day definition (about 1.28%). Both will be computed. This is about the story you tell.
