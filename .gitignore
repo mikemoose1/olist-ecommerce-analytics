@@ -6,3 +6,7 @@ dbt_packages/
 logs/
 data/raw/
 __pycache__/
+
+# local/stray files
+*.whl
+.user.yml
