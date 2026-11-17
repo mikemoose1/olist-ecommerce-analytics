@@ -1,0 +1,42 @@
+name: olist_ecommerce_analytics
+version: "1.0.0"
+config-version: 2
+profile: olist
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+macro-paths: ["macros"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+vars:
+  # Analysis window: full months only (edge months 2016-09..12 and 2018-09..10 are partial).
+  analysis_window_start: "2017-01-01"
+  analysis_window_end: "2018-08-31"
+  # Modeling choices settled by experiment (see README "Modeling choices").
+  multi_seller_late_rule: "trust_order_date"          # C1: trust_order_date | exclude_multi_seller | last_parcel_proxy
+  review_before_delivery_compare: "calendar_day"      # C2: calendar_day | timestamp
+  review_pick_rule: "latest_answer"                   # C4: latest_answer | earliest_creation
+  repeat_same_day_rule: "any_later_order_24h"         # C6: any_later_order_24h | different_calendar_day | second_order_only
+
+models:
+  olist_ecommerce_analytics:
+    +materialized: table
+    staging:
+      +schema: staging
+    intermediate:
+      +schema: intermediate
+    marts:
+      +schema: marts
+    metrics:
+      +schema: metrics
+
+seeds:
+  olist_ecommerce_analytics:
+    +schema: seeds
+
+data_tests:
+  olist_ecommerce_analytics:
+    +severity: error

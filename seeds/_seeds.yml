@@ -1,0 +1,10 @@
+version: 2
+seeds:
+  - name: raw_file_manifest
+    description: sha256 of each raw CSV as downloaded from the Hugging Face mirror on 2026-11-17. The build fails if a file differs.
+    config:
+      column_types: {file_name: varchar, sha256: varchar}
+  - name: category_translation_patch
+    description: English names for the two Portuguese categories missing from the source translation table.
+    config:
+      column_types: {product_category_name: varchar, product_category_name_english: varchar}

@@ -1,0 +1,38 @@
+version: 2
+
+sources:
+  - name: olist_raw
+    description: >
+      The nine Olist CSVs exactly as published (Hugging Face mirror bulutttt/olist-raw-data),
+      read with every column as text. Nothing is cast or filtered here; staging does that.
+      File integrity is enforced by the test assert_raw_file_hashes_match_manifest.
+    meta:
+      external_location: "read_csv('{{ env_var('OLIST_RAW_DIR', 'data/raw') }}/{name}.csv', header=true, all_varchar=true)"
+    tables:
+      - name: olist_orders_dataset
+        data_tests:
+          - dbt_expectations.expect_table_row_count_to_equal: {value: 99441}
+      - name: olist_order_items_dataset
+        data_tests:
+          - dbt_expectations.expect_table_row_count_to_equal: {value: 112650}
+      - name: olist_order_payments_dataset
+        data_tests:
+          - dbt_expectations.expect_table_row_count_to_equal: {value: 103886}
+      - name: olist_order_reviews_dataset
+        data_tests:
+          - dbt_expectations.expect_table_row_count_to_equal: {value: 99224}
+      - name: olist_customers_dataset
+        data_tests:
+          - dbt_expectations.expect_table_row_count_to_equal: {value: 99441}
+      - name: olist_sellers_dataset
+        data_tests:
+          - dbt_expectations.expect_table_row_count_to_equal: {value: 3095}
+      - name: olist_products_dataset
+        data_tests:
+          - dbt_expectations.expect_table_row_count_to_equal: {value: 32951}
+      - name: product_category_name_translation
+        data_tests:
+          - dbt_expectations.expect_table_row_count_to_equal: {value: 71}
+      - name: olist_geolocation_dataset
+        data_tests:
+          - dbt_expectations.expect_table_row_count_to_equal: {value: 1000163}
