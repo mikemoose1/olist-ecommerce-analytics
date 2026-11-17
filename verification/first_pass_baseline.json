@@ -1,0 +1,9 @@
+{
+  "_source": "First-pass EDA (/workspace/olist-eda, scripts 02_analyses.py), rerun 2026-11-17 on the same hashed CSVs. Values copied from out/02_analyses.json.",
+  "late_rate_pct": {"value": 6.79, "denominator": 96203},
+  "review_score": {"value": 4.156},
+  "late_review_gap_raw": {"value": 2.021, "on_time_n": 89182, "late_n": 6378},
+  "late_penalty_controlled": {"value": -1.992, "ci": [-2.023, -1.962], "spec": "OLS review_score ~ late + C(customer_state) + C(top-30 category else other)"},
+  "repeat_rate_ever_pct": {"value": 3.04, "numerator": 2887, "denominator": 94983},
+  "repeat_rate_90d_pct_second_order_rule": {"value": 1.24, "eligible": 77560}
+}

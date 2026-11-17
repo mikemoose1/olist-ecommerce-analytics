@@ -1,0 +1,103 @@
+[
+ {
+  "metric": "repeat_rate_90d (headline)",
+  "mart": {
+   "rule": "any_later_order_24h",
+   "num": 991,
+   "den": 77560,
+   "value": 1.28
+  },
+  "independent": {
+   "num": 991,
+   "den": 77560,
+   "value": 1.28
+  },
+  "first_pass": 1.24,
+  "tolerance": 0.005,
+  "note": "First pass reported 1.24% under the 'second order only' rule; the headline uses 'any_later_order_24h'. The C6 experiment reproduces 1.24% exactly under the first-pass rule.",
+  "verdict": "VERIFIED"
+ },
+ {
+  "metric": "repeat_rate_ever (secondary)",
+  "mart": {
+   "rule": "all_time_including_same_day",
+   "num": 2887,
+   "den": 94983,
+   "value": 3.04
+  },
+  "independent": {
+   "num": 2887,
+   "den": 94983,
+   "value": 3.04
+  },
+  "first_pass": 3.04,
+  "tolerance": 0.005,
+  "note": "",
+  "verdict": "VERIFIED"
+ },
+ {
+  "metric": "late_rate",
+  "mart": {
+   "rule": "trust_order_date",
+   "num": 6531,
+   "den": 96203,
+   "value": 6.79
+  },
+  "independent": {
+   "num": 6531,
+   "den": 96203,
+   "value": 6.79
+  },
+  "first_pass": 6.79,
+  "tolerance": 0.005,
+  "note": "",
+  "verdict": "VERIFIED"
+ },
+ {
+  "metric": "review_score",
+  "mart": {
+   "rule": "chosen_review_per_order",
+   "num": 397176,
+   "den": 95560,
+   "value": 4.156
+  },
+  "independent": {
+   "num": 397176,
+   "den": 95560,
+   "value": 4.156
+  },
+  "first_pass": 4.156,
+  "tolerance": 0.0005,
+  "note": "",
+  "verdict": "VERIFIED"
+ },
+ {
+  "metric": "late_review_gap_raw",
+  "mart": {
+   "value": 2.021
+  },
+  "independent": {
+   "value": 2.021
+  },
+  "first_pass": 2.021,
+  "tolerance": 0.0005,
+  "note": "",
+  "verdict": "VERIFIED"
+ },
+ {
+  "metric": "late_penalty_controlled (OLS, from marts)",
+  "mart": {
+   "value": -1.992,
+   "ci": [
+    -2.023,
+    -1.962
+   ],
+   "n": 95560
+  },
+  "independent": null,
+  "first_pass": -1.992,
+  "tolerance": 0.01,
+  "note": "Recomputed with statsmodels from marts; compared to the first pass within 0.01 stars.",
+  "verdict": "VERIFIED"
+ }
+]

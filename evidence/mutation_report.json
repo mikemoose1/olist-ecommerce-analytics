@@ -1,0 +1,481 @@
+[
+ {
+  "rule": "Raw files are the exact published files",
+  "selector": "assert_raw_file_hashes_match_manifest",
+  "mutation": {
+   "raw_edit": [
+    "olist_sellers_dataset.csv",
+    "append_row"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_raw_file_hashes_match_manifest",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_raw_file_hashes_match_manifest",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 9.3
+ },
+ {
+  "rule": "Raw row counts are as published",
+  "selector": "source:olist_raw.olist_orders_dataset",
+  "mutation": {
+   "raw_edit": [
+    "olist_orders_dataset.csv",
+    "drop_last_row"
+   ]
+  },
+  "baseline": [
+   [
+    "dbt_expectations_source_expect_table_row_count_to_equal_olist_raw_olist_orders_dataset_99441",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
+    "fail",
+    1
+   ],
+   [
+    "dbt_expectations_source_expect_table_row_count_to_equal_olist_raw_olist_orders_dataset_99441",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 9.1
+ },
+ {
+  "rule": "Staging keeps every raw row",
+  "selector": "stg_orders,test_name:expect_table_row_count_to_equal_other_table",
+  "mutation": {
+   "sql": [
+    "delete from staging.stg_orders where order_id in (select order_id from staging.stg_orders limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_delivery_ref_stg_orders_",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_fct_orders_ref_stg_orders_",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_delivery_ref_stg_orders_",
+    "fail",
+    1
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_fct_orders_ref_stg_orders_",
+    "fail",
+    1
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
+    "fail",
+    1
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 9.4
+ },
+ {
+  "rule": "Modeling never creates or loses money (no fan-out)",
+  "selector": "assert_item_money_matches_raw",
+  "mutation": {
+   "sql": [
+    "insert into marts.fct_order_items select * from marts.fct_order_items limit 1"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_item_money_matches_raw",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_item_money_matches_raw",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 8.9
+ },
+ {
+  "rule": "Repeat metrics count people, not per-order ids",
+  "selector": "assert_repeat_metrics_count_people_not_order_ids",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders o set customer_unique_id = c.customer_id from staging.stg_customers c where c.customer_unique_id = o.customer_unique_id and o.order_id in (select order_id from marts.fct_orders order by order_id limit 5)"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_repeat_metrics_count_people_not_order_ids",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_repeat_metrics_count_people_not_order_ids",
+    "fail",
+    5
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 9.2
+ },
+ {
+  "rule": "A multi-seller order is never treated as a single observed parcel",
+  "selector": "assert_multi_seller_orders_never_treated_as_single_parcel",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set delivery_evidence = 'order_level_single_parcel' where order_id in (select order_id from marts.fct_orders where delivery_evidence = 'order_level_multi_parcel' limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_multi_seller_orders_never_treated_as_single_parcel",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_multi_seller_orders_never_treated_as_single_parcel",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 9.7
+ },
+ {
+  "rule": "A review dated before delivery is flagged",
+  "selector": "assert_reviews_dated_before_delivery_are_flagged",
+  "mutation": {
+   "sql": [
+    "update marts.fct_reviews set review_before_delivery = false where review_id in (select review_id from marts.fct_reviews where review_before_delivery limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_reviews_dated_before_delivery_are_flagged",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_reviews_dated_before_delivery_are_flagged",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 8.9
+ },
+ {
+  "rule": "Paid equals items + freight, or the order is labeled",
+  "selector": "assert_payments_match_items_plus_freight_or_are_labeled",
+  "mutation": {
+   "sql": [
+    "update marts.fct_payments set payment_value = payment_value + 50 where order_id in (select order_id from marts.fct_orders where recon_status = 'match' order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_payments_match_items_plus_freight_or_are_labeled",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_payments_match_items_plus_freight_or_are_labeled",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 9.1
+ },
+ {
+  "rule": "Real payment gaps stay under 0.5% of orders",
+  "selector": "assert_payment_mismatch_share_below_threshold",
+  "mutation": {
+   "sql": [
+    "create temp table victims as select order_id from marts.fct_orders where recon_status = 'match' order by order_id limit 600",
+    "update marts.fct_payments p set payment_value = payment_value + 50 from (select order_id, min(payment_sequential) s from marts.fct_payments group by 1) m where p.order_id = m.order_id and p.payment_sequential = m.s and p.order_id in (select order_id from victims)",
+    "update marts.fct_orders set recon_status = 'overpaid' where order_id in (select order_id from victims)"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_payment_mismatch_share_below_threshold",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_payment_mismatch_share_below_threshold",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 9.0
+ },
+ {
+  "rule": "Only full months are in the analysis window",
+  "selector": "assert_analysis_window_is_full_months_only",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set in_analysis_window = true where purchase_date >= date '2018-09-01'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_analysis_window_is_full_months_only",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_analysis_window_is_full_months_only",
+    "fail",
+    20
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 8.9
+ },
+ {
+  "rule": "Delivery state agrees with status and dates",
+  "selector": "assert_delivery_state_agrees_with_status_and_dates",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set delivery_state = 'delivered_late' where delivery_state = 'status_date_conflict'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_delivery_state_agrees_with_status_and_dates",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_delivery_state_agrees_with_status_and_dates",
+    "fail",
+    14
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 8.9
+ },
+ {
+  "rule": "Orders without items are labeled no_items",
+  "selector": "assert_orders_without_items_are_labeled",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set recon_status = 'match' where recon_status = 'no_items'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_orders_without_items_are_labeled",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_orders_without_items_are_labeled",
+    "fail",
+    775
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 8.5
+ },
+ {
+  "rule": "Exactly one chosen review per reviewed order",
+  "selector": "assert_one_chosen_review_per_reviewed_order",
+  "mutation": {
+   "sql": [
+    "update marts.fct_reviews set is_chosen_for_order = true where order_id in (select order_id from marts.fct_reviews group by 1 having count(*) > 1 order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_one_chosen_review_per_reviewed_order",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_one_chosen_review_per_reviewed_order",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 9.3
+ },
+ {
+  "rule": "One location per zip",
+  "selector": "int_geo_zip,test_name:unique",
+  "mutation": {
+   "sql": [
+    "insert into intermediate.int_geo_zip select * from intermediate.int_geo_zip limit 1"
+   ]
+  },
+  "baseline": [
+   [
+    "unique_int_geo_zip_zip_code_prefix",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "unique_int_geo_zip_zip_code_prefix",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 8.9
+ },
+ {
+  "rule": "Zip locations are inside Brazil",
+  "selector": "int_geo_zip,test_name:expect_column_values_to_be_between",
+  "mutation": {
+   "sql": [
+    "update intermediate.int_geo_zip set lat = 40.7 where zip_code_prefix in (select zip_code_prefix from intermediate.int_geo_zip limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lat__5_3___33_8",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lng___34_7___74_0",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lng___34_7___74_0",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lat__5_3___33_8",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 9.2
+ },
+ {
+  "rule": "Payment types are known values",
+  "selector": "stg_payments,test_name:accepted_values",
+  "mutation": {
+   "sql": [
+    "update staging.stg_payments set payment_type = 'pix' where order_id in (select order_id from staging.stg_payments limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "accepted_values_stg_payments_payment_type__credit_card__boleto__voucher__debit_card__not_defined",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "accepted_values_stg_payments_payment_type__credit_card__boleto__voucher__debit_card__not_defined",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 9.1
+ },
+ {
+  "rule": "Trend metrics never include a partial month",
+  "selector": "metric_late_rate_monthly,test_name:expect_column_values_to_be_between",
+  "mutation": {
+   "sql": [
+    "insert into metrics.metric_late_rate_monthly values ('2018-09', 1, 16, 6.25)"
+   ]
+  },
+  "baseline": [
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_monthly_year_month___2018_08____2017_01_",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_monthly_year_month___2018_08____2017_01_",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 8.9
+ }
+]
