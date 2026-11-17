@@ -1,0 +1,41 @@
+name: dbt build
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - name: Cache raw CSVs (keyed on the pinned hashes)
+        uses: actions/cache@v4
+        with:
+          path: data/raw
+          key: olist-raw-${{ hashFiles('seeds/raw_file_manifest.csv') }}
+      - name: Setup (venv, download + verify raw data, dbt deps)
+        run: make setup
+      - name: dbt build (models + all tests)
+        run: make build
+      - name: Reconcile headline numbers
+        run: make verify
+      - name: Prove every business-rule test can fail
+        run: make prove-tests
+      - name: Docs and lineage
+        run: make docs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dbt-docs-and-evidence
+          path: |
+            target/index.html
+            target/manifest.json
+            target/catalog.json
+            target/run_results.json
+            evidence/
+            docs/LINEAGE.md

@@ -89,7 +89,8 @@ evidence/                                     latest verification and mutation r
 analysis_design_phase/                        raw-data checks run before any SQL was written
 ```
 
-CI (GitHub Actions) runs setup, `dbt build`, `make verify`, `make prove-tests` and `make docs` on every push, and uploads the
-docs site and evidence as an artifact.
+CI (GitHub Actions, [`ci/github-actions-ci.yml`](ci/github-actions-ci.yml)) runs setup, `dbt build`, `make verify`,
+`make prove-tests` and `make docs` on every push, and uploads the docs site and evidence as an artifact. To enable it, the file
+must live at `.github/workflows/ci.yml` (it is kept under `ci/` until it is added with an account that has GitHub's `workflow` permission).
 
 Data: Olist, published on Kaggle; see the Kaggle page for license terms. Raw files are downloaded, not committed.
