@@ -68,10 +68,9 @@ df = mart.execute("""
 with cat as (
   select i.order_id, arg_max(p.category, i.price) as category
   from marts.fct_order_items i join marts.dim_product p using (product_id) group by 1)
-select o.order_id, o.review_score, (o.delivery_state = 'delivered_late')::int as late_i, o.ship_to_state as state, cat.category
-from marts.fct_orders o join cat using (order_id)
-where o.delivery_state in ('delivered_on_time', 'delivered_late') and o.n_items > 0 and o.in_analysis_window
-  and o.review_score is not null""").df()
+select o.order_id, o.review_score, o.is_late::int as late_i, o.ship_to_state as state, cat.category
+from metrics.metric_late_rate_orders o join cat using (order_id)
+where o.review_score is not null""").df()
 top = df.category.value_counts().index[:30]
 df["cat30"] = np.where(df.category.isin(top), df.category, "other")
 m = smf.ols("review_score ~ late_i + C(state) + C(cat30)", df).fit()

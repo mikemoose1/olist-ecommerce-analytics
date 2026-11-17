@@ -13,3 +13,13 @@ models:
         data_tests:
           - unique
           - dbt_expectations.expect_column_values_to_be_between: {arguments: {min_value: "'2017-01'", max_value: "'2018-08'"}}
+  - name: metric_late_rate_orders
+    description: The one definition of the late-rate population and of "late" (C1 rule applied).
+    columns:
+      - name: order_id
+        data_tests:
+          - unique
+          - not_null
+          - relationships: {arguments: {to: ref('fct_orders'), field: order_id}}
+      - name: is_late
+        data_tests: [not_null]
