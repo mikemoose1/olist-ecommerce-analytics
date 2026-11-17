@@ -59,14 +59,13 @@ for arm in ["trust_order_date", "exclude_multi_seller", "last_parcel_proxy"]:
     R["C1"][arm] = {"late_rate": h["late_rate"], "review_gap_raw": h["late_review_gap_raw"]["value"], "late_penalty": penalty(con),
                     "multi_seller": {"orders": ms[0], "late_pct": ms[1], "avg_review": ms[2]},
                     "single_seller": {"late_pct": ss[0], "avg_review": ss[1]}}
+    if arm == "trust_order_date":
+        # within multi-seller orders: does the order-level date still separate good from bad reviews?
+        R["C1"]["multi_seller_review_by_late_trust"] = con.execute("""select is_late, count(*), round(avg(review_score),3)
+          from metrics.metric_late_rate_orders where delivery_evidence='order_level_multi_parcel' and review_score is not null group by 1 order by 1""").fetchall()
+        R["C1"]["on_time_low_score_pct_by_evidence"] = con.execute("""select delivery_evidence, round(100*avg((review_score<=2)::int),2)
+          from metrics.metric_late_rate_orders where review_score is not null and not is_late group by 1 order by 1""").fetchall()
     con.close()
-# within multi-seller orders: does lateness still separate reviews? (is the order date informative?)
-con = duckdb.connect(DB, read_only=True)
-R["C1"]["multi_seller_review_by_late_trust"] = con.execute("""select is_late, count(*), round(avg(review_score),3)
-  from metrics.metric_late_rate_orders where delivery_evidence='order_level_multi_parcel' and review_score is not null group by 1 order by 1""").fetchall()
-R["C1"]["multi_seller_low_score_pct"] = con.execute("""select delivery_evidence, round(100*avg((review_score<=2)::int),2)
-  from metrics.metric_late_rate_orders where review_score is not null and not is_late group by 1 order by 1""").fetchall()
-con.close()
 
 # ---------------- C2 reviews dated before delivery
 R["C2"] = {}

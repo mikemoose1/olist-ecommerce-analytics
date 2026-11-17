@@ -75,23 +75,8 @@
     "avg_review": 4.174
    }
   },
-  "multi_seller_review_by_late_trust": [
-   [
-    false,
-    1246,
-    2.872
-   ],
-   [
-    true,
-    12,
-    1.833
-   ]
-  ],
+  "multi_seller_review_by_late_trust": [],
   "multi_seller_low_score_pct": [
-   [
-    "order_level_multi_parcel",
-    46.87
-   ],
    [
     "order_level_single_parcel",
     8.71
@@ -106,25 +91,25 @@
    "flagged_avg_score": 2.768,
    "unflagged_avg_score": 4.285,
    "flagged_same_calendar_day_as_delivery": 3164,
-   "late_pct_among_flagged": 65.64,
-   "review_score_keep": 4.156,
-   "review_score_exclude_flagged": 4.285,
-   "n_exclude": 87440,
+   "late_pct_among_flagged": 65.85,
+   "review_score_keep": 4.174,
+   "review_score_exclude_flagged": 4.305,
+   "n_exclude": 86223,
    "late_penalty_keep": {
-    "coef": -1.992,
+    "coef": -2.012,
     "ci": [
-     -2.023,
-     -1.962
+     -2.042,
+     -1.982
     ],
-    "n": 95560
+    "n": 94302
    },
    "late_penalty_exclude_flagged": {
-    "coef": -0.493,
+    "coef": -0.509,
     "ci": [
-     -0.563,
-     -0.424
+     -0.578,
+     -0.441
     ],
-    "n": 87440
+    "n": 86223
    }
   },
   "calendar_day": {
@@ -134,25 +119,25 @@
    "flagged_avg_score": 1.934,
    "unflagged_avg_score": 4.278,
    "flagged_same_calendar_day_as_delivery": 0,
-   "late_pct_among_flagged": 95.55,
-   "review_score_keep": 4.156,
-   "review_score_exclude_flagged": 4.278,
-   "n_exclude": 90590,
+   "late_pct_among_flagged": 95.66,
+   "review_score_keep": 4.174,
+   "review_score_exclude_flagged": 4.298,
+   "n_exclude": 89347,
    "late_penalty_keep": {
-    "coef": -1.992,
+    "coef": -2.012,
     "ci": [
-     -2.023,
-     -1.962
+     -2.042,
+     -1.982
     ],
-    "n": 95560
+    "n": 94302
    },
    "late_penalty_exclude_flagged": {
-    "coef": -0.751,
+    "coef": -0.769,
     "ci": [
-     -0.808,
-     -0.695
+     -0.824,
+     -0.713
     ],
-    "n": 90590
+    "n": 89347
    }
   },
   "review_creation_with_time_part": [
@@ -163,43 +148,43 @@
  "C4": {
   "latest_answer": {
    "review_score": {
-    "num": 397176,
-    "den": 95560,
-    "value": 4.156
+    "num": 393576,
+    "den": 94302,
+    "value": 4.174
    },
    "late_penalty": {
-    "coef": -1.992,
+    "coef": -2.012,
     "ci": [
-     -2.023,
-     -1.962
+     -2.042,
+     -1.982
     ],
-    "n": 95560
+    "n": 94302
    }
   },
   "earliest_creation": {
    "review_score": {
-    "num": 397237,
-    "den": 95560,
-    "value": 4.157
+    "num": 393655,
+    "den": 94302,
+    "value": 4.174
    },
    "late_penalty": {
-    "coef": -1.99,
+    "coef": -2.01,
     "ci": [
-     -2.02,
-     -1.96
+     -2.04,
+     -1.98
     ],
-    "n": 95560
+    "n": 94302
    }
   },
   "orders_with_multiple_reviews": 547,
   "orders_whose_score_changes": 188,
-  "mean_review_of_order_avg_rule": 4.157
+  "mean_review_of_order_avg_rule": 4.174
  },
  "C5": {
   "people_with_multiple_states": 39,
   "people_with_multiple_zips": 250,
   "orders_where_latest_state_differs": 43,
-  "max_abs_change_in_state_late_rate_pp": 0.154
+  "max_abs_change_in_state_late_rate_pp": 0.155
  },
  "C6": {
   "any_later_order_24h": {
@@ -220,10 +205,10 @@
   "eligible_with_same_day_second_then_later_return": 30
  },
  "C3": {
-  "full_rebuild_seconds": 7.5,
-  "full_rebuild_again_seconds": 5.4,
-  "incremental_first_seconds": 7.1,
-  "incremental_second_seconds": 4.5,
+  "full_rebuild_seconds": 7.8,
+  "full_rebuild_again_seconds": 5.6,
+  "incremental_first_seconds": 7.5,
+  "incremental_second_seconds": 5.5,
   "row_equality_after_first_build": {
    "fct_orders": {
     "rows_only_in_incremental": 0,
