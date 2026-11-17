@@ -25,6 +25,28 @@
     "avg_review": 4.174
    }
   },
+  "multi_seller_review_by_late_trust": [
+   [
+    false,
+    1246,
+    2.872
+   ],
+   [
+    true,
+    12,
+    1.833
+   ]
+  ],
+  "on_time_low_score_pct_by_evidence": [
+   [
+    "order_level_multi_parcel",
+    46.87
+   ],
+   [
+    "order_level_single_parcel",
+    8.71
+   ]
+  ],
   "exclude_multi_seller": {
    "late_rate": {
     "num": 6518,
@@ -74,14 +96,7 @@
     "late_pct": 6.87,
     "avg_review": 4.174
    }
-  },
-  "multi_seller_review_by_late_trust": [],
-  "multi_seller_low_score_pct": [
-   [
-    "order_level_single_parcel",
-    8.71
-   ]
-  ]
+  }
  },
  "C2": {
   "timestamp": {
@@ -205,10 +220,10 @@
   "eligible_with_same_day_second_then_later_return": 30
  },
  "C3": {
-  "full_rebuild_seconds": 7.8,
-  "full_rebuild_again_seconds": 5.6,
-  "incremental_first_seconds": 7.5,
-  "incremental_second_seconds": 5.5,
+  "full_rebuild_seconds": 7.6,
+  "full_rebuild_again_seconds": 5.9,
+  "incremental_first_seconds": 7.7,
+  "incremental_second_seconds": 4.7,
   "row_equality_after_first_build": {
    "fct_orders": {
     "rows_only_in_incremental": 0,
