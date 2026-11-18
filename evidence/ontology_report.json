@@ -1221,7 +1221,7 @@
   "kind": "coverage",
   "name": "allowlist reasons",
   "ok": true,
-  "detail": "6 exemptions, each with a reason"
+  "detail": "44 exemptions, each with a reason"
  },
  {
   "kind": "coverage",
@@ -1239,7 +1239,7 @@
   "kind": "coverage",
   "name": "numbers in ONTOLOGY.md",
   "ok": true,
-  "detail": "60 numbers each bound to the ontology.yml value they state; problems: none"
+  "detail": "71 numbers each bound to the ontology.yml value they state; problems: none"
  },
  {
   "kind": "coverage",
