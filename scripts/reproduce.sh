@@ -13,7 +13,7 @@ deps()        { venv; "$BIN/dbt" deps --quiet; }
 setup()       { venv; data; deps; }
 build()       { deps; "$BIN/dbt" build --fail-fast; }
 verify()      { "$BIN/python" verification/verify_headlines.py; ontology; }
-ontology()    { "$BIN/python" ontology/check.py; }
+ontology()    { "$BIN/python" ontology/check.py; "$BIN/python" verification/known_answers/selftest.py; }
 prove_tests() { "$BIN/python" scripts/prove_tests_fail.py; }
 experiments() { "$BIN/python" experiments/run_experiments.py; }
 docs()        { "$BIN/dbt" docs generate --quiet; "$BIN/python" scripts/lineage_mermaid.py; }

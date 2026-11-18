@@ -23,7 +23,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.7
+  "seconds": 10.1
  },
  {
   "rule": "Raw row counts are as published",
@@ -59,7 +59,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.7
+  "seconds": 9.3
  },
  {
   "rule": "Staging keeps every raw row",
@@ -71,7 +71,7 @@
   },
   "baseline": [
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_fct_orders_ref_stg_orders_",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
     "pass",
     0
    ],
@@ -81,7 +81,7 @@
     0
    ],
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_fct_orders_ref_stg_orders_",
     "pass",
     0
    ],
@@ -93,6 +93,11 @@
   ],
   "mutant": [
    [
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
+    "fail",
+    1
+   ],
+   [
     "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_delivery_ref_stg_orders_",
     "fail",
     1
@@ -103,18 +108,13 @@
     1
    ],
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
-    "fail",
-    1
-   ],
-   [
     "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
     "fail",
     1
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.8
+  "seconds": 9.4
  },
  {
   "rule": "Modeling never creates or loses money (no fan-out)",
@@ -139,7 +139,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.5
+  "seconds": 9.7
  },
  {
   "rule": "Repeat metrics count people, not per-order ids",
@@ -164,7 +164,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 11.0
+  "seconds": 9.8
  },
  {
   "rule": "A multi-seller order is never treated as a single observed parcel",
@@ -189,7 +189,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.3
+  "seconds": 10.0
  },
  {
   "rule": "A review dated before delivery is flagged",
@@ -214,7 +214,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.6
+  "seconds": 10.2
  },
  {
   "rule": "Paid equals items + freight, or the order is labeled",
@@ -239,7 +239,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.2
+  "seconds": 10.7
  },
  {
   "rule": "Real payment gaps stay under 0.5% of orders",
@@ -266,7 +266,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.9
+  "seconds": 10.2
  },
  {
   "rule": "Only full months are in the analysis window",
@@ -291,7 +291,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.7
+  "seconds": 10.6
  },
  {
   "rule": "Delivery state agrees with status and dates",
@@ -316,7 +316,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.9
+  "seconds": 10.0
  },
  {
   "rule": "Orders without items are labeled no_items",
@@ -341,7 +341,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.2
+  "seconds": 10.6
  },
  {
   "rule": "Exactly one chosen review per reviewed order",
@@ -366,7 +366,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.1
+  "seconds": 11.2
  },
  {
   "rule": "Every order's purchase date exists in dim_date",
@@ -388,12 +388,12 @@
     0
    ],
    [
-    "relationships_fct_order_items_order_id__order_id__ref_fct_orders_",
+    "relationships_fct_orders_customer_unique_id__customer_unique_id__ref_dim_customer_",
     "pass",
     0
    ],
    [
-    "relationships_fct_orders_customer_unique_id__customer_unique_id__ref_dim_customer_",
+    "relationships_fct_order_items_order_id__order_id__ref_fct_orders_",
     "pass",
     0
    ],
@@ -420,12 +420,12 @@
     0
    ],
    [
-    "relationships_fct_orders_customer_unique_id__customer_unique_id__ref_dim_customer_",
+    "relationships_fct_order_items_order_id__order_id__ref_fct_orders_",
     "pass",
     0
    ],
    [
-    "relationships_fct_order_items_order_id__order_id__ref_fct_orders_",
+    "relationships_fct_orders_customer_unique_id__customer_unique_id__ref_dim_customer_",
     "pass",
     0
    ],
@@ -441,7 +441,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 11.1
+  "seconds": 12.6
  },
  {
   "rule": "One location per zip",
@@ -466,7 +466,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.6
+  "seconds": 11.1
  },
  {
   "rule": "Zip locations are inside Brazil",
@@ -478,30 +478,30 @@
   },
   "baseline": [
    [
-    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lng___34_7___74_0",
+    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lat__5_3___33_8",
     "pass",
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lat__5_3___33_8",
+    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lng___34_7___74_0",
     "pass",
     0
    ]
   ],
   "mutant": [
    [
-    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lng___34_7___74_0",
-    "pass",
-    0
-   ],
-   [
     "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lat__5_3___33_8",
     "fail",
     1
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lng___34_7___74_0",
+    "pass",
+    0
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.0
+  "seconds": 11.0
  },
  {
   "rule": "Payment types are known values",
@@ -526,7 +526,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 11.3
+  "seconds": 11.0
  },
  {
   "rule": "Trend metrics never include a partial month",
@@ -551,7 +551,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.7
+  "seconds": 10.6
  },
  {
   "rule": "Ontology: an order has exactly one row (no order with two customers)",
@@ -576,7 +576,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.0
+  "seconds": 2.1
  },
  {
   "rule": "Ontology: every customer has at least one order",
@@ -601,7 +601,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.0
+  "seconds": 2.2
  },
  {
   "rule": "Ontology: every item's product exists",
@@ -626,7 +626,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.1
+  "seconds": 2.2
  },
  {
   "rule": "Ontology: every survey response belongs to a real order",
@@ -651,7 +651,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 1.8
+  "seconds": 2.1
  },
  {
   "rule": "Ontology: an order never has two chosen reviews",
@@ -676,7 +676,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 1.7
+  "seconds": 2.1
  },
  {
   "rule": "Ontology: no new unknown ship-to locations beyond the documented 278",
@@ -701,7 +701,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 1.8
+  "seconds": 2.1
  },
  {
   "rule": "Ontology stage rule: late always means delivered after the promised day",
@@ -726,6 +726,981 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 1.6
+  "seconds": 2.0
+ },
+ {
+  "rule": "Ontology: the repeat cohort has one row per person (no duplicate person)",
+  "selector": "ontology:entity repeat_cohort",
+  "mutation": {
+   "sql": [
+    "insert into metrics.metric_repeat_rate_90d_people select * from metrics.metric_repeat_rate_90d_people order by customer_unique_id limit 1"
+   ]
+  },
+  "baseline": [
+   [
+    "entity repeat_cohort",
+    "pass",
+    "rows=77560 (card 77560), distinct keys=77560, null keys=0"
+   ]
+  ],
+  "mutant": [
+   [
+    "entity repeat_cohort",
+    "fail",
+    "rows=77561 (card 77560), distinct keys=77560, null keys=0"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.0
+ },
+ {
+  "rule": "Ontology: every cohort person is a real customer",
+  "selector": "ontology:relationship customer is in the repeat cohort",
+  "mutation": {
+   "sql": [
+    "update metrics.metric_repeat_rate_90d_people set customer_unique_id = 'ghost-person' where customer_unique_id in (select customer_unique_id from metrics.metric_repeat_rate_90d_people order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "relationship customer is in the repeat cohort",
+    "pass",
+    "nulls=0 (card 0), orphans=0 (card 0), children per parent 0..1 (card 0..1)"
+   ]
+  ],
+  "mutant": [
+   [
+    "relationship customer is in the repeat cohort",
+    "fail",
+    "nulls=0 (card 0), orphans=1 (card 0), children per parent 0..1 (card 0..1)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.1
+ },
+ {
+  "rule": "Ontology: purchased_at is never null",
+  "selector": "ontology:column_fact marts.fct_orders.purchased_at",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set purchased_at = null where order_id in (select order_id from marts.fct_orders order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.purchased_at",
+    "pass",
+    "type TIMESTAMP (card TIMESTAMP); nulls 0 (card 0); holds [purchase_date = cast(purchased_at as date)]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.purchased_at",
+    "fail",
+    "type TIMESTAMP (card TIMESTAMP); nulls 1 (card 0); holds [purchase_date = cast(purchased_at as date)]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 1.9
+ },
+ {
+  "rule": "Ontology: purchased_at keeps its TIMESTAMP type (a DATE would lose the 24-hour rule)",
+  "selector": "ontology:column_fact marts.fct_orders.purchased_at",
+  "mutation": {
+   "sql": [
+    "alter table marts.fct_orders alter column purchased_at set data type date"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.purchased_at",
+    "pass",
+    "type TIMESTAMP (card TIMESTAMP); nulls 0 (card 0); holds [purchase_date = cast(purchased_at as date)]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.purchased_at",
+    "fail",
+    "type DATE (card TIMESTAMP); nulls 0 (card 0); holds [purchase_date = cast(purchased_at as date)]: 0 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.0
+ },
+ {
+  "rule": "Ontology: n_parcels is 0, not null, for an order with no items",
+  "selector": "ontology:column_fact marts.fct_orders.n_parcels",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set n_parcels = null where order_id in (select order_id from marts.fct_orders where n_items = 0 order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.n_parcels",
+    "pass",
+    "type BIGINT (card BIGINT); nulls 0 (card 0); holds [(n_parcels = 0) = (n_items = 0)]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.n_parcels",
+    "fail",
+    "type BIGINT (card BIGINT); nulls 1 (card 0); holds [(n_parcels = 0) = (n_items = 0)]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.0
+ },
+ {
+  "rule": "Ontology: in_analysis_window is never null",
+  "selector": "ontology:column_fact marts.fct_orders.in_analysis_window",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set in_analysis_window = null where order_id in (select order_id from marts.fct_orders order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.in_analysis_window",
+    "pass",
+    "type BOOLEAN (card BOOLEAN); nulls 0 (card 0); holds [in_analysis_window = (purchase_date between date '2017-01-01' and date '2018-08-31')]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.in_analysis_window",
+    "fail",
+    "type BOOLEAN (card BOOLEAN); nulls 1 (card 0); holds [in_analysis_window = (purchase_date between date '2017-01-01' and date '2018-08-31')]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.0
+ },
+ {
+  "rule": "Ontology: review_score is null only when the order has no response",
+  "selector": "ontology:column_fact marts.fct_orders.review_score",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set review_score = null where order_id in (select order_id from marts.fct_orders where review_score is not null order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.review_score",
+    "pass",
+    "type INTEGER (card INTEGER); nulls 768 (card 768); null exactly when [review_id is null]: 0 violations; holds [review_score is null or review_score between 1 and 5]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.review_score",
+    "fail",
+    "type INTEGER (card INTEGER); nulls 769 (card 768); null exactly when [review_id is null]: 1 violations; holds [review_score is null or review_score between 1 and 5]: 0 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.1
+ },
+ {
+  "rule": "Ontology: review_score never holds a value outside 1 to 5",
+  "selector": "ontology:column_fact marts.fct_orders.review_score",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set review_score = 9 where order_id in (select order_id from marts.fct_orders where review_score is not null order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.review_score",
+    "pass",
+    "type INTEGER (card INTEGER); nulls 768 (card 768); null exactly when [review_id is null]: 0 violations; holds [review_score is null or review_score between 1 and 5]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.review_score",
+    "fail",
+    "type INTEGER (card INTEGER); nulls 768 (card 768); null exactly when [review_id is null]: 0 violations; holds [review_score is null or review_score between 1 and 5]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.0
+ },
+ {
+  "rule": "Ontology: the repeat flag is never null",
+  "selector": "ontology:column_fact metrics.metric_repeat_rate_90d_people.repeated",
+  "mutation": {
+   "sql": [
+    "update metrics.metric_repeat_rate_90d_people set repeated = null where customer_unique_id in (select customer_unique_id from metrics.metric_repeat_rate_90d_people order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact metrics.metric_repeat_rate_90d_people.repeated",
+    "pass",
+    "type BOOLEAN (card BOOLEAN); nulls 0 (card 0)"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact metrics.metric_repeat_rate_90d_people.repeated",
+    "fail",
+    "type BOOLEAN (card BOOLEAN); nulls 1 (card 0)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.0
+ },
+ {
+  "rule": "Ontology: the canceled count and the 6 canceled orders with a delivery date",
+  "selector": "ontology:term_count canceled_order",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set delivered_to_customer_at = null where order_id in (select order_id from marts.fct_orders where order_status = 'canceled' and delivered_to_customer_at is not null order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "term_count canceled_order",
+    "pass",
+    "order_status = 'canceled': 625 (card 625); order_status = 'canceled' and delivered_to_customer_at is not null: 6 (card 6); order_status = 'canceled' and delivery_state = 'status_date_conflict': 6 (card 6); order_status = 'canceled' and delivery_state = 'not_delivered': 619 (card 619); order_status = 'canceled' and n_items = 0: 164 (card 164)"
+   ]
+  ],
+  "mutant": [
+   [
+    "term_count canceled_order",
+    "fail",
+    "order_status = 'canceled': 625 (card 625); order_status = 'canceled' and delivered_to_customer_at is not null: 5 (card 6); order_status = 'canceled' and delivery_state = 'status_date_conflict': 6 (card 6); order_status = 'canceled' and delivery_state = 'not_delivered': 619 (card 619); order_status = 'canceled' and n_items = 0: 164 (card 164)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.2
+ },
+ {
+  "rule": "Ontology: placed an order versus qualifying order (1,113 people with no qualifying order)",
+  "selector": "ontology:term_count placed_an_order",
+  "mutation": {
+   "sql": [
+    "update marts.dim_customer set n_qualifying_orders = 0 where customer_unique_id in (select customer_unique_id from marts.dim_customer where n_qualifying_orders > 0 order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "term_count placed_an_order",
+    "pass",
+    "n_orders >= 1: 96096 (card 96096); n_qualifying_orders >= 1: 94983 (card 94983); n_qualifying_orders = 0: 1113 (card 1113)"
+   ]
+  ],
+  "mutant": [
+   [
+    "term_count placed_an_order",
+    "fail",
+    "n_orders >= 1: 96096 (card 96096); n_qualifying_orders >= 1: 94982 (card 94983); n_qualifying_orders = 0: 1114 (card 1113)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.1
+ },
+ {
+  "rule": "Ontology: the order count with no parcels (n_parcels = 0)",
+  "selector": "ontology:term_count parcel_count",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set n_parcels = 1 where order_id in (select order_id from marts.fct_orders where n_parcels = 0 order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "term_count parcel_count",
+    "pass",
+    "n_parcels = 0: 775 (card 775); n_parcels = 1: 97388 (card 97388); n_parcels > 1: 1278 (card 1278)"
+   ]
+  ],
+  "mutant": [
+   [
+    "term_count parcel_count",
+    "fail",
+    "n_parcels = 0: 774 (card 775); n_parcels = 1: 97389 (card 97388); n_parcels > 1: 1278 (card 1278)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.0
+ },
+ {
+  "rule": "Ontology: the analysis-window flag counts (349 outside)",
+  "selector": "ontology:term_count analysis_window",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set in_analysis_window = false where order_id in (select order_id from marts.fct_orders where in_analysis_window order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "term_count analysis_window",
+    "pass",
+    "in_analysis_window: 99092 (card 99092); not in_analysis_window: 349 (card 349)"
+   ]
+  ],
+  "mutant": [
+   [
+    "term_count analysis_window",
+    "fail",
+    "in_analysis_window: 99091 (card 99092); not in_analysis_window: 350 (card 349)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.1
+ },
+ {
+  "rule": "Ontology: the repeat cohort is everyone old enough (77,560 and the 17,423 left out)",
+  "selector": "ontology:fact The repeat cohort is exactly the people whose first qualifying order is old enough",
+  "mutation": {
+   "sql": [
+    "delete from metrics.metric_repeat_rate_90d_people where customer_unique_id in (select customer_unique_id from metrics.metric_repeat_rate_90d_people order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "fact The repeat cohort is exactly the people whose first qualifying order is old enough",
+    "pass",
+    "count=0 (card 0)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact The repeat cohort is exactly the people whose first qualifying order is old enough",
+    "fail",
+    "count=1 (card 0)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 1.9
+ },
+ {
+  "rule": "Ontology: first_order_at is the purchased_at of the seq = 1 order",
+  "selector": "ontology:fact first_order_at is the purchased_at of the person's seq = 1 order",
+  "mutation": {
+   "sql": [
+    "update metrics.metric_repeat_rate_90d_people set first_order_at = first_order_at + interval 1 hour where customer_unique_id in (select customer_unique_id from metrics.metric_repeat_rate_90d_people order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "fact first_order_at is the purchased_at of the person's seq = 1 order",
+    "pass",
+    "count=0 (card 0)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact first_order_at is the purchased_at of the person's seq = 1 order",
+    "fail",
+    "count=1 (card 0)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.0
+ },
+ {
+  "rule": "Ontology: the headline metric table has its 5 rows",
+  "selector": "ontology:entity headline_metric",
+  "mutation": {
+   "sql": [
+    "delete from metrics.metrics_headline where metric_name = 'late_rate'"
+   ]
+  },
+  "baseline": [
+   [
+    "entity headline_metric",
+    "pass",
+    "rows=5 (card 5), distinct keys=5, null keys=0"
+   ]
+  ],
+  "mutant": [
+   [
+    "entity headline_metric",
+    "fail",
+    "rows=4 (card 5), distinct keys=4, null keys=0"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.2
+ },
+ {
+  "rule": "Ontology: is_qualifying_order follows its rule (status and items)",
+  "selector": "ontology:column_fact marts.fct_orders.is_qualifying_order",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set is_qualifying_order = not is_qualifying_order where order_id in (select order_id from marts.fct_orders order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.is_qualifying_order",
+    "pass",
+    "type BOOLEAN (card BOOLEAN); nulls 0 (card 0); holds [is_qualifying_order = (order_status not in ('canceled', 'unavailable') and n_items > 0)]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.is_qualifying_order",
+    "fail",
+    "type BOOLEAN (card BOOLEAN); nulls 0 (card 0); holds [is_qualifying_order = (order_status not in ('canceled', 'unavailable') and n_items > 0)]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.1
+ },
+ {
+  "rule": "Ontology: qualifying order counts (98,199 qualifying, 1,242 not)",
+  "selector": "ontology:term_count qualifying_order",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set is_qualifying_order = true where order_id in (select order_id from marts.fct_orders where not is_qualifying_order order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "term_count qualifying_order",
+    "pass",
+    "is_qualifying_order: 98199 (card 98199); not is_qualifying_order: 1242 (card 1242)"
+   ]
+  ],
+  "mutant": [
+   [
+    "term_count qualifying_order",
+    "fail",
+    "is_qualifying_order: 98200 (card 98199); not is_qualifying_order: 1241 (card 1242)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.1
+ },
+ {
+  "rule": "Ontology: the sequence number is null exactly for non-qualifying orders",
+  "selector": "ontology:column_fact marts.fct_orders.customer_qualifying_order_seq",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set customer_qualifying_order_seq = 1 where order_id in (select order_id from marts.fct_orders where customer_qualifying_order_seq is null order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.customer_qualifying_order_seq",
+    "pass",
+    "type BIGINT (card BIGINT); nulls 1242 (card 1242); null exactly when [not is_qualifying_order]: 0 violations; holds [customer_qualifying_order_seq is null or customer_qualifying_order_seq >= 1]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.customer_qualifying_order_seq",
+    "fail",
+    "type BIGINT (card BIGINT); nulls 1241 (card 1242); null exactly when [not is_qualifying_order]: 1 violations; holds [customer_qualifying_order_seq is null or customer_qualifying_order_seq >= 1]: 0 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.1
+ },
+ {
+  "rule": "Ontology: purchase_date is the calendar day of purchased_at",
+  "selector": "ontology:column_fact marts.fct_orders.purchase_date",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set purchase_date = purchase_date + 1 where order_id in (select order_id from marts.fct_orders order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.purchase_date",
+    "pass",
+    "type DATE (card DATE); nulls 0 (card 0); holds [purchase_date = cast(purchased_at as date)]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.purchase_date",
+    "fail",
+    "type DATE (card DATE); nulls 0 (card 0); holds [purchase_date = cast(purchased_at as date)]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.0
+ },
+ {
+  "rule": "Ontology: n_items is never null",
+  "selector": "ontology:column_fact marts.fct_orders.n_items",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set n_items = null where order_id in (select order_id from marts.fct_orders order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.n_items",
+    "pass",
+    "type BIGINT (card BIGINT); nulls 0 (card 0)"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.n_items",
+    "fail",
+    "type BIGINT (card BIGINT); nulls 1 (card 0)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.0
+ },
+ {
+  "rule": "Ontology: delivered_to_customer_at has exactly 2,965 nulls",
+  "selector": "ontology:column_fact marts.fct_orders.delivered_to_customer_at",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set delivered_to_customer_at = null where order_id in (select order_id from marts.fct_orders where delivered_to_customer_at is not null order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.delivered_to_customer_at",
+    "pass",
+    "type TIMESTAMP (card TIMESTAMP); nulls 2965 (card 2965)"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.delivered_to_customer_at",
+    "fail",
+    "type TIMESTAMP (card TIMESTAMP); nulls 2966 (card 2965)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 1.9
+ },
+ {
+  "rule": "Ontology: every person has at least one order (n_orders >= 1)",
+  "selector": "ontology:column_fact marts.dim_customer.n_orders",
+  "mutation": {
+   "sql": [
+    "update marts.dim_customer set n_orders = 0 where customer_unique_id in (select customer_unique_id from marts.dim_customer order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.dim_customer.n_orders",
+    "pass",
+    "type BIGINT (card BIGINT); nulls 0 (card 0); holds [n_orders >= 1]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.dim_customer.n_orders",
+    "fail",
+    "type BIGINT (card BIGINT); nulls 0 (card 0); holds [n_orders >= 1]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.0
+ },
+ {
+  "rule": "Ontology: qualifying orders never exceed orders",
+  "selector": "ontology:column_fact marts.dim_customer.n_qualifying_orders",
+  "mutation": {
+   "sql": [
+    "update marts.dim_customer set n_qualifying_orders = n_orders + 1 where customer_unique_id in (select customer_unique_id from marts.dim_customer order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.dim_customer.n_qualifying_orders",
+    "pass",
+    "type BIGINT (card BIGINT); nulls 0 (card 0); holds [n_qualifying_orders <= n_orders]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.dim_customer.n_qualifying_orders",
+    "fail",
+    "type BIGINT (card BIGINT); nulls 0 (card 0); holds [n_qualifying_orders <= n_orders]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 1.9
+ },
+ {
+  "rule": "Ontology: first_qualifying_order_at is null exactly when a person has no qualifying order",
+  "selector": "ontology:column_fact marts.dim_customer.first_qualifying_order_at",
+  "mutation": {
+   "sql": [
+    "update marts.dim_customer set first_qualifying_order_at = null where customer_unique_id in (select customer_unique_id from marts.dim_customer where n_qualifying_orders > 0 order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.dim_customer.first_qualifying_order_at",
+    "pass",
+    "type TIMESTAMP (card TIMESTAMP); nulls 1113 (card 1113); null exactly when [n_qualifying_orders = 0]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.dim_customer.first_qualifying_order_at",
+    "fail",
+    "type TIMESTAMP (card TIMESTAMP); nulls 1114 (card 1113); null exactly when [n_qualifying_orders = 0]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.0
+ },
+ {
+  "rule": "Ontology: the cohort person id is never null",
+  "selector": "ontology:column_fact metrics.metric_repeat_rate_90d_people.customer_unique_id",
+  "mutation": {
+   "sql": [
+    "update metrics.metric_repeat_rate_90d_people set customer_unique_id = null where customer_unique_id in (select customer_unique_id from metrics.metric_repeat_rate_90d_people order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact metrics.metric_repeat_rate_90d_people.customer_unique_id",
+    "pass",
+    "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact metrics.metric_repeat_rate_90d_people.customer_unique_id",
+    "fail",
+    "type VARCHAR (card VARCHAR); nulls 1 (card 0)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 56.3
+ },
+ {
+  "rule": "Ontology: first_order_at is never null",
+  "selector": "ontology:column_fact metrics.metric_repeat_rate_90d_people.first_order_at",
+  "mutation": {
+   "sql": [
+    "update metrics.metric_repeat_rate_90d_people set first_order_at = null where customer_unique_id in (select customer_unique_id from metrics.metric_repeat_rate_90d_people order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact metrics.metric_repeat_rate_90d_people.first_order_at",
+    "pass",
+    "type TIMESTAMP (card TIMESTAMP); nulls 0 (card 0)"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact metrics.metric_repeat_rate_90d_people.first_order_at",
+    "fail",
+    "type TIMESTAMP (card TIMESTAMP); nulls 1 (card 0)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.1
+ },
+ {
+  "rule": "Ontology: first_order_date is the calendar day of first_order_at",
+  "selector": "ontology:column_fact metrics.metric_repeat_rate_90d_people.first_order_date",
+  "mutation": {
+   "sql": [
+    "update metrics.metric_repeat_rate_90d_people set first_order_date = first_order_date + 1 where customer_unique_id in (select customer_unique_id from metrics.metric_repeat_rate_90d_people order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact metrics.metric_repeat_rate_90d_people.first_order_date",
+    "pass",
+    "type DATE (card DATE); nulls 0 (card 0); holds [first_order_date = cast(first_order_at as date)]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact metrics.metric_repeat_rate_90d_people.first_order_date",
+    "fail",
+    "type DATE (card DATE); nulls 0 (card 0); holds [first_order_date = cast(first_order_at as date)]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.2
+ },
+ {
+  "rule": "Ontology: the headline numerator is null only for the review gap",
+  "selector": "ontology:column_fact metrics.metrics_headline.numerator",
+  "mutation": {
+   "sql": [
+    "update metrics.metrics_headline set numerator = null where metric_name = 'late_rate'"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact metrics.metrics_headline.numerator",
+    "pass",
+    "type HUGEINT (card HUGEINT); nulls 1 (card 1); null exactly when [metric_name = 'late_review_gap_raw']: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact metrics.metrics_headline.numerator",
+    "fail",
+    "type HUGEINT (card HUGEINT); nulls 2 (card 1); null exactly when [metric_name = 'late_review_gap_raw']: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.1
+ },
+ {
+  "rule": "Ontology: the headline denominator is never null",
+  "selector": "ontology:column_fact metrics.metrics_headline.denominator",
+  "mutation": {
+   "sql": [
+    "update metrics.metrics_headline set denominator = null where metric_name = 'late_rate'"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact metrics.metrics_headline.denominator",
+    "pass",
+    "type BIGINT (card BIGINT); nulls 0 (card 0)"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact metrics.metrics_headline.denominator",
+    "fail",
+    "type BIGINT (card BIGINT); nulls 1 (card 0)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.1
+ },
+ {
+  "rule": "Ontology: the headline value is never null",
+  "selector": "ontology:column_fact metrics.metrics_headline.value_pct",
+  "mutation": {
+   "sql": [
+    "update metrics.metrics_headline set value_pct = null where metric_name = 'late_rate'"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact metrics.metrics_headline.value_pct",
+    "pass",
+    "type DOUBLE (card DOUBLE); nulls 0 (card 0)"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact metrics.metrics_headline.value_pct",
+    "fail",
+    "type DOUBLE (card DOUBLE); nulls 1 (card 0)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.1
+ },
+ {
+  "rule": "Ontology: the headline metric name is never null",
+  "selector": "ontology:column_fact metrics.metrics_headline.metric_name",
+  "mutation": {
+   "sql": [
+    "update metrics.metrics_headline set metric_name = null where metric_name = 'late_rate'"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact metrics.metrics_headline.metric_name",
+    "pass",
+    "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact metrics.metrics_headline.metric_name",
+    "fail",
+    "type VARCHAR (card VARCHAR); nulls 1 (card 0)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.2
+ },
+ {
+  "rule": "Ontology: the review score count (768 orders with none)",
+  "selector": "ontology:term_count order_review_score",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set review_score = 3 where order_id in (select order_id from marts.fct_orders where review_score is null order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "term_count order_review_score",
+    "pass",
+    "review_score is null: 768 (card 768)"
+   ]
+  ],
+  "mutant": [
+   [
+    "term_count order_review_score",
+    "fail",
+    "review_score is null: 767 (card 768)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.1
+ },
+ {
+  "rule": "Ontology fact: people with a qualifying order (94,983)",
+  "selector": "ontology:fact People with a qualifying order",
+  "mutation": {
+   "sql": [
+    "update marts.dim_customer set n_qualifying_orders = 0 where customer_unique_id in (select customer_unique_id from marts.dim_customer where n_qualifying_orders > 0 order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "fact People with a qualifying order",
+    "pass",
+    "count=94983 (card 94983)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact People with a qualifying order",
+    "fail",
+    "count=94982 (card 94983)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.1
+ },
+ {
+  "rule": "Ontology fact: people left out of the cohort as too recent (17,423)",
+  "selector": "ontology:fact People whose first qualifying order is too recent for a full 90 days",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set purchased_at = timestamp '2018-09-03 09:06:56' where order_id in (select order_id from marts.fct_orders where customer_qualifying_order_seq = 1 and purchased_at < timestamp '2017-02-01' order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "fact People whose first qualifying order is too recent for a full 90 days",
+    "pass",
+    "count=17423 (card 17423)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact People whose first qualifying order is too recent for a full 90 days",
+    "fail",
+    "count=17424 (card 17423)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.1
+ },
+ {
+  "rule": "Ontology fact: the newest qualifying purchase and the cohort cutoff",
+  "selector": "ontology:fact The newest qualifying purchase in the data is 2018-09-03 09:06:57, so the cohort cutoff is 2018-06-05 09:06:57",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set purchased_at = timestamp '2018-09-04 00:00:00' where order_id in (select order_id from marts.fct_orders where is_qualifying_order order by purchased_at desc limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "fact The newest qualifying purchase in the data is 2018-09-03 09:06:57, so the cohort cutoff is 2018-06-05 09:06:57",
+    "pass",
+    "count=1 (card 1)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact The newest qualifying purchase in the data is 2018-09-03 09:06:57, so the cohort cutoff is 2018-06-05 09:06:57",
+    "fail",
+    "count=0 (card 1)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.2
+ },
+ {
+  "rule": "Ontology fact: one seq = 1 order per cohort person (the first-order state is unambiguous)",
+  "selector": "ontology:fact Each person has exactly one seq = 1 order, so joining the cohort to it gives one row per person (the first-order state is unambiguous)",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set customer_qualifying_order_seq = 2 where order_id in (select o.order_id from marts.fct_orders o join metrics.metric_repeat_rate_90d_people p on p.customer_unique_id = o.customer_unique_id and o.customer_qualifying_order_seq = 1 order by o.order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "fact Each person has exactly one seq = 1 order, so joining the cohort to it gives one row per person (the first-order state is unambiguous)",
+    "pass",
+    "count=77560 (card 77560)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact Each person has exactly one seq = 1 order, so joining the cohort to it gives one row per person (the first-order state is unambiguous)",
+    "fail",
+    "count=77559 (card 77560)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.3
+ },
+ {
+  "rule": "Ontology fact: same-second qualifying orders (281 pairs)",
+  "selector": "ontology:fact Pairs of one person's qualifying orders placed in the same second",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set purchased_at = purchased_at + interval 1 second where order_id in (select max(order_id) from marts.fct_orders where is_qualifying_order group by customer_unique_id, purchased_at having count(*) > 1 order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "fact Pairs of one person's qualifying orders placed in the same second",
+    "pass",
+    "count=281 (card 281)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact Pairs of one person's qualifying orders placed in the same second",
+    "fail",
+    "count=280 (card 281)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.0
+ },
+ {
+  "rule": "Ontology fact: the order's review_score equals the chosen response's score",
+  "selector": "ontology:fact review_score on the order equals the score of the chosen response, and an order with no chosen response has a null score",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set review_score = 6 - review_score where order_id in (select order_id from marts.fct_orders where review_score is not null order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "fact review_score on the order equals the score of the chosen response, and an order with no chosen response has a null score",
+    "pass",
+    "count=0 (card 0)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact review_score on the order equals the score of the chosen response, and an order with no chosen response has a null score",
+    "fail",
+    "count=1 (card 0)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.0
  }
 ]

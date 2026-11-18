@@ -82,6 +82,24 @@ entities:
     one_row_is: one day (2016-09-01 to 2018-10-31)
     rows: 791
     decisions: [D6]
+  repeat_cohort:
+    meaning: The people the 90-day repeat rate is judged on, one row each. A person is in it when their first qualifying order is at least 90 days older than the newest qualifying purchase in the data, so everyone had a full 90 days to come back. This table is the repeat rate's denominator (rows) and numerator (repeated = true).
+    table: metrics.metric_repeat_rate_90d_people
+    key: customer_unique_id
+    one_row_is: one eligible person
+    rows: 77560
+    raw_source: derived from marts.fct_orders (is_qualifying_order, customer_qualifying_order_seq, purchased_at)
+    scope: supporting   # not in the core list; it is the repeat metric's population
+    not_this: not every person. 94,983 people have a qualifying order; 17,423 of them are too recent to have a full 90 days and are left out. Not the 96,096 people who ever placed an order.
+    decisions: [C6, D1, D8]
+  headline_metric:
+    meaning: One row per headline number, with its numerator, denominator and value. The table every verified card below is compared to.
+    table: metrics.metrics_headline
+    key: metric_name
+    one_row_is: one metric
+    rows: 5
+    raw_source: derived from the metric tables
+    scope: supporting
 
 # from = the "many" side, to = the "one" side. Each from-row points to exactly one to-row (to's key is unique).
 # children_per_parent = [min, max] rows on the from side for each to-row (max null = no limit).
@@ -147,6 +165,11 @@ relationships:
     from: {entity: order, column: purchase_date}
     to: date
     children_per_parent: [0, null]
+  - name: customer is in the repeat cohort
+    from: {entity: repeat_cohort, column: customer_unique_id}
+    to: customer
+    children_per_parent: [0, 1]
+    note: Each eligible person appears once. People whose first purchase is too recent, or who never made a qualifying purchase, are not in it.
 
 # Definition cards. source = schema.table.column (checked to exist). Every card says what does NOT count.
 terms:
@@ -161,10 +184,25 @@ terms:
     source: marts.fct_orders.order_status
     values: {delivered: 96478, shipped: 1107, canceled: 625, unavailable: 609, invoiced: 314, processing: 301, created: 5, approved: 2}
     counterexamples: [status 'delivered' with no delivery date (8 orders), status 'canceled' with a delivery date (6 orders); both become delivery_state status_date_conflict]
+  canceled_order:
+    meaning: An order whose Olist status (order_status) is 'canceled'. All 625 count as canceled, including the 6 that still carry a delivery date. For a share of canceled orders, the denominator is every order of any status.
+    source: marts.fct_orders.order_status
+    grain: order
+    rule: order_status = 'canceled'. Status decides this, never the dates. delivery_state is a separate label about delivery, so a canceled order that has a delivery date is both canceled (status) and status_date_conflict (delivery_state).
+    counts:
+      - {where: "order_status = 'canceled'", expected: 625}
+      - {where: "order_status = 'canceled' and delivered_to_customer_at is not null", expected: 6}
+      - {where: "order_status = 'canceled' and delivery_state = 'status_date_conflict'", expected: 6}
+      - {where: "order_status = 'canceled' and delivery_state = 'not_delivered'", expected: 619}
+      - {where: "order_status = 'canceled' and n_items = 0", expected: 164}
+    counterexamples: [status 'unavailable' (a different status, 609 orders), an order that was never delivered but is not canceled (shipped, invoiced), counting canceled as delivery_state not_delivered only (misses the 6 that carry a date)]
+    decisions: [D3]
   qualifying_order:
     meaning: An order that counts as a real purchase for repeat metrics. Not canceled or unavailable, and has at least one item.
     source: marts.fct_orders.is_qualifying_order
     grain: order
+    rule: order_status not in ('canceled', 'unavailable') and n_items > 0. The column is a true/false flag that is never null. A shipped order with no delivery date yet still qualifies.
+    counts: [{where: is_qualifying_order, expected: 98199}, {where: "not is_qualifying_order", expected: 1242}]
     counterexamples: [a canceled order, an unavailable order, an order with no items]
   promised_date:
     meaning: The delivery date Olist promised the customer at purchase. It is a date with no time.
@@ -200,6 +238,8 @@ terms:
   analysis_window:
     meaning: Full months 2017-01 through 2018-08. Edge months are partial and are left out of every rate.
     source: marts.fct_orders.in_analysis_window
+    rule: purchase_date between 2017-01-01 and 2018-08-31. A true/false flag that is never null, so "outside the window" is simply the flag being false.
+    counts: [{where: in_analysis_window, expected: 99092}, {where: "not in_analysis_window", expected: 349}]
     decisions: [D6]
   survey_sent:
     meaning: The date Olist emailed the satisfaction survey (Olist's data card. review_creation_date is when the survey was SENT, not when the customer wrote). Olist sends it when the order is delivered or when the promised date arrives, whichever comes first.
@@ -230,6 +270,67 @@ terms:
     meaning: Whether what the customer paid equals items plus freight. match within R$0.01, minor within R$1, else overpaid or underpaid; no_items and no_payment get their own label.
     source: marts.fct_orders.recon_status
     grain: order
+  purchase_time:
+    meaning: The exact moment the order was placed, to the second (marts.fct_orders.purchased_at, a TIMESTAMP, never null). purchase_date is only its calendar day. Any rule measured in hours or days from the purchase (the 24-hour rule in the repeat rate) uses purchased_at, not purchase_date.
+    source: marts.fct_orders.purchased_at
+    grain: order
+    time_rule: purchase_date = cast(purchased_at as date). A gap of "24 hours" is purchased_at difference, so two orders on different dates can still be under 24 hours apart.
+    counterexamples: [purchase_date (a DATE with no time, cannot apply a 24-hour rule), delivered_to_customer_at (delivery time, not purchase time)]
+    decisions: [C6]
+  qualifying_order_seq:
+    meaning: The order's place in the person's list of qualifying orders, oldest purchased_at first (1 = the first real purchase). Null exactly when the order is not qualifying.
+    source: marts.fct_orders.customer_qualifying_order_seq
+    grain: order
+    time_rule: ordered by purchased_at. When one person has two qualifying orders in the same second (281 such pairs), the numbering between them is arbitrary, but the rule never depends on it because the 24-hour gap uses timestamps.
+    counterexamples: [a canceled order (null), the person's first order of any status (seq counts only qualifying orders)]
+    decisions: [C6]
+  repeat_return:
+    meaning: How "came back" is decided for the 90-day repeat rate. For a person in the repeat cohort, a return is another qualifying order with purchased_at at least 24 hours and at most 90 days after the purchased_at of their first qualifying order (seq = 1).
+    source: metrics.metric_repeat_rate_90d_people.repeated
+    grain: person
+    time_rule: first.purchased_at + 1 day <= other.purchased_at <= first.purchased_at + 90 days, both ends included.
+    counterexamples: [a second order 3 hours after the first (same trip), a second order that is canceled or unavailable (not qualifying), a return on day 91 or later, two orders in the same second]
+    decisions: [C6]
+  repeat_cohort_member:
+    meaning: A person included in the repeat rate's denominator. Their first qualifying order (seq = 1) has purchased_at no later than the newest qualifying purchased_at in the data minus 90 days (2018-09-03 09:06:57 minus 90 days is 2018-06-05 09:06:57).
+    source: metrics.metric_repeat_rate_90d_people.customer_unique_id
+    grain: person
+    population: people with at least one qualifying order whose first qualifying purchase is old enough to have had a full 90 days
+    time_rule: first purchased_at <= max(purchased_at over qualifying orders) - 90 days
+    counterexamples: [a person whose only qualifying order was in the last 90 days of the data, a person with only canceled or unavailable orders]
+    decisions: [C6, D8]
+  repeat_slice:
+    meaning: How to break the 90-day repeat rate down. By first-order month, group the repeat cohort by the month of first_order_date (the date of their first qualifying purchase). By first-order state, join the cohort to marts.fct_orders on customer_unique_id with customer_qualifying_order_seq = 1 and use that order's ship_to_state. The cohort table itself has no state or month column other than first_order_date.
+    source: metrics.metric_repeat_rate_90d_people.first_order_date
+    grain: person
+    counterexamples: [marts.dim_customer.state (the person's latest address, not where the first order went, C5), grouping by the month of the second order, grouping by purchase month of all orders]
+    decisions: [C5, C6]
+  placed_an_order:
+    meaning: A person "placed an order" when they have at least one order of ANY status, canceled and unavailable included. That is every row of marts.dim_customer (n_orders >= 1), 96,096 people. A person with a real purchase is a different, smaller count (n_qualifying_orders >= 1, 94,983 people).
+    source: marts.dim_customer.n_orders
+    grain: one row per person
+    counts:
+      - {where: "n_orders >= 1", expected: 96096}
+      - {where: "n_qualifying_orders >= 1", expected: 94983}
+      - {where: "n_qualifying_orders = 0", expected: 1113}
+    counterexamples: [counting only qualifying orders when the question says "placed an order" or "ever ordered" (loses 1,113 people whose every order was canceled, unavailable or empty), counting customer_id]
+    decisions: [D1, D8]
+  parcel_count:
+    meaning: How many sellers' parcels an order has (n_parcels, a whole number, never null). 0 means the order has no items, so no seller ships anything (775 orders, all with n_items = 0). 1 is a normal order. 2 or more is a multi-seller order.
+    source: marts.fct_orders.n_parcels
+    grain: order
+    rule: (n_parcels = 0) is true exactly when (n_items = 0). To count orders with no items, use n_parcels = 0; n_parcels is null for nobody.
+    counts: [{where: "n_parcels = 0", expected: 775}, {where: "n_parcels = 1", expected: 97388}, {where: "n_parcels > 1", expected: 1278}]
+    counterexamples: [treating n_parcels as null for an order with no items (it is 0), treating an order with no items as one parcel]
+    decisions: [D2]
+  order_review_score:
+    meaning: The stars (1 to 5, whole numbers) of the order's chosen review, copied onto the order row (marts.fct_orders.review_score). Null when the order has no survey response (768 orders). It never holds an unchosen response.
+    source: marts.fct_orders.review_score
+    grain: order
+    rule: review_score is null exactly when review_id is null, and equals marts.fct_reviews.review_score of the response where is_chosen_for_order.
+    counts: [{where: "review_score is null", expected: 768}]
+    counterexamples: [an earlier answer on the same order, a score of 0 for no response (it is null, and null is skipped by avg())]
+    decisions: [C4]
 
 metrics:
   late_rate:
@@ -260,10 +361,16 @@ metrics:
     semantic_metric: repeat_rate_90d
     semantic_parts: [repeat_people_90d, eligible_people]
     grain: person
-    population: people whose first qualifying order was at least 90 days before the last qualifying purchase in the data (everyone had a full 90 days)
-    numerator: people with another qualifying order at least 24 hours and at most 90 days after their first
-    denominator: people in the population
-    time_rule: clock starts at the first qualifying purchase timestamp; a second order within 24 hours does not count (C6)
+    population: people whose first qualifying order was at least 90 days before the last qualifying purchase in the data (everyone had a full 90 days). One row each in metrics.metric_repeat_rate_90d_people (entity repeat_cohort).
+    numerator: people with another qualifying order at least 24 hours and at most 90 days after their first (repeated = true in the cohort table)
+    denominator: people in the population (the rows of the cohort table)
+    time_rule: clock starts at the first qualifying purchase timestamp (marts.fct_orders.purchased_at of the order with customer_qualifying_order_seq = 1); a second order within 24 hours does not count (C6)
+    rebuild_from_orders: >-
+      Without the metrics tables: take marts.fct_orders rows where is_qualifying_order; each person's first is the row with
+      customer_qualifying_order_seq = 1 (its purchased_at is the clock start); keep people whose first purchased_at is at or
+      before max(purchased_at over qualifying rows) minus 90 days; a person repeated when any qualifying row of theirs has
+      purchased_at between first + 1 day and first + 90 days. The rate is repeated people over kept people, as a percentage.
+    slices: first-order month = month of first_order_date; first-order state = ship_to_state of the person's seq = 1 order (see term repeat_slice)
     source: metrics.metric_repeat_rate_90d_people.repeated
     counterexamples: [a second order 3 hours after the first (same trip, not a return), a return on day 120, two customer_ids that are the same person (counted once)]
     decisions: [C6, D1, D8]
@@ -300,6 +407,132 @@ metrics:
     source: metrics.metric_late_rate_orders.review_score
     counterexamples: [the controlled penalty (-2.012, from a regression) is a different number]
     verified: {denominator: 94302, value_pct: 2.04}
+
+# Column facts: the type, the nulls and any row rule of columns the cards lean on. type is DuckDB's data_type.
+# nulls = exact count of null values. holds = a SQL condition that must be true for EVERY row (a null result counts as false).
+# null_when = the column is null exactly when this condition is true. check.py proves each line against the warehouse.
+columns:
+  marts.fct_orders.purchased_at:
+    type: TIMESTAMP
+    nulls: 0
+    meaning: When the order was placed, to the second. The only column with the time of day of the purchase.
+    holds: [purchase_date = cast(purchased_at as date)]
+  marts.fct_orders.purchase_date:
+    type: DATE
+    nulls: 0
+    meaning: The calendar day of purchased_at. It has no time, so it cannot apply a 24-hour rule.
+    holds: [purchase_date = cast(purchased_at as date)]
+  marts.fct_orders.is_qualifying_order:
+    type: BOOLEAN
+    nulls: 0
+    meaning: True for a real purchase (see term qualifying_order).
+    holds: ["is_qualifying_order = (order_status not in ('canceled', 'unavailable') and n_items > 0)"]
+  marts.fct_orders.customer_qualifying_order_seq:
+    type: BIGINT
+    nulls: 1242
+    meaning: 1 for the person's first qualifying order, 2 for the next, and so on. Null for a non-qualifying order.
+    null_when: not is_qualifying_order
+    holds: [customer_qualifying_order_seq is null or customer_qualifying_order_seq >= 1]
+  marts.fct_orders.n_items:
+    type: BIGINT
+    nulls: 0
+    meaning: Number of item lines on the order. 0 for an order with no items.
+  marts.fct_orders.n_parcels:
+    type: BIGINT
+    nulls: 0
+    meaning: Number of sellers' parcels. 0 (not null) for an order with no items.
+    holds: [(n_parcels = 0) = (n_items = 0)]
+  marts.fct_orders.in_analysis_window:
+    type: BOOLEAN
+    nulls: 0
+    meaning: True when purchase_date is in 2017-01-01..2018-08-31. Never null; false for edge months.
+    holds: [in_analysis_window = (purchase_date between date '2017-01-01' and date '2018-08-31')]
+  marts.fct_orders.review_score:
+    type: INTEGER
+    nulls: 768
+    meaning: Stars (1-5) of the chosen review. Null when the order has no response.
+    null_when: review_id is null
+    holds: [review_score is null or review_score between 1 and 5]
+  marts.fct_orders.delivered_to_customer_at:
+    type: TIMESTAMP
+    nulls: 2965
+    meaning: Delivery time to the customer. Null when not delivered, but also present on 6 canceled orders (use delivery_state to decide delivered).
+  marts.dim_customer.n_orders:
+    type: BIGINT
+    nulls: 0
+    meaning: Orders of any status by this person. At least 1 for everyone in the table.
+    holds: [n_orders >= 1]
+  marts.dim_customer.n_qualifying_orders:
+    type: BIGINT
+    nulls: 0
+    meaning: Qualifying orders by this person. 0 for 1,113 people who only ever had canceled, unavailable or empty orders.
+    holds: [n_qualifying_orders <= n_orders]
+  marts.dim_customer.first_qualifying_order_at:
+    type: TIMESTAMP
+    nulls: 1113
+    meaning: purchased_at of the person's first qualifying order. Null when they have none.
+    null_when: n_qualifying_orders = 0
+  metrics.metric_repeat_rate_90d_people.customer_unique_id:
+    type: VARCHAR
+    nulls: 0
+    meaning: The eligible person (primary key of the cohort table).
+  metrics.metric_repeat_rate_90d_people.first_order_at:
+    type: TIMESTAMP
+    nulls: 0
+    meaning: purchased_at of the person's first qualifying order (seq = 1). The clock start of the 90-day window.
+  metrics.metric_repeat_rate_90d_people.first_order_date:
+    type: DATE
+    nulls: 0
+    meaning: The calendar day of first_order_at. Group by its month to slice the repeat rate by first-order month.
+    holds: [first_order_date = cast(first_order_at as date)]
+  metrics.metric_repeat_rate_90d_people.repeated:
+    type: BOOLEAN
+    nulls: 0
+    meaning: True when the person came back 24 hours to 90 days after first_order_at. Never null.
+  metrics.metrics_headline.metric_name:
+    type: VARCHAR
+    nulls: 0
+    meaning: Name of the metric (repeat_rate_90d, repeat_rate_ever, late_rate, review_score, late_review_gap_raw).
+  metrics.metrics_headline.numerator:
+    type: HUGEINT
+    nulls: 1
+    meaning: Count (or sum) on top. Null only for late_review_gap_raw, which is a difference of averages.
+    null_when: metric_name = 'late_review_gap_raw'
+  metrics.metrics_headline.denominator:
+    type: BIGINT
+    nulls: 0
+    meaning: Count underneath.
+  metrics.metrics_headline.value_pct:
+    type: DOUBLE
+    nulls: 0
+    meaning: The value rounded for display (a percentage, or stars for review_score and the review gap).
+
+# Facts that span tables: a SQL query that returns one number and the number it must equal.
+facts:
+  - claim: People with a qualifying order
+    sql: select count(*) from marts.dim_customer where n_qualifying_orders >= 1
+    expected: 94983
+  - claim: People whose first qualifying order is too recent for a full 90 days
+    sql: "select count(*) from marts.fct_orders where customer_qualifying_order_seq = 1 and purchased_at > (select max(purchased_at) from marts.fct_orders where is_qualifying_order) - interval 90 day"
+    expected: 17423
+  - claim: The repeat cohort is exactly the people whose first qualifying order is old enough
+    sql: "select count(*) from marts.fct_orders o full join metrics.metric_repeat_rate_90d_people p on p.customer_unique_id = o.customer_unique_id where o.customer_qualifying_order_seq = 1 and (o.purchased_at <= (select max(purchased_at) from marts.fct_orders where is_qualifying_order) - interval 90 day) is distinct from (p.customer_unique_id is not null)"
+    expected: 0
+  - claim: The newest qualifying purchase in the data is 2018-09-03 09:06:57, so the cohort cutoff is 2018-06-05 09:06:57
+    sql: "select count(*) from (select max(purchased_at) m from marts.fct_orders where is_qualifying_order) where m = timestamp '2018-09-03 09:06:57' and m - interval 90 day = timestamp '2018-06-05 09:06:57'"
+    expected: 1
+  - claim: first_order_at is the purchased_at of the person's seq = 1 order
+    sql: "select count(*) from metrics.metric_repeat_rate_90d_people p join marts.fct_orders o on o.customer_unique_id = p.customer_unique_id and o.customer_qualifying_order_seq = 1 where o.purchased_at <> p.first_order_at"
+    expected: 0
+  - claim: Each person has exactly one seq = 1 order, so joining the cohort to it gives one row per person (the first-order state is unambiguous)
+    sql: "select count(*) from metrics.metric_repeat_rate_90d_people p join marts.fct_orders o on o.customer_unique_id = p.customer_unique_id and o.customer_qualifying_order_seq = 1"
+    expected: 77560
+  - claim: Pairs of one person's qualifying orders placed in the same second
+    sql: "select count(*) from (select 1 from marts.fct_orders where is_qualifying_order group by customer_unique_id, purchased_at having count(*) > 1)"
+    expected: 281
+  - claim: review_score on the order equals the score of the chosen response, and an order with no chosen response has a null score
+    sql: "select count(*) from marts.fct_orders o left join marts.fct_reviews r on r.order_id = o.order_id and r.is_chosen_for_order where o.review_score is distinct from r.review_score"
+    expected: 0
 
 # Order-stage rules from ontology/order_lifecycle (TLA+ model, checked with TLC). Each rule either holds
 # in the data (expected 0) or is a documented exception with its exact count. The check recounts them.

@@ -20,3 +20,31 @@
   question: Considering only states with at least 1,000 orders in the lateness population, which two-letter state code has the largest share of late deliveries?
 - id: q10
   question: Across every order Olist has recorded, what percentage was canceled? Give it to 2 decimals.
+
+- id: q11
+  question: Without touching the metrics schema, recompute Olist's headline repeat-buying percentage (people who came back within 90 days) from order-level tables. Round to 2 decimals.
+  forbidden_tables: ["metrics.*"]
+- id: q12
+  question: Counting people, how many of those judged in the headline 90-day repeat measure actually came back? Do not read any table in the metrics schema.
+  forbidden_tables: ["metrics.*"]
+- id: q13
+  question: How many people form the pool that the headline 90-day repeat measure is computed over? Do not read any table in the metrics schema.
+  forbidden_tables: ["metrics.*"]
+- id: q14
+  question: Of the people who first made a real purchase in March 2017, what percentage came back within 90 days under Olist's headline repeat measure? Give it to 2 decimals.
+- id: q15
+  question: Take the people whose first real purchase shipped to the state GO. What percentage of them came back within 90 days under Olist's headline repeat measure? Give it to 2 decimals.
+- id: q16
+  question: How many orders did Olist label canceled?
+- id: q17
+  question: Of the orders labeled canceled, what percentage still show a customer delivery date? Give it to 2 decimals.
+- id: q18
+  question: How many orders have zero seller parcels?
+- id: q19
+  question: How many orders were bought outside the analysis window?
+- id: q20
+  question: Among orders bought within the analysis window, how many have no star rating?
+- id: q21
+  question: Count the people who ordered at least once but have no qualifying order.
+- id: q22
+  question: How many people have at least one real, qualifying purchase?

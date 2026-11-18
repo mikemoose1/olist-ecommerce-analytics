@@ -60,6 +60,18 @@
   "detail": "rows=791 (card 791), distinct keys=791, null keys=0"
  },
  {
+  "kind": "entity",
+  "name": "repeat_cohort",
+  "ok": true,
+  "detail": "rows=77560 (card 77560), distinct keys=77560, null keys=0"
+ },
+ {
+  "kind": "entity",
+  "name": "headline_metric",
+  "ok": true,
+  "detail": "rows=5 (card 5), distinct keys=5, null keys=0"
+ },
+ {
   "kind": "relationship",
   "name": "customer places orders",
   "ok": true,
@@ -138,6 +150,12 @@
   "detail": "nulls=0 (card 0), orphans=0 (card 0), children per parent 0..1176 (card 0..many)"
  },
  {
+  "kind": "relationship",
+  "name": "customer is in the repeat cohort",
+  "ok": true,
+  "detail": "nulls=0 (card 0), orphans=0 (card 0), children per parent 0..1 (card 0..1)"
+ },
+ {
   "kind": "column",
   "name": "terms.person",
   "ok": true,
@@ -146,6 +164,12 @@
  {
   "kind": "column",
   "name": "terms.order_status",
+  "ok": true,
+  "detail": "marts.fct_orders.order_status"
+ },
+ {
+  "kind": "column",
+  "name": "terms.canceled_order",
   "ok": true,
   "detail": "marts.fct_orders.order_status"
  },
@@ -229,6 +253,54 @@
  },
  {
   "kind": "column",
+  "name": "terms.purchase_time",
+  "ok": true,
+  "detail": "marts.fct_orders.purchased_at"
+ },
+ {
+  "kind": "column",
+  "name": "terms.qualifying_order_seq",
+  "ok": true,
+  "detail": "marts.fct_orders.customer_qualifying_order_seq"
+ },
+ {
+  "kind": "column",
+  "name": "terms.repeat_return",
+  "ok": true,
+  "detail": "metrics.metric_repeat_rate_90d_people.repeated"
+ },
+ {
+  "kind": "column",
+  "name": "terms.repeat_cohort_member",
+  "ok": true,
+  "detail": "metrics.metric_repeat_rate_90d_people.customer_unique_id"
+ },
+ {
+  "kind": "column",
+  "name": "terms.repeat_slice",
+  "ok": true,
+  "detail": "metrics.metric_repeat_rate_90d_people.first_order_date"
+ },
+ {
+  "kind": "column",
+  "name": "terms.placed_an_order",
+  "ok": true,
+  "detail": "marts.dim_customer.n_orders"
+ },
+ {
+  "kind": "column",
+  "name": "terms.parcel_count",
+  "ok": true,
+  "detail": "marts.fct_orders.n_parcels"
+ },
+ {
+  "kind": "column",
+  "name": "terms.order_review_score",
+  "ok": true,
+  "detail": "marts.fct_orders.review_score"
+ },
+ {
+  "kind": "column",
   "name": "metrics.late_rate",
   "ok": true,
   "detail": "metrics.metric_late_rate_orders.is_late"
@@ -267,13 +339,25 @@
   "kind": "term_count",
   "name": "order_status",
   "ok": true,
-  "detail": "{'approved': 2, 'processing': 301, 'canceled': 625, 'invoiced': 314, 'shipped': 1107, 'unavailable': 609, 'delivered': 96478, 'created': 5}"
+  "detail": "{'approved': 2, 'shipped': 1107, 'unavailable': 609, 'processing': 301, 'canceled': 625, 'invoiced': 314, 'delivered': 96478, 'created': 5}"
+ },
+ {
+  "kind": "term_count",
+  "name": "canceled_order",
+  "ok": true,
+  "detail": "order_status = 'canceled': 625 (card 625); order_status = 'canceled' and delivered_to_customer_at is not null: 6 (card 6); order_status = 'canceled' and delivery_state = 'status_date_conflict': 6 (card 6); order_status = 'canceled' and delivery_state = 'not_delivered': 619 (card 619); order_status = 'canceled' and n_items = 0: 164 (card 164)"
+ },
+ {
+  "kind": "term_count",
+  "name": "qualifying_order",
+  "ok": true,
+  "detail": "is_qualifying_order: 98199 (card 98199); not is_qualifying_order: 1242 (card 1242)"
  },
  {
   "kind": "term_count",
   "name": "delivery_state",
   "ok": true,
-  "detail": "{'status_date_conflict': 14, 'delivered_late': 6534, 'not_delivered': 2957, 'delivered_on_time': 89936}"
+  "detail": "{'status_date_conflict': 14, 'delivered_on_time': 89936, 'delivered_late': 6534, 'not_delivered': 2957}"
  },
  {
   "kind": "term_count",
@@ -286,6 +370,198 @@
   "name": "multi_seller_order",
   "ok": true,
   "detail": "n_parcels > 1: 1278 (card 1278)"
+ },
+ {
+  "kind": "term_count",
+  "name": "analysis_window",
+  "ok": true,
+  "detail": "in_analysis_window: 99092 (card 99092); not in_analysis_window: 349 (card 349)"
+ },
+ {
+  "kind": "term_count",
+  "name": "placed_an_order",
+  "ok": true,
+  "detail": "n_orders >= 1: 96096 (card 96096); n_qualifying_orders >= 1: 94983 (card 94983); n_qualifying_orders = 0: 1113 (card 1113)"
+ },
+ {
+  "kind": "term_count",
+  "name": "parcel_count",
+  "ok": true,
+  "detail": "n_parcels = 0: 775 (card 775); n_parcels = 1: 97388 (card 97388); n_parcels > 1: 1278 (card 1278)"
+ },
+ {
+  "kind": "term_count",
+  "name": "order_review_score",
+  "ok": true,
+  "detail": "review_score is null: 768 (card 768)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.purchased_at",
+  "ok": true,
+  "detail": "type TIMESTAMP (card TIMESTAMP); nulls 0 (card 0); holds [purchase_date = cast(purchased_at as date)]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.purchase_date",
+  "ok": true,
+  "detail": "type DATE (card DATE); nulls 0 (card 0); holds [purchase_date = cast(purchased_at as date)]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.is_qualifying_order",
+  "ok": true,
+  "detail": "type BOOLEAN (card BOOLEAN); nulls 0 (card 0); holds [is_qualifying_order = (order_status not in ('canceled', 'unavailable') and n_items > 0)]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.customer_qualifying_order_seq",
+  "ok": true,
+  "detail": "type BIGINT (card BIGINT); nulls 1242 (card 1242); null exactly when [not is_qualifying_order]: 0 violations; holds [customer_qualifying_order_seq is null or customer_qualifying_order_seq >= 1]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.n_items",
+  "ok": true,
+  "detail": "type BIGINT (card BIGINT); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.n_parcels",
+  "ok": true,
+  "detail": "type BIGINT (card BIGINT); nulls 0 (card 0); holds [(n_parcels = 0) = (n_items = 0)]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.in_analysis_window",
+  "ok": true,
+  "detail": "type BOOLEAN (card BOOLEAN); nulls 0 (card 0); holds [in_analysis_window = (purchase_date between date '2017-01-01' and date '2018-08-31')]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.review_score",
+  "ok": true,
+  "detail": "type INTEGER (card INTEGER); nulls 768 (card 768); null exactly when [review_id is null]: 0 violations; holds [review_score is null or review_score between 1 and 5]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.delivered_to_customer_at",
+  "ok": true,
+  "detail": "type TIMESTAMP (card TIMESTAMP); nulls 2965 (card 2965)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.dim_customer.n_orders",
+  "ok": true,
+  "detail": "type BIGINT (card BIGINT); nulls 0 (card 0); holds [n_orders >= 1]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.dim_customer.n_qualifying_orders",
+  "ok": true,
+  "detail": "type BIGINT (card BIGINT); nulls 0 (card 0); holds [n_qualifying_orders <= n_orders]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.dim_customer.first_qualifying_order_at",
+  "ok": true,
+  "detail": "type TIMESTAMP (card TIMESTAMP); nulls 1113 (card 1113); null exactly when [n_qualifying_orders = 0]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_repeat_rate_90d_people.customer_unique_id",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_repeat_rate_90d_people.first_order_at",
+  "ok": true,
+  "detail": "type TIMESTAMP (card TIMESTAMP); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_repeat_rate_90d_people.first_order_date",
+  "ok": true,
+  "detail": "type DATE (card DATE); nulls 0 (card 0); holds [first_order_date = cast(first_order_at as date)]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_repeat_rate_90d_people.repeated",
+  "ok": true,
+  "detail": "type BOOLEAN (card BOOLEAN); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metrics_headline.metric_name",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metrics_headline.numerator",
+  "ok": true,
+  "detail": "type HUGEINT (card HUGEINT); nulls 1 (card 1); null exactly when [metric_name = 'late_review_gap_raw']: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metrics_headline.denominator",
+  "ok": true,
+  "detail": "type BIGINT (card BIGINT); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metrics_headline.value_pct",
+  "ok": true,
+  "detail": "type DOUBLE (card DOUBLE); nulls 0 (card 0)"
+ },
+ {
+  "kind": "fact",
+  "name": "People with a qualifying order",
+  "ok": true,
+  "detail": "count=94983 (card 94983)"
+ },
+ {
+  "kind": "fact",
+  "name": "People whose first qualifying order is too recent for a full 90 days",
+  "ok": true,
+  "detail": "count=17423 (card 17423)"
+ },
+ {
+  "kind": "fact",
+  "name": "The repeat cohort is exactly the people whose first qualifying order is old enough",
+  "ok": true,
+  "detail": "count=0 (card 0)"
+ },
+ {
+  "kind": "fact",
+  "name": "The newest qualifying purchase in the data is 2018-09-03 09:06:57, so the cohort cutoff is 2018-06-05 09:06:57",
+  "ok": true,
+  "detail": "count=1 (card 1)"
+ },
+ {
+  "kind": "fact",
+  "name": "first_order_at is the purchased_at of the person's seq = 1 order",
+  "ok": true,
+  "detail": "count=0 (card 0)"
+ },
+ {
+  "kind": "fact",
+  "name": "Each person has exactly one seq = 1 order, so joining the cohort to it gives one row per person (the first-order state is unambiguous)",
+  "ok": true,
+  "detail": "count=77560 (card 77560)"
+ },
+ {
+  "kind": "fact",
+  "name": "Pairs of one person's qualifying orders placed in the same second",
+  "ok": true,
+  "detail": "count=281 (card 281)"
+ },
+ {
+  "kind": "fact",
+  "name": "review_score on the order equals the score of the chosen response, and an order with no chosen response has a null score",
+  "ok": true,
+  "detail": "count=0 (card 0)"
  },
  {
   "kind": "stage_rule",
