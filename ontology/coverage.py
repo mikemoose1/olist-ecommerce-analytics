@@ -60,7 +60,8 @@ def match(pattern, name):
     return fnmatch.fnmatchcase(name, pattern)
 
 
-NUMBER = re.compile(r"(?<![\w.:-])\d{4}-\d{2}-\d{2}(?: \d{2}:\d{2}(?::\d{2})?)?(?![\w:-])"      # date, timestamp
+NUMBER = re.compile(r"(?<![\w.])\d+(?:\.\d+){2,}(?![\w.])"                                         # dotted triple (a version)
+                    r"|(?<![\w.:-])\d{4}-\d{2}-\d{2}(?: \d{2}:\d{2}(?::\d{2})?)?(?![\w:-])"      # date, timestamp
                     r"|(?<![\w.:-])\d{4}-\d{2}(?![\w-])"                                       # month
                     r"|(?<![\w.:])\d{1,2}:\d{2}(?::\d{2})?(?![\w:])"                             # clock time
                     r"|(?<![\w.])-?\d{1,3}(?:,\d{3})+(?:\.\d+)?(?![\w])"                        # 96,096
@@ -75,10 +76,58 @@ def _blank(m):
 def mask(text):
     """Blank out what is not a number a reader sees (dates, times, versions, the generated chart, the markers
     themselves), keeping every character position so a match can be looked up in the original text."""
-    for pat, flags in ((r"<!--n:[^>]*-->", 0), (r"v?\d+\.\d+\.\d+", 0), (r"```mermaid.*?```", re.S),
-                       (r"^[ \t]*\d+\.(?= )", re.M)):            # ordered-list ordinals
+    for pat, flags in ((r"<!--n:[^>]*-->", 0), (r"```mermaid.*?```", re.S)):
         text = re.sub(pat, _blank, text, flags=flags)
-    return text
+    # ordered-list ordinals, but only a real list: 1, 2, 3 ... in order. A lone "9. orders ..." is a number
+    out, expect = [], 1
+    for line in text.split("\n"):
+        m = re.match(r"([ \t]*)(\d+)\.(?= )", line)
+        if m and int(m.group(2)) == expect:
+            line = m.group(1) + " " * (len(m.group(2)) + 1) + line[m.end():]
+            expect += 1
+        elif line.strip() and not line.startswith((" ", "\t")):
+            expect = 1
+        out.append(line)
+    return "\n".join(out)
+
+
+VULGAR = "\u00bc\u00bd\u00be\u2150-\u215e\u00b2\u00b3\u00b9\u2070-\u2079\u2080-\u2089"   # fractions and super/subscript digits
+
+
+def names_in(onto):
+    """every key in ontology.yml and every word with letters and digits in its strings: the identifiers a glued digit may belong
+    to (repeat_rate_90d, metric_repeat_rate_90d_people, decision C1)"""
+    out, stack = set(), [onto]
+    while stack:
+        n = stack.pop()
+        if isinstance(n, dict):
+            out |= {str(k) for k in n}
+            stack += list(n.values())
+        elif isinstance(n, list):
+            stack += n
+        elif isinstance(n, str):
+            out |= {w for w in re.findall(r"\w+", n) if re.search(r"\d", w) and re.search(r"[A-Za-z]", w)}
+    return out
+
+
+def stray_digits(masked, names=frozenset()):
+    """digit runs no NUMBER token covers (a range '1-3', '..5', a glued unit '30d', an ordinal '2nd', 'count:9', '3,9'),
+    digits glued after letters ('top5', 'p95', 'x_7') unless the whole word is a name ontology.yml uses (repeat_rate_90d,
+    decision C1), and fraction or super/subscript digits ('\u00bd', '\u00b2')."""
+    spans = [(m.start(), m.end()) for m in NUMBER.finditer(masked)]
+    out = []
+    for m in re.finditer(rf"\d+|[{VULGAR}]", masked):
+        if any(a <= m.start() < b for a, b in spans):
+            continue
+        a, b = m.start(), m.end()
+        while a > 0 and (masked[a - 1].isalnum() or masked[a - 1] == "_"):
+            a -= 1
+        while b < len(masked) and (masked[b].isalnum() or masked[b] == "_"):
+            b += 1
+        if a < m.start() and masked[a:b] in names:
+            continue
+        out.append(m)
+    return out
 
 
 def shown_numbers(text):
@@ -189,6 +238,7 @@ def number_bindings(text, onto):
             problems.append(f"{shown}: marker {mk.group(1)} belongs to {anchors(onto, mk.group(1))}, which its row or sentence does not name")
         else:
             bound += 1
+    problems += [(m.group(0), m.start(), True) for m in stray_digits(masked, names_in(onto))]     # no escape from the number rule
     problems += [f"marker {k.group(1)} follows no number" for k in MARKER.finditer(text) if k.start() not in claimed]
     return bound, [p if isinstance(p, tuple) else (p, -1, False) for p in problems]
 

@@ -56,6 +56,11 @@ CASES = [
     ("a decoy q05 is placed before the real q05", lambda d: edit(d, "questions.yml", lambda t: t.replace("- id: q05\n", "- id: q05\n  question: decoy wording\n- id: q05\n", 1)), ["q05", "appears twice"], []),
     # M2: --against fails closed
     ("--against a rev that does not resolve", lambda d: None, ["does not resolve"], ["--against", "nosuchrev"]),
+    # an empty --against (an unset CI variable) used to skip the history comparison
+    ("--against an empty rev fails closed", lambda d: None, ["does not resolve"], ["--against", ""]),
+    # 4b: a duplicate YAML key inside one question (the last one wins in a plain loader, hiding the first)
+    ("a question entry with two 'question:' keys", lambda d: edit(d, "questions.yml", lambda t: t.replace("- id: q05\n", "- id: q05\n  question: decoy wording\n", 1)), ["duplicate key", "question"], []),
+    ("a reworded entry with two 'forbidden_tables:' keys", lambda d: edit(d, "questions_reworded.yml", lambda t: t.replace('  forbidden_tables: ["metrics.*"]\n', '  forbidden_tables: ["metrics.*"]\n  forbidden_tables: []\n', 1)), ["duplicate key", "forbidden_tables"], []),
 ]
 
 
@@ -180,6 +185,31 @@ def main():
             bad.append(name)
             print(out)
         shutil.rmtree(d)
+    # the revision reproduce.sh hands the guard. An empty APPEND_ONLY_BASE (CI's first push of a new branch)
+    # must not quietly become HEAD (which undid the fail-closed --against ""): it means origin/main, or "" when there is none
+    repro = os.path.join(HERE, "..", "..", "scripts", "reproduce.sh")
+    d = tempfile.mkdtemp()
+    os.makedirs(os.path.join(d, "scripts"))
+    shutil.copy(repro, os.path.join(d, "scripts"))
+    for c in (["git", "init", "-q"], ["git", "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "--allow-empty", "-m", "x"]):
+        subprocess.run(c, cwd=d, check=True, capture_output=True)
+    def base(value, origin_main):
+        if origin_main:
+            subprocess.run(["git", "update-ref", "refs/remotes/origin/main", "HEAD"], cwd=d, check=True)
+        env = {k: v for k, v in os.environ.items() if k != "APPEND_ONLY_BASE"}
+        if value is not None:
+            env["APPEND_ONLY_BASE"] = value
+        p = subprocess.run(["bash", os.path.join(d, "scripts", "reproduce.sh"), "append_base"], cwd=d, env=env, capture_output=True, text=True)
+        return p.stdout.strip() if p.returncode == 0 else f"error {p.returncode}: {p.stderr.strip()[-80:]}"
+    for name, value, origin_main, want in (("unset (a local run) compares with HEAD", None, False, "HEAD"),
+                                           ("a CI base commit is used as given", "abc123", False, "abc123"),
+                                           ("empty with no origin/main gives '' (the guard fails closed)", "", False, ""),
+                                           ("empty with origin/main compares with origin/main", "", True, "origin/main")):
+        got = base(value, origin_main)
+        print(("PASS  " if got == want else "FAIL  ") + f"reproduce.sh append_base: {name}: got {got!r}")
+        if got != want:
+            bad.append(name)
+    shutil.rmtree(d)
     sys.exit(1 if bad else 0)
 
 

@@ -10,6 +10,7 @@ Usage: python verification/known_answers/selftest.py     (after `make build`)   
 import os, re, shutil, subprocess, sys, tempfile
 import yaml
 import key_file
+from alternatives import ALTS
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCORE = os.path.join(HERE, "score.py")
@@ -73,17 +74,39 @@ def main():
         ("q16", "select 625 + 0 * \"canceled\" from " + pivot),
         ("q11", 'select "true" from (pivot (select repeated from metrics.metric_repeat_rate_90d_people) on repeated using count(*))'),
         ("q12", "select \"true\" from (pivot (select * from query('select repeated from metrics.metric_repeat_rate_90d_people')) on repeated using count(*)) p, (select 1 from marts.dim_date limit 1) one"),
+        # a constant inside the PIVOT source, so the plan carries no folded answer
+        ("q16", 'select "canceled" from (pivot (select order_status, 600 as a, 25 as b from marts.fct_orders) on order_status using max(a + b))'),
+        ("q16", 'select "canceled" from (pivot (select order_status, 625 as x from marts.fct_orders) on order_status using max(x))'),
+        # 2: constants laundered through a CTE, a subquery, VALUES or a table function, so no constant-only expression holds the answer
+        ("q02", "with c as (select 94000 as a, 931 as b) select a + b from c, marts.dim_date limit 1"),
+        ("q02", "select (select a + b from (select 94000 as a, 931 as b)) from marts.dim_date limit 1"),
+        ("q02", "select a + b from (values (94000, 931)) v(a, b), marts.dim_date limit 1"),
+        ("q02", "select r.range + 931 from range(94000, 94001) r, marts.dim_date limit 1"),
+        ("q06", "select max(a) * 2 + max(b) from (select 48000 as a, 96 as b), marts.dim_customer"),
+        # a constant behind a data fingerprint; the answer changes on a changed copy, but not to the key's value,
+        #   or errors there, or returns no rows there
+        ("q02", "with c as (select 94000 a, 931 b) select case when count(*) % 1000 = 441 then max(a) + max(b) else count(*) end from marts.fct_orders, c"),
+        ("q02", "with c as (select 94000 a, 931 b) select greatest(max(a) + max(b), (count(*) - 99000) * 1000) from marts.fct_orders, c"),
+        ("q02", "with c as (select 94000 a, 931 b) select a + b from c, (select count(*) n from marts.fct_orders) where n % 1000 = 441"),
+        ("q02", "with c as (select 94000 a, 931 b) select max(a) + max(b) + 1 / (case when count(*) % 1000 = 441 then 1 else 0 end)::int from marts.fct_orders, c"),
+        ("q09", "with c as (select 'C' a, 'E' b) select case when count(*) % 1000 = 441 then max(a) || max(b) else 'SP' end from marts.fct_orders, c"),
+        ("q24", "with c as (select '2018-' a, '03' b) select case when count(*) % 1000 = 441 then max(a) || max(b) else max(strftime(purchase_date, '%Y-%m')) end from marts.fct_orders, c"),
     ]
     # correct answers written differently must still score right
-    differently = {
-        "q02": "with t as (select * from marts.fct_orders) select count(*) from t where order_status = 'delivered' and delivered_to_customer_at is not null and n_items > 0 and purchase_date between date '2017-01-01' and date '2018-08-31' and n_parcels = 1;",
-        "q06": "select cast(count(distinct customer_unique_id) as bigint) + 0 from marts.fct_orders",
-        "q10": "select round(100.0 * count(*) filter (where order_status = 'canceled') / count(*), 2) from marts.fct_orders",
-        "q16": 'select "canceled" from ' + pivot,                        # review L1: a correct PIVOT answer was rejected
-    }
+    differently = [
+        ("q02", "with t as (select * from marts.fct_orders) select count(*) from t where order_status = 'delivered' and delivered_to_customer_at is not null and n_items > 0 and purchase_date between date '2017-01-01' and date '2018-08-31' and n_parcels = 1;"),
+        ("q06", "select cast(count(distinct customer_unique_id) as bigint) + 0 from marts.fct_orders"),
+        ("q10", "select round(100.0 * count(*) filter (where order_status = 'canceled') / count(*), 2) from marts.fct_orders"),
+        ("q16", 'select "canceled" from ' + pivot),                        # review L1: a correct PIVOT answer was rejected
+        # a bare PIVOT statement and a comma join that starts with a subquery were rejected
+        ("q07", "select count(*) from (select 1) one, (select order_id from marts.fct_order_items group by 1 having count(distinct seller_id) > 1) x"),
+        ("q06", "select count(distinct customer_unique_id) from (select 1) one, marts.fct_orders"),
+        ("q16", "pivot (select order_status from marts.fct_orders) on order_status in ('canceled') using count(*)"),
+        ("q16", "select sum(\"canceled\") from (pivot marts.fct_orders on order_status in ('canceled') using count(*) group by order_status)"),
+    ] + ALTS                                              # honest answers from other layers and idioms
     ok = True
     d2 = tempfile.mkdtemp()
-    for name, overrides, expect in (("bypass", bypass, "WRONG"), ("different", list(differently.items()), "RIGHT")):
+    for name, overrides, expect in (("bypass", bypass, "WRONG"), ("different", differently, "RIGHT")):
         rounds = []                                       # one answer file per round, each id at most once per file
         for qid, sql in overrides:
             r = next((r for r in rounds if qid not in r), None)
@@ -102,6 +125,14 @@ def main():
         good = not offenders
         print(f"{'PASS' if good else 'FAIL'}  {name}: all {len(overrides)} overrides score {expect} (offenders: {offenders})")
         ok &= good
+    # a constant can only be caught on a copy where the key's value moves, so every key must move on one copy
+    sys.path.insert(0, HERE)
+    import duckdb, score as scorer
+    real = duckdb.connect(scorer.DB, read_only=True)
+    copies = [duckdb.connect(pth, read_only=True) for pth in scorer.perturbed_paths()]
+    still = [q for q, sql in key.items() if all(scorer.one(c, sql) == scorer.one(real, sql) for c in copies)]
+    print(f"{'PASS' if not still else 'FAIL'}  every key value moves on at least one changed copy (unmoved: {still})")
+    ok &= not still
     # review M1: a malformed header must stop the scorer, not silently re-cut the key blocks
     sb = tempfile.mkdtemp()
     for f in ("score.py", "key_file.py", "questions.yml", "questions_reworded.yml", "answer_key.sql"):
@@ -115,6 +146,13 @@ def main():
     print(f"{'PASS' if good else 'FAIL'}  a malformed key header ('--q25') stops the scorer: {(p.stdout + p.stderr).strip().splitlines()[-1:]}")
     ok &= good
     shutil.rmtree(sb)
+    # an answer file that gives one id twice (a plain loader keeps the last) is refused
+    dup = os.path.join(d, "dup.yml")
+    open(dup, "w").write("q05: \"select 1\"\n" + yaml.safe_dump(key, width=100000))
+    p2 = subprocess.run([sys.executable, SCORE, dup], capture_output=True, text=True)
+    good = p2.returncode != 0 and "duplicate key" in p2.stdout + p2.stderr
+    print(f"{'PASS' if good else 'FAIL'}  an answer file with q05 twice is refused: {(p2.stdout + p2.stderr).strip().splitlines()[-1:]}")
+    ok &= good
     for name, answers in (("key.yml", key), ("key_reworded.yml", key), ("variants.yml", variants), ("bad.yml", bad)):
         path = os.path.join(d, name)
         yaml.safe_dump(answers, open(path, "w"), width=100000)

@@ -765,7 +765,23 @@
    ],
    "gap": 1.266592,
    "raw_gap": 1.688821,
-   "share_of_raw_pct": 74.998575
+   "share_of_raw_pct": 74.998575,
+   "share_by_weighting_pct": {
+    "after_group": 70.275387,
+    "both": 74.998575,
+    "before_group": 78.350781
+   },
+   "before_lower_every_day": true,
+   "smaller_group_by_day": {
+    "1": 6,
+    "2": 32,
+    "3": 148,
+    "4": 74,
+    "5": 57,
+    "6": 24,
+    "7": 8,
+    "8": 1
+   }
   }
  },
  "memo_facts": {
@@ -859,6 +875,13 @@
   "survey_gap_raw": "1.69",
   "survey_gap_same_days": "1.27",
   "survey_gap_same_days_pct": "75",
+  "survey_gap_share_lo": "70",
+  "survey_gap_share_hi": "78",
+  "matched_pct_all_late": "85.2",
+  "survey_thin_min_n": "1",
+  "survey_thin_days": "3",
+  "survey_days_n": "8",
+  "late_unreviewed_n": "152",
   "survey_same_days_min": "1",
   "survey_same_days_max": "8",
   "low_star_matched_n": "5,553",
@@ -868,6 +891,12 @@
   "rj_other": "4.4",
   "rest_spike": "9.8",
   "rest_other": "4.1",
+  "window_first_month": "2017-01",
+  "window_last_month": "2018-08",
+  "holdout_first_month": "2018-05",
+  "holdout_last_month": "2018-08",
+  "spike_first_month": "2017-11",
+  "spike_last_month": "2018-03",
   "month_2018-03": "19.2",
   "month_2018-02": "14.2",
   "month_2017-11": "12.5",

@@ -44,11 +44,11 @@ def norm(text):
 def load_questions(read):
     out = {}
     for field, f in FILES.items():
-        seen = Counter(q["id"] for q in yaml.safe_load(read(f)) or [])
+        seen = Counter(q["id"] for q in key_file.load_yaml(read(f)) or [])
         twice = sorted(i for i, n in seen.items() if n > 1)
         if twice:
             raise key_file.KeyFileError(f"{f}: id {', '.join(twice)} appears twice")
-        for q in yaml.safe_load(read(f)) or []:
+        for q in key_file.load_yaml(read(f)) or []:
             out.setdefault(q["id"], {})[field] = sha({"question": norm(q["question"]), "forbidden_tables": q.get("forbidden_tables", [])})
     return out
 
@@ -144,7 +144,7 @@ def check(against=None):
                 problems.append(f"{qid} {field}: changed ({start} -> {cur[qid][field]}) without a changelog entry that reaches it")
     for qid in sorted(set(cur) - set(base)):
         problems.append(f"{qid}: not adopted. Hand-compute its key, then run: python append_only.py --adopt")
-    if against:
+    if against is not None:          # an empty --against (an unset variable) is a rev that does not resolve, not "skip"
         rev, problem = resolve_against(against)
         if problem:
             problems.append(problem)

@@ -1221,7 +1221,7 @@
   "kind": "coverage",
   "name": "allowlist reasons",
   "ok": true,
-  "detail": "44 exemptions, each with a reason"
+  "detail": "45 exemptions, each with a reason"
  },
  {
   "kind": "coverage",
