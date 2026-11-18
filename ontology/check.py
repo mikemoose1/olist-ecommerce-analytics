@@ -9,6 +9,8 @@ Checks, each a PASS/FAIL line:
   column_fact   each documented column has the stated type and null count, and its row rules hold on every row
   fact          each cross-table fact's query returns the stated number
   stage_rule    each order-stage rule's count equals the documented count
+  model_link    each rule's `model:` is `not_modeled` or names an invariant that exists in OrderLifecycle.tla and .cfg with the result
+                report.md records, and the Model column of ONTOLOGY.md says exactly that (TLC itself is run by hand, not in CI)
   metric        each verified card equals the metric table AND MetricFlow (`mf query`)
   diagram       the Mermaid diagram in ONTOLOGY.md equals the one generated from the YAML
   coverage      every marts and metrics table and column, and every number shown in ONTOLOGY.md, is described in
@@ -18,7 +20,7 @@ Usage:  python ontology/check.py [--skip-semantic]   (after `make build`; OLIST_
         python ontology/check.py --mermaid           (print the entity diagram)
 Output: evidence/ontology_report.md and .json; exit 1 on any FAIL.
 """
-import csv, json, os, subprocess, sys, tempfile
+import csv, json, os, re, subprocess, sys, tempfile
 import duckdb, yaml
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -143,6 +145,42 @@ def check_stage_rules(con):
         yield "stage_rule", s["rule"], n == s["expected"], f"count={n} (card {s['expected']})"
 
 
+LIFECYCLE = os.environ.get("ONTOLOGY_LIFECYCLE", os.path.join(ROOT, "ontology", "order_lifecycle"))
+
+
+def check_model_links():
+    """The Model column in ONTOLOGY.md may only claim what a named TLA+ invariant checks (S6)."""
+    read = lambda f: open(os.path.join(LIFECYCLE, f)).read()
+    tla, cfg, report = read("OrderLifecycle.tla"), read("OrderLifecycle.cfg"), read("report.md")
+    defined = set(re.findall(r"^(\w+) ==", tla, re.M))
+    in_cfg = set(re.findall(r"^INVARIANT (\w+)", cfg, re.M))
+    breaks = set(re.findall(r"^## (\w+) breaks", report, re.M))
+    holds = set(re.split(r"\s*,\s*", (re.search(r"## Rules that hold\n(.*)", report) or [0, ""])[1].strip()))
+    cells = {}
+    for line in open(MD).read().splitlines():
+        parts = [p.strip() for p in line.strip().strip("|").split("|")]
+        if line.startswith("|") and len(parts) > 2:
+            cells[parts[0]] = parts[1]
+    claimed = []
+    for s in ONTO["stage_rules"]:
+        m, name = s.get("model"), s["rule"]
+        if m == "not_modeled":
+            want, why, ok = "not modeled", "no invariant in the model", True
+        elif isinstance(m, dict) and m.get("result") in ("holds", "breaks"):
+            inv, res = m.get("invariant"), m["result"]
+            claimed.append(inv)
+            seen = inv in breaks if res == "breaks" else inv in holds and inv not in breaks
+            ok = inv in defined and inv in in_cfg and seen
+            want = "**breaks**" if res == "breaks" else "holds"
+            why = f"invariant {inv}: defined={inv in defined} in cfg={inv in in_cfg} report says {res}={seen}"
+        else:
+            want, why, ok = "?", f"model must be `not_modeled` or {{invariant, result: holds|breaks}}, got {m!r}", False
+        shown = cells.get(name)
+        yield "model_link", name, ok and shown == want, f"{why}; ONTOLOGY.md Model column shows {shown!r}, card says {want!r}"
+    unclaimed = sorted(in_cfg - set(claimed))
+    yield "model_link", "every invariant TLC checks backs a rule", not unclaimed, f"invariants in the cfg that no rule claims: {unclaimed or 'none'}"
+
+
 def mf_rows(names, group_by=None):
     out = os.path.join(tempfile.mkdtemp(), "mf.csv")
     env = dict(os.environ, DBT_PROFILES_DIR=ROOT, OLIST_DB_PATH=DB)
@@ -204,7 +242,7 @@ def main():
         mf["monthly"] = mf_monthly_late()
     con = duckdb.connect(DB, read_only=True)
     results = []
-    for gen in (check_entities(con), check_relationships(con), check_columns(con), check_term_counts(con), check_column_facts(con), check_facts(con), check_stage_rules(con),
+    for gen in (check_entities(con), check_relationships(con), check_columns(con), check_term_counts(con), check_column_facts(con), check_facts(con), check_stage_rules(con), check_model_links(),
                 coverage.check_coverage(con, ONTO, MD, ALLOW),
                 check_metrics(con, mf), check_diagram()):
         for kind, name, ok, detail in gen:

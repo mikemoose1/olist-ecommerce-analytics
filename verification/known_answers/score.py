@@ -21,7 +21,7 @@ a text answer when it equals the key. CANNOT_ANSWER counts as not correct and pr
 honest gap in the ontology is distinguishable from a wrong query. Prints one line per question and the
 score; exit 1 below 10/10.
 """
-import argparse, os, re, sys
+import argparse, json, os, re, sys
 import duckdb, yaml
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -87,6 +87,86 @@ def check_hardcode(sql, literal, text_keys, forbidden):
             raise ValueError(f"reads forbidden table {pat}")
 
 
+# --- structural checks on the parsed query (DuckDB's own parser), so wrapping or arithmetic cannot hide a value ---
+ALLOWED_TABLE_FUNCTIONS = {"unnest", "generate_series", "range"}   # produce rows from nothing; they cannot read a table
+NOT_CONSTANT_CLASSES = {"COLUMN_REF", "STAR", "SUBQUERY", "WINDOW", "PARAMETER", "LAMBDA"}
+AGGREGATES = {"count", "count_star", "sum", "avg", "min", "max", "median", "mode", "any_value", "first", "last", "list",
+              "string_agg", "stddev", "stddev_samp", "var_samp", "regr_slope", "corr", "bool_or", "bool_and", "arg_max", "arg_min"}
+
+
+def parse(con, sql):
+    out = json.loads(con.execute("select json_serialize_sql(?)", [sql]).fetchone()[0])
+    if out.get("error"):
+        raise ValueError(f"not a single select statement: {str(out.get('error_message'))[:60]}")
+    if len(out["statements"]) != 1:
+        raise ValueError("answer must be one statement")
+    return out
+
+
+def walk(node):
+    if isinstance(node, dict):
+        yield node
+        for v in node.values():
+            yield from walk(v)
+    elif isinstance(node, list):
+        for v in node:
+            yield from walk(v)
+
+
+def is_constant_only(expr):
+    for n in walk(expr):
+        if n.get("class") in NOT_CONSTANT_CLASSES or n.get("type") in NOT_CONSTANT_CLASSES:
+            return False
+        if n.get("class") == "FUNCTION" and str(n.get("function_name", "")).lower() in AGGREGATES:
+            return False
+    return True
+
+
+def folded_forms(v):
+    """Every way a computed constant might be printed, for comparison with the key and the printed values."""
+    if isinstance(v, bool) or v is None:
+        return set()
+    if isinstance(v, (int, float)) or hasattr(v, "as_integer_ratio"):
+        f = float(v)
+        forms = {repr(f), f"{f:.2f}", f"{f:.3f}", f"{f:.4f}"}
+        if f == int(f):
+            forms |= {str(int(f)), f"{int(f):,}"}
+        return forms
+    return {str(v).strip()} if isinstance(v, str) else set()
+
+
+def check_structure(con, sql, literal, text_keys, forbidden):
+    tree = parse(con, sql)
+    template = parse(con, "select 1")
+    for n in walk(tree):
+        if n.get("type") == "TABLE_FUNCTION":
+            name = str((n.get("function") or {}).get("function_name", "")).lower()
+            if name not in ALLOWED_TABLE_FUNCTIONS:
+                raise ValueError(f"table function {name}() can hide a table; query base tables directly")
+        if n.get("type") == "BASE_TABLE":
+            full = f"{n.get('schema_name', '')}.{n.get('table_name', '')}".lower()
+            for pat in forbidden:
+                schema, _, table = pat.lower().partition(".")
+                if n.get("schema_name", "").lower() == schema and table in ("", "*", n.get("table_name", "").lower()):
+                    raise ValueError(f"reads forbidden table {pat}")
+    # a constant-only expression (arithmetic, concatenation, cast on literals) that folds to a key or printed value is copying
+    for n in walk(tree):
+        if "class" not in n or n["class"] in ("CONSTANT", "COLUMN_REF") or not is_constant_only(n):
+            continue
+        if not any(m.get("class") == "CONSTANT" for m in walk(n)):
+            continue
+        probe = json.loads(json.dumps(template))
+        probe["statements"][0]["node"]["select_list"] = [n]
+        try:
+            text = con.execute("select json_deserialize_sql(?)", [json.dumps(probe)]).fetchone()[0]
+            val = con.execute(text).fetchone()[0]
+        except Exception:
+            continue
+        forms = folded_forms(val)
+        if any(literal.fullmatch(x) for x in forms) or (isinstance(val, str) and val.strip() in text_keys):
+            raise ValueError(f"computes the answer from literals ({str(val)[:20]}); derive it from the tables")
+
+
 def parse_ids(spec, all_ids):
     if not spec:
         return all_ids
@@ -130,7 +210,9 @@ def main():
         try:
             if sql is None:
                 raise ValueError("no answer given")
-            check_hardcode(sql, literal, [want] if isinstance(want, str) else [], q.get("forbidden_tables", []))   # a text key blocks only its own question: q05 may say '2018-03'
+            texts = [want] if isinstance(want, str) else []
+            check_hardcode(sql, literal, texts, q.get("forbidden_tables", []))
+            check_structure(con, sql, literal, texts, q.get("forbidden_tables", []))   # a text key blocks only its own question: q05 may say '2018-03'
             got = one(con, sql)
             ok = got == want
         except Exception as e:  # a query that does not run is a wrong answer

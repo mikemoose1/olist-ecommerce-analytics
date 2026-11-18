@@ -1,6 +1,6 @@
 # Ontology check: every claim in ontology/ontology.yml against the warehouse
 
-207/207 PASS
+215/215 PASS
 
 | Kind | Claim | Result | Detail |
 |---|---|---|---|
@@ -199,10 +199,18 @@
 | stage_rule | The survey goes out only when the order is delivered or the promised date arrives | PASS | count=606 (card 606) |
 | stage_rule | The survey goes out on or after the purchase day | PASS | count=64 (card 64) |
 | stage_rule | Nobody answers the survey before the order is delivered | PASS | count=4367 (card 4367) |
+| model_link | A late order arrived after the promised day | PASS | invariant LateMeansArrivedAfterPromise: defined=True in cfg=True report says holds=True; ONTOLOGY.md Model column shows 'holds', card says 'holds' |
+| model_link | A delivery date exists exactly when the status is delivered | PASS | no invariant in the model; ONTOLOGY.md Model column shows 'not modeled', card says 'not modeled' |
+| model_link | The carrier gets the order after payment approval | PASS | no invariant in the model; ONTOLOGY.md Model column shows 'not modeled', card says 'not modeled' |
+| model_link | The customer gets the order after the carrier does | PASS | no invariant in the model; ONTOLOGY.md Model column shows 'not modeled', card says 'not modeled' |
+| model_link | The survey goes out only when the order is delivered or the promised date arrives | PASS | invariant SurveyFollowsPolicy: defined=True in cfg=True report says holds=True; ONTOLOGY.md Model column shows 'holds', card says 'holds' |
+| model_link | The survey goes out on or after the purchase day | PASS | no invariant in the model; ONTOLOGY.md Model column shows 'not modeled', card says 'not modeled' |
+| model_link | Nobody answers the survey before the order is delivered | PASS | invariant NoReviewBeforeDelivery: defined=True in cfg=True report says breaks=True; ONTOLOGY.md Model column shows '**breaks**', card says '**breaks**' |
+| model_link | every invariant TLC checks backs a rule | PASS | invariants in the cfg that no rule claims: none |
 | coverage | allowlist reasons | PASS | 6 exemptions, each with a reason |
 | coverage | tables | PASS | 16 tables; undescribed: none |
 | coverage | columns | PASS | 127 columns; undescribed: none |
-| coverage | numbers in ONTOLOGY.md | PASS | 41 numbers shown; not a checked value in ontology.yml: none |
+| coverage | numbers in ONTOLOGY.md | PASS | 60 numbers each bound to the ontology.yml value they state; problems: none |
 | coverage | allowlist is current | PASS | entries matching nothing: none |
 | metric | late_rate | PASS | table 6518/94931=6.87 (card 6518/94931=6.87); MetricFlow 6518/94931=0.068660 -> 6.87 |
 | metric | repeat_rate_90d | PASS | table 991/77560=1.28 (card 991/77560=1.28); MetricFlow 991/77560=0.012777 -> 1.28 |

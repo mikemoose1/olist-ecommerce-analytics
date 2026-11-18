@@ -969,40 +969,43 @@ facts:
     sql: "select count(*) from marts.fct_orders o left join marts.fct_reviews r on r.order_id = o.order_id and r.is_chosen_for_order where o.review_score is distinct from r.review_score"
     expected: 0
 
-# Order-stage rules from ontology/order_lifecycle (TLA+ model, checked with TLC). Each rule either holds
-# in the data (expected 0) or is a documented exception with its exact count. The check recounts them.
+# Order-stage rules. Each rule either holds in the data (expected 0) or is a documented exception with its exact count;
+# the check recounts them. `model:` says whether the TLA+ model in ontology/order_lifecycle has an invariant for the rule
+# (`invariant` is a named invariant in OrderLifecycle.tla and listed in OrderLifecycle.cfg; `result` is what TLC found,
+# recorded in report.md) or `not_modeled`. check.py cross-checks all three files and the Model column of ONTOLOGY.md.
+# TLC itself is not run in CI (it needs Java).
 stage_rules:
   - rule: A late order arrived after the promised day
-    holds_in_model: true
+    model: {invariant: LateMeansArrivedAfterPromise, result: holds}
     sql: "select count(*) from marts.fct_orders where delivery_state in ('delivered_on_time','delivered_late') and ((delivery_state = 'delivered_late') <> (cast(delivered_to_customer_at as date) > estimated_delivery_date))"
     expected: 0
   - rule: A delivery date exists exactly when the status is delivered
-    holds_in_model: true
+    model: not_modeled
     sql: "select count(*) from marts.fct_orders where (order_status = 'delivered') <> (delivered_to_customer_at is not null)"
     expected: 14
     exception: 8 delivered orders have no date and 6 canceled orders have one. They are labeled status_date_conflict and kept out of every delivery metric.
   - rule: The carrier gets the order after payment approval
-    holds_in_model: true
+    model: not_modeled
     sql: "select count(*) from staging.stg_orders where delivered_to_carrier_at < approved_at"
     expected: 1359
     exception: Raw timestamps out of order (often same day). No metric uses approval-to-carrier time.
   - rule: The customer gets the order after the carrier does
-    holds_in_model: true
+    model: not_modeled
     sql: "select count(*) from staging.stg_orders where delivered_to_customer_at < delivered_to_carrier_at"
     expected: 23
     exception: Raw timestamps out of order. Lateness uses only the delivery date and the promise, so it is unaffected.
   - rule: The survey goes out only when the order is delivered or the promised date arrives
-    holds_in_model: true
+    model: {invariant: SurveyFollowsPolicy, result: holds}
     sql: "select count(*) from marts.fct_reviews r join marts.fct_orders o using (order_id) where r.review_created_on < least(coalesce(cast(o.delivered_to_customer_at as date), o.estimated_delivery_date), o.estimated_delivery_date)"
     expected: 606
     exception: 606 of 99,224 responses were sent before both the delivery and the promised date. Kept; flagged by survey_sent_before_delivery when a delivery date exists.
   - rule: The survey goes out on or after the purchase day
-    holds_in_model: true
+    model: not_modeled
     sql: "select count(*) from marts.fct_reviews r join marts.fct_orders o using (order_id) where r.review_created_on < o.purchase_date"
     expected: 64
     exception: 64 responses carry a survey date before the order was placed. A source data error; kept, and they are part of the 606 above.
   - rule: Nobody answers the survey before the order is delivered
-    holds_in_model: false
+    model: {invariant: NoReviewBeforeDelivery, result: breaks}
     sql: "select count(*) from marts.fct_reviews r join marts.fct_orders o using (order_id) where cast(r.review_answered_at as date) < cast(o.delivered_to_customer_at as date)"
     expected: 4367
     exception: This is not a real rule. The model shows why. When the promised date passes first, the survey goes out and the customer can answer before the parcel arrives. 4,367 responses on delivered orders were answered on an earlier day than the delivery, plus responses on orders never delivered.

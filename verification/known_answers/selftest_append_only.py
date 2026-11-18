@@ -7,10 +7,12 @@ PY = sys.executable
 FILES = ["append_only.py", "questions.yml", "questions_reworded.yml", "answer_key.sql", "questions_baseline.json", "questions_changelog.yml"]
 
 
-def sandbox():
+def sandbox(pre=None):
     d = tempfile.mkdtemp(prefix="appendonly-")
     for f in FILES:
         shutil.copy(os.path.join(HERE, f), d)
+    if pre:
+        pre(d)
     for c in (["git", "init", "-q"], ["git", "add", "-A"], ["git", "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-qm", "base"]):
         subprocess.run(c, cwd=d, check=True, capture_output=True)
     return d
@@ -47,8 +49,54 @@ CASES = [
 ]
 
 
+def note(qid, n):
+    return f"- id: {qid}\n  field: note\n  date: 2026-11-17\n  reason: note number {n} for {qid}, long enough to count as a real reason\n"
+
+
+def two_notes(d):
+    with open(os.path.join(d, "questions_changelog.yml"), "a") as f:
+        f.write(note("q05", 1) + note("q05", 2))
+
+
+def commit(d, msg):
+    subprocess.run(["git", "add", "-A"], cwd=d, capture_output=True)
+    subprocess.run(["git", "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-qm", msg], cwd=d, capture_output=True)
+
+
+def delete_everywhere(d, qid):
+    for f in ("questions.yml", "questions_reworded.yml"):
+        edit(d, f, lambda t: drop_block(t, qid))
+    edit(d, "answer_key.sql", lambda t: re.sub(rf"-- {qid}\n.*?(?=\n-- q\d+\n|\Z)", "", t, flags=re.S))
+    p = os.path.join(d, "questions_baseline.json")
+    b = json.load(open(p))
+    del b[qid]
+    json.dump(b, open(p, "w"), indent=1, sort_keys=True)
+
+
+# (name, setup before the base commit, mutation after it, must pass?, expected text if it must fail). All compare against HEAD.
+HISTORY_CASES = [
+    ("a commit compared with itself passes", None, lambda d: None, True, []),
+    ("two notes on one id, compared with itself, pass", two_notes, lambda d: None, True, []),
+    ("two notes on one id: one is edited", two_notes, lambda d: edit(d, "questions_changelog.yml", lambda t: t.replace("note number 2 for q05", "note number 2 for q05, quietly reworded")), False, ["q05", "edited or removed"]),
+    ("two notes on one id: one is deleted", two_notes, lambda d: edit(d, "questions_changelog.yml", lambda t: t.replace(note("q05", 2), "")), False, ["q05", "edited or removed"]),
+    ("two identical notes on one id: one is deleted", lambda d: open(os.path.join(d, "questions_changelog.yml"), "a").write(note("q05", 1) * 2), lambda d: edit(d, "questions_changelog.yml", lambda t: t.replace(note("q05", 1), "", 1)), False, ["q05", "edited or removed"]),
+    ("a question is deleted from both files, the key AND the baseline", None, lambda d: delete_everywhere(d, "q10"), False, ["q10", "existed at HEAD but is gone"]),
+    ("two notes on one id: a third is appended", two_notes, lambda d: open(os.path.join(d, "questions_changelog.yml"), "a").write(note("q05", 3)), True, []),
+]
+
+
 def main():
     bad = []
+    for name, pre, mutate, should_pass, expect in HISTORY_CASES:
+        d = sandbox(pre)
+        mutate(d)
+        rc, out = run(d, "--against", "HEAD")
+        good = (rc == 0 and "PASS" in out) if should_pass else (rc != 0 and all(e in out for e in expect) and (out.count("was edited or removed") == 1 or "but is gone" in out))  # exactly the one entry we touched
+        print(("PASS  " if good else "FAIL  ") + f"{name}: {'accepted' if rc == 0 else 'rejected'}")
+        if not good:
+            bad.append(name)
+            print(out)
+        shutil.rmtree(d)
     d = sandbox()
     rc, out = run(d)
     ok = rc == 0 and "PASS" in out

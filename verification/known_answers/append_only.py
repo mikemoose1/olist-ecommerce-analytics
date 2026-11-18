@@ -16,6 +16,7 @@ Rules (all checked on every run, and in CI):
 
 Usage:  python append_only.py [--against REV] [--adopt] [--print-sha ID FIELD]
 """
+from collections import Counter
 import argparse, hashlib, json, os, re, subprocess, sys
 import yaml
 
@@ -100,6 +101,7 @@ def check(against=None):
                 problems.append(f"changelog entry {e} is missing '{k}'")
         if e.get("field") == "note" and len(str(e.get("reason", "")).strip()) < 15:
             problems.append(f"note on {e.get('id')} has no real reason")
+    full_log = log
     log = [e for e in log if e.get("field") != "note"]
     for qid, fields in base.items():
         if qid not in cur:
@@ -124,10 +126,24 @@ def check(against=None):
             for qid, fields in json.loads(old_base).items():
                 if base.get(qid) != fields:
                     problems.append(f"{qid}: baseline entry differs from the one at {against}")
-            now = [json.dumps(e, sort_keys=True, default=str) for e in log]
+                # independent of the working-tree baseline: a question that existed at REV must still exist and
+                # be unchanged (or chain to its current wording through the changelog from the fingerprint at REV)
+                if qid not in cur:
+                    problems.append(f"{qid}: existed at {against} but is gone (questions are append-only)")
+                    continue
+                for field, start in fields.items():
+                    if field not in cur[qid]:
+                        problems.append(f"{qid}: {field} existed at {against} but is gone")
+                    elif chain(start, qid, field, log)[0] != cur[qid][field]:
+                        problems.append(f"{qid} {field}: differs from {against} without a changelog entry that reaches it")
+            # compare the FULL log (notes included) as a multiset: several identical-looking entries must each survive
+            now = Counter(json.dumps(e, sort_keys=True, default=str) for e in full_log)
             for e in yaml.safe_load(old_log) or []:
-                if json.dumps(e, sort_keys=True, default=str) not in now:
+                key = json.dumps(e, sort_keys=True, default=str)
+                if now[key] <= 0:
                     problems.append(f"changelog entry {e['id']} {e['field']} {e.get('old_sha', '')}->{e.get('new_sha', '')} was edited or removed")
+                else:
+                    now[key] -= 1
     return base, cur, problems
 
 

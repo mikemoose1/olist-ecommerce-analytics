@@ -16,7 +16,7 @@ verify()      { "$BIN/python" verification/verify_headlines.py; ontology; }
 ontology()    {
   "$BIN/python" ontology/check.py                                          # claims + coverage
   "$BIN/python" verification/known_answers/selftest.py                    # scorer
-  "$BIN/python" verification/known_answers/append_only.py ${APPEND_ONLY_BASE:+--against "$APPEND_ONLY_BASE"}   # questions never change silently
+  "$BIN/python" verification/known_answers/append_only.py --against "${APPEND_ONLY_BASE:-HEAD}"   # questions never change silently (default: compare with the last commit)
   "$BIN/python" verification/known_answers/selftest_append_only.py        # ...and that guard can fail
 }
 prove_tests() { "$BIN/python" scripts/prove_tests_fail.py; }
