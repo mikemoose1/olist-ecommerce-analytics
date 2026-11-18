@@ -21,7 +21,7 @@ a text answer when it equals the key. CANNOT_ANSWER counts as not correct and pr
 honest gap in the ontology is distinguishable from a wrong query. Prints one line per question and the
 score; exit 1 below 10/10.
 """
-import argparse, json, os, re, sys
+import argparse, hashlib, json, os, re, sys, tempfile
 import duckdb, yaml
 import key_file
 
@@ -74,8 +74,8 @@ def literal_re(key_values):
 
 def check_hardcode(sql, literal, text_keys, forbidden):
     bare = strip_strings(sql)
-    if not re.search(r"\b(from|join)\s+(\w+\s*\.\s*)?(marts|metrics|intermediate|staging)\s*\.", bare, re.I):
-        raise ValueError("answer must query a warehouse table, not hard-code a value")
+    # (the parse tree or the plan proves a warehouse table is read; a text pattern here rejected `from (pivot marts.x ...)`
+    # and `from (select 1) one, marts.x`)
     m = literal.search(bare)
     if m:
         raise ValueError(f"hard-coded value {m.group(0)} copied from the ontology text or the key")
@@ -290,6 +290,51 @@ def check_plan(con, sql, literal, text_keys, forbidden, why):
                 raise ValueError(f"hard-coded text answer '{t}'")
 
 
+# --- the perturbed warehouse: no text or tree check can see every way to launder a constant
+#     (a CTE, a subquery, VALUES, a table function, a PIVOT source). So run the answer on a copy of the warehouse whose data
+#     is changed: about 1 row in 10 dropped and 1 in 10 doubled in every table (picked by a hash of the row, so the copy is
+#     the same every time), and in the small metrics tables every number nudged. Where the key's value changes on that copy,
+#     a computed answer changes too; one that stays put did not come from the data.
+PERTURB_VERSION = "1"
+
+
+def perturbed_path():
+    st = os.stat(DB)
+    tag = hashlib.sha256(f"{os.path.abspath(DB)}|{st.st_size}|{st.st_mtime_ns}|{PERTURB_VERSION}".encode()).hexdigest()[:16]
+    d = os.path.join(tempfile.gettempdir(), f"olist_perturbed_{tag}")
+    path = os.path.join(d, "olist.duckdb")       # same catalog name, so olist.marts.x still resolves
+    if os.path.exists(path):
+        return path
+    os.makedirs(d, exist_ok=True)
+    tmp = os.path.join(d, f"olist.{os.getpid()}.building")
+    w = duckdb.connect(tmp)
+    w.execute(f"attach '{DB}' as src (read_only)")
+    rels = w.execute("select schema_name, table_name, estimated_size from duckdb_tables() where database_name = 'src' "
+                     "and schema_name in ('marts', 'metrics', 'intermediate', 'staging')").fetchall()
+    for schema, table, size in rels:
+        w.execute(f"create schema if not exists {schema}")
+        cols = w.execute("select column_name, data_type from duckdb_columns() where database_name = 'src' and schema_name = ? "
+                         "and table_name = ? order by column_index", [schema, table]).fetchall()
+        numeric = ("TINYINT", "SMALLINT", "INTEGER", "BIGINT", "HUGEINT", "FLOAT", "DOUBLE")
+        exprs = []
+        for c, typ in cols:
+            q = '"' + c.replace('"', '""') + '"'
+            nudge = schema == "metrics" and size < 1000 and (typ in numeric or typ.startswith("DECIMAL"))
+            exprs.append(f"cast({q} * 1.0137 + 1 as {typ}) as {q}" if nudge else q)
+        src = f"src.{schema}.{table} t"
+        w.execute(f"create table {schema}.{table} as select {', '.join(exprs)} from (select * from {src} where hash(t) % 10 <> 0 "
+                  f"union all select * from {src} where hash(t) % 10 = 1) t")
+    w.execute("detach src")
+    w.close()
+    os.replace(tmp, path)
+    return path
+
+
+def data_independent(want, got_perturbed_key, got_perturbed_answer):
+    """True when the key moved on the perturbed copy but the answer kept the real value"""
+    return got_perturbed_key is not None and got_perturbed_key != want and got_perturbed_answer == want
+
+
 def parse_ids(spec, all_ids):
     if not spec:
         return all_ids
@@ -319,6 +364,13 @@ def main():
         sys.exit(f"{qfile} ids {sorted(ids)} do not match the key ids {sorted(keys)}")
     con = duckdb.connect(DB, read_only=True)
     want_all = {k: one(con, v) for k, v in keys.items()}
+    pcon = duckdb.connect(perturbed_path(), read_only=True)
+
+    def on_perturbed(q):
+        try:
+            return one(pcon, q)
+        except Exception:
+            return None
     literal = literal_re(v for v in want_all.values())
     selected = parse_ids(a.ids, ids)
     right = abstain = 0
@@ -340,6 +392,8 @@ def main():
             check_structure(con, sql, literal, texts, q.get("forbidden_tables", []))   # a text key blocks only its own question: q05 may say '2018-03'
             got = one(con, sql)
             ok = got == want
+            if ok and data_independent(want, on_perturbed(keys[q["id"]]), on_perturbed(sql)):
+                raise ValueError("the answer does not change when the warehouse data changes (the key does); derive it from the tables")
         except Exception as e:  # a query that does not run is a wrong answer
             got, ok = f"error: {str(e).splitlines()[0][:80]}", False
         right += ok

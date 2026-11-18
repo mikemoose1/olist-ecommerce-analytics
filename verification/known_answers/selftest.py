@@ -73,17 +73,31 @@ def main():
         ("q16", "select 625 + 0 * \"canceled\" from " + pivot),
         ("q11", 'select "true" from (pivot (select repeated from metrics.metric_repeat_rate_90d_people) on repeated using count(*))'),
         ("q12", "select \"true\" from (pivot (select * from query('select repeated from metrics.metric_repeat_rate_90d_people')) on repeated using count(*)) p, (select 1 from marts.dim_date limit 1) one"),
+        # a constant inside the PIVOT source, so the plan carries no folded answer
+        ("q16", 'select "canceled" from (pivot (select order_status, 600 as a, 25 as b from marts.fct_orders) on order_status using max(a + b))'),
+        ("q16", 'select "canceled" from (pivot (select order_status, 625 as x from marts.fct_orders) on order_status using max(x))'),
+        # 2: constants laundered through a CTE, a subquery, VALUES or a table function, so no constant-only expression holds the answer
+        ("q02", "with c as (select 94000 as a, 931 as b) select a + b from c, marts.dim_date limit 1"),
+        ("q02", "select (select a + b from (select 94000 as a, 931 as b)) from marts.dim_date limit 1"),
+        ("q02", "select a + b from (values (94000, 931)) v(a, b), marts.dim_date limit 1"),
+        ("q02", "select r.range + 931 from range(94000, 94001) r, marts.dim_date limit 1"),
+        ("q06", "select max(a) * 2 + max(b) from (select 48000 as a, 96 as b), marts.dim_customer"),
     ]
     # correct answers written differently must still score right
-    differently = {
-        "q02": "with t as (select * from marts.fct_orders) select count(*) from t where order_status = 'delivered' and delivered_to_customer_at is not null and n_items > 0 and purchase_date between date '2017-01-01' and date '2018-08-31' and n_parcels = 1;",
-        "q06": "select cast(count(distinct customer_unique_id) as bigint) + 0 from marts.fct_orders",
-        "q10": "select round(100.0 * count(*) filter (where order_status = 'canceled') / count(*), 2) from marts.fct_orders",
-        "q16": 'select "canceled" from ' + pivot,                        # review L1: a correct PIVOT answer was rejected
-    }
+    differently = [
+        ("q02", "with t as (select * from marts.fct_orders) select count(*) from t where order_status = 'delivered' and delivered_to_customer_at is not null and n_items > 0 and purchase_date between date '2017-01-01' and date '2018-08-31' and n_parcels = 1;"),
+        ("q06", "select cast(count(distinct customer_unique_id) as bigint) + 0 from marts.fct_orders"),
+        ("q10", "select round(100.0 * count(*) filter (where order_status = 'canceled') / count(*), 2) from marts.fct_orders"),
+        ("q16", 'select "canceled" from ' + pivot),                        # review L1: a correct PIVOT answer was rejected
+        # a bare PIVOT statement and a comma join that starts with a subquery were rejected
+        ("q07", "select count(*) from (select 1) one, (select order_id from marts.fct_order_items group by 1 having count(distinct seller_id) > 1) x"),
+        ("q06", "select count(distinct customer_unique_id) from (select 1) one, marts.fct_orders"),
+        ("q16", "pivot (select order_status from marts.fct_orders) on order_status in ('canceled') using count(*)"),
+        ("q16", "select sum(\"canceled\") from (pivot marts.fct_orders on order_status in ('canceled') using count(*) group by order_status)"),
+    ]
     ok = True
     d2 = tempfile.mkdtemp()
-    for name, overrides, expect in (("bypass", bypass, "WRONG"), ("different", list(differently.items()), "RIGHT")):
+    for name, overrides, expect in (("bypass", bypass, "WRONG"), ("different", differently, "RIGHT")):
         rounds = []                                       # one answer file per round, each id at most once per file
         for qid, sql in overrides:
             r = next((r for r in rounds if qid not in r), None)
