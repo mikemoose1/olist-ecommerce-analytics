@@ -6,6 +6,8 @@ Olist is a Brazilian online marketplace. This project takes about 99,000 of its 
 
 The main finding is that late delivery is the biggest driver of bad reviews. Orders that arrive late score about 2 stars lower, and only 6.87% of orders are late. Only 1.28% of customers place a second order within 90 days.
 
+[recommendation/MEMO.md](recommendation/MEMO.md) turns that into a decision for an operations manager: what late delivery costs, where it clusters, and two changes Olist could test. The cost shows up in ratings. A late first order shows no clear effect on whether people come back.
+
 Those numbers only matter if they are right, so each known data problem has an automatic check, and each check was shown to fail when given bad data. A separate recalculation straight from the original files confirms every headline number. One command rebuilds everything from scratch, and GitHub reruns all checks on every change.
 
 Technical readers: the sections below keep the full detail, with the exact tables, tests and definitions.
@@ -119,6 +121,10 @@ and writes [experiments/results.json](experiments/results.json).
 
 [ontology/ONTOLOGY.md](ontology/ONTOLOGY.md) names every business thing (customer, order, item, parcel, seller, product, payment, review, location, date), how they connect, and what each term and metric means, with examples that do not count. [ontology/ontology.yml](ontology/ontology.yml) holds the definition cards. `make ontology` (part of `make verify`) proves every card against the warehouse: row counts, keys, links, stage-rule exceptions, and each metric through both the dbt metric tables and MetricFlow. The MetricFlow semantic layer in `models/semantic/` answers metric questions by name, for example `mf query --metrics late_rate --group-by metric_time__month`.
 
+## Business recommendation
+
+[recommendation/MEMO.md](recommendation/MEMO.md) is a one-page memo. [recommendation/PLAN.md](recommendation/PLAN.md) holds the analysis plan and the predictions, committed before any outcome was measured, plus a labeled addendum for checks added afterwards. `recommendation/analyze.py` measures each effect two ways (exact matching on state, category, freight band and month, and a regression with the same controls), re-checks findings on held-out months 2018-05 to 2018-08, and writes [evidence/recommendation_report.md](evidence/recommendation_report.md). It runs in `make verify` and fails if any number in the memo is not one it produced.
+
 ## What is in the repository
 
 ```
@@ -130,6 +136,7 @@ seeds/                                        raw file hashes, category translat
 scripts/                                      reproduce.sh, fetch_data.sh, prove_tests_fail.py, doctor.sh, lineage_mermaid.py
 verification/                                 verify_headlines.py + first-pass baseline; known_answers/ (10-question test for an agent)
 experiments/                                  run_experiments.py + results.json
+recommendation/                               MEMO.md, PLAN.md, analyze.py (late-delivery cost and the tests to run)
 evidence/                                     latest verification, mutation and ontology reports
 analysis_design_phase/                        raw-data checks run before any SQL was written
 ```
