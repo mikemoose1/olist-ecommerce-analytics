@@ -55,6 +55,12 @@ erDiagram
     DATE {
         string date_day PK
     }
+    REPEAT_COHORT {
+        string customer_unique_id PK
+    }
+    HEADLINE_METRIC {
+        string metric_name PK
+    }
     CUSTOMER ||--|{ ORDER : "customer places orders"
     ORDER ||--o{ ITEM : "order contains items"
     ORDER ||--o{ PARCEL : "order splits into parcels"
@@ -68,6 +74,7 @@ erDiagram
     LOCATION ||--o{ ORDER : "order ships to a location"
     LOCATION ||--o{ SELLER : "seller is based at a location"
     DATE ||--o{ ORDER : "order is purchased on a date"
+    CUSTOMER ||--|o REPEAT_COHORT : "customer is in the repeat cohort"
 ```
 
 | Thing | One row is | Key | Rows |
@@ -82,12 +89,15 @@ erDiagram
 | review | one survey response on one order | review_id + order_id | 99,224 |
 | location | one 5-digit zip prefix | zip_code_prefix | 19,015 |
 | date | one calendar day | date_day | 791 |
+| repeat cohort (supporting) | one person eligible for the 90-day repeat rate | customer_unique_id | 77,560 |
+| headline metric (supporting) | one headline number with its numerator and denominator | metric_name | 5 |
 
 Known gaps in the links, each counted and checked:
 
 - 775 orders have no items and 1 order has no payment row.
 - 768 orders have no survey response, and 547 have more than one. Decision C4 picks the latest-answered one, so each order has at most one chosen review.
 - 278 orders and 7 sellers sit in a zip prefix that Olist's geolocation file does not have. They are kept, with no map point.
+- The repeat cohort has 77,560 people, one row each. Of the 94,983 people with a real purchase, 17,423 are left out because their first purchase is less than 90 days before the newest purchase in the data.
 - 789 survey responses (`review_id`) are attached to more than one order, so a review's key is the response plus the order.
 
 ## The stages of an order
@@ -171,6 +181,10 @@ The last rule is how people first state it, and the model shows why it is wrong.
 
 Rebuild the chart: `node --experimental-strip-types <path-to>/statechart.ts ontology/order_lifecycle/OrderLifecycle.tla --view ontology/order_lifecycle/view.ts --out /tmp/new-chart`.
 
+## Column facts
+
+`ontology.yml` has a `columns:` section with the data type, the null count and the row rules of the columns the cards depend on (for example `purchased_at` is a TIMESTAMP and never null; `n_parcels` is 0, not null, for an order with no items; `review_score` is null for the 768 orders with no response). It also has a `facts:` section of cross-table counts, such as the 17,423 people left out of the repeat cohort. `check.py` proves every line of both against the warehouse.
+
 ## Glossary
 
 Every term below has a full card in ontology.yml with its source column, grain, population, time rule and examples that do not count.
@@ -179,11 +193,20 @@ Every term below has a full card in ontology.yml with its source column, grain, 
 |---|---|---|
 | person | A real buyer (`customer_unique_id`). "Customer" in every metric means person. | `customer_id`, which is one per order |
 | qualifying order | An order that counts as a real purchase. Not canceled or unavailable, with at least one item. | canceled, unavailable, or empty orders |
+| purchase time | The exact second the order was placed (`purchased_at`, a TIMESTAMP, never null). `purchase_date` is only its day. The 24-hour rule in the repeat rate uses `purchased_at`. | `purchase_date`, which has no time |
+| qualifying order sequence | `customer_qualifying_order_seq`: 1 for the person's first qualifying order, 2 for the next. Null for a non-qualifying order. | a canceled order (null) |
+| repeat return | A later qualifying order 24 hours to 90 days after the first one's `purchased_at` (both ends included). | an order 3 hours later, a canceled order, day 91 |
+| repeat cohort member | A person whose first qualifying order is at least 90 days older than the newest qualifying purchase (2018-09-03 09:06:57), so the cutoff is 2018-06-05 09:06:57. They are the rows of `metrics.metric_repeat_rate_90d_people`. | people with only recent first purchases, people with only canceled orders |
+| repeat slice | Slice the repeat rate by first-order month (month of `first_order_date`) or first-order state (`ship_to_state` of the person's `seq = 1` order, joined on `customer_unique_id`). | `dim_customer.state` (latest address), month of the second order |
+| placed an order | A person with at least one order of ANY status: every row of `dim_customer`, 96,096 people. | counting only qualifying orders (94,983 people; the other 1,113 only had canceled, unavailable or empty orders) |
+| canceled order | `order_status = 'canceled'`: 625 orders, including the 6 that still carry a delivery date (those are also `status_date_conflict`). The denominator for a share is every order. | status `unavailable`, or "not delivered" in general |
+| parcel count | `n_parcels`: 0 for an order with no items (775 orders), never null; 1 normal; 2 or more multi-seller. | treating it as null for empty orders |
+| order review score | `fct_orders.review_score`: stars 1-5 of the chosen response; null for the 768 orders with no response. | an earlier answer on the same order |
 | promised date | The delivery date promised at purchase. A date with no time. | |
 | delivered | Status is delivered and a delivery date exists (96,470 orders). Use `delivery_state`, not "has a delivery date", which also catches 6 canceled orders. | delivered status without a date, shipped orders |
 | late | Delivered on a later calendar day than promised. | same-day delivery at 23:00, multi-seller orders, undelivered orders |
 | multi-seller order | An order with items from 2 or more sellers (1,278 orders). | one seller shipping 3 items |
-| analysis window | Full months 2017-01 through 2018-08. | partial edge months |
+| analysis window | Full months 2017-01 through 2018-08. `in_analysis_window` is true/false and never null (349 orders are outside). | partial edge months |
 | survey sent | The day Olist emailed the survey (`review_creation_date`). | the day the customer answered |
 | chosen review | The one response used per order: the latest answered. | earlier answers on the same order |
 | survey sent before delivery | The survey went out on an earlier day than the delivery (column `review_before_delivery`). | same-day survey; responses on undelivered orders (null) |

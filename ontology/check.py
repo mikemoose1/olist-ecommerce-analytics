@@ -5,7 +5,9 @@ Checks, each a PASS/FAIL line:
   entity        table exists, key is unique and never null, row count equals the card
   relationship  no unexpected nulls or orphans; children per parent inside [min, max]
   column        every card's source (schema.table.column) exists
-  term_count    every count printed on a term card (values, count) equals the warehouse
+  term_count    every count printed on a term card (values, count, counts) equals the warehouse
+  column_fact   each documented column has the stated type and null count, and its row rules hold on every row
+  fact          each cross-table fact's query returns the stated number
   stage_rule    each order-stage rule's count equals the documented count
   metric        each verified card equals the metric table AND MetricFlow (`mf query`)
   diagram       the Mermaid diagram in ONTOLOGY.md equals the one generated from the YAML
@@ -90,9 +92,40 @@ def check_term_counts(con):
             got = {str(k): v for k, v in con.execute(f"select {col}, count(*) from {schema}.{table} group by 1").fetchall()}
             want = {str(k): v for k, v in card["values"].items()}
             yield "term_count", name, got == want, f"{got}"
-        if "count" in card:
-            n = con.execute(f"select count(*) from {schema}.{table} where {card['count']['where']}").fetchone()[0]
-            yield "term_count", name, n == card["count"]["expected"], f"{card['count']['where']}: {n} (card {card['count']['expected']})"
+        for c in ([card["count"]] if "count" in card else []):
+            n = con.execute(f"select count(*) from {schema}.{table} where {c['where']}").fetchone()[0]
+            yield "term_count", name, n == c["expected"], f"{c['where']}: {n} (card {c['expected']})"
+        if "counts" in card:
+            got = [(c, con.execute(f"select count(*) from {schema}.{table} where {c['where']}").fetchone()[0]) for c in card["counts"]]
+            yield "term_count", name, all(n == c["expected"] for c, n in got), \
+                "; ".join(f"{c['where']}: {n} (card {c['expected']})" for c, n in got)
+
+
+def check_column_facts(con):
+    types = {f"{s}.{t}.{c}": d for s, t, c, d in con.execute(
+        "select table_schema, table_name, column_name, data_type from information_schema.columns").fetchall()}
+    for ref, f in ONTO["columns"].items():
+        schema, table, col = ref.split(".")
+        tbl = f"{schema}.{table}"
+        parts, ok = [f"type {types.get(ref)} (card {f['type']})"], types.get(ref) == f["type"]
+        nulls = con.execute(f"select count(*) from {tbl} where {col} is null").fetchone()[0]
+        ok &= nulls == f["nulls"]
+        parts.append(f"nulls {nulls} (card {f['nulls']})")
+        if "null_when" in f:
+            bad = con.execute(f"select count(*) from {tbl} where ({col} is null) is distinct from ({f['null_when']})").fetchone()[0]
+            ok &= bad == 0
+            parts.append(f"null exactly when [{f['null_when']}]: {bad} violations")
+        for rule in f.get("holds", []):
+            bad = con.execute(f"select count(*) from {tbl} where not coalesce({rule}, false)").fetchone()[0]
+            ok &= bad == 0
+            parts.append(f"holds [{rule}]: {bad} violations")
+        yield "column_fact", ref, ok, "; ".join(parts)
+
+
+def check_facts(con):
+    for f in ONTO["facts"]:
+        n = con.execute(f["sql"]).fetchone()[0]
+        yield "fact", f["claim"], n == f["expected"], f"count={n} (card {f['expected']})"
 
 
 def check_stage_rules(con):
@@ -162,7 +195,7 @@ def main():
         mf["monthly"] = mf_monthly_late()
     con = duckdb.connect(DB, read_only=True)
     results = []
-    for gen in (check_entities(con), check_relationships(con), check_columns(con), check_term_counts(con), check_stage_rules(con),
+    for gen in (check_entities(con), check_relationships(con), check_columns(con), check_term_counts(con), check_column_facts(con), check_facts(con), check_stage_rules(con),
                 check_metrics(con, mf), check_diagram()):
         for kind, name, ok, detail in gen:
             results.append({"kind": kind, "name": name, "ok": bool(ok), "detail": detail})
