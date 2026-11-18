@@ -12,7 +12,8 @@ data()        { bash scripts/fetch_data.sh; }
 deps()        { venv; "$BIN/dbt" deps --quiet; }
 setup()       { venv; data; deps; }
 build()       { deps; "$BIN/dbt" build --fail-fast; }
-verify()      { "$BIN/python" verification/verify_headlines.py; ontology; }
+verify()      { "$BIN/python" verification/verify_headlines.py; ontology; recommendation; }
+recommendation() { "$BIN/python" recommendation/analyze.py; }
 ontology()    { "$BIN/python" ontology/check.py; }
 prove_tests() { "$BIN/python" scripts/prove_tests_fail.py; }
 experiments() { "$BIN/python" experiments/run_experiments.py; }
