@@ -43,6 +43,9 @@ CASES = [
     ("handoff orders swapped between groups", "late_by_handoff:Handed over on time", edit_csv("late_by_handoff", "Handed over on time", "orders", lambda v: str(int(v) - 5))),
     ("comment share rounded the wrong way", "comment_delay_share", edit_fact("comment_delay_share", lambda v: v + 0.001)),
     ("late sales off by R$1", "late_sales_window", edit_fact("late_sales_window", lambda v: v + 1)),
+    ("last-12-month late sales off by R$1", "late_sales_last12", edit_fact("late_sales_last12", lambda v: v + 1)),
+    ("last-12-month total sales off by R$1", "late_sales_last12", edit_fact("total_sales_last12", lambda v: v + 1)),
+    ("last-12-month late first orders off by one", "late_first_last12", edit_fact("late_first_last12", lambda v: v + 1)),
 ]
 
 

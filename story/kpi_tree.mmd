@@ -15,18 +15,18 @@ flowchart TD
   late_by_month["Late orders by purchase month<br/>6,518<br/>top: 2018-03 1,324, 2018-02 925, 2017-11 902 (of 20)"]
   late_by_handoff["Late orders by seller handoff<br/>6,518<br/>top: handed over on time 4,708, handed over after ship-by 1,809, handoff not recorded 1 (of 3)"]
   late_by_seller["Late orders by seller<br/>6,518<br/>top: 4a3ca931 168, 1f50f920 124, 4869f7a5 118 (of 1272)"]
-  lost_repeat_sales["Lost repeat sales per year<br/>R$ 645 [0 to 3,208]"]
+  lost_repeat_sales["Lost repeat sales, last 12 months (95% range, low end floored at 0)<br/>R$ 948 [0 to 4,717]"]
   commission["Olist commission lost<br/><i>not answerable</i>"]
   star_sales_value["Sales value of one star<br/><i>not answerable</i>"]
   carrier["Which carrier was late<br/><i>not answerable</i>"]
   multi_seller_arrival["Lateness of multi-seller orders<br/><i>not answerable</i>"]
-  cost -->|part of| low_star_excess
+  cost -.->|"part of, association only"| low_star_excess
   low_star_excess -->|"= x"| late_reviewed
   low_star_excess -.->|"= x, association only"| excess_low_star_share
   excess_low_star_share -.->|association only| star_penalty
   star_penalty -.->|association only| survey_before_share
   star_penalty -.->|association only| comment_not_arrived_share
-  cost -->|part of| late_sales
+  cost -->|"exposed, not lost"| late_sales
   late_sales -->|"= x"| late_orders
   late_sales -->|"= x"| avg_late_order_value
   late_orders -->|"= x"| judged_orders
@@ -43,4 +43,4 @@ flowchart TD
   classDef na fill:#eee,stroke:#999,color:#777,stroke-dasharray:4 3
   classDef assoc stroke-dasharray:4 3
   class commission,star_sales_value,carrier,multi_seller_arrival na
-  class excess_low_star_share,star_penalty,survey_before_share,comment_not_arrived_share,lost_repeat_sales assoc
+  class low_star_excess,excess_low_star_share,star_penalty,survey_before_share,comment_not_arrived_share,lost_repeat_sales assoc

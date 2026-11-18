@@ -5,19 +5,27 @@ Numbers: every number carries a tag, and recommendation/memo_check.py checks it,
   <!--d:name-->  a design constant: memo_check.DESIGN, or a story threshold below
 Shape: each question section (## Q...) opens with one bold one-sentence takeaway and holds exactly one chart; each chart's
 key numbers are also in its section's text (CHART_KEYS, for text-only readers); each lever in "What to do" names its driver
-in its bold lead (LEVER_DRIVERS); the page holds both KPI tree markers. Exit 1 on any problem. story/selftest_story.py proves it fails on planted wrong captions.
+in its bold lead (LEVER_DRIVERS); a scoped count carries its population right after it (SCOPED_FACTS); and a lever resting on a borderline pass says so there (LEVER_HEDGES); the page holds both KPI tree markers.
+Number words: the title, subtitle, headings, bold lines and chart alt text cannot carry tags, so every number word there
+("two in three", "about four times", "three ... months") must sit in a phrase of NUMBER_PHRASES that checks it against the
+facts, and alt text (either quote style) and every header string outside `format:` hold no numerals.
+Out of scope: whether a phrase's subject is right ("more than a quarter of sellers" passes if the share is), and number
+words in body prose, where every numeral already carries a tag. Exit 1 on any problem. story/selftest_story.py proves it fails on planted wrong captions.
 """
 import json, re, sys
 from pathlib import Path
 
+import yaml
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "recommendation"))
+sys.path.insert(0, str(ROOT / "story"))
 from memo_check import check_memo
 
-STORY_DESIGN = {   # thresholds from story/QUESTIONS.md, fixed before the charts were drawn
-    "thr_low_star_share": "10", "thr_segment_ratio": "1.75", "thr_segment_share": "10",
-    "thr_handoff_share": "20", "thr_comment_share": "50",
-}
+def design():
+    """Story design numbers: the bars in kpi_tree.yml `thresholds:` (the one source), as d:thr_<name> tags."""
+    bars = yaml.safe_load((ROOT / "story" / "kpi_tree.yml").read_text())["thresholds"]
+    return {f"thr_{k}": f"{v:g}" for k, v in bars.items()}
 
 
 def facts():
@@ -37,14 +45,119 @@ def body(text):
 
 # A text-only reader must get each chart's key numbers from the words: these facts must be tagged in the chart's own section.
 CHART_KEYS = {
-    "fig_cost.png": ["c_low_star_excess_exact", "c_low_star_all", "low_star_share_mid", "c_late_sales_year_m"],
+    "fig_cost.png": ["c_low_star_excess_exact", "c_low_star_all", "low_star_share_mid", "c_late_sales_last12_m", "c_late_sales_last12_share"],
     "fig_where_when.png": ["nne_rate", "c_rest_rate", "month_2018-03", "month_2018-02", "month_2017-11", "c_segment_thr"],
-    "fig_handoff.png": ["late_if_handoff_late", "late_if_handoff_ok", "c_handoff_late_n", "c_handoff_orders", "seller_side_pct"],
+    "fig_handoff.png": ["late_if_handoff_late", "late_if_handoff_ok", "c_handoff_late_n", "c_handoff_orders", "seller_side_pct",
+                        "late_orders"],
     "fig_comments.png": ["c_comment_pct", "survey_before_pct", "d:thr_comment_share"],
     "fig_repeat.png": ["rep_matched", "rep_matched_lo", "rep_matched_hi"],
 }
 # Each lever in the recommendation must name its driver in its own bold lead sentence.
+# A lever that rests on a borderline pass must say so in its bold lead (wave-4 readers missed the hedge in the body).
+LEVER_HEDGES = [None, "borderline"]
 LEVER_DRIVERS = [["late_if_handoff_late", "late_if_handoff_ok", "seller_side_pct"], ["nne_rate", "top3_months_late"]]
+
+
+from kpi_tree import NUMBER_WORD   # the number-word list kpi_tree.py also uses for threshold text
+
+WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10,
+         "eleven": 11, "twelve": 12}
+FRACTIONS = {"half": 2, "halves": 2, "third": 3, "thirds": 3, "quarter": 4, "quarters": 4, "fifth": 5, "fifths": 5,
+             "tenth": 10, "tenths": 10}
+N = r"(" + "|".join(WORDS) + r")"          # a counted number word, captured
+F = r"(" + "|".join(FRACTIONS) + r")"      # a fraction word, captured
+NEAR = r"(?:about|nearly|almost|roughly|around)"
+
+
+def num(x):
+    return float(str(x).replace(",", "").replace("R$", ""))
+
+
+def _w(m, i=1):
+    return WORDS[m.group(i).lower()]
+
+
+def _share_ok(share, pct):
+    return abs(100 * share - num(pct)) <= 5
+
+
+# phrase regex -> (what it claims, test against facts f and design d). A number word outside these phrases is a problem.
+# Each phrase starts with a number word, so number-free wording ("the tests", "these peak months") never matches.
+NUMBER_PHRASES = [
+    (rf"\b{N} in {N} comments", "comment share", lambda m, f, d: _share_ok(_w(m) / _w(m, 2), f["c_comment_pct"])),
+    (rf"\b{N} {F} of comments", "comment share",
+     lambda m, f, d: _share_ok(_w(m) / FRACTIONS[m.group(2).lower()], f["c_comment_pct"])),
+    (rf"\b{NEAR} {N} times as often", "late-handoff ratio", lambda m, f, d: _w(m) == round(num(f["c_handoff_ratio"]))),
+    (rf"\b(?:more than|over) {N} times as often", "late-handoff ratio", lambda m, f, d: num(f["c_handoff_ratio"]) > _w(m)),
+    (rf"\b(?:more than|over) an? {F}\b", "low-star share",
+     lambda m, f, d: num(f["low_star_share_lo"]) > 100 / FRACTIONS[m.group(1).lower()]),
+    (rf"\b{N} (?:highest-lateness|peak) months", "number of top months",
+     lambda m, f, d: _w(m) == sum(k.startswith("month_") for k in f)),
+    (rf"\b{N} months with the highest late rate", "number of top months",
+     lambda m, f, d: _w(m) == sum(k.startswith("month_") for k in f)),
+    (rf"\b{N} (?:tests|levers)\b", "number of levers", lambda m, f, d: _w(m) == len(LEVER_DRIVERS)),
+    (r"\bone- and two-star", "low-star definition", lambda m, f, d: (d["star_low_min"], d["star_low_max"]) == ("1", "2")),
+    (r"\bat one half\b", "comment bar", lambda m, f, d: d["thr_comment_share"] == "50"),
+]
+ALT = re.compile(r"""\b(?:fig-alt|fig-cap|alt)=(["'])((?:\\.|(?!\1).)*)\1""", re.S)
+
+
+def header_text(text):
+    """Every string in the YAML header except the `format:` options: title, subtitle, abstract, description, ..."""
+    hdr = yaml.safe_load(re.match(r"\A---\n(.*?)\n---\n", text, re.S).group(1)) or {}
+    out = []
+    def walk(x):
+        if isinstance(x, dict):
+            for v in x.values(): walk(v)
+        elif isinstance(x, list):
+            for v in x: walk(v)
+        elif x is not None and not isinstance(x, bool):
+            out.append(str(x))
+    walk({k: v for k, v in hdr.items() if k != "format"})
+    return "\n".join(out)
+
+
+def untaggable(text):
+    """Text that cannot carry tags: the header, headings, bold spans, and chart alt text (either quote style)."""
+    rest = re.sub(r"\A---\n.*?\n---\n", "", text, flags=re.S)
+    bold = re.findall(r"\*\*(.+?)\*\*", rest, re.S)
+    heads = re.findall(r"^#+ (.*)$", rest, re.M)
+    alts = [m.group(2) for m in ALT.finditer(rest)]
+    clean = lambda t: re.sub(r"<!--.*?-->", "", t)
+    return [("header", header_text(text))] + [("bold", clean(b)) for b in bold] + [("heading", h) for h in heads] + [("alt", a) for a in alts]
+
+
+def check_number_words(text, f, d):
+    problems = []
+    for where, chunk in untaggable(text):
+        if where in ("alt", "header") and re.search(r"\d", chunk):
+            problems.append(f"{where} holds a numeral (it cannot carry a tag): {chunk[:70]!r}")
+        covered = set()
+        for pat, what, ok in NUMBER_PHRASES:
+            for m in re.finditer(pat, chunk, re.I):
+                covered |= set(range(*m.span()))
+                if not ok(m, f, d):
+                    problems.append(f"{where}: {m.group(0)!r} does not match the facts ({what})")
+        for m in re.finditer(NUMBER_WORD, chunk, re.I):
+            if m.start() not in covered:
+                problems.append(f"{where}: number word {m.group(0)!r} is not checked against a fact: {chunk[:70]!r}")
+    return problems
+
+
+# A count that readers repeat without its population: wherever it is printed, its scope must follow within SCOPE_WINDOW
+# characters of plain text (wave-4 and wave-5 readers dropped "delivered single-seller" from the 11,635).
+SCOPED_FACTS = {"c_low_star_all": "delivered single-seller orders"}
+SCOPE_WINDOW = 60
+
+
+def check_scope(text):
+    problems = []
+    for name, scope in SCOPED_FACTS.items():
+        for m in re.finditer(rf"<!--f:{re.escape(name)}-->", text):
+            after = re.sub(r"<!--.*?-->", "", text[m.end():m.end() + 400])[:SCOPE_WINDOW]
+            if scope not in after:
+                problems.append(f"f:{name} is printed without its scope '{scope}' right after it: {after!r}")
+    return problems
 
 
 def tags_in(chunk):
@@ -69,8 +182,9 @@ def check_shape(text):
     for i, (lead, want) in enumerate(zip(items, LEVER_DRIVERS), 1):
         if not set(want) <= tags_in(lead):
             problems.append(f"lever {i}: its bold lead does not name its driver {sorted(set(want) - tags_in(lead))}")
-    if re.search(r"\d", re.match(r"\A---\n(.*?)\n---\n", text, re.S).group(1).split("format:")[0]):
-        problems.append("title or subtitle holds a number (the header cannot carry tags)")
+    for i, (lead, hedge) in enumerate(zip(items, LEVER_HEDGES), 1):
+        if hedge and hedge not in lead.lower():
+            problems.append(f"lever {i}: its bold lead does not say it rests on a {hedge} pass")
     for m in ("<!-- KPI_TREE_TOP -->", "<!-- KPI_TREE_FULL -->"):
         if m not in text:
             problems.append(f"missing {m}")
@@ -91,9 +205,11 @@ def check_shape(text):
     return problems
 
 
-def check(text, fx=None):
-    n, problems = check_memo(body(text), fx or facts(), STORY_DESIGN)
-    return n, problems + check_shape(text)
+def check(text, fx=None, design_numbers=None):
+    from memo_check import DESIGN
+    fx, d = fx or facts(), design_numbers or design()
+    n, problems = check_memo(body(text), fx, d)
+    return n, problems + check_shape(text) + check_number_words(text, fx, {**DESIGN, **d}) + check_scope(text)
 
 
 def main():

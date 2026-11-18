@@ -727,12 +727,32 @@
  },
  {
   "part": "C",
+  "metric": "story late_first_last12",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 5586/None raw 5586/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
   "metric": "story late_orders",
   "mart": null,
   "independent": null,
   "first_pass": null,
   "tolerance": 0,
   "note": "story 6518/94931 raw 6518/94931",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_sales_last12",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 998816.62/11619769.11 raw 998816.62/11619769.11",
   "verdict": "VERIFIED"
  },
  {

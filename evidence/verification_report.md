@@ -68,7 +68,9 @@
 | C | story late_by_state:SE | story 51/329 raw 51/329 | - | - | **VERIFIED** |
 | C | story late_by_state:SP | story 1814/39834 raw 1814/39834 | - | - | **VERIFIED** |
 | C | story late_by_state:TO | story 27/267 raw 27/267 | - | - | **VERIFIED** |
+| C | story late_first_last12 | story 5586/None raw 5586/None | - | - | **VERIFIED** |
 | C | story late_orders | story 6518/94931 raw 6518/94931 | - | - | **VERIFIED** |
+| C | story late_sales_last12 | story 998816.62/11619769.11 raw 998816.62/11619769.11 | - | - | **VERIFIED** |
 | C | story late_sales_window | story 1148081.0/None raw 1148081.0/None | - | - | **VERIFIED** |
 
 Part A rules: {'multi_seller_late_rule': 'trust_order_date', 'repeat_same_day_rule': 'second_order_only'}. Part B rules: {'analysis_window_start': '2017-01-01', 'analysis_window_end': '2018-08-31', 'multi_seller_late_rule': 'exclude_multi_seller', 'review_before_delivery_compare': 'calendar_day', 'review_pick_rule': 'latest_answer', 'repeat_same_day_rule': 'any_later_order_24h'}.
