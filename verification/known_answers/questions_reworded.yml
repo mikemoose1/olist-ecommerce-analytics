@@ -1,0 +1,22 @@
+# Same ten business questions as questions.yml, in different words. Same ids.
+# Answer each with one DuckDB SQL query that returns a single value (one row, one column).
+- id: q01
+  question: Of the orders that Olist's headline lateness figure is judged on, what share arrived on a later calendar day than promised? Give a percentage to 2 decimals.
+- id: q02
+  question: How large is the group of orders that the headline lateness percentage is calculated over (its denominator)?
+- id: q03
+  question: Using Olist's headline repeat-buying measure, what percentage of buyers made another purchase within 90 days of their first one? Give it to 2 decimals.
+- id: q04
+  question: What is the mean star rating (1 to 5) across the orders that Olist's review-score metric covers? Give it to 3 decimals.
+- id: q05
+  question: Using the standard lateness definition, what percentage of orders bought in March 2018 arrived after the promised day? Give it to 2 decimals.
+- id: q06
+  question: How many different real people have placed at least one order of any status?
+- id: q07
+  question: For how many orders, of any status, do the items come from two or more different sellers?
+- id: q08
+  question: Look only at orders that count toward the late-delivery rate, arrived late, and have a review. What is their mean star rating, to 3 decimals?
+- id: q09
+  question: Considering only states with at least 1,000 orders in the lateness population, which two-letter state code has the largest share of late deliveries?
+- id: q10
+  question: Across every order Olist has recorded, what percentage was canceled? Give it to 2 decimals.
