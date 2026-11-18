@@ -771,7 +771,17 @@
     "both": 74.998575,
     "before_group": 78.350781
    },
-   "before_lower_every_day": true
+   "before_lower_every_day": true,
+   "smaller_group_by_day": {
+    "1": 6,
+    "2": 32,
+    "3": 148,
+    "4": 74,
+    "5": 57,
+    "6": 24,
+    "7": 8,
+    "8": 1
+   }
   }
  },
  "memo_facts": {
@@ -868,6 +878,10 @@
   "survey_gap_share_lo": "70",
   "survey_gap_share_hi": "78",
   "matched_pct_all_late": "85.2",
+  "survey_thin_min_n": "1",
+  "survey_thin_days": "3",
+  "survey_days_n": "8",
+  "late_unreviewed_n": "152",
   "survey_same_days_min": "1",
   "survey_same_days_max": "8",
   "low_star_matched_n": "5,553",

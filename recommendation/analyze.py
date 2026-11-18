@@ -246,6 +246,9 @@ shares = {w: float(100 * (gap_day * wt).sum() / wt.sum() / raw_gap) for w, wt in
           (("after_group", by_day["size"][False]), ("both", w_day), ("before_group", by_day["size"][True]))}
 R["survey_timing"]["same_days_late"]["share_by_weighting_pct"] = shares
 R["survey_timing"]["same_days_late"]["before_lower_every_day"] = bool((gap_day > 0).all())
+# thin cells: per day, the smaller of the two groups; the memo says how few orders some days rest on
+thin = by_day["size"].min(axis=1)
+R["survey_timing"]["same_days_late"]["smaller_group_by_day"] = {int(d): int(n) for d, n in thin.items()}
 # the gap is the difference of the two figures as printed, so the memo's 2.38, 3.53 and gap always add up
 R["survey_timing"]["within_1_3_days_late"]["gap"] = (round(R["survey_timing"]["within_1_3_days_late"]["stars_sent_after"], 2)
                                                       - round(R["survey_timing"]["within_1_3_days_late"]["stars_sent_before"], 2))
@@ -257,6 +260,7 @@ R["clusters"]["rj_episode"] = {"months": SPIKE, "rj_spike_pct": float(100 * rj[r
                                "rest_other_pct": float(100 * xr[~xr.month.isin(SPIKE)].late.mean())}
 
 # ---------------------------------------------------------------- memo facts: the only numbers MEMO.md may print
+THIN_CELL = 10   # a day where either group has fewer orders than this is called thin in the memo (memo_check DESIGN thin_cell)
 f1 = lambda x: f"{x:.1f}"; f2 = lambda x: f"{x:.2f}"; n0 = lambda x: f"{x:,.0f}"
 def rs(x):  # R$ rounded to the nearest 500: the middle estimate moves by about R$100 under small changes in how matches are built
     return f"R${round(x / 500) * 500:,.0f}"
@@ -326,6 +330,10 @@ facts.update({"survey_before_pct": f1(ST["sent_before_delivery_pct"]), "stars_se
               "survey_gap_share_lo": f"{min(ST['same_days_late']['share_by_weighting_pct'].values()):.0f}",
               "survey_gap_share_hi": f"{max(ST['same_days_late']['share_by_weighting_pct'].values()):.0f}",
               "matched_pct_all_late": f1(100 * S["all"]["matched"]["late_matched"] / total_late),
+              "survey_thin_min_n": str(min(ST["same_days_late"]["smaller_group_by_day"].values())),
+              "survey_thin_days": str(sum(n < THIN_CELL for n in ST["same_days_late"]["smaller_group_by_day"].values())),
+              "survey_days_n": str(len(ST["same_days_late"]["smaller_group_by_day"])),
+              "late_unreviewed_n": n0(total_late - S["all"]["matched"]["late_total"]),
               "survey_same_days_min": str(ST["same_days_late"]["days"][0]), "survey_same_days_max": str(ST["same_days_late"]["days"][1]),
               "low_star_matched_n": n0(R["low_star"]["all"]["matched"]["late_matched"]),
               "low_star_matched_pct": f1(100 * R["low_star"]["all"]["matched"]["late_matched"] / R["low_star"]["all"]["matched"]["late_total"]),

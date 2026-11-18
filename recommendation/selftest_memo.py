@@ -39,6 +39,11 @@ CASES = [  # (name, old text, new text, text the problem list must contain)
     ("the analysis window's first month edited (2017-01 -> 2016-12)", "bought 2017-01", "bought 2016-12", "2016-12"),
     ("the held-out window's first month edited (2018-05 -> 2018-04)", "held in 2018-05", "held in 2018-04", "2018-04"),
     ("the spike window's first month edited (2017-11 -> 2017-10)", "late from 2017-11", "late from 2017-10", "2017-10"),
+    # a comparative the word lists do not know, on a decrease, is flagged; the thin-cell and unreviewed notes are tied
+    ("an unknown comparative on a decrease (stars lower -> stars steeper)", "1.96<!--f:abs:stars_matched--> stars lower", "1.96<!--f:abs:stars_matched--> stars steeper", "steeper"),
+    ("an unknown comparative on a decrease (stars lower -> stars sharper)", "1.96<!--f:abs:stars_matched--> stars lower", "1.96<!--f:abs:stars_matched--> stars sharper", "sharper"),
+    ("the thin-cell count edited (3 -> 1 of 8 days)", "3<!--f:survey_thin_days--> of those", "1<!--f:survey_thin_days--> of those", "survey_thin_days"),
+    ("the unreviewed late-order count edited (152 -> 52)", "152<!--f:late_unreviewed_n-->", "52<!--f:late_unreviewed_n-->", "late_unreviewed_n"),
 ]
 
 
