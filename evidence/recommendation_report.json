@@ -267,37 +267,43 @@
    "bucket": "on time",
    "orders": 87936,
    "avg_stars": 4.311272,
-   "low_star_pct": 8.714292
+   "low_star_pct": 8.714292,
+   "survey_before_pct": 0.244496
   },
   {
    "bucket": "1 day",
    "orders": 817,
    "avg_stars": 3.736842,
-   "low_star_pct": 19.461444
+   "low_star_pct": 19.461444,
+   "survey_before_pct": 0.734394
   },
   {
    "bucket": "2-3 days",
    "orders": 1028,
    "avg_stars": 2.94358,
-   "low_star_pct": 42.023346
+   "low_star_pct": 42.023346,
+   "survey_before_pct": 36.673152
   },
   {
    "bucket": "4-7 days",
    "orders": 1742,
    "avg_stars": 2.104478,
-   "low_star_pct": 67.623421
+   "low_star_pct": 67.623421,
+   "survey_before_pct": 90.642939
   },
   {
    "bucket": "8-14 days",
    "orders": 1446,
    "avg_stars": 1.670816,
-   "low_star_pct": 80.152144
+   "low_star_pct": 80.152144,
+   "survey_before_pct": 99.930844
   },
   {
    "bucket": "15+ days",
    "orders": 1333,
    "avg_stars": 1.724681,
-   "low_star_pct": 78.31958
+   "low_star_pct": 78.31958,
+   "survey_before_pct": 100.0
   }
  ],
  "money": {
@@ -751,6 +757,15 @@
    "stars_sent_before": 2.37859,
    "stars_sent_after": 3.534884,
    "gap": 1.15
+  },
+  "same_days_late": {
+   "days": [
+    1,
+    8
+   ],
+   "gap": 1.266592,
+   "raw_gap": 1.688821,
+   "share_of_raw_pct": 74.998575
   }
  },
  "memo_facts": {
@@ -841,6 +856,14 @@
   "survey_near_before": "2.38",
   "survey_near_after": "3.53",
   "survey_near_gap": "1.15",
+  "survey_gap_raw": "1.69",
+  "survey_gap_same_days": "1.27",
+  "survey_gap_same_days_pct": "75",
+  "survey_same_days_min": "1",
+  "survey_same_days_max": "8",
+  "low_star_matched_n": "5,553",
+  "low_star_matched_pct": "87.2",
+  "late_reviewed_n": "6,366",
   "rj_spike": "26.6",
   "rj_other": "4.4",
   "rest_spike": "9.8",
@@ -849,11 +872,17 @@
   "month_2018-02": "14.2",
   "month_2017-11": "12.5",
   "days_on time": "4.31",
+  "before_pct_on time": "0.2",
   "days_1 day": "3.74",
+  "before_pct_1 day": "0.7",
   "days_2-3 days": "2.94",
+  "before_pct_2-3 days": "36.7",
   "days_4-7 days": "2.10",
+  "before_pct_4-7 days": "90.6",
   "days_8-14 days": "1.67",
+  "before_pct_8-14 days": "99.9",
   "days_15+ days": "1.72",
+  "before_pct_15+ days": "100.0",
   "state_AL": "21.6",
   "state_MA": "17.7",
   "state_SE": "15.5",

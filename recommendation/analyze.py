@@ -110,7 +110,8 @@ bins = [-1e9, 0, 1, 3, 7, 14, 1e9]; labels = ["on time", "1 day", "2-3 days", "4
 rv = orders[orders.review_score.notna()].copy()
 rv["days_late_bucket"] = pd.cut(rv.days_past_promise.clip(lower=0).where(rv.late == 1, 0), bins, labels=labels)
 R["stars_by_days_late"] = [{"bucket": b, "orders": int(len(g)), "avg_stars": float(g.review_score.mean()),
-                            "low_star_pct": float(100 * g.low_star.mean())}
+                            "low_star_pct": float(100 * g.low_star.mean()),
+                            "survey_before_pct": float(100 * g.survey_before_delivery.astype(float).mean())}
                            for b, g in rv.groupby("days_late_bucket", observed=True)]
 
 # ---------------------------------------------------------------- money
@@ -231,6 +232,14 @@ near = lr[lr.days_past_promise.between(1, 3)]
 R["survey_timing"]["within_1_3_days_late"] = {
     "stars_sent_before": float(near[near.survey_before_delivery == True].review_score.mean()),
     "stars_sent_after": float(near[near.survey_before_delivery == False].review_score.mean())}
+# the same gap compared only between orders equally late: at each whole days-late value where both groups exist, after minus
+# before, weighted by the orders at that value
+by_day = lr.groupby(["days_past_promise", "survey_before_delivery"]).review_score.agg(["mean", "size"]).unstack("survey_before_delivery").dropna()
+w_day = by_day["size"][True] + by_day["size"][False]
+same = float(((by_day["mean"][False] - by_day["mean"][True]) * w_day).sum() / w_day.sum())
+raw_gap = R["survey_timing"]["stars_late_sent_after"] - R["survey_timing"]["stars_late_sent_before"]
+R["survey_timing"]["same_days_late"] = {"days": [int(by_day.index.min()), int(by_day.index.max())], "gap": same, "raw_gap": raw_gap,
+                                        "share_of_raw_pct": 100 * same / raw_gap}
 # the gap is the difference of the two figures as printed, so the memo's 2.38, 3.53 and gap always add up
 R["survey_timing"]["within_1_3_days_late"]["gap"] = (round(R["survey_timing"]["within_1_3_days_late"]["stars_sent_after"], 2)
                                                       - round(R["survey_timing"]["within_1_3_days_late"]["stars_sent_before"], 2))
@@ -306,12 +315,19 @@ facts.update({"survey_before_pct": f1(ST["sent_before_delivery_pct"]), "stars_se
               "survey_near_before": f2(ST["within_1_3_days_late"]["stars_sent_before"]),
               "survey_near_after": f2(ST["within_1_3_days_late"]["stars_sent_after"]),
               "survey_near_gap": f2(ST["within_1_3_days_late"]["gap"]),
+              "survey_gap_raw": f2(ST["same_days_late"]["raw_gap"]), "survey_gap_same_days": f2(ST["same_days_late"]["gap"]),
+              "survey_gap_same_days_pct": f"{round(ST['same_days_late']['share_of_raw_pct'] / 5) * 5:.0f}",   # "about 75%"
+              "survey_same_days_min": str(ST["same_days_late"]["days"][0]), "survey_same_days_max": str(ST["same_days_late"]["days"][1]),
+              "low_star_matched_n": n0(R["low_star"]["all"]["matched"]["late_matched"]),
+              "low_star_matched_pct": f1(100 * R["low_star"]["all"]["matched"]["late_matched"] / R["low_star"]["all"]["matched"]["late_total"]),
+              "late_reviewed_n": n0(R["money"]["low_star_reviews"]["late_reviewed"]),
               "rj_spike": f1(RJE["rj_spike_pct"]), "rj_other": f1(RJE["rj_other_pct"]),
               "rest_spike": f1(RJE["rest_spike_pct"]), "rest_other": f1(RJE["rest_other_pct"])})
 for r in R["clusters"]["months_by_late_count"]:
     facts[f"month_{r['month']}"] = f1(r["late_rate_pct"])
 for r in R["stars_by_days_late"]:
     facts[f"days_{r['bucket']}"] = f2(r["avg_stars"])
+    facts[f"before_pct_{r['bucket']}"] = f1(r["survey_before_pct"])
 for r in R["clusters"]["states_by_rate"][:5]:
     facts[f"state_{r['ship_to_state']}"] = f1(r["late_rate_pct"])
 R["memo_facts"] = facts
