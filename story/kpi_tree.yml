@@ -1,5 +1,5 @@
 # KPI tree for the data story. Reader: an Olist operations manager deciding where to reduce late deliveries.
-# Grain of every measured node: one judged order = a single-seller order bought 2017-01..2018-08 and delivered
+# Grain (unless a node says otherwise): one judged order = a single-seller order bought 2017-01..2018-08 and delivered
 # (the late-rate population, ontology metrics.late_rate). `judged` below is that population, built from marts.fct_orders.
 #
 # edge (how the node relates to its parent):
@@ -17,11 +17,13 @@ judged_sql: >
     and purchase_date between date '2017-01-01' and date '2018-08-31'
 nodes:
   - id: cost
+    grain: judged order
     label: Cost of late delivery to Olist
     counts: two parts measured separately, ratings at risk and sales that went through a late delivery (plus a repeat-revenue part the data cannot tell from zero)
     claims: [metrics.late_rate, metrics.late_review_gap_raw]
     answerable: "yes"
   - id: low_star_excess
+    grain: reviewed judged order
     parent: cost
     edge: component
     label: Extra 1-2 star reviews linked to lateness
@@ -33,8 +35,9 @@ nodes:
     threshold: above 10% of all 1-2 star reviews, lateness is a top ratings problem worth a funded test
     models: [marts.fct_orders, marts.fct_reviews]
     claims: [terms.chosen_review, terms.order_review_score, metrics.late_review_gap_raw]
-    answerable: "yes"
+    answerable: "association only (rests on the matched gap)"
   - id: late_reviewed
+    grain: judged order
     parent: low_star_excess
     edge: product
     label: Late orders with a review
@@ -45,6 +48,7 @@ nodes:
     claims: [terms.late, terms.chosen_review]
     answerable: "yes"
   - id: excess_low_star_share
+    grain: reviewed judged order, compared within matched cells (state x category x freight band x month)
     parent: low_star_excess
     edge: product
     label: Matched gap in 1-2 star share (late minus look-alike)
@@ -58,6 +62,7 @@ nodes:
     answerable: "association only"
     association: true
   - id: star_penalty
+    grain: reviewed judged order, within matched cells
     parent: excess_low_star_share
     edge: association
     label: Star penalty of a late order (matched)
@@ -70,17 +75,19 @@ nodes:
     claims: [metrics.review_score, metrics.late_review_gap_raw]
     answerable: "association only"
   - id: survey_before_share
+    grain: reviewed judged late order
     parent: star_penalty
     edge: association
     label: Late orders surveyed before the parcel arrived
     unit: share of reviewed late orders
     sql: select avg(review_before_delivery::int) from judged where is_late and review_score is not null
     counts: reviewed late orders whose survey went out on an earlier day than the delivery
-    why_moves: Olist sends the survey on the promised date when the parcel has not arrived
+    why_moves: the survey usually goes out around the promised date, so a late parcel is often still on the way (ontology terms.survey_sent_before_delivery)
     models: [marts.fct_orders]
     claims: [terms.survey_sent_before_delivery]
     answerable: "yes"
   - id: comment_not_arrived_share
+    grain: judged late order with a comment
     parent: star_penalty
     edge: association
     label: Late-order comments about delay or non-arrival
@@ -195,6 +202,7 @@ nodes:
     claims: [terms.multi_seller_order]
     answerable: "yes"
   - id: lost_repeat_sales
+    grain: customer's first judged order
     parent: cost
     edge: association
     label: Lost repeat sales per year
