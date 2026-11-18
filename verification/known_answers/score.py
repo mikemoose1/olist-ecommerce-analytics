@@ -354,8 +354,8 @@ def main():
     a = ap.parse_args()
     qfile = a.questions or os.path.join(
         HERE, "questions_reworded.yml" if "reworded" in os.path.basename(a.answers) else "questions.yml")
-    answers = yaml.safe_load(open(a.answers)) or {}
-    questions = yaml.safe_load(open(qfile))
+    answers = key_file.load_yaml(open(a.answers).read()) or {}     # an id given twice is refused, not last-wins
+    questions = key_file.load_yaml(open(qfile).read())
     keys = key_queries()
     ids = [q["id"] for q in questions]
     if len(ids) != len(set(ids)):

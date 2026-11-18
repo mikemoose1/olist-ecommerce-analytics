@@ -129,6 +129,13 @@ def main():
     print(f"{'PASS' if good else 'FAIL'}  a malformed key header ('--q25') stops the scorer: {(p.stdout + p.stderr).strip().splitlines()[-1:]}")
     ok &= good
     shutil.rmtree(sb)
+    # an answer file that gives one id twice (a plain loader keeps the last) is refused
+    dup = os.path.join(d, "dup.yml")
+    open(dup, "w").write("q05: \"select 1\"\n" + yaml.safe_dump(key, width=100000))
+    p2 = subprocess.run([sys.executable, SCORE, dup], capture_output=True, text=True)
+    good = p2.returncode != 0 and "duplicate key" in p2.stdout + p2.stderr
+    print(f"{'PASS' if good else 'FAIL'}  an answer file with q05 twice is refused: {(p2.stdout + p2.stderr).strip().splitlines()[-1:]}")
+    ok &= good
     for name, answers in (("key.yml", key), ("key_reworded.yml", key), ("variants.yml", variants), ("bad.yml", bad)):
         path = os.path.join(d, name)
         yaml.safe_dump(answers, open(path, "w"), width=100000)

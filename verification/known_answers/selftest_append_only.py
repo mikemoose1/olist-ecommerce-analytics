@@ -56,6 +56,11 @@ CASES = [
     ("a decoy q05 is placed before the real q05", lambda d: edit(d, "questions.yml", lambda t: t.replace("- id: q05\n", "- id: q05\n  question: decoy wording\n- id: q05\n", 1)), ["q05", "appears twice"], []),
     # M2: --against fails closed
     ("--against a rev that does not resolve", lambda d: None, ["does not resolve"], ["--against", "nosuchrev"]),
+    # an empty --against (an unset CI variable) used to skip the history comparison
+    ("--against an empty rev fails closed", lambda d: None, ["does not resolve"], ["--against", ""]),
+    # 4b: a duplicate YAML key inside one question (the last one wins in a plain loader, hiding the first)
+    ("a question entry with two 'question:' keys", lambda d: edit(d, "questions.yml", lambda t: t.replace("- id: q05\n", "- id: q05\n  question: decoy wording\n", 1)), ["duplicate key", "question"], []),
+    ("a reworded entry with two 'forbidden_tables:' keys", lambda d: edit(d, "questions_reworded.yml", lambda t: t.replace('  forbidden_tables: ["metrics.*"]\n', '  forbidden_tables: ["metrics.*"]\n  forbidden_tables: []\n', 1)), ["duplicate key", "forbidden_tables"], []),
 ]
 
 
