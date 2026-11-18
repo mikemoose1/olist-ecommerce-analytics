@@ -90,8 +90,9 @@ def check_meaning(raw_text):
     return problems
 
 
-def check_memo(raw_text, facts):
-    """Returns (numbers checked, problems)."""
+def check_memo(raw_text, facts, design=None):
+    """Returns (numbers checked, problems). design adds design constants to DESIGN (story/check_story.py uses it)."""
+    DESIGN = {**globals()["DESIGN"], **(design or {})}
     blank = lambda m: " " * len(m.group(0))
     masked = re.sub(r"<!--.*?-->|\b\d{4}-\d{2}\b|^\s*\d+\.(?=\s)", blank, raw_text, flags=re.S | re.M)   # tags, dates (YYYY-MM), list numbering
     problems, claimed, n = [], set(), 0

@@ -88,7 +88,38 @@ def build():
     top3 = sorted(tables["late_by_month"], key=lambda r: -r["late"])[:3]
     facts["top3_months"] = [r["segment"] for r in top3]
     facts["top3_months_share_of_late"] = round(sum(r["late"] for r in top3) / late, 6)
+    facts["captions"] = captions(facts, tables, rep)
     return tables, facts
+
+
+def captions(f, t, rep):
+    """Numbers as the story prints them. story/check_story.py ties each printed number to one of these names
+    (or to a recommendation/analyze.py memo fact)."""
+    pct = lambda x: f"{100 * x:.1f}"
+    seg = lambda table, k: next(r for r in t[table] if r["segment"] == k)
+    nne, rest = seg("late_by_region", "North and northeast"), seg("late_by_region", "Rest of Brazil")
+    mar = seg("late_by_month", "2018-03")
+    total_sales = rep["money"]["total_gmv_window"]
+    lab = f["label_eval"]
+    return {
+        "c_late_rate_lo": f"{100 * f['late_rate_ci'][0]:.2f}", "c_late_rate_hi": f"{100 * f['late_rate_ci'][1]:.2f}",
+        "c_low_star_all": f"{f['low_star_all']:,}",
+        "c_late_sales_window": f"R${f['late_sales_window'] / 1e6:.2f} million",
+        "c_total_sales_year": f"R${total_sales * 12 / WINDOW_MONTHS / 1e6:.1f} million",
+        "c_late_sales_share": pct(f["late_sales_window"] / total_sales),
+        "c_nne_lo": pct(nne["ci_low"]), "c_nne_hi": pct(nne["ci_high"]), "c_rest_rate": pct(rest["late_rate"]),
+        "c_mar_lo": pct(mar["ci_low"]), "c_mar_hi": pct(mar["ci_high"]),
+        "c_handoff_late_n": f"{seg('late_by_handoff', 'Handed over after ship-by')['late']:,}",
+        "c_handoff_late_lo": pct(f["handoff_late_rate_ci"][0]), "c_handoff_late_hi": pct(f["handoff_late_rate_ci"][1]),
+        "c_handoff_ratio": f"{f['handoff_late_rate'] / f['handoff_ok_rate']:.1f}",
+        "c_comment_pct": pct(f["comment_delay_share"]),
+        "c_comment_lo": pct(f["comment_delay_share_ci"][0]), "c_comment_hi": pct(f["comment_delay_share_ci"][1]),
+        "c_comments_n": f"{f['comments_n']:,}",
+        "c_rule_labelled_n": str(sum(e["n"] for e in lab.values())), "c_rule_holdout_n": str(lab["holdout"]["n"]),
+        "c_rule_false_matches": str(sum(e["fp"] for e in lab.values())),
+        "c_rule_holdout_missed": f"{100 * (1 - lab['holdout']['recall']):.0f}",
+        "c_survey_lo": pct(f["survey_before_share_ci"][0]), "c_survey_hi": pct(f["survey_before_share_ci"][1]),
+    }
 
 
 def render(tables, facts):

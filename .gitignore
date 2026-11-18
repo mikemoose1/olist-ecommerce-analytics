@@ -11,3 +11,4 @@ __pycache__/
 *.whl
 .user.yml
 build/
+story/build/

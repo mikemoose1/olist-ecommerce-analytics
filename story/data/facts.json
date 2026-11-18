@@ -82,5 +82,32 @@
   "2018-02",
   "2017-11"
  ],
- "top3_months_share_of_late": 0.483431
+ "top3_months_share_of_late": 0.483431,
+ "captions": {
+  "c_late_rate_lo": "6.71",
+  "c_late_rate_hi": "7.03",
+  "c_low_star_all": "11,635",
+  "c_late_sales_window": "R$1.15 million",
+  "c_total_sales_year": "R$9.0 million",
+  "c_late_sales_share": "7.6",
+  "c_nne_lo": "11.6",
+  "c_nne_hi": "12.8",
+  "c_rest_rate": "6.2",
+  "c_mar_lo": "18.2",
+  "c_mar_hi": "20.1",
+  "c_handoff_late_n": "1,809",
+  "c_handoff_late_lo": "20.4",
+  "c_handoff_late_hi": "22.1",
+  "c_handoff_ratio": "3.9",
+  "c_comment_pct": "66.7",
+  "c_comment_lo": "65.2",
+  "c_comment_hi": "68.2",
+  "c_comments_n": "3,747",
+  "c_rule_labelled_n": "70",
+  "c_rule_holdout_n": "30",
+  "c_rule_false_matches": "0",
+  "c_rule_holdout_missed": "23",
+  "c_survey_lo": "73.4",
+  "c_survey_hi": "75.5"
+ }
 }
