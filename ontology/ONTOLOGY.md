@@ -97,7 +97,7 @@ Known gaps in the links, each counted and checked:
 - 775 orders have no items and 1 order has no payment row.
 - 768 orders have no survey response, and 547 have more than one. Decision C4 picks the latest-answered one, so each order has at most one chosen review.
 - 278 orders and 7 sellers sit in a zip prefix that Olist's geolocation file does not have. They are kept, with no map point.
-- The repeat cohort has 77,560 people, one row each. Of the 94,983 people with a real purchase, 17,423 are left out because their first purchase is less than 90 days before the newest purchase in the data.
+- The repeat cohort has 77,560 people, one row each. Another 17,423 of the 94,983 people with a real purchase are left out. Their first purchase falls in the last 90 days of the data, so they had no full 90 days to come back.
 - 789 survey responses (`review_id`) are attached to more than one order, so a review's key is the response plus the order.
 
 ## The stages of an order
@@ -183,7 +183,7 @@ Rebuild the chart: `node --experimental-strip-types <path-to>/statechart.ts onto
 
 ## Column facts
 
-`ontology.yml` has a `columns:` section with the data type, the null count and the row rules of the columns the cards depend on (for example `purchased_at` is a TIMESTAMP and never null; `n_parcels` is 0, not null, for an order with no items; `review_score` is null for the 768 orders with no response). It also has a `facts:` section of cross-table counts, such as the 17,423 people left out of the repeat cohort. `check.py` proves every line of both against the warehouse.
+`ontology.yml` has a `columns:` section. For each column the cards depend on, it gives the data type, the exact null count and the row rules. For example, `purchased_at` is a TIMESTAMP and never null. `n_parcels` is 0, not null, on an order with no items. `review_score` is null on the 768 orders with no response. It also has a `facts:` section of counts that span tables, such as the 17,423 people left out of the repeat cohort. `check.py` proves every line of both against the warehouse.
 
 ## Glossary
 
@@ -193,20 +193,20 @@ Every term below has a full card in ontology.yml with its source column, grain, 
 |---|---|---|
 | person | A real buyer (`customer_unique_id`). "Customer" in every metric means person. | `customer_id`, which is one per order |
 | qualifying order | An order that counts as a real purchase. Not canceled or unavailable, with at least one item. | canceled, unavailable, or empty orders |
-| purchase time | The exact second the order was placed (`purchased_at`, a TIMESTAMP, never null). `purchase_date` is only its day. The 24-hour rule in the repeat rate uses `purchased_at`. | `purchase_date`, which has no time |
-| qualifying order sequence | `customer_qualifying_order_seq`: 1 for the person's first qualifying order, 2 for the next. Null for a non-qualifying order. | a canceled order (null) |
-| repeat return | A later qualifying order 24 hours to 90 days after the first one's `purchased_at` (both ends included). | an order 3 hours later, a canceled order, day 91 |
-| repeat cohort member | A person whose first qualifying order is at least 90 days older than the newest qualifying purchase (2018-09-03 09:06:57), so the cutoff is 2018-06-05 09:06:57. They are the rows of `metrics.metric_repeat_rate_90d_people`. | people with only recent first purchases, people with only canceled orders |
-| repeat slice | Slice the repeat rate by first-order month (month of `first_order_date`) or first-order state (`ship_to_state` of the person's `seq = 1` order, joined on `customer_unique_id`). | `dim_customer.state` (latest address), month of the second order |
-| placed an order | A person with at least one order of ANY status: every row of `dim_customer`, 96,096 people. | counting only qualifying orders (94,983 people; the other 1,113 only had canceled, unavailable or empty orders) |
-| canceled order | `order_status = 'canceled'`: 625 orders, including the 6 that still carry a delivery date (those are also `status_date_conflict`). The denominator for a share is every order. | status `unavailable`, or "not delivered" in general |
-| parcel count | `n_parcels`: 0 for an order with no items (775 orders), never null; 1 normal; 2 or more multi-seller. | treating it as null for empty orders |
-| order review score | `fct_orders.review_score`: stars 1-5 of the chosen response; null for the 768 orders with no response. | an earlier answer on the same order |
+| purchase time | The second the order was placed. The column is `purchased_at`, a TIMESTAMP that is never null. `purchase_date` is only its day. The 24-hour rule in the repeat rate uses `purchased_at`. | `purchase_date`, which has no time |
+| qualifying order sequence | `customer_qualifying_order_seq` is 1 on the person's first qualifying order, 2 on the next, and null on a non-qualifying order. | a canceled order (null) |
+| repeat return | A later qualifying order whose `purchased_at` is at least 24 hours and at most 90 days after the first one's. Both ends count. | an order 3 hours later, a canceled order, day 91 |
+| repeat cohort member | A person whose first qualifying order is at least 90 days older than the newest qualifying purchase, 2018-09-03 09:06:57. The cutoff is therefore 2018-06-05 09:06:57. The members are the rows of `metrics.metric_repeat_rate_90d_people`. | people with only recent first purchases, people with only canceled orders |
+| repeat slice | The first-order month is the month of `first_order_date`. The first-order state is the `ship_to_state` of the person's `seq = 1` order, joined on `customer_unique_id`. | `dim_customer.state`, which is the latest address, and the month of the second order |
+| placed an order | A person with at least one order of any status. That is every row of `dim_customer`, 96,096 people. | counting only qualifying orders. That gives 94,983 people and drops 1,113 whose orders were all canceled, unavailable or empty |
+| canceled order | An order with `order_status = 'canceled'`. There are 625, including 6 that still carry a delivery date and also show `status_date_conflict`. The denominator for a share is every order. | status `unavailable`, or "not delivered" in general |
+| parcel count | `n_parcels` is 0 on an order with no items (775 orders) and never null. It is 1 on a normal order and 2 or more on a multi-seller order. | treating it as null for empty orders |
+| order review score | `fct_orders.review_score` holds the stars, 1 to 5, of the chosen response. It is null on the 768 orders with no response. | an earlier answer on the same order |
 | promised date | The delivery date promised at purchase. A date with no time. | |
 | delivered | Status is delivered and a delivery date exists (96,470 orders). Use `delivery_state`, not "has a delivery date", which also catches 6 canceled orders. | delivered status without a date, shipped orders |
 | late | Delivered on a later calendar day than promised. | same-day delivery at 23:00, multi-seller orders, undelivered orders |
 | multi-seller order | An order with items from 2 or more sellers (1,278 orders). | one seller shipping 3 items |
-| analysis window | Full months 2017-01 through 2018-08. `in_analysis_window` is true/false and never null (349 orders are outside). | partial edge months |
+| analysis window | Full months 2017-01 through 2018-08. `in_analysis_window` is true or false and never null. 349 orders are outside. | partial edge months |
 | survey sent | The day Olist emailed the survey (`review_creation_date`). | the day the customer answered |
 | chosen review | The one response used per order: the latest answered. | earlier answers on the same order |
 | survey sent before delivery | The survey went out on an earlier day than the delivery (column `review_before_delivery`). | same-day survey; responses on undelivered orders (null) |

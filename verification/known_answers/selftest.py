@@ -2,8 +2,9 @@
 """Prove the known-answer harness before trusting a score.
 
 1. The hand-written key, fed back as answers (both wordings), must score full marks.
-2. A deliberately bad answer set must fail every way score.py is meant to catch:
-   wrong value, missing answer, abstain, a copied printed number, a forbidden table, a null-behavior mistake.
+2. Correct answers written other ways (quoted names, catalog prefix, a comment naming a forbidden table) must still score full marks.
+3. A deliberately bad answer set must fail every way score.py is meant to catch:
+   wrong value, missing answer, abstain, a copied printed number, a forbidden table (also quoted or catalog-qualified), a printed number hidden behind a comment, a null-behavior mistake.
 Usage: python verification/known_answers/selftest.py     (after `make build`)   Exit 1 if either half misbehaves.
 """
 import os, re, subprocess, sys, tempfile
@@ -31,12 +32,19 @@ def main():
         "q11": "select value_pct from metrics.metrics_headline where metric_name = 'repeat_rate_90d'",  # forbidden table
         "q16": "select count(*) from marts.fct_orders where order_status = 'canceled' and delivery_state = 'not_delivered'",  # misses the 6
         "q18": "select count(*) from marts.fct_orders where n_parcels is null",     # wrong null assumption
+        "q12": 'select count(*) from "metrics"."metric_repeat_rate_90d_people" where repeated',     # quoted forbidden table
+        "q13": "select count(*) from olist.metrics.metric_repeat_rate_90d_people",                 # catalog-qualified forbidden table
+        "q22": "select 94983 /* from marts.dim_customer */",                                         # printed value hidden behind a comment
     })
     del bad["q02"]                                                                   # missing answer
-    want_fail = ["q01", "q02", "q03", "q06", "q09", "q11", "q16", "q18"]
+    want_fail = ["q01", "q02", "q03", "q06", "q09", "q11", "q12", "q13", "q16", "q18", "q22"]
     d = tempfile.mkdtemp()
+    variants = dict(key)   # correct answers written another way must still score right
+    variants["q22"] = 'select count(*) from "marts"."dim_customer" where n_qualifying_orders >= 1'
+    variants["q21"] = "select count(*) from olist.marts.dim_customer where n_orders >= 1 and n_qualifying_orders = 0"
+    variants["q13"] = "select count(*) from marts.dim_customer -- metrics.x is not read\nwhere first_qualifying_order_at <= (select max(purchased_at) from marts.fct_orders where is_qualifying_order) - interval 90 day"
     ok = True
-    for name, answers in (("key.yml", key), ("key_reworded.yml", key), ("bad.yml", bad)):
+    for name, answers in (("key.yml", key), ("key_reworded.yml", key), ("variants.yml", variants), ("bad.yml", bad)):
         path = os.path.join(d, name)
         yaml.safe_dump(answers, open(path, "w"), width=100000)
         rc, out = score(path)

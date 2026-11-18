@@ -339,7 +339,7 @@
   "kind": "term_count",
   "name": "order_status",
   "ok": true,
-  "detail": "{'approved': 2, 'shipped': 1107, 'unavailable': 609, 'processing': 301, 'canceled': 625, 'invoiced': 314, 'delivered': 96478, 'created': 5}"
+  "detail": "{'approved': 2, 'canceled': 625, 'created': 5, 'delivered': 96478, 'invoiced': 314, 'processing': 301, 'shipped': 1107, 'unavailable': 609}"
  },
  {
   "kind": "term_count",
@@ -357,7 +357,7 @@
   "kind": "term_count",
   "name": "delivery_state",
   "ok": true,
-  "detail": "{'status_date_conflict': 14, 'delivered_on_time': 89936, 'delivered_late': 6534, 'not_delivered': 2957}"
+  "detail": "{'delivered_late': 6534, 'delivered_on_time': 89936, 'not_delivered': 2957, 'status_date_conflict': 14}"
  },
  {
   "kind": "term_count",
@@ -550,6 +550,12 @@
   "name": "Each person has exactly one seq = 1 order, so joining the cohort to it gives one row per person (the first-order state is unambiguous)",
   "ok": true,
   "detail": "count=77560 (card 77560)"
+ },
+ {
+  "kind": "fact",
+  "name": "The sequence number follows purchased_at, so seq = 1 is the person's earliest qualifying order",
+  "ok": true,
+  "detail": "count=0 (card 0)"
  },
  {
   "kind": "fact",

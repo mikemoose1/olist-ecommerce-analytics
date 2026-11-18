@@ -23,7 +23,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.1
+  "seconds": 10.8
  },
  {
   "rule": "Raw row counts are as published",
@@ -36,12 +36,12 @@
   },
   "baseline": [
    [
-    "dbt_expectations_source_expect_table_row_count_to_equal_olist_raw_olist_orders_dataset_99441",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
     "pass",
     0
    ],
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
+    "dbt_expectations_source_expect_table_row_count_to_equal_olist_raw_olist_orders_dataset_99441",
     "pass",
     0
    ]
@@ -59,7 +59,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.3
+  "seconds": 10.2
  },
  {
   "rule": "Staging keeps every raw row",
@@ -71,17 +71,17 @@
   },
   "baseline": [
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
-    "pass",
-    0
-   ],
-   [
     "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_delivery_ref_stg_orders_",
     "pass",
     0
    ],
    [
     "dbt_expectations_expect_table_row_count_to_equal_other_table_fct_orders_ref_stg_orders_",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
     "pass",
     0
    ],
@@ -93,11 +93,6 @@
   ],
   "mutant": [
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
-    "fail",
-    1
-   ],
-   [
     "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_delivery_ref_stg_orders_",
     "fail",
     1
@@ -108,13 +103,18 @@
     1
    ],
    [
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
+    "fail",
+    1
+   ],
+   [
     "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
     "fail",
     1
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.4
+  "seconds": 10.1
  },
  {
   "rule": "Modeling never creates or loses money (no fan-out)",
@@ -139,7 +139,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.7
+  "seconds": 9.5
  },
  {
   "rule": "Repeat metrics count people, not per-order ids",
@@ -189,7 +189,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.0
+  "seconds": 9.5
  },
  {
   "rule": "A review dated before delivery is flagged",
@@ -214,7 +214,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.2
+  "seconds": 9.6
  },
  {
   "rule": "Paid equals items + freight, or the order is labeled",
@@ -239,7 +239,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.7
+  "seconds": 9.4
  },
  {
   "rule": "Real payment gaps stay under 0.5% of orders",
@@ -266,7 +266,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.2
+  "seconds": 9.6
  },
  {
   "rule": "Only full months are in the analysis window",
@@ -291,7 +291,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.6
+  "seconds": 9.5
  },
  {
   "rule": "Delivery state agrees with status and dates",
@@ -316,7 +316,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.0
+  "seconds": 9.6
  },
  {
   "rule": "Orders without items are labeled no_items",
@@ -341,7 +341,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.6
+  "seconds": 9.5
  },
  {
   "rule": "Exactly one chosen review per reviewed order",
@@ -366,7 +366,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 11.2
+  "seconds": 9.7
  },
  {
   "rule": "Every order's purchase date exists in dim_date",
@@ -383,7 +383,7 @@
     0
    ],
    [
-    "relationships_fct_payments_order_id__order_id__ref_fct_orders_",
+    "relationships_fct_order_items_order_id__order_id__ref_fct_orders_",
     "pass",
     0
    ],
@@ -393,7 +393,7 @@
     0
    ],
    [
-    "relationships_fct_order_items_order_id__order_id__ref_fct_orders_",
+    "relationships_fct_payments_order_id__order_id__ref_fct_orders_",
     "pass",
     0
    ],
@@ -415,17 +415,17 @@
     4
    ],
    [
-    "relationships_fct_payments_order_id__order_id__ref_fct_orders_",
-    "pass",
-    0
-   ],
-   [
     "relationships_fct_order_items_order_id__order_id__ref_fct_orders_",
     "pass",
     0
    ],
    [
     "relationships_fct_orders_customer_unique_id__customer_unique_id__ref_dim_customer_",
+    "pass",
+    0
+   ],
+   [
+    "relationships_fct_payments_order_id__order_id__ref_fct_orders_",
     "pass",
     0
    ],
@@ -441,7 +441,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 12.6
+  "seconds": 9.6
  },
  {
   "rule": "One location per zip",
@@ -466,7 +466,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 11.1
+  "seconds": 9.1
  },
  {
   "rule": "Zip locations are inside Brazil",
@@ -478,12 +478,12 @@
   },
   "baseline": [
    [
-    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lat__5_3___33_8",
+    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lng___34_7___74_0",
     "pass",
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lng___34_7___74_0",
+    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lat__5_3___33_8",
     "pass",
     0
    ]
@@ -501,7 +501,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 11.0
+  "seconds": 9.8
  },
  {
   "rule": "Payment types are known values",
@@ -526,7 +526,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 11.0
+  "seconds": 9.3
  },
  {
   "rule": "Trend metrics never include a partial month",
@@ -551,7 +551,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.6
+  "seconds": 9.5
  },
  {
   "rule": "Ontology: an order has exactly one row (no order with two customers)",
@@ -601,7 +601,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.2
+  "seconds": 2.1
  },
  {
   "rule": "Ontology: every item's product exists",
@@ -626,7 +626,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.2
+  "seconds": 2.3
  },
  {
   "rule": "Ontology: every survey response belongs to a real order",
@@ -651,7 +651,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.1
+  "seconds": 2.2
  },
  {
   "rule": "Ontology: an order never has two chosen reviews",
@@ -776,7 +776,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.1
+  "seconds": 2.0
  },
  {
   "rule": "Ontology: purchased_at is never null",
@@ -801,7 +801,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 1.9
+  "seconds": 2.0
  },
  {
   "rule": "Ontology: purchased_at keeps its TIMESTAMP type (a DATE would lose the 24-hour rule)",
@@ -826,7 +826,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.0
+  "seconds": 2.1
  },
  {
   "rule": "Ontology: n_parcels is 0, not null, for an order with no items",
@@ -851,7 +851,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.0
+  "seconds": 2.2
  },
  {
   "rule": "Ontology: in_analysis_window is never null",
@@ -876,7 +876,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.0
+  "seconds": 2.3
  },
  {
   "rule": "Ontology: review_score is null only when the order has no response",
@@ -926,7 +926,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.0
+  "seconds": 2.1
  },
  {
   "rule": "Ontology: the repeat flag is never null",
@@ -951,7 +951,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.0
+  "seconds": 2.1
  },
  {
   "rule": "Ontology: the canceled count and the 6 canceled orders with a delivery date",
@@ -1001,7 +1001,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.1
+  "seconds": 2.2
  },
  {
   "rule": "Ontology: the order count with no parcels (n_parcels = 0)",
@@ -1026,7 +1026,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.0
+  "seconds": 2.2
  },
  {
   "rule": "Ontology: the analysis-window flag counts (349 outside)",
@@ -1051,7 +1051,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.1
+  "seconds": 2.4
  },
  {
   "rule": "Ontology: the repeat cohort is everyone old enough (77,560 and the 17,423 left out)",
@@ -1076,7 +1076,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 1.9
+  "seconds": 2.2
  },
  {
   "rule": "Ontology: first_order_at is the purchased_at of the seq = 1 order",
@@ -1101,7 +1101,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.0
+  "seconds": 2.2
  },
  {
   "rule": "Ontology: the headline metric table has its 5 rows",
@@ -1151,7 +1151,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.1
+  "seconds": 2.2
  },
  {
   "rule": "Ontology: qualifying order counts (98,199 qualifying, 1,242 not)",
@@ -1176,7 +1176,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.1
+  "seconds": 2.2
  },
  {
   "rule": "Ontology: the sequence number is null exactly for non-qualifying orders",
@@ -1226,7 +1226,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.0
+  "seconds": 2.4
  },
  {
   "rule": "Ontology: n_items is never null",
@@ -1251,7 +1251,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.0
+  "seconds": 2.1
  },
  {
   "rule": "Ontology: delivered_to_customer_at has exactly 2,965 nulls",
@@ -1276,7 +1276,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 1.9
+  "seconds": 2.1
  },
  {
   "rule": "Ontology: every person has at least one order (n_orders >= 1)",
@@ -1326,7 +1326,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 1.9
+  "seconds": 2.1
  },
  {
   "rule": "Ontology: first_qualifying_order_at is null exactly when a person has no qualifying order",
@@ -1351,7 +1351,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.0
+  "seconds": 2.2
  },
  {
   "rule": "Ontology: the cohort person id is never null",
@@ -1376,7 +1376,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 56.3
+  "seconds": 2.2
  },
  {
   "rule": "Ontology: first_order_at is never null",
@@ -1426,7 +1426,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.2
+  "seconds": 2.3
  },
  {
   "rule": "Ontology: the headline numerator is null only for the review gap",
@@ -1476,7 +1476,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.1
+  "seconds": 2.0
  },
  {
   "rule": "Ontology: the headline value is never null",
@@ -1501,7 +1501,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.1
+  "seconds": 2.0
  },
  {
   "rule": "Ontology: the headline metric name is never null",
@@ -1526,7 +1526,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.2
+  "seconds": 2.0
  },
  {
   "rule": "Ontology: the review score count (768 orders with none)",
@@ -1551,7 +1551,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.1
+  "seconds": 2.0
  },
  {
   "rule": "Ontology fact: people with a qualifying order (94,983)",
@@ -1576,7 +1576,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.1
+  "seconds": 2.0
  },
  {
   "rule": "Ontology fact: people left out of the cohort as too recent (17,423)",
@@ -1626,7 +1626,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.2
+  "seconds": 2.1
  },
  {
   "rule": "Ontology fact: one seq = 1 order per cohort person (the first-order state is unambiguous)",
@@ -1651,7 +1651,32 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.1
+ },
+ {
+  "rule": "Ontology fact: seq = 1 is the earliest qualifying order",
+  "selector": "ontology:fact The sequence number follows purchased_at, so seq = 1 is the person's earliest qualifying order",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set purchased_at = purchased_at + interval 3650 day where order_id in (select order_id from marts.fct_orders where customer_qualifying_order_seq = 1 and customer_unique_id in (select customer_unique_id from marts.fct_orders where customer_qualifying_order_seq = 2) order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "fact The sequence number follows purchased_at, so seq = 1 is the person's earliest qualifying order",
+    "pass",
+    "count=0 (card 0)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact The sequence number follows purchased_at, so seq = 1 is the person's earliest qualifying order",
+    "fail",
+    "count=1 (card 0)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.1
  },
  {
   "rule": "Ontology fact: same-second qualifying orders (281 pairs)",
@@ -1676,7 +1701,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.0
+  "seconds": 2.3
  },
  {
   "rule": "Ontology fact: the order's review_score equals the chosen response's score",
@@ -1701,6 +1726,6 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.0
+  "seconds": 2.1
  }
 ]
