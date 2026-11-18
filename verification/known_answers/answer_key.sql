@@ -113,3 +113,13 @@ select count(*) from (select customer_unique_id from marts.fct_orders group by 1
 -- q22
 select count(distinct customer_unique_id) from marts.fct_orders
 where order_status not in ('canceled', 'unavailable') and n_items > 0;
+-- q23
+select count(*) from marts.fct_orders
+where order_status = 'delivered' and delivered_to_customer_at is not null and n_items > 0
+  and purchase_date between date '2017-01-01' and date '2018-08-31' and n_parcels = 1
+  and cast(delivered_to_customer_at as date) > estimated_delivery_date and review_score is null;
+-- q24
+select strftime(purchase_date, '%Y-%m') from marts.fct_orders
+where order_status = 'delivered' and delivered_to_customer_at is not null and n_items > 0
+  and purchase_date between date '2017-01-01' and date '2018-08-31' and n_parcels = 1
+group by 1 order by avg((cast(delivered_to_customer_at as date) > estimated_delivery_date)::int) desc limit 1;

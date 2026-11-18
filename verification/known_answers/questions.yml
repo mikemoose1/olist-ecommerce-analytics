@@ -8,7 +8,7 @@
 - id: q03
   question: What is the 90-day repeat rate (the headline repeat metric), as a percentage rounded to 2 decimals?
 - id: q04
-  question: What is the average review score, in stars rounded to 3 decimals?
+  question: What is Olist's average review score, as defined by its review-score metric, in stars rounded to 3 decimals?
 - id: q05
   question: What was the late-delivery rate for orders purchased in March 2018, as a percentage rounded to 2 decimals?
 - id: q06
@@ -51,3 +51,7 @@
   question: How many people placed at least one order but never made a qualifying purchase?
 - id: q22
   question: How many people have made at least one qualifying purchase?
+- id: q23
+  question: How many orders judged for lateness were late and have no review score?
+- id: q24
+  question: Which purchase month (YYYY-MM) has the highest late-delivery rate?
