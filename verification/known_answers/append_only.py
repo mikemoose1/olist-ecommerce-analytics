@@ -12,13 +12,18 @@ Rules (all checked on every run, and in CI):
   3. an id that is not in the baseline fails: finish the key by hand, then run `append_only.py --adopt`
      (adopt refuses ids with no key, no reworded twin, or a null key)
   4. with --against REV (CI passes the base commit): every baseline entry and changelog entry at REV is still present, unchanged.
-     This stops anyone editing the baseline or deleting history to hide a change.
+     This stops anyone editing the baseline or deleting history to hide a change. It fails closed: a REV that does not
+     resolve, or is not an ancestor of HEAD (a force-push), fails. A REV from before the baseline existed is compared
+     through the commit in REV..HEAD that first added the baseline, so the comparison is never skipped.
+  5. answer_key.sql is read by key_file.py, the parser score.py uses too: a malformed or repeated header fails, and so
+     does a key block or a question id that appears twice or has no question.
 
 Usage:  python append_only.py [--against REV] [--adopt] [--print-sha ID FIELD]
 """
 from collections import Counter
 import argparse, hashlib, json, os, re, subprocess, sys
 import yaml
+import key_file
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 _top = subprocess.run(["git", "rev-parse", "--show-toplevel"], cwd=HERE, capture_output=True, text=True).stdout.strip()
@@ -39,30 +44,49 @@ def norm(text):
 def load_questions(read):
     out = {}
     for field, f in FILES.items():
+        seen = Counter(q["id"] for q in yaml.safe_load(read(f)) or [])
+        twice = sorted(i for i, n in seen.items() if n > 1)
+        if twice:
+            raise key_file.KeyFileError(f"{f}: id {', '.join(twice)} appears twice")
         for q in yaml.safe_load(read(f)) or []:
             out.setdefault(q["id"], {})[field] = sha({"question": norm(q["question"]), "forbidden_tables": q.get("forbidden_tables", [])})
     return out
 
 
 def load_keys(read):
-    keys, cur = {}, None
-    for line in read(KEY).splitlines():
-        m = re.match(r"--\s*(q\d+)\s*$", line.strip())
-        if m:
-            cur = m.group(1)
-            keys[cur] = []
-        elif cur and not line.strip().startswith("--"):
-            keys[cur].append(line)
+    """fingerprint of each key block's SQL (whole-line comments dropped, whitespace normalized)"""
+    keys = {k: [l for l in v if not l.strip().startswith("--")] for k, v in key_file.parse(read(KEY)).items()}
     return {k: sha(norm("\n".join(v))) for k, v in keys.items() if norm("\n".join(v))}
 
 
 def current(read=None):
     read = read or (lambda f: open(os.path.join(HERE, f)).read())
     qs, keys = load_questions(read), load_keys(read)
+    orphans = sorted(set(keys) - set(qs))
+    if orphans:
+        raise key_file.KeyFileError(f"answer_key.sql has a block for {', '.join(orphans)}, which no question file has")
     for qid in qs:
         if qid in keys:
             qs[qid]["key"] = keys[qid]
     return qs
+
+
+def resolve_against(rev):
+    """The commit to compare with, or a problem. Fails closed: never returns 'skip'."""
+    git = lambda *a: subprocess.run(["git", *a], cwd=HERE, capture_output=True, text=True)
+    p = git("rev-parse", "--verify", "--quiet", f"{rev}^{{commit}}")
+    if p.returncode:
+        return None, f"--against {rev}: does not resolve to a commit, so history cannot be compared (failing closed)"
+    full = p.stdout.strip()
+    if git("merge-base", "--is-ancestor", full, "HEAD").returncode:
+        return None, f"--against {rev}: is not an ancestor of HEAD (history was rewritten?), so it cannot be compared (failing closed)"
+    if git_show(full, BASELINE) is not None:
+        return full, None
+    first = git("log", "--diff-filter=A", "--reverse", "--format=%H", f"{full}..HEAD", "--", BASELINE).stdout.split()   # the pathspec is relative to cwd=HERE
+    if not first:
+        return None, f"--against {rev}: has no {BASELINE} and no commit since added one (failing closed)"
+    print(f"note: {rev} predates {BASELINE}; comparing with {first[0][:7]}, the commit that first added it")
+    return first[0], None
 
 
 def git_show(rev, name):
@@ -91,7 +115,10 @@ def chain(start, qid, field, log):
 def check(against=None):
     base = json.load(open(os.path.join(HERE, BASELINE)))
     log = yaml.safe_load(open(os.path.join(HERE, CHANGELOG))) or []
-    cur = current()
+    try:
+        cur = current()
+    except key_file.KeyFileError as e:
+        return base, {}, [str(e)]
     problems = []
     for e in log:
         # a `note` records a decision NOT to change a question (id, field note, date, reason); every other entry is a change
@@ -118,11 +145,12 @@ def check(against=None):
     for qid in sorted(set(cur) - set(base)):
         problems.append(f"{qid}: not adopted. Hand-compute its key, then run: python append_only.py --adopt")
     if against:
-        old_base = git_show(against, BASELINE)
-        old_log = git_show(against, CHANGELOG)
-        if old_base is None:
-            print(f"note: {against} has no baseline yet, history comparison skipped")
+        rev, problem = resolve_against(against)
+        if problem:
+            problems.append(problem)
         else:
+            old_base = git_show(rev, BASELINE)
+            old_log = git_show(rev, CHANGELOG)
             for qid, fields in json.loads(old_base).items():
                 if base.get(qid) != fields:
                     problems.append(f"{qid}: baseline entry differs from the one at {against}")
@@ -138,7 +166,7 @@ def check(against=None):
                         problems.append(f"{qid} {field}: differs from {against} without a changelog entry that reaches it")
             # compare the FULL log (notes included) as a multiset: several identical-looking entries must each survive
             now = Counter(json.dumps(e, sort_keys=True, default=str) for e in full_log)
-            for e in yaml.safe_load(old_log) or []:
+            for e in yaml.safe_load(old_log or "") or []:
                 key = json.dumps(e, sort_keys=True, default=str)
                 if now[key] <= 0:
                     problems.append(f"changelog entry {e['id']} {e['field']} {e.get('old_sha', '')}->{e.get('new_sha', '')} was edited or removed")

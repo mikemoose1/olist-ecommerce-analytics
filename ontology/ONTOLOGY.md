@@ -109,16 +109,16 @@ erDiagram
 | location | one 5-digit zip prefix | zip_code_prefix | 19,015<!--n:entities.location.rows--> |
 | date | one calendar day | date_day | 791<!--n:entities.date.rows--> |
 | repeat cohort (supporting) | one person eligible for the 90-day repeat rate | customer_unique_id | 77,560<!--n:entities.repeat_cohort.rows--> |
-| headline metric (supporting) | one headline number with its numerator and denominator | metric_name | 5 |
+| headline metric (supporting) | one headline number with its numerator and denominator | metric_name | 5<!--n:entities.headline_metric.rows--> |
 | late-rate order (supporting) | one order judged for lateness, with its verdict | order_id | 94,931<!--n:entities.late_rate_order.rows--> |
-| late-rate month (supporting) | one purchase month's late rate | year_month | 20 |
+| late-rate month (supporting) | one purchase month's late rate | year_month | 20<!--n:entities.late_rate_month.rows--> |
 | result tables (supporting) | the one-row results of the late rate, the 90-day repeat rate and the all-time repeat rate, and the two review metrics | metric_name | 1, 1, 1 and 2 |
 
 Known gaps in the links, each counted and checked:
 
-- 775<!--n:terms.parcel_count.counts.0.expected--> orders have no items and 1 order has no payment row.
+- 775<!--n:terms.parcel_count.counts.0.expected--> orders have no items and 1<!--n:columns.marts.fct_orders.amount_paid.nulls--> order has no payment row (its `amount_paid` is null).
 - 768<!--n:terms.order_review_score.counts.0.expected--> orders have no survey response, and 547<!--n:facts.7.expected--> have more than one. Decision C4 picks the latest-answered one, so each order has at most one chosen review.
-- 278<!--n:relationships.10.orphans--> orders and 7 sellers sit in a zip prefix that Olist's geolocation file does not have. They are kept, with no map point.
+- 278<!--n:relationships.10.orphans--> orders and 7<!--n:relationships.11.orphans--> sellers sit in a zip prefix that Olist's geolocation file does not have. They are kept, with no map point.
 - The repeat cohort has 77,560<!--n:entities.repeat_cohort.rows--> people, one row each. Another 17,423<!--n:facts.1.expected--> of the 94,983<!--n:facts.0.expected--> people with a real purchase are left out. Their first purchase falls in the last 90 days of the data, so they had no full 90 days to come back.
 - 789<!--n:facts.8.expected--> survey responses (`review_id`) are attached to more than one order, so a review's key is the response plus the order.
 
@@ -191,12 +191,12 @@ The chart hides the final "nothing more happens" step. Every rule is recounted i
 
 | Rule | Model | Data | What happens to the exceptions |
 |---|---|---|---|
-| A late order arrived after the promised day | holds | 0 exceptions | none needed |
-| A delivery date exists exactly when the status is delivered | not modeled | 14 exceptions (8 delivered with no date, 6 canceled with a date) | labeled `status_date_conflict`, left out of delivery metrics |
+| A late order arrived after the promised day | holds | 0<!--n:stage_rules.0.expected--> exceptions | none needed |
+| A delivery date exists exactly when the status is delivered | not modeled | 14<!--n:stage_rules.1.expected--> exceptions (8 delivered with no date, 6 canceled with a date) | labeled `status_date_conflict`, left out of delivery metrics |
 | The carrier gets the order after payment approval | not modeled | 1,359<!--n:stage_rules.2.expected--> exceptions | raw timestamps out of order; no metric uses this gap |
-| The customer gets the order after the carrier does | not modeled | 23 exceptions | raw timestamps out of order; lateness uses only delivery date and promise |
+| The customer gets the order after the carrier does | not modeled | 23<!--n:stage_rules.3.expected--> exceptions | raw timestamps out of order; lateness uses only delivery date and promise |
 | The survey goes out only when the order is delivered or the promised date arrives | holds | 606<!--n:stage_rules.4.expected--> of 99,224<!--n:entities.review.rows--> responses | kept; flagged when a delivery date exists |
-| The survey goes out on or after the purchase day | not modeled | 64 responses (part of the 606<!--n:stage_rules.4.expected-->) | source data error; kept |
+| The survey goes out on or after the purchase day | not modeled | 64<!--n:stage_rules.5.expected--> responses (part of the 606<!--n:stage_rules.4.expected--> sent before both dates) | source data error; kept |
 | Nobody answers the survey before the order is delivered | **breaks** | 4,367<!--n:stage_rules.6.expected--> responses answered on an earlier day than delivery | not a real rule, see below |
 
 The last rule is how people first state it, and the model shows why it is wrong. TLC's shortest path: the order is placed, the promised date passes, Olist emails the survey, and the customer answers, all before the parcel arrives. In the data, 4,713<!--n:facts.12.expected--> of the 5,127<!--n:facts.11.expected--> responses sent before delivery went out on or after the promised date, and 4,777<!--n:facts.13.expected--> of those 5,127<!--n:facts.11.expected--> belong to late orders. The early review is a symptom of lateness, which is why decision C2 keeps these reviews in the review score.
@@ -221,11 +221,11 @@ Every term below has a full card in ontology.yml with its source column, grain, 
 | repeat cohort member | A person whose first qualifying order is at least 90 days older than the newest qualifying purchase, 2018-09-03 09:06:57. The cutoff is therefore 2018-06-05 09:06:57. The members are the rows of `metrics.metric_repeat_rate_90d_people`. | people with only recent first purchases, people with only canceled orders |
 | repeat slice | The first-order month is the month of `first_order_date`. The first-order state is the `ship_to_state` of the person's `seq = 1` order, joined on `customer_unique_id`. | `dim_customer.state`, which is the latest address, and the month of the second order |
 | placed an order | A person with at least one order of any status. That is every row of `dim_customer`, 96,096<!--n:terms.placed_an_order.counts.0.expected--> people. | counting only qualifying orders. That gives 94,983<!--n:terms.placed_an_order.counts.1.expected--> people and drops 1,113<!--n:terms.placed_an_order.counts.2.expected--> whose orders were all canceled, unavailable or empty |
-| canceled order | An order with `order_status = 'canceled'`. There are 625<!--n:terms.canceled_order.counts.0.expected-->, including 6 that still carry a delivery date and also show `status_date_conflict`. The denominator for a share is every order. | status `unavailable`, or "not delivered" in general |
+| canceled order | An order with `order_status = 'canceled'`. There are 625<!--n:terms.canceled_order.counts.0.expected-->, including 6<!--n:terms.canceled_order.counts.1.expected--> that still carry a delivery date and also show `status_date_conflict`. The denominator for a share is every order. | status `unavailable`, or "not delivered" in general |
 | parcel count | `n_parcels` is 0 on an order with no items (775<!--n:terms.parcel_count.counts.0.expected--> orders) and never null. It is 1 on a normal order and 2 or more on a multi-seller order. | treating it as null for empty orders |
 | order review score | `fct_orders.review_score` holds the stars, 1 to 5, of the chosen response. It is null on the 768<!--n:terms.order_review_score.counts.0.expected--> orders with no response. | an earlier answer on the same order |
 | promised date | The delivery date promised at purchase. A date with no time. | |
-| delivered | Status is delivered and a delivery date exists (96,470<!--n:terms.delivered.count.expected--> orders). Use `delivery_state`, not "has a delivery date", which also catches 6 canceled orders. | delivered status without a date, shipped orders |
+| delivered | Status is delivered and a delivery date exists (96,470<!--n:terms.delivered.count.expected--> orders). Use `delivery_state`, not "has a delivery date", which also catches 6<!--n:terms.canceled_order.counts.1.expected--> canceled orders. | delivered status without a date, shipped orders |
 | late | Delivered on a later calendar day than promised. | same-day delivery at 23:00, multi-seller orders, undelivered orders |
 | multi-seller order | An order with items from 2 or more sellers (1,278<!--n:terms.multi_seller_order.count.expected--> orders). | one seller shipping 3 items |
 | analysis window | Full months 2017-01 through 2018-08. `in_analysis_window` is true or false and never null. 349<!--n:terms.analysis_window.counts.1.expected--> orders are outside. | partial edge months |
@@ -264,7 +264,7 @@ Both options were built and run on this warehouse (2026-11-17).
 | | (a) MetricFlow semantic models + cards | (b) YAML cards + existing metric tables |
 |---|---|---|
 | Setup | 1 package (dbt-metricflow 0.16.0, same dbt/duckdb pins, 13 s install), 75-line YAML, a time spine on dim_date, and one refactor so the repeat population has a row per person | no new package |
-| Reproduces the numbers | yes: 6,518<!--n:metrics.late_rate.verified.numerator-->/94,931<!--n:metrics.late_rate.verified.denominator-->, 991<!--n:metrics.repeat_rate_90d.verified.numerator-->/77,560<!--n:metrics.repeat_rate_90d.verified.denominator-->, 397,176<!--n:metrics.review_score.verified.numerator-->/95,560<!--n:metrics.review_score.verified.denominator--> and all 20 months, summed from rows | yes, but only by reading the same rows it is compared to |
+| Reproduces the numbers | yes: late_rate 6,518<!--n:metrics.late_rate.verified.numerator-->/94,931<!--n:metrics.late_rate.verified.denominator-->, repeat_rate_90d 991<!--n:metrics.repeat_rate_90d.verified.numerator-->/77,560<!--n:metrics.repeat_rate_90d.verified.denominator-->, review_score 397,176<!--n:metrics.review_score.verified.numerator-->/95,560<!--n:metrics.review_score.verified.denominator--> and all 20<!--n:entities.late_rate_month.rows--> late-rate months, summed from rows | yes, but only by reading the same rows it is compared to |
 | New questions | any metric by month, by state or by order field, no new SQL | only what a metric table already holds; anything else needs hand SQL |
 | CI | `make verify` runs check.py, which calls `mf query`; no workflow change | same script without the MetricFlow calls |
 | Gotchas | needs a fresh `target/semantic_manifest.json`; cannot query while another process holds the DuckDB file | none |

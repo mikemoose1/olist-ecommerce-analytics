@@ -7,8 +7,9 @@
    wrong value, missing answer, abstain, a copied printed number, a forbidden table (also quoted or catalog-qualified), a printed number hidden behind a comment, a null-behavior mistake.
 Usage: python verification/known_answers/selftest.py     (after `make build`)   Exit 1 if either half misbehaves.
 """
-import os, re, subprocess, sys, tempfile
+import os, re, shutil, subprocess, sys, tempfile
 import yaml
+import key_file
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCORE = os.path.join(HERE, "score.py")
@@ -20,8 +21,7 @@ def score(path):
 
 
 def main():
-    text = open(os.path.join(HERE, "answer_key.sql")).read()
-    key = {k: v.strip().rstrip(";") for k, v in re.findall(r"-- (q\d\d)\n(.*?)(?=\n-- q\d\d\n|\Z)", text, re.S)}
+    key = {k: v.rstrip(";") for k, v in key_file.queries(open(os.path.join(HERE, "answer_key.sql")).read()).items()}
     bad = dict(key)
     bad.update({
         "q01": "select round(100.0 * avg((cast(delivered_to_customer_at as date) > estimated_delivery_date)::int), 2) "
@@ -29,11 +29,11 @@ def main():
         "q03": "select 1.28 from metrics.metrics_headline limit 1",                 # copied printed value
         "q06": "select 96096 from marts.fct_orders limit 1",                        # copied printed value
         "q09": "CANNOT_ANSWER",                                                     # abstain
-        "q11": "select round(100.0 * avg(repeated::int), 2) from query('select repeated from metrics.metric_repeat_rate_90d_people'), (select 1 from marts.dim_date limit 1) one",
+        "q11": "select value_pct from metrics.metrics_headline where metric_name = 'repeat_rate_90d'",  # forbidden table
         "q16": "select count(*) from marts.fct_orders where order_status = 'canceled' and delivery_state = 'not_delivered'",  # misses the 6
         "q18": "select count(*) from marts.fct_orders where n_parcels is null",     # wrong null assumption
         "q12": 'select count(*) from "metrics"."metric_repeat_rate_90d_people" where repeated',     # quoted forbidden table
-        "q13": "select count(*) from query('select * from metrics.metric_repeat_rate_90d_people'), (select 1 from marts.dim_date limit 1) one",
+        "q13": "select count(*) from olist.metrics.metric_repeat_rate_90d_people",                 # catalog-qualified forbidden table
         "q24": "select '2018-03' from marts.fct_orders limit 1",                                    # typed text answer (a text key blocks only its own question)
         "q22": "select 94983 /* from marts.dim_customer */",                                         # printed value hidden behind a comment
     })
@@ -45,38 +45,76 @@ def main():
     variants["q21"] = "select count(*) from olist.marts.dim_customer where n_orders >= 1 and n_qualifying_orders = 0"
     variants["q13"] = "select count(*) from marts.dim_customer -- metrics.x is not read\nwhere first_qualifying_order_at <= (select max(purchased_at) from marts.fct_orders where is_qualifying_order) - interval 90 day"
     # S4 counterexamples: values computed from literals, and forbidden tables wrapped in a string for query()
-    bypass = {
-        "q01": "select round(0.0687*100,2) from marts.dim_date limit 1",
-        "q02": "select 94000+931 from marts.dim_date limit 1",
-        "q03": "select '1.28'::double from marts.dim_date limit 1",
-        "q06": "select 96000+96 from marts.dim_customer limit 1",
-        "q09": "select 'C'||'E' from marts.dim_date limit 1",
-        "q24": "select '2018-'||'03' from marts.dim_date limit 1",
-        "q11": "select round(100.0 * avg(repeated::int), 2) from query('select repeated from metrics.metric_repeat_rate_90d_people'), (select 1 from marts.dim_date limit 1) one",
-        "q13": "select count(*) from query('select * from metrics.metric_repeat_rate_90d_people'), (select 1 from marts.dim_date limit 1) one",
-        "q12": "select count(*) from query_table('metrics.metric_repeat_rate_90d_people'), (select 1 from marts.dim_date limit 1) one where repeated",
-        "q04": "select cast(4155 + 1 as double) / 1000 from marts.dim_date limit 1",
-        "q05": "select upper(lower(concat('1', '9', '.', '15'))) from marts.dim_date limit 1",
-    }
+    pivot = "(pivot (select order_status, 1 as x from marts.fct_orders) on order_status using count(x))"
+    bypass = [
+        ("q01", "select round(0.0687*100,2) from marts.dim_date limit 1"),
+        ("q02", "select 94000+931 from marts.dim_date limit 1"),
+        ("q03", "select '1.28'::double from marts.dim_date limit 1"),
+        ("q06", "select 96000+96 from marts.dim_customer limit 1"),
+        ("q09", "select 'C'||'E' from marts.dim_date limit 1"),
+        ("q24", "select '2018-'||'03' from marts.dim_date limit 1"),
+        ("q11", "select round(100.0 * avg(repeated::int), 2) from query('select repeated from metrics.metric_repeat_rate_90d_people'), (select 1 from marts.dim_date limit 1) one"),
+        ("q13", "select count(*) from query('select * from metrics.metric_repeat_rate_90d_people'), (select 1 from marts.dim_date limit 1) one"),
+        ("q12", "select count(*) from query_table('metrics.metric_repeat_rate_90d_people'), (select 1 from marts.dim_date limit 1) one where repeated"),
+        ("q04", "select cast(4155 + 1 as double) / 1000 from marts.dim_date limit 1"),
+        ("q05", "select upper(lower(concat('1', '9', '.', '15'))) from marts.dim_date limit 1"),
+        # review M4: literals the text check could not see, and literal arithmetic hidden behind data that cancels out
+        ("q02", "select 9.4931e4 from marts.dim_date limit 1"),
+        ("q02", "select 94_931 from marts.dim_date limit 1"),
+        ("q02", "select 94000 + 931 * (count(*)/count(*)) from marts.dim_date"),
+        ("q02", 'select 9.4931e4 as "from marts.fct_orders"'),
+        ("q06", "with t as (select count(*) + 96000 + 96 - count(*) as v from marts.dim_customer) select v from t"),
+        ("q09", "select $$CE$$ from marts.dim_date limit 1"),
+        ("q09", "select 'C'\n'E' from marts.dim_date limit 1"),
+        ("q24", "select $$2018-03$$ from marts.dim_date limit 1"),
+        ("q24", "select $t$2018-03$t$ from marts.dim_date limit 1"),
+        # review L1: PIVOT is judged from the plan; the plan route must not reopen the bypasses
+        ("q16", 'select "canceled" * 0 + 6.25e2 from ' + pivot),
+        ("q16", "select 625 + 0 * \"canceled\" from " + pivot),
+        ("q11", 'select "true" from (pivot (select repeated from metrics.metric_repeat_rate_90d_people) on repeated using count(*))'),
+        ("q12", "select \"true\" from (pivot (select * from query('select repeated from metrics.metric_repeat_rate_90d_people')) on repeated using count(*)) p, (select 1 from marts.dim_date limit 1) one"),
+    ]
     # correct answers written differently must still score right
     differently = {
         "q02": "with t as (select * from marts.fct_orders) select count(*) from t where order_status = 'delivered' and delivered_to_customer_at is not null and n_items > 0 and purchase_date between date '2017-01-01' and date '2018-08-31' and n_parcels = 1;",
         "q06": "select cast(count(distinct customer_unique_id) as bigint) + 0 from marts.fct_orders",
         "q10": "select round(100.0 * count(*) filter (where order_status = 'canceled') / count(*), 2) from marts.fct_orders",
+        "q16": 'select "canceled" from ' + pivot,                        # review L1: a correct PIVOT answer was rejected
     }
     ok = True
     d2 = tempfile.mkdtemp()
-    for name, overrides, expect in (("bypass.yml", bypass, "WRONG"), ("different.yml", differently, "RIGHT")):
-        answers = dict(key)
-        answers.update(overrides)
-        path = os.path.join(d2, name)
-        yaml.safe_dump(answers, open(path, "w"), width=100000)
-        rc, out = score(path)
-        got = {i: v for v, i in re.findall(r"^(RIGHT|WRONG|ABSTAIN)\s+(q\d\d)", out, re.M)}
-        bad_ids = sorted(i for i in overrides if got.get(i) != expect)
-        good = not bad_ids
-        print(f"{'PASS' if good else 'FAIL'}  {name}: every override scores {expect} (offenders: {bad_ids})")
+    for name, overrides, expect in (("bypass", bypass, "WRONG"), ("different", list(differently.items()), "RIGHT")):
+        rounds = []                                       # one answer file per round, each id at most once per file
+        for qid, sql in overrides:
+            r = next((r for r in rounds if qid not in r), None)
+            if r is None:
+                rounds.append(r := {})
+            r[qid] = sql
+        offenders = []
+        for n, r in enumerate(rounds):
+            answers = dict(key)
+            answers.update(r)
+            path = os.path.join(d2, f"{name}{n}.yml")
+            yaml.safe_dump(answers, open(path, "w"), width=100000)
+            rc, out = score(path)
+            got = {i: v for v, i in re.findall(r"^(RIGHT|WRONG|ABSTAIN)\s+(q\d\d)", out, re.M)}
+            offenders += [f"{i}: {r[i][:60]}" for i in r if got.get(i) != expect]
+        good = not offenders
+        print(f"{'PASS' if good else 'FAIL'}  {name}: all {len(overrides)} overrides score {expect} (offenders: {offenders})")
         ok &= good
+    # review M1: a malformed header must stop the scorer, not silently re-cut the key blocks
+    sb = tempfile.mkdtemp()
+    for f in ("score.py", "key_file.py", "questions.yml", "questions_reworded.yml", "answer_key.sql"):
+        if os.path.exists(os.path.join(HERE, f)):
+            shutil.copy(os.path.join(HERE, f), sb)
+    open(os.path.join(sb, "answer_key.sql"), "a").write("\n--q25\nselect 'XX';\n")
+    open(os.path.join(d, "none.yml"), "w").write("{}\n")
+    p = subprocess.run([sys.executable, os.path.join(sb, "score.py"), os.path.join(d, "none.yml")], capture_output=True, text=True,
+                       env={**os.environ, "OLIST_DB_PATH": os.path.abspath(os.path.join(HERE, "..", "..", "olist.duckdb"))})
+    good = p.returncode != 0 and "looks like a header" in p.stdout + p.stderr
+    print(f"{'PASS' if good else 'FAIL'}  a malformed key header ('--q25') stops the scorer: {(p.stdout + p.stderr).strip().splitlines()[-1:]}")
+    ok &= good
+    shutil.rmtree(sb)
     for name, answers in (("key.yml", key), ("key_reworded.yml", key), ("variants.yml", variants), ("bad.yml", bad)):
         path = os.path.join(d, name)
         yaml.safe_dump(answers, open(path, "w"), width=100000)

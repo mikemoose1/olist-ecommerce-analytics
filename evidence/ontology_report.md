@@ -207,10 +207,10 @@
 | model_link | The survey goes out on or after the purchase day | PASS | no invariant in the model; ONTOLOGY.md Model column shows 'not modeled', card says 'not modeled' |
 | model_link | Nobody answers the survey before the order is delivered | PASS | invariant NoReviewBeforeDelivery: defined=True in cfg=True report says breaks=True; ONTOLOGY.md Model column shows '**breaks**', card says '**breaks**' |
 | model_link | every invariant TLC checks backs a rule | PASS | invariants in the cfg that no rule claims: none |
-| coverage | allowlist reasons | PASS | 6 exemptions, each with a reason |
+| coverage | allowlist reasons | PASS | 44 exemptions, each with a reason |
 | coverage | tables | PASS | 16 tables; undescribed: none |
 | coverage | columns | PASS | 127 columns; undescribed: none |
-| coverage | numbers in ONTOLOGY.md | PASS | 60 numbers each bound to the ontology.yml value they state; problems: none |
+| coverage | numbers in ONTOLOGY.md | PASS | 71 numbers each bound to the ontology.yml value they state; problems: none |
 | coverage | allowlist is current | PASS | entries matching nothing: none |
 | metric | late_rate | PASS | table 6518/94931=6.87 (card 6518/94931=6.87); MetricFlow 6518/94931=0.068660 -> 6.87 |
 | metric | repeat_rate_90d | PASS | table 991/77560=1.28 (card 991/77560=1.28); MetricFlow 991/77560=0.012777 -> 1.28 |

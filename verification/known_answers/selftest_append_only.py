@@ -4,13 +4,14 @@ import json, os, re, shutil, subprocess, sys, tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PY = sys.executable
-FILES = ["append_only.py", "questions.yml", "questions_reworded.yml", "answer_key.sql", "questions_baseline.json", "questions_changelog.yml"]
+FILES = ["append_only.py", "key_file.py", "questions.yml", "questions_reworded.yml", "answer_key.sql", "questions_baseline.json", "questions_changelog.yml"]
 
 
 def sandbox(pre=None):
     d = tempfile.mkdtemp(prefix="appendonly-")
     for f in FILES:
-        shutil.copy(os.path.join(HERE, f), d)
+        if os.path.exists(os.path.join(HERE, f)):      # key_file.py does not exist before the M1 fix; the proof runs there too
+            shutil.copy(os.path.join(HERE, f), d)
     if pre:
         pre(d)
     for c in (["git", "init", "-q"], ["git", "add", "-A"], ["git", "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-qm", "base"]):
@@ -46,6 +47,15 @@ CASES = [
     ("the baseline is edited to match a changed question", None, ["differs from the one at"], ["--against", "HEAD"]),
     ("a changelog note is deleted from history", lambda d: edit(d, "questions_changelog.yml", lambda t: re.sub(r"- id: q12\n  field: note\n(?:  .*\n)+?(?=- id|\Z)", "", t)), ["q12", "removed"], ["--against", "HEAD"]),
     ("a changelog entry is deleted from history", lambda d: edit(d, "questions_changelog.yml", lambda t: "[]\n"), ["q09"], ["--against", "HEAD"]),
+    # M1: score.py and append_only.py read answer_key.sql with one parser, so a header only one of them sees cannot exist
+    ("a malformed key header '--q25' is appended", lambda d: open(os.path.join(d, "answer_key.sql"), "a").write("\n--q25\nselect 'XX';\n"), ["looks like a header"], ["--against", "HEAD"]),
+    ("a key block for an id no question has is appended", lambda d: open(os.path.join(d, "answer_key.sql"), "a").write("\n-- q25\nselect 'XX';\n"), ["q25", "no question file has"], []),
+    ("a second key block for q05 is appended", lambda d: open(os.path.join(d, "answer_key.sql"), "a").write("\n-- q05\nselect 1;\n"), ["second header for q05"], []),
+    ("an indented key header is added", lambda d: edit(d, "answer_key.sql", lambda t: t.replace("-- q07\n", "-- q07\n  -- q07\n", 1)), ["looks like a header"], []),
+    # L4: a decoy question with a real id placed before the real one (last-wins parsing used to hide it)
+    ("a decoy q05 is placed before the real q05", lambda d: edit(d, "questions.yml", lambda t: t.replace("- id: q05\n", "- id: q05\n  question: decoy wording\n- id: q05\n", 1)), ["q05", "appears twice"], []),
+    # M2: --against fails closed
+    ("--against a rev that does not resolve", lambda d: None, ["does not resolve"], ["--against", "nosuchrev"]),
 ]
 
 
@@ -85,8 +95,54 @@ HISTORY_CASES = [
 ]
 
 
+def pre_baseline_repo(after=None):
+    """history: commit 1 has the questions but no baseline/changelog, commit 2 adds them (the true first-baseline case)"""
+    d = sandbox()
+    for c in (["git", "rm", "-q", "--cached", "questions_baseline.json", "questions_changelog.yml"],):
+        subprocess.run(c, cwd=d, check=True, capture_output=True)
+    subprocess.run(["git", "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-qm", "no baseline"], cwd=d, check=True, capture_output=True)
+    subprocess.run(["git", "reset", "-q", "--soft", "HEAD~1"], cwd=d, check=True, capture_output=True)   # squash: root has no baseline
+    subprocess.run(["git", "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-qm", "root without baseline"], cwd=d, check=True, capture_output=True)
+    commit(d, "add baseline")
+    if after:
+        after(d)
+    return d
+
+
+def non_ancestor_repo():
+    d = sandbox()
+    subprocess.run(["git", "checkout", "-q", "-b", "side"], cwd=d, check=True, capture_output=True)
+    subprocess.run(["git", "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "--allow-empty", "-m", "side"], cwd=d, check=True, capture_output=True)
+    subprocess.run(["git", "checkout", "-q", "-"], cwd=d, check=True, capture_output=True)
+    return d
+
+
+def baseline_edit(d):
+    p = os.path.join(d, "questions_baseline.json")
+    b = json.load(open(p))
+    b["q01"]["original"] = "0" * 16
+    json.dump(b, open(p, "w"), indent=1, sort_keys=True)
+
+
+# (name, repo builder, --against value, must pass?, expected text)
+REV_CASES = [
+    ("--against a commit that is not an ancestor of HEAD fails (force-push)", non_ancestor_repo, "side", False, ["not an ancestor"]),
+    ("--against a commit from before the baseline existed compares with the first baseline commit and passes", lambda: pre_baseline_repo(), "HEAD~1", True, ["first added it"]),
+    ("--against a pre-baseline commit still catches an edited baseline", lambda: pre_baseline_repo(baseline_edit), "HEAD~1", False, ["q01", "differs from the one at"]),
+]
+
+
 def main():
     bad = []
+    for name, build, rev, should_pass, expect in REV_CASES:
+        d = build()
+        rc, out = run(d, "--against", rev)
+        good = (rc == 0) == should_pass and all(e in out for e in expect)
+        print(("PASS  " if good else "FAIL  ") + f"{name}: {'accepted' if rc == 0 else 'rejected'}")
+        if not good:
+            bad.append(name)
+            print(out)
+        shutil.rmtree(d)
     for name, pre, mutate, should_pass, expect in HISTORY_CASES:
         d = sandbox(pre)
         mutate(d)

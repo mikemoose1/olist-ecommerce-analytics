@@ -328,10 +328,46 @@ CASES = [
     ("Coverage: an exemption with no written reason fails",
      "ontology:coverage allowlist reasons",
      {"allowlist_append": "  - match: marts.fct_orders.max_installments\n    reason: ''\n"}),
+    ("Coverage (M5): a small count is edited (14 exceptions -> 41)",
+     "ontology:coverage numbers in ONTOLOGY.md",
+     {"md_replace": [('14<!--n:stage_rules.1.expected--> exceptions', '41<!--n:stage_rules.1.expected--> exceptions')]}),
+    ("Coverage (M5): a one-digit count is edited (7 sellers -> 70)",
+     "ontology:coverage numbers in ONTOLOGY.md",
+     {"md_replace": [('7<!--n:relationships.11.orphans--> sellers', '70<!--n:relationships.11.orphans--> sellers')]}),
+    ("Coverage (M5): the headline-metric row count is edited (5 -> 6)",
+     "ontology:coverage numbers in ONTOLOGY.md",
+     {"md_replace": [('5<!--n:entities.headline_metric.rows-->', '6<!--n:entities.headline_metric.rows-->')]}),
+    ("Coverage (M5): an exempt number is edited inside its phrase (29 reachable states -> 92)",
+     "ontology:coverage numbers in ONTOLOGY.md",
+     {"md_replace": [('all 29 reachable states', 'all 92 reachable states')]}),
+    ("Coverage (M5): a timestamp is edited (the cohort cutoff)",
+     "ontology:coverage numbers in ONTOLOGY.md",
+     {"md_replace": [('The cutoff is therefore 2018-06-05 09:06:57', 'The cutoff is therefore 2018-06-06 09:06:57')]}),
+    ("Coverage (M5): a duration is edited (at most 90 days -> 60)",
+     "ontology:coverage numbers in ONTOLOGY.md",
+     {"md_replace": [('at least 24 hours and at most 90 days', 'at least 24 hours and at most 60 days')]}),
+    ("Coverage (M5): a duration is edited (24 hours -> 12)",
+     "ontology:coverage numbers in ONTOLOGY.md",
+     {"md_replace": [('a return must be 24 hours to 90 days later', 'a return must be 12 hours to 90 days later')]}),
+    ("Coverage (M5): a month is edited (window end 2018-08 -> 2018-09)",
+     "ontology:coverage numbers in ONTOLOGY.md",
+     {"md_replace": [('Full months 2017-01 through 2018-08', 'Full months 2017-01 through 2018-09')]}),
+    ("Coverage (M5): number AND marker swapped together (96,096 customer -> 99,441 order) fails on the row's owner",
+     "ontology:coverage numbers in ONTOLOGY.md",
+     {"md_replace": [('96,096<!--n:entities.customer.rows-->', '99,441<!--n:entities.order.rows-->')]}),
+    ("Coverage (M5): a fact marker moved to a sentence that does not name it",
+     "ontology:coverage numbers in ONTOLOGY.md",
+     {"md_replace": [('17,423<!--n:facts.1.expected--> people left out', '17,423<!--n:facts.1.expected--> people dropped')]}),
+    ("Coverage (M5): an exemption with a bare value and no context phrase fails",
+     "ontology:coverage numbers in ONTOLOGY.md",
+     {"allowlist_replace": [('context: "TLC checked all 29 reachable states"', 'context: ""')]}),
     ("Coverage: an exemption that matches nothing fails",
      "ontology:coverage allowlist is current",
      {"allowlist_append": "  - match: marts.dim_seller.no_such_column\n    reason: stale on purpose\n"}),
 ]
+
+DOC_EDITS = ("yml_drop_card", "yml_replace", "md_replace", "md_append", "allowlist_append", "allowlist_replace")   # every key edited_docs reads
+
 
 def edited_docs(mut, work):
     """Env vars pointing the ontology check at edited copies of ontology.yml, ONTOLOGY.md and the coverage allowlist."""
@@ -358,6 +394,9 @@ def edited_docs(mut, work):
         md = md.replace(old, new, 1)
     md += mut.get("md_append", "")
     allow += mut.get("allowlist_append", "")
+    for old, new in mut.get("allowlist_replace", []):  # edit an exemption in the copy of the allowlist
+        assert old in allow, f"no {old!r} in coverage_allowlist.yml"
+        allow = allow.replace(old, new, 1)
     env = {}
     for var, name, text in (("ONTOLOGY_YML", "ontology.yml", yml), ("ONTOLOGY_MD", "ONTOLOGY.md", md), ("COVERAGE_ALLOWLIST", "allow.yml", allow)):
         path = os.path.join(work, name)
@@ -418,7 +457,7 @@ def main():
         b_rc, b_res = run_tests(selector, base_db, raw_clean)
         mut_db = os.path.join(work, "mutant.duckdb"); shutil.copy(DB, mut_db)
         raw_mut = raw_copy(mut.get("raw_edit"))
-        doc_env = edited_docs(mut, work) if {"yml_drop_card", "yml_replace", "md_replace", "md_append", "allowlist_append"} & set(mut) else None
+        doc_env = edited_docs(mut, work) if set(DOC_EDITS) & set(mut) else None
         if "sql" in mut:
             con = duckdb.connect(mut_db)
             for s in mut["sql"]:
@@ -446,7 +485,7 @@ def main():
         f.write("| Rule | Tests | Known-bad rows injected | Baseline | Mutant (failing rows) | Verdict |\n|---|---|---|---|---|---|\n")
         for r in report:
             m = r["mutation"]
-            mut = m.get("sql") or [f"{k}: {m[k]}" for k in ("raw_edit", "yml_drop_card", "yml_replace", "md_replace", "md_append", "allowlist_append") if k in m]
+            mut = m.get("sql") or [f"{k}: {m[k]}" for k in ("raw_edit",) + DOC_EDITS if k in m]
             f.write(f"| {r['rule']} | `{r['selector']}` | {'<br>'.join('`'+m.replace('|','\\|')+'`' for m in mut)} | "
                     f"{', '.join(s for _, s, _ in r['baseline'])} | {', '.join(f'{s} ({n})' for _, s, n in r['mutant'])} | **{r['verdict']}** |\n")
     bad = [r for r in report if r["verdict"] != "PROVEN"]
