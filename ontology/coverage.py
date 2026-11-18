@@ -1,10 +1,11 @@
 """Coverage: is everything the warehouse and the docs show described in ontology.yml?
 
 Three checks, each a PASS/FAIL line (run from ontology/check.py, so `make ontology` and CI fail on a gap):
-  tables   every table in the marts and metrics schemas is an entity table, a metric card's model or source table,
-           or listed in coverage_allowlist.yml with a written reason
-  columns  every column of those tables has a card: an entity key, a relationship column, a term or metric source,
-           a `columns:` entry, or an allowlist entry with a written reason
+  tables   every table in the marts and metrics schemas is an entity table or listed in coverage_allowlist.yml with a
+           written reason. A metric card that names a table as its model does not describe it (G7).
+  columns  every column of those tables has a contract: an entity key, a relationship column, a `columns:` entry, the source
+           of a term that carries values or counts, or an allowlist entry with a written reason. A bare `source:` pointer
+           (and every metric source) is not a contract: nothing checks the column itself (G7).
   numbers  every number shown in ONTOLOGY.md (counts with commas, decimals, integers of 3+ digits) is a CHECKED value in
            ontology.yml (expected, nulls, rows, verified ...; a number inside a sentence does not count), or is in the
            allowlist with a reason
@@ -33,13 +34,11 @@ def described(onto):
         cols |= {f"{e['table']}.{k}" for k in key_columns(e)}
     for r in onto["relationships"]:
         cols.add(f"{onto['entities'][r['from']['entity']]['table']}.{r['from']['column']}")
-    for kind in ("terms", "metrics"):
-        for card in onto[kind].values():
+    for card in onto["terms"].values():
+        # a term's source column is only "described" when the term carries values or counts the check compares
+        # to the warehouse. A bare pointer (and every metric source) proves nothing about the column itself.
+        if any(k in card for k in ("values", "count", "counts")):
             cols.add(card["source"])
-            tables.add(card["source"].rsplit(".", 1)[0])
-            if "model" in card:
-                tables.add(card["model"])
-    tables |= {c.rsplit(".", 1)[0] for c in cols}
     return tables, cols
 
 

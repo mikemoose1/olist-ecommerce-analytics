@@ -61,6 +61,24 @@ erDiagram
     HEADLINE_METRIC {
         string metric_name PK
     }
+    LATE_RATE_ORDER {
+        string order_id PK
+    }
+    LATE_RATE_MONTH {
+        string year_month PK
+    }
+    LATE_RATE_RESULT {
+        string metric_name PK
+    }
+    REPEAT_RATE_90D_RESULT {
+        string metric_name PK
+    }
+    REPEAT_RATE_EVER_RESULT {
+        string metric_name PK
+    }
+    REVIEW_SCORE_RESULT {
+        string metric_name PK
+    }
     CUSTOMER ||--|{ ORDER : "customer places orders"
     ORDER ||--o{ ITEM : "order contains items"
     ORDER ||--o{ PARCEL : "order splits into parcels"
@@ -75,6 +93,7 @@ erDiagram
     LOCATION ||--o{ SELLER : "seller is based at a location"
     DATE ||--o{ ORDER : "order is purchased on a date"
     CUSTOMER ||--|o REPEAT_COHORT : "customer is in the repeat cohort"
+    ORDER ||--|o LATE_RATE_ORDER : "late-rate verdict covers an order"
 ```
 
 | Thing | One row is | Key | Rows |
@@ -91,6 +110,9 @@ erDiagram
 | date | one calendar day | date_day | 791 |
 | repeat cohort (supporting) | one person eligible for the 90-day repeat rate | customer_unique_id | 77,560 |
 | headline metric (supporting) | one headline number with its numerator and denominator | metric_name | 5 |
+| late-rate order (supporting) | one order judged for lateness, with its verdict | order_id | 94,931 |
+| late-rate month (supporting) | one purchase month's late rate | year_month | 20 |
+| result tables (supporting) | the one-row results of the late rate, the 90-day repeat rate and the all-time repeat rate, and the two review metrics | metric_name | 1, 1, 1 and 2 |
 
 Known gaps in the links, each counted and checked:
 

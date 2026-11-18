@@ -72,6 +72,42 @@
   "detail": "rows=5 (card 5), distinct keys=5, null keys=0"
  },
  {
+  "kind": "entity",
+  "name": "late_rate_order",
+  "ok": true,
+  "detail": "rows=94931 (card 94931), distinct keys=94931, null keys=0"
+ },
+ {
+  "kind": "entity",
+  "name": "late_rate_month",
+  "ok": true,
+  "detail": "rows=20 (card 20), distinct keys=20, null keys=0"
+ },
+ {
+  "kind": "entity",
+  "name": "late_rate_result",
+  "ok": true,
+  "detail": "rows=1 (card 1), distinct keys=1, null keys=0"
+ },
+ {
+  "kind": "entity",
+  "name": "repeat_rate_90d_result",
+  "ok": true,
+  "detail": "rows=1 (card 1), distinct keys=1, null keys=0"
+ },
+ {
+  "kind": "entity",
+  "name": "repeat_rate_ever_result",
+  "ok": true,
+  "detail": "rows=1 (card 1), distinct keys=1, null keys=0"
+ },
+ {
+  "kind": "entity",
+  "name": "review_score_result",
+  "ok": true,
+  "detail": "rows=2 (card 2), distinct keys=2, null keys=0"
+ },
+ {
   "kind": "relationship",
   "name": "customer places orders",
   "ok": true,
@@ -152,6 +188,12 @@
  {
   "kind": "relationship",
   "name": "customer is in the repeat cohort",
+  "ok": true,
+  "detail": "nulls=0 (card 0), orphans=0 (card 0), children per parent 0..1 (card 0..1)"
+ },
+ {
+  "kind": "relationship",
+  "name": "late-rate verdict covers an order",
   "ok": true,
   "detail": "nulls=0 (card 0), orphans=0 (card 0), children per parent 0..1 (card 0..1)"
  },
@@ -930,6 +972,66 @@
   "detail": "type BOOLEAN (card BOOLEAN); nulls 0 (card 0)"
  },
  {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.estimated_delivery_date",
+  "ok": true,
+  "detail": "type DATE (card DATE); nulls 0 (card 0); holds [promised_days >= 0]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.recon_status",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0); holds [recon_status in ('match', 'minor', 'overpaid', 'underpaid', 'no_items', 'no_payment')]: 0 violations; holds [(recon_status = 'no_items') = (n_items = 0)]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.ship_to_state",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0); holds [length(ship_to_state) = 2]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_reviews.review_created_on",
+  "ok": true,
+  "detail": "type DATE (card DATE); nulls 0 (card 0); holds [review_created_on = cast(review_created_at as date)]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_reviews.review_answered_at",
+  "ok": true,
+  "detail": "type TIMESTAMP (card TIMESTAMP); nulls 0 (card 0); holds [review_answered_at >= review_created_at]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_reviews.is_chosen_for_order",
+  "ok": true,
+  "detail": "type BOOLEAN (card BOOLEAN); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_reviews.review_before_delivery",
+  "ok": true,
+  "detail": "type BOOLEAN (card BOOLEAN); nulls 2865 (card 2865)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_late_rate_orders.is_late",
+  "ok": true,
+  "detail": "type BOOLEAN (card BOOLEAN); nulls 0 (card 0); holds [is_late = (delivery_state = 'delivered_late')]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_late_rate_orders.review_score",
+  "ok": true,
+  "detail": "type INTEGER (card INTEGER); nulls 629 (card 629); holds [review_score is null or review_score between 1 and 5]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_late_rate_monthly.year_month",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0); holds [year_month between '2017-01' and '2018-08']: 0 violations"
+ },
+ {
   "kind": "fact",
   "name": "People with a qualifying order",
   "ok": true,
@@ -982,6 +1084,18 @@
   "name": "Survey responses (review_id) attached to more than one order",
   "ok": true,
   "detail": "count=789 (card 789)"
+ },
+ {
+  "kind": "fact",
+  "name": "Survey responses chosen for an order (C4)",
+  "ok": true,
+  "detail": "count=98673 (card 98673)"
+ },
+ {
+  "kind": "fact",
+  "name": "Judged orders marked late",
+  "ok": true,
+  "detail": "count=6518 (card 6518)"
  },
  {
   "kind": "fact",

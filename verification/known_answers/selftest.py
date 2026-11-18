@@ -34,10 +34,11 @@ def main():
         "q18": "select count(*) from marts.fct_orders where n_parcels is null",     # wrong null assumption
         "q12": 'select count(*) from "metrics"."metric_repeat_rate_90d_people" where repeated',     # quoted forbidden table
         "q13": "select count(*) from olist.metrics.metric_repeat_rate_90d_people",                 # catalog-qualified forbidden table
+        "q24": "select '2018-03' from marts.fct_orders limit 1",                                    # typed text answer (a text key blocks only its own question)
         "q22": "select 94983 /* from marts.dim_customer */",                                         # printed value hidden behind a comment
     })
     del bad["q02"]                                                                   # missing answer
-    want_fail = ["q01", "q02", "q03", "q06", "q09", "q11", "q12", "q13", "q16", "q18", "q22"]
+    want_fail = ["q01", "q02", "q03", "q06", "q09", "q11", "q12", "q13", "q16", "q18", "q22", "q24"]
     d = tempfile.mkdtemp()
     variants = dict(key)   # correct answers written another way must still score right
     variants["q22"] = 'select count(*) from "marts"."dim_customer" where n_qualifying_orders >= 1'

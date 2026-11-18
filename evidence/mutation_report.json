@@ -23,7 +23,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 11.4
+  "seconds": 10.0
  },
  {
   "rule": "Raw row counts are as published",
@@ -36,12 +36,12 @@
   },
   "baseline": [
    [
-    "dbt_expectations_source_expect_table_row_count_to_equal_olist_raw_olist_orders_dataset_99441",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
     "pass",
     0
    ],
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
+    "dbt_expectations_source_expect_table_row_count_to_equal_olist_raw_olist_orders_dataset_99441",
     "pass",
     0
    ]
@@ -59,7 +59,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.5
+  "seconds": 9.3
  },
  {
   "rule": "Staging keeps every raw row",
@@ -71,17 +71,17 @@
   },
   "baseline": [
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
-    "pass",
-    0
-   ],
-   [
     "dbt_expectations_expect_table_row_count_to_equal_other_table_fct_orders_ref_stg_orders_",
     "pass",
     0
    ],
    [
     "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_delivery_ref_stg_orders_",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
     "pass",
     0
    ],
@@ -93,12 +93,12 @@
   ],
   "mutant": [
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_delivery_ref_stg_orders_",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_fct_orders_ref_stg_orders_",
     "fail",
     1
    ],
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_fct_orders_ref_stg_orders_",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_delivery_ref_stg_orders_",
     "fail",
     1
    ],
@@ -114,7 +114,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.9
+  "seconds": 9.3
  },
  {
   "rule": "Modeling never creates or loses money (no fan-out)",
@@ -139,7 +139,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.6
+  "seconds": 9.2
  },
  {
   "rule": "Repeat metrics count people, not per-order ids",
@@ -164,7 +164,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.4
+  "seconds": 9.2
  },
  {
   "rule": "A multi-seller order is never treated as a single observed parcel",
@@ -189,7 +189,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.5
+  "seconds": 9.4
  },
  {
   "rule": "A review dated before delivery is flagged",
@@ -214,7 +214,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.5
+  "seconds": 9.3
  },
  {
   "rule": "Paid equals items + freight, or the order is labeled",
@@ -239,7 +239,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.3
+  "seconds": 9.9
  },
  {
   "rule": "Real payment gaps stay under 0.5% of orders",
@@ -266,7 +266,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.3
+  "seconds": 9.1
  },
  {
   "rule": "Only full months are in the analysis window",
@@ -291,7 +291,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.5
+  "seconds": 9.0
  },
  {
   "rule": "Delivery state agrees with status and dates",
@@ -316,7 +316,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.6
+  "seconds": 9.5
  },
  {
   "rule": "Orders without items are labeled no_items",
@@ -366,7 +366,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.1
+  "seconds": 9.4
  },
  {
   "rule": "Every order's purchase date exists in dim_date",
@@ -388,12 +388,12 @@
     0
    ],
    [
-    "relationships_fct_payments_order_id__order_id__ref_fct_orders_",
+    "relationships_fct_order_items_order_id__order_id__ref_fct_orders_",
     "pass",
     0
    ],
    [
-    "relationships_fct_order_items_order_id__order_id__ref_fct_orders_",
+    "relationships_fct_payments_order_id__order_id__ref_fct_orders_",
     "pass",
     0
    ],
@@ -415,12 +415,12 @@
     4
    ],
    [
-    "relationships_fct_payments_order_id__order_id__ref_fct_orders_",
+    "relationships_fct_orders_customer_unique_id__customer_unique_id__ref_dim_customer_",
     "pass",
     0
    ],
    [
-    "relationships_fct_orders_customer_unique_id__customer_unique_id__ref_dim_customer_",
+    "relationships_fct_payments_order_id__order_id__ref_fct_orders_",
     "pass",
     0
    ],
@@ -441,7 +441,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.1
+  "seconds": 9.8
  },
  {
   "rule": "One location per zip",
@@ -466,7 +466,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.7
+  "seconds": 9.5
  },
  {
   "rule": "Zip locations are inside Brazil",
@@ -490,18 +490,18 @@
   ],
   "mutant": [
    [
-    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lat__5_3___33_8",
-    "fail",
-    1
-   ],
-   [
     "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lng___34_7___74_0",
     "pass",
     0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lat__5_3___33_8",
+    "fail",
+    1
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.5
+  "seconds": 9.6
  },
  {
   "rule": "Payment types are known values",
@@ -526,7 +526,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.7
+  "seconds": 9.4
  },
  {
   "rule": "Trend metrics never include a partial month",
@@ -551,7 +551,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.8
+  "seconds": 9.5
  },
  {
   "rule": "Ontology: an order has exactly one row (no order with two customers)",
@@ -576,7 +576,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.6
  },
  {
   "rule": "Ontology: every customer has at least one order",
@@ -601,7 +601,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.2
+  "seconds": 2.7
  },
  {
   "rule": "Ontology: every item's product exists",
@@ -626,7 +626,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.4
+  "seconds": 2.8
  },
  {
   "rule": "Ontology: every survey response belongs to a real order",
@@ -651,7 +651,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.4
+  "seconds": 2.6
  },
  {
   "rule": "Ontology: an order never has two chosen reviews",
@@ -676,7 +676,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.7
  },
  {
   "rule": "Ontology: no new unknown ship-to locations beyond the documented 278",
@@ -701,7 +701,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.6
  },
  {
   "rule": "Ontology stage rule: late always means delivered after the promised day",
@@ -726,7 +726,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.7
  },
  {
   "rule": "Ontology: the repeat cohort has one row per person (no duplicate person)",
@@ -751,7 +751,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.4
  },
  {
   "rule": "Ontology: every cohort person is a real customer",
@@ -776,7 +776,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.2
+  "seconds": 2.8
  },
  {
   "rule": "Ontology: purchased_at is never null",
@@ -801,7 +801,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.7
  },
  {
   "rule": "Ontology: purchased_at keeps its TIMESTAMP type (a DATE would lose the 24-hour rule)",
@@ -826,7 +826,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.2
+  "seconds": 2.6
  },
  {
   "rule": "Ontology: n_parcels is 0, not null, for an order with no items",
@@ -851,7 +851,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.6
  },
  {
   "rule": "Ontology: in_analysis_window is never null",
@@ -876,7 +876,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.4
+  "seconds": 2.5
  },
  {
   "rule": "Ontology: review_score is null only when the order has no response",
@@ -901,7 +901,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.2
+  "seconds": 2.3
  },
  {
   "rule": "Ontology: review_score never holds a value outside 1 to 5",
@@ -926,7 +926,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.6
  },
  {
   "rule": "Ontology: the repeat flag is never null",
@@ -951,7 +951,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.5
  },
  {
   "rule": "Ontology: the canceled count and the 6 canceled orders with a delivery date",
@@ -1001,7 +1001,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.5
  },
  {
   "rule": "Ontology: the order count with no parcels (n_parcels = 0)",
@@ -1026,7 +1026,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.5
  },
  {
   "rule": "Ontology: the analysis-window flag counts (349 outside)",
@@ -1051,7 +1051,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.4
+  "seconds": 2.6
  },
  {
   "rule": "Ontology: the repeat cohort is everyone old enough (77,560 and the 17,423 left out)",
@@ -1076,7 +1076,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.5
+  "seconds": 2.6
  },
  {
   "rule": "Ontology: first_order_at is the purchased_at of the seq = 1 order",
@@ -1101,7 +1101,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.4
+  "seconds": 2.5
  },
  {
   "rule": "Ontology: the headline metric table has its 5 rows",
@@ -1126,7 +1126,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.4
  },
  {
   "rule": "Ontology: is_qualifying_order follows its rule (status and items)",
@@ -1151,7 +1151,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.2
+  "seconds": 2.5
  },
  {
   "rule": "Ontology: qualifying order counts (98,199 qualifying, 1,242 not)",
@@ -1176,7 +1176,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.5
  },
  {
   "rule": "Ontology: the sequence number is null exactly for non-qualifying orders",
@@ -1201,7 +1201,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.2
+  "seconds": 2.7
  },
  {
   "rule": "Ontology: purchase_date is the calendar day of purchased_at",
@@ -1226,7 +1226,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.7
  },
  {
   "rule": "Ontology: n_items is never null",
@@ -1251,7 +1251,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.1
+  "seconds": 2.5
  },
  {
   "rule": "Ontology: delivered_to_customer_at has exactly 2,965 nulls",
@@ -1276,7 +1276,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.4
+  "seconds": 2.5
  },
  {
   "rule": "Ontology: every person has at least one order (n_orders >= 1)",
@@ -1301,7 +1301,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.5
  },
  {
   "rule": "Ontology: qualifying orders never exceed orders",
@@ -1326,7 +1326,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.5
+  "seconds": 2.4
  },
  {
   "rule": "Ontology: first_qualifying_order_at is null exactly when a person has no qualifying order",
@@ -1351,7 +1351,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.5
+  "seconds": 2.6
  },
  {
   "rule": "Ontology: the cohort person id is never null",
@@ -1376,7 +1376,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.5
  },
  {
   "rule": "Ontology: first_order_at is never null",
@@ -1401,7 +1401,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.6
  },
  {
   "rule": "Ontology: first_order_date is the calendar day of first_order_at",
@@ -1451,7 +1451,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.5
  },
  {
   "rule": "Ontology: the headline denominator is never null",
@@ -1476,7 +1476,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 33.8
+  "seconds": 2.6
  },
  {
   "rule": "Ontology: the headline value is never null",
@@ -1501,7 +1501,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.2
+  "seconds": 2.5
  },
  {
   "rule": "Ontology: the headline metric name is never null",
@@ -1526,7 +1526,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.2
+  "seconds": 2.7
  },
  {
   "rule": "Ontology: the review score count (768 orders with none)",
@@ -1551,7 +1551,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.7
  },
  {
   "rule": "Ontology fact: people with a qualifying order (94,983)",
@@ -1576,7 +1576,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.6
  },
  {
   "rule": "Ontology fact: people left out of the cohort as too recent (17,423)",
@@ -1601,7 +1601,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.6
  },
  {
   "rule": "Ontology fact: the newest qualifying purchase and the cohort cutoff",
@@ -1651,7 +1651,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.2
+  "seconds": 2.6
  },
  {
   "rule": "Ontology fact: seq = 1 is the earliest qualifying order",
@@ -1676,7 +1676,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.6
  },
  {
   "rule": "Ontology fact: same-second qualifying orders (281 pairs)",
@@ -1701,7 +1701,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.6
  },
  {
   "rule": "Ontology fact: the order's review_score equals the chosen response's score",
@@ -1726,7 +1726,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.2
+  "seconds": 2.5
  },
  {
   "rule": "Ontology card: promised_days is the days from purchase to the promised date",
@@ -1751,7 +1751,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.2
+  "seconds": 2.6
  },
  {
   "rule": "Ontology card: paid_minus_due is amount_paid minus amount_due",
@@ -1776,7 +1776,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.6
  },
  {
   "rule": "Ontology card: amount_due is null only on orders with no items",
@@ -1801,7 +1801,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.2
+  "seconds": 2.7
  },
  {
   "rule": "Ontology fact: 5,127 survey responses were sent before delivery",
@@ -1826,7 +1826,328 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.4
+ },
+ {
+  "rule": "G7 coverage: a metric table cited only as a card's model has no entity",
+  "selector": "ontology:coverage tables",
+  "mutation": {
+   "yml_drop_card": "late_rate_month"
+  },
+  "baseline": [
+   [
+    "coverage tables",
+    "pass",
+    "16 tables; undescribed: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage tables",
+    "fail",
+    "16 tables; undescribed: ['metrics.metric_late_rate_monthly']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "G7 coverage: a column cited only as a metric's source has no contract",
+  "selector": "ontology:coverage columns",
+  "mutation": {
+   "yml_drop_card": "metrics.metric_late_rate_orders.is_late"
+  },
+  "baseline": [
+   [
+    "coverage columns",
+    "pass",
+    "127 columns; undescribed: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage columns",
+    "fail",
+    "127 columns; undescribed: ['metrics.metric_late_rate_orders.is_late']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "G7 entity: the judged-order table has one row per judged order",
+  "selector": "ontology:entity late_rate_order",
+  "mutation": {
+   "sql": [
+    "delete from metrics.metric_late_rate_orders where order_id in (select order_id from metrics.metric_late_rate_orders order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "entity late_rate_order",
+    "pass",
+    "rows=94931 (card 94931), distinct keys=94931, null keys=0"
+   ]
+  ],
+  "mutant": [
+   [
+    "entity late_rate_order",
+    "fail",
+    "rows=94930 (card 94931), distinct keys=94930, null keys=0"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.6
+ },
+ {
+  "rule": "G7 entity: the monthly table has one row per month",
+  "selector": "ontology:entity late_rate_month",
+  "mutation": {
+   "sql": [
+    "insert into metrics.metric_late_rate_monthly select * from metrics.metric_late_rate_monthly limit 1"
+   ]
+  },
+  "baseline": [
+   [
+    "entity late_rate_month",
+    "pass",
+    "rows=20 (card 20), distinct keys=20, null keys=0"
+   ]
+  ],
+  "mutant": [
+   [
+    "entity late_rate_month",
+    "fail",
+    "rows=21 (card 20), distinct keys=20, null keys=0"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "G7 entity: a result table has exactly the rows on its card",
+  "selector": "ontology:entity review_score_result",
+  "mutation": {
+   "sql": [
+    "insert into metrics.metric_review_score values ('stray', 'x', 1, 1, 1.0)"
+   ]
+  },
+  "baseline": [
+   [
+    "entity review_score_result",
+    "pass",
+    "rows=2 (card 2), distinct keys=2, null keys=0"
+   ]
+  ],
+  "mutant": [
+   [
+    "entity review_score_result",
+    "fail",
+    "rows=3 (card 2), distinct keys=3, null keys=0"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "G7 link: every judged order is an order",
+  "selector": "ontology:relationship late-rate verdict covers an order",
+  "mutation": {
+   "sql": [
+    "update metrics.metric_late_rate_orders set order_id = 'no-such-order' where order_id in (select order_id from metrics.metric_late_rate_orders order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "relationship late-rate verdict covers an order",
+    "pass",
+    "nulls=0 (card 0), orphans=0 (card 0), children per parent 0..1 (card 0..1)"
+   ]
+  ],
+  "mutant": [
+   [
+    "relationship late-rate verdict covers an order",
+    "fail",
+    "nulls=0 (card 0), orphans=1 (card 0), children per parent 0..1 (card 0..1)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "G7 card: is_late is exactly delivery_state = delivered_late",
+  "selector": "ontology:column_fact metrics.metric_late_rate_orders.is_late",
+  "mutation": {
+   "sql": [
+    "update metrics.metric_late_rate_orders set is_late = not is_late where order_id in (select order_id from metrics.metric_late_rate_orders order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact metrics.metric_late_rate_orders.is_late",
+    "pass",
+    "type BOOLEAN (card BOOLEAN); nulls 0 (card 0); holds [is_late = (delivery_state = 'delivered_late')]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact metrics.metric_late_rate_orders.is_late",
+    "fail",
+    "type BOOLEAN (card BOOLEAN); nulls 0 (card 0); holds [is_late = (delivery_state = 'delivered_late')]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.6
+ },
+ {
+  "rule": "G7 card: a judged order's review score is 1 to 5 or null",
+  "selector": "ontology:column_fact metrics.metric_late_rate_orders.review_score",
+  "mutation": {
+   "sql": [
+    "update metrics.metric_late_rate_orders set review_score = 6 where order_id in (select order_id from metrics.metric_late_rate_orders where review_score is not null order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact metrics.metric_late_rate_orders.review_score",
+    "pass",
+    "type INTEGER (card INTEGER); nulls 629 (card 629); holds [review_score is null or review_score between 1 and 5]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact metrics.metric_late_rate_orders.review_score",
+    "fail",
+    "type INTEGER (card INTEGER); nulls 629 (card 629); holds [review_score is null or review_score between 1 and 5]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.6
+ },
+ {
+  "rule": "G7 card: the monthly table holds only months inside the window",
+  "selector": "ontology:column_fact metrics.metric_late_rate_monthly.year_month",
+  "mutation": {
+   "sql": [
+    "update metrics.metric_late_rate_monthly set year_month = '2018-09' where year_month = '2018-08'"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact metrics.metric_late_rate_monthly.year_month",
+    "pass",
+    "type VARCHAR (card VARCHAR); nulls 0 (card 0); holds [year_month between '2017-01' and '2018-08']: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact metrics.metric_late_rate_monthly.year_month",
+    "fail",
+    "type VARCHAR (card VARCHAR); nulls 0 (card 0); holds [year_month between '2017-01' and '2018-08']: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "G7 fact: 6,518 judged orders are late",
+  "selector": "ontology:fact Judged orders marked late",
+  "mutation": {
+   "sql": [
+    "update metrics.metric_late_rate_orders set is_late = true where order_id in (select order_id from metrics.metric_late_rate_orders where not is_late order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "fact Judged orders marked late",
+    "pass",
+    "count=6518 (card 6518)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact Judged orders marked late",
+    "fail",
+    "count=6519 (card 6518)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "Card: recon_status uses only the six named values",
+  "selector": "ontology:column_fact marts.fct_orders.recon_status",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set recon_status = 'refunded' where order_id in (select order_id from marts.fct_orders order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.recon_status",
+    "pass",
+    "type VARCHAR (card VARCHAR); nulls 0 (card 0); holds [recon_status in ('match', 'minor', 'overpaid', 'underpaid', 'no_items', 'no_payment')]: 0 violations; holds [(recon_status = 'no_items') = (n_items = 0)]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.recon_status",
+    "fail",
+    "type VARCHAR (card VARCHAR); nulls 0 (card 0); holds [recon_status in ('match', 'minor', 'overpaid', 'underpaid', 'no_items', 'no_payment')]: 1 violations; holds [(recon_status = 'no_items') = (n_items = 0)]: 0 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "Card: review_created_on is the day of review_created_at",
+  "selector": "ontology:column_fact marts.fct_reviews.review_created_on",
+  "mutation": {
+   "sql": [
+    "update marts.fct_reviews set review_created_on = review_created_on + 1 where review_id in (select review_id from marts.fct_reviews order by review_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_reviews.review_created_on",
+    "pass",
+    "type DATE (card DATE); nulls 0 (card 0); holds [review_created_on = cast(review_created_at as date)]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_reviews.review_created_on",
+    "fail",
+    "type DATE (card DATE); nulls 0 (card 0); holds [review_created_on = cast(review_created_at as date)]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "Fact: one chosen response per order that has any",
+  "selector": "ontology:fact Survey responses chosen for an order (C4)",
+  "mutation": {
+   "sql": [
+    "update marts.fct_reviews set is_chosen_for_order = false where review_id in (select review_id from marts.fct_reviews where is_chosen_for_order order by review_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "fact Survey responses chosen for an order (C4)",
+    "pass",
+    "count=98673 (card 98673)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact Survey responses chosen for an order (C4)",
+    "fail",
+    "count=98672 (card 98673)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.6
  },
  {
   "rule": "Coverage: removing a column card leaves the column undescribed",
@@ -1849,7 +2170,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.1
+  "seconds": 2.5
  },
  {
   "rule": "Coverage: a new warehouse column with no card fails",
@@ -1874,7 +2195,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.5
  },
  {
   "rule": "Coverage: a new warehouse table with no card fails",
@@ -1922,7 +2243,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.1
+  "seconds": 2.3
  },
  {
   "rule": "Coverage: a number shown in ONTOLOGY.md that ontology.yml only mentions in prose fails",
@@ -1975,7 +2296,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.4
  },
  {
   "rule": "Ontology fact: 789 review_ids sit on more than one order",
@@ -2000,7 +2321,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.5
  },
  {
   "rule": "Coverage: an exemption with no written reason fails",
@@ -2023,7 +2344,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.1
+  "seconds": 2.4
  },
  {
   "rule": "Coverage: an exemption that matches nothing fails",

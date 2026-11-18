@@ -104,6 +104,59 @@ entities:
 # from = the "many" side, to = the "one" side. Each from-row points to exactly one to-row (to's key is unique).
 # children_per_parent = [min, max] rows on the from side for each to-row (max null = no limit).
 # orphans = from-rows whose value is not found on the to side; nulls = from-rows with no value.
+  late_rate_order:
+    meaning: The orders the late rate is judged on, one row each, with the verdict (is_late). The row-level base of the late rate, the monthly late rate and the review gap. 94,931 orders are judged; multi-seller orders are not (C1).
+    table: metrics.metric_late_rate_orders
+    key: order_id
+    one_row_is: one order judged for lateness
+    rows: 94931
+    raw_source: derived from marts.fct_orders (delivered, with items, in the analysis window, single seller)
+    scope: supporting
+    not_this: not every order. Canceled, undelivered, multi-seller and out-of-window orders are not in it.
+    decisions: [C1, D2]
+  late_rate_month:
+    meaning: The late rate for each purchase month, 2017-01 to 2018-08, on the same population as late_rate_order.
+    table: metrics.metric_late_rate_monthly
+    key: year_month
+    one_row_is: one purchase month
+    rows: 20
+    raw_source: derived from metrics.metric_late_rate_orders
+    scope: supporting
+    not_this: no partial month. September 2018 and later are outside the analysis window.
+  late_rate_result:
+    meaning: The one-row result of the late rate, with its numerator, denominator and percentage.
+    table: metrics.metric_late_rate
+    key: metric_name
+    one_row_is: the late-rate result
+    rows: 1
+    raw_source: derived from metrics.metric_late_rate_orders
+    scope: supporting
+  repeat_rate_90d_result:
+    meaning: The one-row result of the 90-day repeat rate.
+    table: metrics.metric_repeat_rate_90d
+    key: metric_name
+    one_row_is: the 90-day repeat-rate result
+    rows: 1
+    raw_source: derived from metrics.metric_repeat_rate_90d_people
+    scope: supporting
+  repeat_rate_ever_result:
+    meaning: The one-row result of the repeat rate with no time limit (a second order at any time counts).
+    table: metrics.metric_repeat_rate_ever
+    key: metric_name
+    one_row_is: the all-time repeat-rate result
+    rows: 1
+    raw_source: derived from marts.fct_orders (qualifying orders)
+    scope: supporting
+    not_this: not the headline. The headline is the 90-day rate.
+  review_score_result:
+    meaning: Two rows. The average review score of orders with a chosen review, and the raw on-time minus late review gap.
+    table: metrics.metric_review_score
+    key: metric_name
+    one_row_is: one review metric
+    rows: 2
+    raw_source: derived from marts.fct_orders and metrics.metric_late_rate_orders
+    scope: supporting
+
 relationships:
   - name: customer places orders
     from: {entity: order, column: customer_unique_id}
@@ -170,6 +223,11 @@ relationships:
     to: customer
     children_per_parent: [0, 1]
     note: Each eligible person appears once. People whose first purchase is too recent, or who never made a qualifying purchase, are not in it.
+  - name: late-rate verdict covers an order
+    from: {entity: late_rate_order, column: order_id}
+    to: order
+    children_per_parent: [0, 1]
+    note: An order has a verdict only when it is judged for lateness. 94,931 of 99,441 orders are.
 
 # Definition cards. source = schema.table.column (checked to exist). Every card says what does NOT count.
 terms:
@@ -452,7 +510,8 @@ columns:
     nulls: 768
     meaning: Stars (1-5) of the chosen review. Null when the order has no response.
     null_when: review_id is null
-    holds: [review_score is null or review_score between 1 and 5]
+    holds:
+      - "review_score is null or review_score between 1 and 5"
   marts.fct_orders.delivered_to_customer_at:
     type: TIMESTAMP
     nulls: 2965
@@ -806,6 +865,58 @@ columns:
     type: BOOLEAN
     nulls: 0
     meaning: True only for repeat_rate_90d.
+  marts.fct_orders.estimated_delivery_date:
+    type: DATE
+    nulls: 0
+    meaning: The delivery date Olist promised at purchase. A calendar date, so lateness is judged by calendar day.
+    holds: [promised_days >= 0]
+  marts.fct_orders.recon_status:
+    type: VARCHAR
+    nulls: 0
+    meaning: How the payments compare with items plus freight - match, minor (a small gap), overpaid, underpaid, no_items (nothing to pay for) or no_payment.
+    holds:
+      - "recon_status in ('match', 'minor', 'overpaid', 'underpaid', 'no_items', 'no_payment')"
+      - "(recon_status = 'no_items') = (n_items = 0)"
+  marts.fct_orders.ship_to_state:
+    type: VARCHAR
+    nulls: 0
+    meaning: Two-letter state the order shipped to, as at order time (C5). Use this for geography, not dim_customer.state.
+    holds: [length(ship_to_state) = 2]
+  marts.fct_reviews.review_created_on:
+    type: DATE
+    nulls: 0
+    meaning: The calendar day the survey was sent (the day of review_created_at), not the day the customer answered.
+    holds: [review_created_on = cast(review_created_at as date)]
+  marts.fct_reviews.review_answered_at:
+    type: TIMESTAMP
+    nulls: 0
+    meaning: When the customer answered. Decision C4 picks the latest-answered response as the chosen one for an order.
+    holds: [review_answered_at >= review_created_at]
+  marts.fct_reviews.is_chosen_for_order:
+    type: BOOLEAN
+    nulls: 0
+    meaning: True on the response C4 chose for its order (latest answered). fct_orders.review_score is the score of this response.
+  marts.fct_reviews.review_before_delivery:
+    type: BOOLEAN
+    nulls: 2865
+    meaning: True when the survey was sent on an earlier calendar day than the delivery. Null when the order has no delivery date.
+  metrics.metric_late_rate_orders.is_late:
+    type: BOOLEAN
+    nulls: 0
+    meaning: True when the order was delivered after its promised date (delivery_state delivered_late). Never null, because every judged order was delivered.
+    holds: [is_late = (delivery_state = 'delivered_late')]
+  metrics.metric_late_rate_orders.review_score:
+    type: INTEGER
+    nulls: 629
+    meaning: The chosen review's stars, 1 to 5. Null when the order has no review.
+    holds:
+      - "review_score is null or review_score between 1 and 5"
+  metrics.metric_late_rate_monthly.year_month:
+    type: VARCHAR
+    nulls: 0
+    meaning: The purchase month as text, YYYY-MM. One row per month from 2017-01 to 2018-08.
+    holds:
+      - "year_month between '2017-01' and '2018-08'"
 
 # Facts that span tables: a SQL query that returns one number and the number it must equal.
 facts:
@@ -836,6 +947,12 @@ facts:
   - claim: Survey responses (review_id) attached to more than one order
     sql: select count(*) from (select review_id from marts.fct_reviews group by 1 having count(distinct order_id) > 1)
     expected: 789
+  - claim: Survey responses chosen for an order (C4)
+    sql: select count(*) from marts.fct_reviews where is_chosen_for_order
+    expected: 98673
+  - claim: Judged orders marked late
+    sql: select count(*) from metrics.metric_late_rate_orders where is_late
+    expected: 6518
   - claim: Survey responses sent on an earlier day than the delivery
     sql: select count(*) from marts.fct_reviews where review_before_delivery
     expected: 5127

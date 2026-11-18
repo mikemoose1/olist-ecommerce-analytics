@@ -39,8 +39,10 @@ CASES = [
     ("a key's SQL changes with no changelog entry", lambda d: edit(d, "answer_key.sql", lambda t: t.replace("select count(*) from marts.fct_orders\nwhere order_status = 'delivered'", "select count(*) + 1 from marts.fct_orders\nwhere order_status = 'delivered'", 1)), ["q02", "key"], []),
     ("a key's SQL is deleted", lambda d: edit(d, "answer_key.sql", lambda t: re.sub(r"-- q10\n.*?(?=\n-- q11)", "-- q10", t, flags=re.S)), ["q10"], []),
     ("a changelog entry's reason is emptied", lambda d: edit(d, "questions_changelog.yml", lambda t: re.sub(r"reason: >-\n(?:    .*\n)+", "reason: ok\n", t)), ["no real reason"], []),
-    ("a new question is added but never adopted", lambda d: (edit(d, "questions.yml", lambda t: t + "- id: q23\n  question: How many sellers are there?\n")), ["q23", "not adopted"], []),
+    ("a note on a question has no reason", lambda d: open(os.path.join(d, "questions_changelog.yml"), "a").write("- id: q03\n  field: note\n  date: 2026-11-17\n  reason: ok\n"), ["no real reason"], []),
+    ("a new question is added but never adopted", lambda d: (edit(d, "questions.yml", lambda t: t + "- id: q97\n  question: How many sellers are there?\n")), ["q97", "not adopted"], []),
     ("the baseline is edited to match a changed question", None, ["differs from the one at"], ["--against", "HEAD"]),
+    ("a changelog note is deleted from history", lambda d: edit(d, "questions_changelog.yml", lambda t: re.sub(r"- id: q12\n  field: note\n(?:  .*\n)+?(?=- id|\Z)", "", t)), ["q12", "removed"], ["--against", "HEAD"]),
     ("a changelog entry is deleted from history", lambda d: edit(d, "questions_changelog.yml", lambda t: "[]\n"), ["q09"], ["--against", "HEAD"]),
 ]
 

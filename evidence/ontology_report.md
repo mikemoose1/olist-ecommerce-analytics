@@ -1,6 +1,6 @@
 # Ontology check: every claim in ontology/ontology.yml against the warehouse
 
-188/188 PASS
+207/207 PASS
 
 | Kind | Claim | Result | Detail |
 |---|---|---|---|
@@ -16,6 +16,12 @@
 | entity | date | PASS | rows=791 (card 791), distinct keys=791, null keys=0 |
 | entity | repeat_cohort | PASS | rows=77560 (card 77560), distinct keys=77560, null keys=0 |
 | entity | headline_metric | PASS | rows=5 (card 5), distinct keys=5, null keys=0 |
+| entity | late_rate_order | PASS | rows=94931 (card 94931), distinct keys=94931, null keys=0 |
+| entity | late_rate_month | PASS | rows=20 (card 20), distinct keys=20, null keys=0 |
+| entity | late_rate_result | PASS | rows=1 (card 1), distinct keys=1, null keys=0 |
+| entity | repeat_rate_90d_result | PASS | rows=1 (card 1), distinct keys=1, null keys=0 |
+| entity | repeat_rate_ever_result | PASS | rows=1 (card 1), distinct keys=1, null keys=0 |
+| entity | review_score_result | PASS | rows=2 (card 2), distinct keys=2, null keys=0 |
 | relationship | customer places orders | PASS | nulls=0 (card 0), orphans=0 (card 0), children per parent 1..17 (card 1..many) |
 | relationship | order contains items | PASS | nulls=0 (card 0), orphans=0 (card 0), children per parent 0..21 (card 0..many) |
 | relationship | order splits into parcels | PASS | nulls=0 (card 0), orphans=0 (card 0), children per parent 0..5 (card 0..many) |
@@ -30,6 +36,7 @@
 | relationship | seller is based at a location | PASS | nulls=0 (card 0), orphans=7 (card 7), children per parent 0..49 (card 0..many) |
 | relationship | order is purchased on a date | PASS | nulls=0 (card 0), orphans=0 (card 0), children per parent 0..1176 (card 0..many) |
 | relationship | customer is in the repeat cohort | PASS | nulls=0 (card 0), orphans=0 (card 0), children per parent 0..1 (card 0..1) |
+| relationship | late-rate verdict covers an order | PASS | nulls=0 (card 0), orphans=0 (card 0), children per parent 0..1 (card 0..1) |
 | column | terms.person | PASS | marts.dim_customer.customer_unique_id |
 | column | terms.order_status | PASS | marts.fct_orders.order_status |
 | column | terms.canceled_order | PASS | marts.fct_orders.order_status |
@@ -159,6 +166,16 @@
 | column_fact | metrics.metric_review_score.value_pct | PASS | type DOUBLE (card DOUBLE); nulls 0 (card 0) |
 | column_fact | metrics.metrics_headline.rule | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0) |
 | column_fact | metrics.metrics_headline.is_headline | PASS | type BOOLEAN (card BOOLEAN); nulls 0 (card 0) |
+| column_fact | marts.fct_orders.estimated_delivery_date | PASS | type DATE (card DATE); nulls 0 (card 0); holds [promised_days >= 0]: 0 violations |
+| column_fact | marts.fct_orders.recon_status | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0); holds [recon_status in ('match', 'minor', 'overpaid', 'underpaid', 'no_items', 'no_payment')]: 0 violations; holds [(recon_status = 'no_items') = (n_items = 0)]: 0 violations |
+| column_fact | marts.fct_orders.ship_to_state | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0); holds [length(ship_to_state) = 2]: 0 violations |
+| column_fact | marts.fct_reviews.review_created_on | PASS | type DATE (card DATE); nulls 0 (card 0); holds [review_created_on = cast(review_created_at as date)]: 0 violations |
+| column_fact | marts.fct_reviews.review_answered_at | PASS | type TIMESTAMP (card TIMESTAMP); nulls 0 (card 0); holds [review_answered_at >= review_created_at]: 0 violations |
+| column_fact | marts.fct_reviews.is_chosen_for_order | PASS | type BOOLEAN (card BOOLEAN); nulls 0 (card 0) |
+| column_fact | marts.fct_reviews.review_before_delivery | PASS | type BOOLEAN (card BOOLEAN); nulls 2865 (card 2865) |
+| column_fact | metrics.metric_late_rate_orders.is_late | PASS | type BOOLEAN (card BOOLEAN); nulls 0 (card 0); holds [is_late = (delivery_state = 'delivered_late')]: 0 violations |
+| column_fact | metrics.metric_late_rate_orders.review_score | PASS | type INTEGER (card INTEGER); nulls 629 (card 629); holds [review_score is null or review_score between 1 and 5]: 0 violations |
+| column_fact | metrics.metric_late_rate_monthly.year_month | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0); holds [year_month between '2017-01' and '2018-08']: 0 violations |
 | fact | People with a qualifying order | PASS | count=94983 (card 94983) |
 | fact | People whose first qualifying order is too recent for a full 90 days | PASS | count=17423 (card 17423) |
 | fact | The repeat cohort is exactly the people whose first qualifying order is old enough | PASS | count=0 (card 0) |
@@ -168,6 +185,8 @@
 | fact | The sequence number follows purchased_at, so seq = 1 is the person's earliest qualifying order | PASS | count=0 (card 0) |
 | fact | Orders with more than one survey response | PASS | count=547 (card 547) |
 | fact | Survey responses (review_id) attached to more than one order | PASS | count=789 (card 789) |
+| fact | Survey responses chosen for an order (C4) | PASS | count=98673 (card 98673) |
+| fact | Judged orders marked late | PASS | count=6518 (card 6518) |
 | fact | Survey responses sent on an earlier day than the delivery | PASS | count=5127 (card 5127) |
 | fact | Of those, responses sent on or after the promised date | PASS | count=4713 (card 4713) |
 | fact | Of those, responses on orders whose delivery_state is delivered_late | PASS | count=4777 (card 4777) |

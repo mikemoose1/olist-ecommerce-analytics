@@ -4,6 +4,7 @@
 What is guarded, per question id: the original wording, the reworded wording (with forbidden_tables), and the key SQL.
   questions_baseline.json   fingerprint (sha256 of normalized content) of every adopted question. Grows only.
   questions_changelog.yml   every change: id, field (original | reworded | key), old_sha, new_sha, date, gap, reason.
+                            A `field: note` entry (id, date, reason, no shas) records a decision NOT to change a question.
 
 Rules (all checked on every run, and in CI):
   1. every baselined id still exists in both question files and in answer_key.sql
@@ -92,9 +93,14 @@ def check(against=None):
     cur = current()
     problems = []
     for e in log:
-        for k in ("id", "field", "old_sha", "new_sha", "date", "reason"):
+        # a `note` records a decision NOT to change a question (id, field note, date, reason); every other entry is a change
+        need = ("id", "field", "date", "reason") if e.get("field") == "note" else ("id", "field", "old_sha", "new_sha", "date", "reason")
+        for k in need:
             if not e.get(k):
                 problems.append(f"changelog entry {e} is missing '{k}'")
+        if e.get("field") == "note" and len(str(e.get("reason", "")).strip()) < 15:
+            problems.append(f"note on {e.get('id')} has no real reason")
+    log = [e for e in log if e.get("field") != "note"]
     for qid, fields in base.items():
         if qid not in cur:
             problems.append(f"{qid}: removed (questions are append-only)")
@@ -121,7 +127,7 @@ def check(against=None):
             now = [json.dumps(e, sort_keys=True, default=str) for e in log]
             for e in yaml.safe_load(old_log) or []:
                 if json.dumps(e, sort_keys=True, default=str) not in now:
-                    problems.append(f"changelog entry {e['id']} {e['field']} {e['old_sha']}->{e['new_sha']} was edited or removed")
+                    problems.append(f"changelog entry {e['id']} {e['field']} {e.get('old_sha', '')}->{e.get('new_sha', '')} was edited or removed")
     return base, cur, problems
 
 

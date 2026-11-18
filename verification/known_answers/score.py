@@ -115,7 +115,6 @@ def main():
     con = duckdb.connect(DB, read_only=True)
     want_all = {k: one(con, v) for k, v in keys.items()}
     literal = literal_re(v for v in want_all.values())
-    text_keys = [v for v in want_all.values() if isinstance(v, str)]
     selected = parse_ids(a.ids, ids)
     right = abstain = 0
     print(f"questions: {os.path.basename(qfile)}   answers: {os.path.basename(a.answers)}   scored: {len(selected)}")
@@ -131,7 +130,7 @@ def main():
         try:
             if sql is None:
                 raise ValueError("no answer given")
-            check_hardcode(sql, literal, text_keys, q.get("forbidden_tables", []))
+            check_hardcode(sql, literal, [want] if isinstance(want, str) else [], q.get("forbidden_tables", []))   # a text key blocks only its own question: q05 may say '2018-03'
             got = one(con, sql)
             ok = got == want
         except Exception as e:  # a query that does not run is a wrong answer
