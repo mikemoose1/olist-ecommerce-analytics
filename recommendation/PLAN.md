@@ -80,3 +80,7 @@ The first run showed two held-out surprises, so three descriptive checks were ad
 - Rio de Janeiro (RJ) had a 14.8% late rate in discovery months and 4.2% in held-out months. Clusters are now also checked by month: share of late orders in the three worst months.
 - The star penalty was smaller in held-out months. Median days late per split is now reported, since stars fall with each extra day late.
 - Upper bound on late orders tied to sellers missing ship-by dates, and share of late orders that were 1-3 or 1-7 days late, to size the two actions.
+- Survey timing (added after the adversarial review, after outcomes were seen): late orders split by whether the survey went out before or after delivery, then compared within 1-3 days late, because the two groups differ mainly in how late the parcel was.
+- The Rio de Janeiro "spike" window, 2017-11 to 2018-03 (`SPIKE` in analyze.py), was chosen after seeing which months were worst. The RJ and rest-of-country rates inside and outside it are descriptive, not a tested hypothesis.
+- Wording of causal claims was softened after an independent review: "associated with" instead of "caused by", and no claim that changing survey timing would change scores.
+- Money figures are rounded to the nearest R$500, because an independent rebuild moved the middle estimate by about R$100.

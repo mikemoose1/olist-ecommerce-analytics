@@ -223,8 +223,18 @@ R["who_caused"]["avoidable_upper_bound"] = {"handoff_late_orders": n_handoff_lat
 lr = orders[(orders.late == 1) & orders.review_score.notna()]
 R["survey_timing"] = {"late_reviewed": len(lr), "sent_before_delivery_pct": float(100 * lr.survey_before_delivery.astype(float).mean()),
                       "stars_late_sent_before": float(lr[lr.survey_before_delivery == True].review_score.mean()),
-                      "stars_late_sent_after": float(lr[lr.survey_before_delivery == False].review_score.mean())}
-SPIKE = ["2017-11", "2017-12", "2018-01", "2018-02", "2018-03"]
+                      "stars_late_sent_after": float(lr[lr.survey_before_delivery == False].review_score.mean()),
+                      # the two groups differ mainly in how late the parcel was, so compare them within the same lateness
+                      "mean_days_late_sent_before": float(lr[lr.survey_before_delivery == True].days_past_promise.mean()),
+                      "mean_days_late_sent_after": float(lr[lr.survey_before_delivery == False].days_past_promise.mean())}
+near = lr[lr.days_past_promise.between(1, 3)]
+R["survey_timing"]["within_1_3_days_late"] = {
+    "stars_sent_before": float(near[near.survey_before_delivery == True].review_score.mean()),
+    "stars_sent_after": float(near[near.survey_before_delivery == False].review_score.mean())}
+# the gap is the difference of the two figures as printed, so the memo's 2.38, 3.53 and gap always add up
+R["survey_timing"]["within_1_3_days_late"]["gap"] = (round(R["survey_timing"]["within_1_3_days_late"]["stars_sent_after"], 2)
+                                                      - round(R["survey_timing"]["within_1_3_days_late"]["stars_sent_before"], 2))
+SPIKE = ["2017-11", "2017-12", "2018-01", "2018-02", "2018-03"]   # window chosen after seeing which months were worst (PLAN.md addendum): descriptive, not a tested hypothesis
 rj = orders[orders.ship_to_state == "RJ"]; xr = orders[orders.ship_to_state != "RJ"]
 R["clusters"]["rj_episode"] = {"months": SPIKE, "rj_spike_pct": float(100 * rj[rj.month.isin(SPIKE)].late.mean()),
                                "rj_other_pct": float(100 * rj[~rj.month.isin(SPIKE)].late.mean()),
@@ -233,13 +243,14 @@ R["clusters"]["rj_episode"] = {"months": SPIKE, "rj_spike_pct": float(100 * rj[r
 
 # ---------------------------------------------------------------- memo facts: the only numbers MEMO.md may print
 f1 = lambda x: f"{x:.1f}"; f2 = lambda x: f"{x:.2f}"; n0 = lambda x: f"{x:,.0f}"
-def rs(x):  # R$ rounded to the nearest hundred, the precision the inputs support
-    return f"R${round(x, -2):,.0f}"
+def rs(x):  # R$ rounded to the nearest 500: the middle estimate moves by about R$100 under small changes in how matches are built
+    return f"R${round(x / 500) * 500:,.0f}"
 S, M = R["stars"], R["money"]
 facts = {
     "late_rate": f2(100 * R["population"]["late"] / R["population"]["orders"]), "late_orders": n0(R["population"]["late"]),
     "orders": n0(R["population"]["orders"]),
     "stars_raw_late": f2(S["all"]["raw"]["late"]), "stars_raw_on_time": f2(S["all"]["raw"]["on_time"]),
+    "stars_matched_rounded": f"{abs(round(S['all']['matched']['effect']))}",
     "stars_matched": f2(S["all"]["matched"]["effect"]), "stars_matched_lo": f2(S["all"]["matched"]["ci"][0]), "stars_matched_hi": f2(S["all"]["matched"]["ci"][1]),
     "stars_reg": f2(S["all"]["regression"]["effect"]), "stars_reg_lo": f2(S["all"]["regression"]["ci"][0]), "stars_reg_hi": f2(S["all"]["regression"]["ci"][1]),
     "stars_hold": f2(S["holdout"]["matched"]["effect"]), "stars_hold_lo": f2(S["holdout"]["matched"]["ci"][0]), "stars_hold_hi": f2(S["holdout"]["matched"]["ci"][1]),
@@ -291,6 +302,10 @@ facts.update({
 ST, RJE = R["survey_timing"], R["clusters"]["rj_episode"]
 facts.update({"survey_before_pct": f1(ST["sent_before_delivery_pct"]), "stars_sent_before": f2(ST["stars_late_sent_before"]),
               "stars_sent_after": f2(ST["stars_late_sent_after"]),
+              "days_late_sent_before": f1(ST["mean_days_late_sent_before"]), "days_late_sent_after": f1(ST["mean_days_late_sent_after"]),
+              "survey_near_before": f2(ST["within_1_3_days_late"]["stars_sent_before"]),
+              "survey_near_after": f2(ST["within_1_3_days_late"]["stars_sent_after"]),
+              "survey_near_gap": f2(ST["within_1_3_days_late"]["gap"]),
               "rj_spike": f1(RJE["rj_spike_pct"]), "rj_other": f1(RJE["rj_other_pct"]),
               "rest_spike": f1(RJE["rest_spike_pct"]), "rest_other": f1(RJE["rest_other_pct"])})
 for r in R["clusters"]["months_by_late_count"]:
@@ -302,25 +317,33 @@ for r in R["clusters"]["states_by_rate"][:5]:
 R["memo_facts"] = facts
 
 out = os.path.join(ROOT, "evidence"); os.makedirs(out, exist_ok=True)
-json.dump(R, open(os.path.join(out, "recommendation_report.json"), "w"), indent=1, default=float)
+def rounded(x, nd=6):
+    """Last-digit float noise differs between machines (BLAS, numpy). Six decimals keeps every reported figure and makes reruns byte-identical."""
+    if isinstance(x, dict):
+        return {k: rounded(v, nd) for k, v in x.items()}
+    if isinstance(x, (list, tuple)):
+        return [rounded(v, nd) for v in x]
+    if isinstance(x, (np.floating, float)):
+        return round(float(x), nd)
+    if isinstance(x, np.integer):
+        return int(x)
+    if isinstance(x, np.bool_):
+        return bool(x)
+    return x
+json.dump(rounded(R), open(os.path.join(out, "recommendation_report.json"), "w"), indent=1, default=float)
 with open(os.path.join(out, "recommendation_report.md"), "w") as f:
     f.write("# Late-delivery cost: computed numbers\n\nGenerated by `recommendation/analyze.py`. Raw values in `recommendation_report.json`.\n\n")
     f.write("| Fact | Value |\n|---|---|\n" + "".join(f"| {k} | {v} |\n" for k, v in facts.items()))
 
-# ---------------------------------------------------------------- memo check: every number in MEMO.md must be a fact from this run
-# Numbers MEMO.md may print that are definitions or test design, not measurements. Dates (YYYY-MM) are stripped first.
-ALLOWED = {"0", "1", "2", "3", "4", "7", "8", "14", "15", "20", "36", "90", "95"}  # 15 = days-late bucket edge, 20 = min seller orders
-NUM = re.compile(r"R\$[\d,]+(?:\.\d+)?(?: million)?|-?\d[\d,]*(?:\.\d+)?")
+# ---------------------------------------------------------------- memo check: every number in MEMO.md is tied to the fact it states (see memo_check.py)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from memo_check import check_memo
 memo_path = os.path.join(ROOT, "recommendation", "MEMO.md")
-bad_tokens = []
+problems = []
 if os.path.exists(memo_path):
-    text = re.sub(r"<!--.*?-->|\b\d{4}-\d{2}\b", "", open(memo_path).read(), flags=re.S)
-    allowed = set(facts.values()) | ALLOWED | {v.lstrip("-") for v in facts.values()}
-    for tok in NUM.findall(text):
-        t = tok.rstrip(",.")
-        if t not in allowed and t.lstrip("-") not in allowed:
-            bad_tokens.append(t)
-    print(f"memo check: {len(NUM.findall(text))} numbers, {len(bad_tokens)} not produced by this run" + (f": {sorted(set(bad_tokens))}" if bad_tokens else ""))
+    n_numbers, problems = check_memo(open(memo_path).read(), facts)
+    print(f"memo check: {n_numbers} numbers each tied to a named fact or design constant, {len(problems)} problems" + (f": {problems}" if problems else ""))
+bad_tokens = problems
 for k, v in facts.items():
     print(f"{k:24s} {v}")
 sys.exit(1 if bad_tokens else 0)

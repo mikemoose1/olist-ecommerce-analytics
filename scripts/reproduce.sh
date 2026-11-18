@@ -13,7 +13,7 @@ deps()        { venv; "$BIN/dbt" deps --quiet; }
 setup()       { venv; data; deps; }
 build()       { deps; "$BIN/dbt" build --fail-fast; }
 verify()      { "$BIN/python" verification/verify_headlines.py; ontology; recommendation; }
-recommendation() { "$BIN/python" recommendation/analyze.py; }
+recommendation() { "$BIN/python" recommendation/analyze.py; "$BIN/python" recommendation/selftest_memo.py; }   # numbers tied to facts, then proof that check can fail
 ontology()    {
   "$BIN/python" ontology/check.py                                          # claims + coverage
   "$BIN/python" verification/known_answers/selftest.py                    # scorer

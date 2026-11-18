@@ -9,93 +9,93 @@
  "stars": {
   "all": {
    "raw": {
-    "late": 2.2714420358152685,
-    "on_time": 4.311271834061135,
+    "late": 2.271442,
+    "on_time": 4.311272,
     "n_late": 6366,
     "n_on_time": 87936,
-    "effect": -2.039829798245867,
+    "effect": -2.03983,
     "ci": [
-     -2.0791453739249377,
-     -2.000514222566796
+     -2.079145,
+     -2.000514
     ]
    },
    "matched": {
-    "effect": -1.9598178441324914,
+    "effect": -1.959818,
     "ci": [
-     -2.0066416475237983,
-     -1.9060452375236556
+     -2.006642,
+     -1.906045
     ],
     "late_matched": 5553,
     "late_total": 6366,
     "cells": 3136
    },
    "regression": {
-    "effect": -1.9730517032920973,
+    "effect": -1.973052,
     "ci": [
-     -2.0221813028339914,
-     -1.923922103750203
+     -2.022181,
+     -1.923922
     ],
     "n": 94302
    }
   },
   "discovery": {
    "raw": {
-    "late": 2.1596511186954874,
-    "on_time": 4.285020091580226,
+    "late": 2.159651,
+    "on_time": 4.28502,
     "n_late": 5274,
     "n_on_time": 64206,
-    "effect": -2.125368972884739,
+    "effect": -2.125369,
     "ci": [
-     -2.1675261497786247,
-     -2.083211795990853
+     -2.167526,
+     -2.083212
     ]
    },
    "matched": {
-    "effect": -2.0485812258186713,
+    "effect": -2.048581,
     "ci": [
-     -2.1023350597336488,
-     -1.9883505526644962
+     -2.102335,
+     -1.988351
     ],
     "late_matched": 4545,
     "late_total": 5274,
     "cells": 2554
    },
    "regression": {
-    "effect": -2.05601802737263,
+    "effect": -2.056018,
     "ci": [
-     -2.1101246948841856,
-     -2.001911359861074
+     -2.110125,
+     -2.001911
     ],
     "n": 69480
    }
   },
   "holdout": {
    "raw": {
-    "late": 2.811355311355311,
-    "on_time": 4.382300884955752,
+    "late": 2.811355,
+    "on_time": 4.382301,
     "n_late": 1092,
     "n_on_time": 23730,
-    "effect": -1.570945573600441,
+    "effect": -1.570946,
     "ci": [
-     -1.6707957477425697,
-     -1.4710953994583122
+     -1.670796,
+     -1.471095
     ]
    },
    "matched": {
-    "effect": -1.559590096351053,
+    "effect": -1.55959,
     "ci": [
-     -1.6754922349857215,
-     -1.4395874330504297
+     -1.675492,
+     -1.439587
     ],
     "late_matched": 1008,
     "late_total": 1092,
     "cells": 582
    },
    "regression": {
-    "effect": -1.584158846699378,
+    "effect": -1.584159,
     "ci": [
-     -1.6850271597832183,
-     -1.4832905336155375
+     -1.685027,
+     -1.483291
     ],
     "n": 24822
    }
@@ -104,31 +104,31 @@
  "low_star": {
   "all": {
    "raw": {
-    "late": 0.6239396795475967,
-    "on_time": 0.08714292212518195,
+    "late": 0.62394,
+    "on_time": 0.087143,
     "n_late": 6366,
     "n_on_time": 87936,
-    "effect": 0.5367967574224147,
+    "effect": 0.536797,
     "ci": [
-     0.5247513540545566,
-     0.5488421607902728
+     0.524751,
+     0.548842
     ]
    },
    "matched": {
-    "effect": 0.5239168529400465,
+    "effect": 0.523917,
     "ci": [
-     0.5068693893163483,
-     0.5368550261159408
+     0.506869,
+     0.536855
     ],
     "late_matched": 5553,
     "late_total": 6366,
     "cells": 3136
    },
    "regression": {
-    "effect": 0.5234593407242705,
+    "effect": 0.523459,
     "ci": [
-     0.5097751722403664,
-     0.5371435092081746
+     0.509775,
+     0.537144
     ],
     "n": 94302
    }
@@ -137,93 +137,93 @@
  "repeat90": {
   "all": {
    "raw": {
-    "late": 0.010216663730843756,
-    "on_time": 0.012975941044722203,
+    "late": 0.010217,
+    "on_time": 0.012976,
     "n_late": 5677,
     "n_on_time": 69205,
-    "effect": -0.0027592773138784468,
+    "effect": -0.002759,
     "ci": [
-     -0.005507932549951994,
-     -1.0622077804899738e-05
+     -0.005508,
+     -1.1e-05
     ]
    },
    "matched": {
-    "effect": -0.0010420767435496778,
+    "effect": -0.001042,
     "ci": [
-     -0.00518356063430291,
-     0.002221598086043782
+     -0.005184,
+     0.002222
     ],
     "late_matched": 4889,
     "late_total": 5677,
     "cells": 2811
    },
    "regression": {
-    "effect": -0.00217843304990596,
+    "effect": -0.002178,
     "ci": [
-     -0.004896224652033283,
-     0.000539358552221363
+     -0.004896,
+     0.000539
     ],
     "n": 74882
    }
   },
   "discovery": {
    "raw": {
-    "late": 0.010106788710907704,
-    "on_time": 0.01293654854803633,
+    "late": 0.010107,
+    "on_time": 0.012937,
     "n_late": 5244,
     "n_on_time": 62536,
-    "effect": -0.0028297598371286262,
+    "effect": -0.00283,
     "ci": [
-     -0.005678431564478566,
-     1.8911890221312826e-05
+     -0.005678,
+     1.9e-05
     ]
    },
    "matched": {
-    "effect": -0.0010156443469349296,
+    "effect": -0.001016,
     "ci": [
-     -0.005368307990311742,
-     0.002808573589395828
+     -0.005368,
+     0.002809
     ],
     "late_matched": 4496,
     "late_total": 5244,
     "cells": 2553
    },
    "regression": {
-    "effect": -0.0021384569236094684,
+    "effect": -0.002138,
     "ci": [
-     -0.005042039410840423,
-     0.0007651255636214865
+     -0.005042,
+     0.000765
     ],
     "n": 67780
    }
   },
   "holdout": {
    "raw": {
-    "late": 0.011547344110854504,
-    "on_time": 0.01334532913480282,
+    "late": 0.011547,
+    "on_time": 0.013345,
     "n_late": 433,
     "n_on_time": 6669,
-    "effect": -0.0017979850239483158,
+    "effect": -0.001798,
     "ci": [
-     -0.012242411590934709,
-     0.008646441543038078
+     -0.012242,
+     0.008646
     ]
    },
    "matched": {
-    "effect": -0.0013444687414629324,
+    "effect": -0.001344,
     "ci": [
-     -0.01370874322786663,
-     0.010620319240408438
+     -0.013709,
+     0.01062
     ],
     "late_matched": 393,
     "late_total": 433,
     "cells": 258
    },
    "regression": {
-    "effect": -0.0032697651813106523,
+    "effect": -0.00327,
     "ci": [
-     -0.013578222520327577,
-     0.007038692157706273
+     -0.013578,
+     0.007039
     ],
     "n": 7102
    }
@@ -232,31 +232,31 @@
  "repeat_ever": {
   "all": {
    "raw": {
-    "late": 0.02730315307380659,
-    "on_time": 0.035011921103966476,
+    "late": 0.027303,
+    "on_time": 0.035012,
     "n_late": 5677,
     "n_on_time": 69205,
-    "effect": -0.007708768030159886,
+    "effect": -0.007709,
     "ci": [
-     -0.012164117861621773,
-     -0.003253418198697999
+     -0.012164,
+     -0.003253
     ]
    },
    "matched": {
-    "effect": -0.004255667236820047,
+    "effect": -0.004256,
     "ci": [
-     -0.010344661002509543,
-     0.002179224120678212
+     -0.010345,
+     0.002179
     ],
     "late_matched": 4889,
     "late_total": 5677,
     "cells": 2811
    },
    "regression": {
-    "effect": -0.003713468559907695,
+    "effect": -0.003713,
     "ci": [
-     -0.008368476157482386,
-     0.0009415390376669962
+     -0.008368,
+     0.000942
     ],
     "n": 74882
    }
@@ -266,71 +266,71 @@
   {
    "bucket": "on time",
    "orders": 87936,
-   "avg_stars": 4.311271834061135,
-   "low_star_pct": 8.714292212518195
+   "avg_stars": 4.311272,
+   "low_star_pct": 8.714292
   },
   {
    "bucket": "1 day",
    "orders": 817,
-   "avg_stars": 3.736842105263158,
-   "low_star_pct": 19.461444308445532
+   "avg_stars": 3.736842,
+   "low_star_pct": 19.461444
   },
   {
    "bucket": "2-3 days",
    "orders": 1028,
-   "avg_stars": 2.943579766536965,
-   "low_star_pct": 42.023346303501945
+   "avg_stars": 2.94358,
+   "low_star_pct": 42.023346
   },
   {
    "bucket": "4-7 days",
    "orders": 1742,
-   "avg_stars": 2.1044776119402986,
-   "low_star_pct": 67.62342135476463
+   "avg_stars": 2.104478,
+   "low_star_pct": 67.623421
   },
   {
    "bucket": "8-14 days",
    "orders": 1446,
-   "avg_stars": 1.6708160442600277,
-   "low_star_pct": 80.15214384508991
+   "avg_stars": 1.670816,
+   "low_star_pct": 80.152144
   },
   {
    "bucket": "15+ days",
    "orders": 1333,
-   "avg_stars": 1.724681170292573,
-   "low_star_pct": 78.31957989497374
+   "avg_stars": 1.724681,
+   "low_star_pct": 78.31958
   }
  ],
  "money": {
   "late_first_orders_window": 6332,
   "late_first_orders_per_year": 3799.2,
-  "avg_90d_repeat_spend": 162.9187588294652,
+  "avg_90d_repeat_spend": 162.918759,
   "repeaters_for_spend": 991,
   "repeat_drop_pts": {
    "low": 0.0,
-   "mid": 0.10420767435496778,
-   "high": 0.518356063430291
+   "mid": 0.104208,
+   "high": 0.518356
   },
   "lost_repeat_gmv_per_year": {
    "low": 0.0,
-   "mid": 645.0048096440934,
-   "high": 3208.421607048154
+   "mid": 645.00481,
+   "high": 3208.421607
   },
   "repeat_ci_includes_zero": true,
   "late_order_gmv_window": 1148081.0,
   "late_order_gmv_per_year": 688848.6,
-  "total_gmv_window": 15046784.959999999,
+  "total_gmv_window": 15046784.96,
   "low_star_reviews": {
    "late_reviewed": 6366,
    "all_low_star": 11635,
    "excess_from_lateness": {
-    "low": 3226.730532387873,
-    "mid": 3335.2546858163364,
-    "high": 3417.619096254079
+    "low": 3226.730532,
+    "mid": 3335.254686,
+    "high": 3417.619096
    },
    "share_of_all_low_star_pct": {
-    "low": 27.732965469599257,
-    "mid": 28.66570421844724,
-    "high": 29.37360632792505
+    "low": 27.732965,
+    "mid": 28.665704,
+    "high": 29.373606
    }
   }
  },
@@ -340,57 +340,57 @@
     "ship_to_state": "AL",
     "orders": 394,
     "late": 85,
-    "late_rate_pct": 21.5736040609,
-    "share_of_late_pct": 1.3040810064
+    "late_rate_pct": 21.573604,
+    "share_of_late_pct": 1.304081
    },
    {
     "ship_to_state": "MA",
     "orders": 702,
     "late": 124,
-    "late_rate_pct": 17.6638176638,
-    "share_of_late_pct": 1.9024240565
+    "late_rate_pct": 17.663818,
+    "share_of_late_pct": 1.902424
    },
    {
     "ship_to_state": "SE",
     "orders": 329,
     "late": 51,
-    "late_rate_pct": 15.5015197568,
-    "share_of_late_pct": 0.7824486039
+    "late_rate_pct": 15.50152,
+    "share_of_late_pct": 0.782449
    },
    {
     "ship_to_state": "PI",
     "orders": 473,
     "late": 66,
-    "late_rate_pct": 13.9534883721,
-    "share_of_late_pct": 1.0125805462
+    "late_rate_pct": 13.953488,
+    "share_of_late_pct": 1.012581
    },
    {
     "ship_to_state": "CE",
     "orders": 1262,
     "late": 176,
-    "late_rate_pct": 13.9461172742,
-    "share_of_late_pct": 2.7002147898
+    "late_rate_pct": 13.946117,
+    "share_of_late_pct": 2.700215
    },
    {
     "ship_to_state": "BA",
     "orders": 3217,
     "late": 396,
-    "late_rate_pct": 12.3096052223,
-    "share_of_late_pct": 6.0754832771
+    "late_rate_pct": 12.309605,
+    "share_of_late_pct": 6.075483
    },
    {
     "ship_to_state": "RJ",
     "orders": 12154,
     "late": 1490,
-    "late_rate_pct": 12.2593384894,
-    "share_of_late_pct": 22.8597729365
+    "late_rate_pct": 12.259338,
+    "share_of_late_pct": 22.859773
    },
    {
     "ship_to_state": "PA",
     "orders": 933,
     "late": 105,
-    "late_rate_pct": 11.2540192926,
-    "share_of_late_pct": 1.6109235962
+    "late_rate_pct": 11.254019,
+    "share_of_late_pct": 1.610924
    }
   ],
   "states_by_late_count": [
@@ -398,36 +398,36 @@
     "ship_to_state": "SP",
     "orders": 39834,
     "late": 1814,
-    "late_rate_pct": 4.5538986795,
-    "share_of_late_pct": 27.8306228905
+    "late_rate_pct": 4.553899,
+    "share_of_late_pct": 27.830623
    },
    {
     "ship_to_state": "RJ",
     "orders": 12154,
     "late": 1490,
-    "late_rate_pct": 12.2593384894,
-    "share_of_late_pct": 22.8597729365
+    "late_rate_pct": 12.259338,
+    "share_of_late_pct": 22.859773
    },
    {
     "ship_to_state": "MG",
     "orders": 11157,
     "late": 517,
-    "late_rate_pct": 4.6338621493,
-    "share_of_late_pct": 7.9318809451
+    "late_rate_pct": 4.633862,
+    "share_of_late_pct": 7.931881
    },
    {
     "ship_to_state": "BA",
     "orders": 3217,
     "late": 396,
-    "late_rate_pct": 12.3096052223,
-    "share_of_late_pct": 6.0754832771
+    "late_rate_pct": 12.309605,
+    "share_of_late_pct": 6.075483
    },
    {
     "ship_to_state": "RS",
     "orders": 5241,
     "late": 325,
-    "late_rate_pct": 6.201106659,
-    "share_of_late_pct": 4.9861920835
+    "late_rate_pct": 6.201107,
+    "share_of_late_pct": 4.986192
    }
   ],
   "routes_by_rate": [
@@ -436,64 +436,64 @@
     "ship_to_state": "MA",
     "orders": 483,
     "late": 93,
-    "late_rate_pct": 19.2546583851,
-    "share_of_late_pct": 1.4268180423
+    "late_rate_pct": 19.254658,
+    "share_of_late_pct": 1.426818
    },
    {
     "seller_state": "SP",
     "ship_to_state": "PI",
     "orders": 326,
     "late": 54,
-    "late_rate_pct": 16.5644171779,
-    "share_of_late_pct": 0.8284749923
+    "late_rate_pct": 16.564417,
+    "share_of_late_pct": 0.828475
    },
    {
     "seller_state": "SP",
     "ship_to_state": "RJ",
     "orders": 8031,
     "late": 1147,
-    "late_rate_pct": 14.282156643,
-    "share_of_late_pct": 17.5974225222
+    "late_rate_pct": 14.282157,
+    "share_of_late_pct": 17.597423
    },
    {
     "seller_state": "SP",
     "ship_to_state": "CE",
     "orders": 958,
     "late": 133,
-    "late_rate_pct": 13.8830897704,
-    "share_of_late_pct": 2.0405032218
+    "late_rate_pct": 13.88309,
+    "share_of_late_pct": 2.040503
    },
    {
     "seller_state": "SP",
     "ship_to_state": "BA",
     "orders": 2275,
     "late": 297,
-    "late_rate_pct": 13.0549450549,
-    "share_of_late_pct": 4.5566124578
+    "late_rate_pct": 13.054945,
+    "share_of_late_pct": 4.556612
    },
    {
     "seller_state": "SP",
     "ship_to_state": "MS",
     "orders": 471,
     "late": 59,
-    "late_rate_pct": 12.5265392781,
-    "share_of_late_pct": 0.9051856398
+    "late_rate_pct": 12.526539,
+    "share_of_late_pct": 0.905186
    },
    {
     "seller_state": "SP",
     "ship_to_state": "ES",
     "orders": 1443,
     "late": 180,
-    "late_rate_pct": 12.474012474,
-    "share_of_late_pct": 2.7615833078
+    "late_rate_pct": 12.474012,
+    "share_of_late_pct": 2.761583
    },
    {
     "seller_state": "PR",
     "ship_to_state": "RJ",
     "orders": 948,
     "late": 117,
-    "late_rate_pct": 12.3417721519,
-    "share_of_late_pct": 1.79502915
+    "late_rate_pct": 12.341772,
+    "share_of_late_pct": 1.795029
    }
   ],
   "routes_by_late_count": [
@@ -502,83 +502,83 @@
     "ship_to_state": "SP",
     "orders": 30254,
     "late": 1424,
-    "late_rate_pct": 4.7068156277,
-    "share_of_late_pct": 21.8471923903
+    "late_rate_pct": 4.706816,
+    "share_of_late_pct": 21.847192
    },
    {
     "seller_state": "SP",
     "ship_to_state": "RJ",
     "orders": 8031,
     "late": 1147,
-    "late_rate_pct": 14.282156643,
-    "share_of_late_pct": 17.5974225222
+    "late_rate_pct": 14.282157,
+    "share_of_late_pct": 17.597423
    },
    {
     "seller_state": "SP",
     "ship_to_state": "MG",
     "orders": 7307,
     "late": 391,
-    "late_rate_pct": 5.3510332558,
-    "share_of_late_pct": 5.9987726296
+    "late_rate_pct": 5.351033,
+    "share_of_late_pct": 5.998773
    },
    {
     "seller_state": "SP",
     "ship_to_state": "BA",
     "orders": 2275,
     "late": 297,
-    "late_rate_pct": 13.0549450549,
-    "share_of_late_pct": 4.5566124578
+    "late_rate_pct": 13.054945,
+    "share_of_late_pct": 4.556612
    },
    {
     "seller_state": "SP",
     "ship_to_state": "RS",
     "orders": 3530,
     "late": 238,
-    "late_rate_pct": 6.7422096317,
-    "share_of_late_pct": 3.651426818
+    "late_rate_pct": 6.74221,
+    "share_of_late_pct": 3.651427
    }
   ],
   "north_northeast": {
    "orders": 10707,
    "late": 1302,
-   "late_rate_pct": 12.160268982908377,
-   "share_of_orders_pct": 11.278718226922713,
-   "share_of_late_pct": 19.975452592819885
+   "late_rate_pct": 12.160269,
+   "share_of_orders_pct": 11.278718,
+   "share_of_late_pct": 19.975453
   },
   "sellers": {
    "sellers_20plus_orders": 787,
    "top10pct_sellers": 79,
-   "top10pct_share_of_late_pct": 45.918993556305615,
-   "top10pct_share_of_orders_pct": 38.40368267478485,
+   "top10pct_share_of_late_pct": 45.918994,
+   "top10pct_share_of_orders_pct": 38.403683,
    "double_rate_sellers": 73,
-   "double_rate_share_of_late_pct": 12.718625345197914,
-   "double_rate_share_of_orders_pct": 4.987833268373872
+   "double_rate_share_of_late_pct": 12.718625,
+   "double_rate_share_of_orders_pct": 4.987833
   },
   "months_by_late_count": [
    {
     "month": "2018-03",
     "orders": 6913,
     "late": 1324,
-    "late_rate_pct": 19.1523217127,
-    "share_of_late_pct": 20.3129794415
+    "late_rate_pct": 19.152322,
+    "share_of_late_pct": 20.312979
    },
    {
     "month": "2018-02",
     "orders": 6505,
     "late": 925,
-    "late_rate_pct": 14.2198308993,
-    "share_of_late_pct": 14.191469776
+    "late_rate_pct": 14.219831,
+    "share_of_late_pct": 14.19147
    },
    {
     "month": "2017-11",
     "orders": 7195,
     "late": 902,
-    "late_rate_pct": 12.5364836692,
-    "share_of_late_pct": 13.8386007978
+    "late_rate_pct": 12.536484,
+    "share_of_late_pct": 13.838601
    }
   ],
-  "top3_months_share_of_late_pct": 48.34305001534213,
-  "top3_months_share_of_orders_pct": 21.713665715098333,
+  "top3_months_share_of_late_pct": 48.34305,
+  "top3_months_share_of_orders_pct": 21.713666,
   "rj_episode": {
    "months": [
     "2017-11",
@@ -587,95 +587,95 @@
     "2018-02",
     "2018-03"
    ],
-   "rj_spike_pct": 26.638772663877262,
-   "rj_other_pct": 4.381049414161997,
-   "rest_spike_pct": 9.80091883614089,
-   "rest_other_pct": 4.09288555833102
+   "rj_spike_pct": 26.638773,
+   "rj_other_pct": 4.381049,
+   "rest_spike_pct": 9.800919,
+   "rest_other_pct": 4.092886
   }
  },
  "who_caused": {
   "all": {
    "late_orders": 6517,
    "seller_side": 1809,
-   "seller_side_pct": 27.75817093754795,
-   "late_rate_if_handoff_late_pct": 21.207502930832355,
-   "late_rate_if_handoff_on_time_pct": 5.449074074074074,
-   "handoff_late_share_of_orders_pct": 8.985568313494154
+   "seller_side_pct": 27.758171,
+   "late_rate_if_handoff_late_pct": 21.207503,
+   "late_rate_if_handoff_on_time_pct": 5.449074,
+   "handoff_late_share_of_orders_pct": 8.985568
   },
   "discovery": {
    "late_orders": 5403,
    "seller_side": 1375,
-   "seller_side_pct": 25.448824727003515,
-   "late_rate_if_handoff_late_pct": 20.979554470552333,
-   "late_rate_if_handoff_on_time_pct": 6.3485058630689695,
-   "handoff_late_share_of_orders_pct": 9.362589640295992
+   "seller_side_pct": 25.448825,
+   "late_rate_if_handoff_late_pct": 20.979554,
+   "late_rate_if_handoff_on_time_pct": 6.348506,
+   "handoff_late_share_of_orders_pct": 9.36259
   },
   "holdout": {
    "late_orders": 1114,
    "seller_side": 434,
-   "seller_side_pct": 38.95870736086176,
-   "late_rate_if_handoff_late_pct": 21.963562753036435,
-   "late_rate_if_handoff_on_time_pct": 2.9627047751829907,
-   "handoff_late_share_of_orders_pct": 7.926829268292683
+   "seller_side_pct": 38.958707,
+   "late_rate_if_handoff_late_pct": 21.963563,
+   "late_rate_if_handoff_on_time_pct": 2.962705,
+   "handoff_late_share_of_orders_pct": 7.926829
   },
   "avoidable_upper_bound": {
    "handoff_late_orders": 8530,
-   "late_orders": 1344.1939814814814,
-   "share_of_late_pct": 20.622798120305024
+   "late_orders": 1344.193981,
+   "share_of_late_pct": 20.622798
   }
  },
  "by_promise_days": [
   {
    "promised_days": "0-14",
    "orders": 11930,
-   "late_rate_pct": 6.244761106454317
+   "late_rate_pct": 6.244761
   },
   {
    "promised_days": "15-21",
    "orders": 23038,
-   "late_rate_pct": 7.487629134473478
+   "late_rate_pct": 7.487629
   },
   {
    "promised_days": "22-28",
    "orders": 34314,
-   "late_rate_pct": 7.69656699889258
+   "late_rate_pct": 7.696567
   },
   {
    "promised_days": "29-35",
    "orders": 17464,
-   "late_rate_pct": 6.344480073293633
+   "late_rate_pct": 6.34448
   },
   {
    "promised_days": "36+",
    "orders": 8185,
-   "late_rate_pct": 3.653023824068418
+   "late_rate_pct": 3.653024
   }
  ],
  "on_time_stars_by_promise_days": [
   {
    "promised_days": "0-14",
    "orders": 11134,
-   "avg_stars": 4.418268367163643
+   "avg_stars": 4.418268
   },
   {
    "promised_days": "15-21",
    "orders": 21192,
-   "avg_stars": 4.352161192902982
+   "avg_stars": 4.352161
   },
   {
    "promised_days": "22-28",
    "orders": 31510,
-   "avg_stars": 4.3132021580450655
+   "avg_stars": 4.313202
   },
   {
    "promised_days": "29-35",
    "orders": 16267,
-   "avg_stars": 4.250691584188848
+   "avg_stars": 4.250692
   },
   {
    "promised_days": "36+",
    "orders": 7833,
-   "avg_stars": 4.166602834163156
+   "avg_stars": 4.166603
   }
  ],
  "holdout_check": {
@@ -702,8 +702,8 @@
    "holdout": 1114
   },
   "late_rate_pct": {
-   "discovery": 7.719669157036127,
-   "holdout": 4.4688703465982025
+   "discovery": 7.719669,
+   "holdout": 4.46887
   },
   "eligible_people": {
    "discovery": 67780,
@@ -721,30 +721,37 @@
   },
   "rates": {
    "discovery": {
-    "nne_late_rate_pct": 13.832004904966277,
-    "rest_late_rate_pct": 6.913723968438753,
-    "rj_late_rate_pct": 14.764013392374986,
-    "sp_to_rj_late_rate_pct": 17.213642213642213,
+    "nne_late_rate_pct": 13.832005,
+    "rest_late_rate_pct": 6.913724,
+    "rj_late_rate_pct": 14.764013,
+    "sp_to_rj_late_rate_pct": 17.213642,
     "median_days_late": 7.0
    },
    "holdout": {
-    "nne_late_rate_pct": 6.8181818181818175,
-    "rest_late_rate_pct": 4.200929567393636,
-    "rj_late_rate_pct": 4.248704663212435,
-    "sp_to_rj_late_rate_pct": 4.242424242424243,
+    "nne_late_rate_pct": 6.818182,
+    "rest_late_rate_pct": 4.20093,
+    "rj_late_rate_pct": 4.248705,
+    "sp_to_rj_late_rate_pct": 4.242424,
     "median_days_late": 5.0
    }
   }
  },
  "late_within_days_pct": {
-  "3": 28.582387235348268,
-  "7": 56.13685179502915
+  "3": 28.582387,
+  "7": 56.136852
  },
  "survey_timing": {
   "late_reviewed": 6366,
-  "sent_before_delivery_pct": 74.45805843543826,
-  "stars_late_sent_before": 1.8400843881856541,
-  "stars_late_sent_after": 3.5289052890528905
+  "sent_before_delivery_pct": 74.458058,
+  "stars_late_sent_before": 1.840084,
+  "stars_late_sent_after": 3.528905,
+  "mean_days_late_sent_before": 13.495359,
+  "mean_days_late_sent_after": 1.875769,
+  "within_1_3_days_late": {
+   "stars_sent_before": 2.37859,
+   "stars_sent_after": 3.534884,
+   "gap": 1.15
+  }
  },
  "memo_facts": {
   "late_rate": "6.87",
@@ -752,6 +759,7 @@
   "orders": "94,931",
   "stars_raw_late": "2.27",
   "stars_raw_on_time": "4.31",
+  "stars_matched_rounded": "2",
   "stars_matched": "-1.96",
   "stars_matched_lo": "-2.01",
   "stars_matched_hi": "-1.91",
@@ -786,8 +794,8 @@
   "late_first_per_year": "3,800",
   "repeat_spend": "R$163",
   "money_low": "R$0",
-  "money_mid": "R$600",
-  "money_high": "R$3,200",
+  "money_mid": "R$500",
+  "money_high": "R$3,000",
   "late_gmv_year": "R$0.7 million",
   "seller_side_pct": "27.8",
   "seller_side_hold_pct": "39.0",
@@ -828,6 +836,11 @@
   "survey_before_pct": "74.5",
   "stars_sent_before": "1.84",
   "stars_sent_after": "3.53",
+  "days_late_sent_before": "13.5",
+  "days_late_sent_after": "1.9",
+  "survey_near_before": "2.38",
+  "survey_near_after": "3.53",
+  "survey_near_gap": "1.15",
   "rj_spike": "26.6",
   "rj_other": "4.4",
   "rest_spike": "9.8",
