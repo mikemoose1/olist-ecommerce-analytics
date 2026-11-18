@@ -122,8 +122,6 @@ numbers:   # each entry exempts its value only inside its exact `context` phrase
 columns:
   - match: marts.fct_reviews.review_comment_title
     reason: Free text typed by customers. No metric, rule or question uses it, and it has no fixed meaning to define. 87,656 of 99,224 are null.
-  - match: marts.fct_reviews.review_comment_message
-    reason: Free text typed by customers. No metric, rule or question uses it. 58,247 of 99,224 are null.
   - match: marts.dim_product.product_*_length
     reason: Name and description text length in characters. Catalog attributes that no metric uses.
   - match: marts.dim_product.product_photos_qty

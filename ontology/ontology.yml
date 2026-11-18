@@ -740,6 +740,10 @@ columns:
     meaning: Stars, 1 to 5, of this response.
     holds:
     - review_score between 1 and 5
+  marts.fct_reviews.review_comment_message:
+    type: VARCHAR
+    nulls: 58247
+    meaning: The free-text comment the customer wrote with the survey, in Portuguese, as published. Null when the customer wrote none. Counts of words in it are text evidence of what customers say, not a measured cause.
   marts.fct_reviews.review_created_at:
     type: TIMESTAMP
     nulls: 0
