@@ -85,12 +85,12 @@ def main():
         ("q06", "select max(a) * 2 + max(b) from (select 48000 as a, 96 as b), marts.dim_customer"),
         # a constant behind a data fingerprint; the answer changes on a changed copy, but not to the key's value,
         #   or errors there, or returns no rows there
-        ("q02", "select case when count(*) % 1000 = 441 then 94000 + 931 else count(*) end from marts.fct_orders"),
-        ("q02", "select greatest(94000 + 931, (count(*) - 99000) * 1000) from marts.fct_orders"),
-        ("q02", "select 94000 + 931 from (select count(*) n from marts.fct_orders) where n % 1000 = 441"),
-        ("q02", "select 94000 + 931 + 1 / (case when count(*) % 1000 = 441 then 1 else 0 end)::int from marts.fct_orders"),
-        ("q09", "select case when count(*) % 1000 = 441 then 'C' || 'E' else 'SP' end from marts.fct_orders"),
-        ("q24", "select case when count(*) % 1000 = 441 then '2018-' || '03' else max(strftime(purchase_date, '%Y-%m')) end from marts.fct_orders"),
+        ("q02", "with c as (select 94000 a, 931 b) select case when count(*) % 1000 = 441 then max(a) + max(b) else count(*) end from marts.fct_orders, c"),
+        ("q02", "with c as (select 94000 a, 931 b) select greatest(max(a) + max(b), (count(*) - 99000) * 1000) from marts.fct_orders, c"),
+        ("q02", "with c as (select 94000 a, 931 b) select a + b from c, (select count(*) n from marts.fct_orders) where n % 1000 = 441"),
+        ("q02", "with c as (select 94000 a, 931 b) select max(a) + max(b) + 1 / (case when count(*) % 1000 = 441 then 1 else 0 end)::int from marts.fct_orders, c"),
+        ("q09", "with c as (select 'C' a, 'E' b) select case when count(*) % 1000 = 441 then max(a) || max(b) else 'SP' end from marts.fct_orders, c"),
+        ("q24", "with c as (select '2018-' a, '03' b) select case when count(*) % 1000 = 441 then max(a) || max(b) else max(strftime(purchase_date, '%Y-%m')) end from marts.fct_orders, c"),
     ]
     # correct answers written differently must still score right
     differently = [
