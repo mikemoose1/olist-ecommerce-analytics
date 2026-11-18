@@ -21,7 +21,7 @@ a text answer when it equals the key. CANNOT_ANSWER counts as not correct and pr
 honest gap in the ontology is distinguishable from a wrong query. Prints one line per question and the
 score; exit 1 below 10/10.
 """
-import argparse, hashlib, json, os, re, sys, tempfile
+import argparse, hashlib, json, os, re, shutil, subprocess, sys, tempfile
 import duckdb, yaml
 import key_file
 
@@ -290,49 +290,99 @@ def check_plan(con, sql, literal, text_keys, forbidden, why):
                 raise ValueError(f"hard-coded text answer '{t}'")
 
 
-# --- the perturbed warehouse: no text or tree check can see every way to launder a constant
-#     (a CTE, a subquery, VALUES, a table function, a PIVOT source). So run the answer on a copy of the warehouse whose data
-#     is changed: about 1 row in 10 dropped and 1 in 10 doubled in every table (picked by a hash of the row, so the copy is
-#     the same every time), and in the small metrics tables every number nudged. Where the key's value changes on that copy,
-#     a computed answer changes too; one that stays put did not come from the data.
-PERTURB_VERSION = "1"
+# --- changed copies of the warehouse: no text or tree check can see every way to
+#     launder a constant (a CTE, a subquery, VALUES, a table function, a PIVOT source, a data fingerprint such as
+#     `case when count(*) % 1000 = 931`). So the answer must also equal the key on two copies of the warehouse rebuilt by dbt
+#     from changed raw files. Each copy removes about 1 order in 10, picked by a hash of order_id, with its items, payments,
+#     reviews and customer row, so every layer (staging, intermediate, marts, metrics) agrees with every other, as on the
+#     real data. Each copy also removes half the on-time orders in one half of the states and months (copy a one half,
+#     copy b the other), so rates and the state or month that tops them move too. An answer computed from the data
+#     follows the key on both copies; a typed-in value, or a rule that matches the real data only by chance, does not.
+PERTURB_VERSION = "3"
+COPIES = ("a", "b")
+ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
+RAW = os.path.abspath(os.path.join(ROOT, os.environ.get("OLIST_RAW_DIR", os.path.join("data", "raw"))))
 
 
-def perturbed_path():
-    st = os.stat(DB)
-    tag = hashlib.sha256(f"{os.path.abspath(DB)}|{st.st_size}|{st.st_mtime_ns}|{PERTURB_VERSION}".encode()).hexdigest()[:16]
-    d = os.path.join(tempfile.gettempdir(), f"olist_perturbed_{tag}")
-    path = os.path.join(d, "olist.duckdb")       # same catalog name, so olist.marts.x still resolves
+def _inputs_tag():
+    """a copy is rebuilt when the dbt project, the raw files or this perturbation changes"""
+    h = hashlib.sha256(f"{PERTURB_VERSION}|{RAW}".encode())
+    for top in ("models", "macros", "seeds", "dbt_project.yml", "packages.yml"):
+        base = os.path.join(ROOT, top)
+        files = [base] if os.path.isfile(base) else sorted(os.path.join(dp, f) for dp, _, fs in os.walk(base) for f in fs)
+        for f in files:
+            h.update(f"{os.path.relpath(f, ROOT)}\0".encode() + open(f, "rb").read())
+    for f in sorted(os.listdir(RAW)):
+        st = os.stat(os.path.join(RAW, f))
+        h.update(f"{f}|{st.st_size}|{st.st_mtime_ns}".encode())
+    return h.hexdigest()[:16]
+
+
+def _write_raw(out, copy):
+    """the raw CSVs for one copy: orders removed (and everything that hangs off them), other files linked unchanged"""
+    c = duckdb.connect()
+    rd = lambda n: f"read_csv('{RAW}/{n}', header=true, all_varchar=true)"
+    half = "= 0" if copy == "a" else "= 1"
+    c.execute(f"""create temp table gone as
+        select o.order_id, o.customer_id from {rd('olist_orders_dataset.csv')} o
+        left join {rd('olist_customers_dataset.csv')} c using (customer_id)
+        where hash(o.order_id || '|{copy}') % 10 = 0
+           or (try_cast(o.order_delivered_customer_date as date) <= try_cast(o.order_estimated_delivery_date as date)
+               and hash(o.order_id || '|on-time|{copy}') % 2 = 0
+               and (hash(coalesce(c.customer_state, '') || '|state') % 2 {half}
+                    or hash(substr(o.order_purchase_timestamp, 1, 7) || '|month') % 2 {half}))""")
+    for f in sorted(os.listdir(RAW)):
+        cols = [r[0] for r in c.execute(f"describe select * from {rd(f)}").fetchall()]
+        key = "order_id" if "order_id" in cols else "customer_id" if "customer_id" in cols else None
+        if key is None:
+            os.symlink(os.path.join(RAW, f), os.path.join(out, f))
+            continue
+        c.execute(f"copy (select * from {rd(f)} where {key} not in (select {key} from gone)) to '{out}/{f}' (header, force_quote *)")
+    c.close()
+
+
+def _build_copy(base, copy):
+    final = os.path.join(base, copy)
+    path = os.path.join(final, "olist.duckdb")            # same catalog name, so olist.marts.x still resolves
     if os.path.exists(path):
         return path
-    os.makedirs(d, exist_ok=True)
-    tmp = os.path.join(d, f"olist.{os.getpid()}.building")
-    w = duckdb.connect(tmp)
-    w.execute(f"attach '{DB}' as src (read_only)")
-    rels = w.execute("select schema_name, table_name, estimated_size from duckdb_tables() where database_name = 'src' "
-                     "and schema_name in ('marts', 'metrics', 'intermediate', 'staging')").fetchall()
-    for schema, table, size in rels:
-        w.execute(f"create schema if not exists {schema}")
-        cols = w.execute("select column_name, data_type from duckdb_columns() where database_name = 'src' and schema_name = ? "
-                         "and table_name = ? order by column_index", [schema, table]).fetchall()
-        numeric = ("TINYINT", "SMALLINT", "INTEGER", "BIGINT", "HUGEINT", "FLOAT", "DOUBLE")
-        exprs = []
-        for c, typ in cols:
-            q = '"' + c.replace('"', '""') + '"'
-            nudge = schema == "metrics" and size < 1000 and (typ in numeric or typ.startswith("DECIMAL"))
-            exprs.append(f"cast({q} * 1.0137 + 1 as {typ}) as {q}" if nudge else q)
-        src = f"src.{schema}.{table} t"
-        w.execute(f"create table {schema}.{table} as select {', '.join(exprs)} from (select * from {src} where hash(t) % 10 <> 0 "
-                  f"union all select * from {src} where hash(t) % 10 = 1) t")
-    w.execute("detach src")
-    w.close()
-    os.replace(tmp, path)
+    os.makedirs(base, exist_ok=True)
+    work = tempfile.mkdtemp(dir=base, prefix=f"{copy}.building.")
+    raw = os.path.join(work, "raw")
+    os.mkdir(raw)
+    _write_raw(raw, copy)
+    dbt = os.path.join(os.path.dirname(sys.executable), "dbt")
+    dbt = dbt if os.path.exists(dbt) else (shutil.which("dbt") or "dbt")
+    p = subprocess.run([dbt, "build", "--resource-type", "model", "--resource-type", "seed", "--project-dir", ROOT,
+                        "--profiles-dir", ROOT, "--target-path", os.path.join(work, "target"), "--log-path", os.path.join(work, "logs")],
+                       cwd=ROOT, capture_output=True, text=True,
+                       env={**os.environ, "OLIST_RAW_DIR": raw, "OLIST_DB_PATH": os.path.join(work, "olist.duckdb")})
+    if p.returncode:
+        raise RuntimeError(f"building changed copy {copy} of the warehouse failed:\n{p.stdout[-2000:]}{p.stderr[-2000:]}")
+    for d in ("raw", "target", "logs"):
+        shutil.rmtree(os.path.join(work, d), ignore_errors=True)
+    try:
+        os.rename(work, final)
+    except OSError:                                       # another scorer finished the same copy first
+        shutil.rmtree(work, ignore_errors=True)
     return path
 
 
-def data_independent(want, got_perturbed_key, got_perturbed_answer):
-    """True when the key moved on the perturbed copy but the answer kept the real value"""
-    return got_perturbed_key is not None and got_perturbed_key != want and got_perturbed_answer == want
+def perturbed_paths():
+    base = os.path.join(tempfile.gettempdir(), f"olist_perturbed_{_inputs_tag()}")
+    return [_build_copy(base, c) for c in COPIES]
+
+
+def check_copies(sql, wants, pcons):
+    """the answer must run, give one value, and equal the key on every changed copy (fails closed)"""
+    for copy, pcon, want in zip(COPIES, pcons, wants):
+        try:
+            got = one(pcon, sql)
+        except Exception as e:
+            raise ValueError(f"fails on changed copy {copy} of the warehouse (some orders removed): {str(e).splitlines()[0][:60]}")
+        if got != want:
+            raise ValueError(f"on changed copy {copy} of the warehouse (some orders removed) it gives {got}, the key {want}: "
+                             f"a typed-in value, or a rule that fits the real data only by chance")
 
 
 def parse_ids(spec, all_ids):
@@ -364,13 +414,8 @@ def main():
         sys.exit(f"{qfile} ids {sorted(ids)} do not match the key ids {sorted(keys)}")
     con = duckdb.connect(DB, read_only=True)
     want_all = {k: one(con, v) for k, v in keys.items()}
-    pcon = duckdb.connect(perturbed_path(), read_only=True)
-
-    def on_perturbed(q):
-        try:
-            return one(pcon, q)
-        except Exception:
-            return None
+    pcons = [duckdb.connect(p, read_only=True) for p in perturbed_paths()]
+    want_copies = [{k: one(pc, v) for k, v in keys.items()} for pc in pcons]
     literal = literal_re(v for v in want_all.values())
     selected = parse_ids(a.ids, ids)
     right = abstain = 0
@@ -392,8 +437,8 @@ def main():
             check_structure(con, sql, literal, texts, q.get("forbidden_tables", []))   # a text key blocks only its own question: q05 may say '2018-03'
             got = one(con, sql)
             ok = got == want
-            if ok and data_independent(want, on_perturbed(keys[q["id"]]), on_perturbed(sql)):
-                raise ValueError("the answer does not change when the warehouse data changes (the key does); derive it from the tables")
+            if ok:
+                check_copies(sql, [w[q["id"]] for w in want_copies], pcons)
         except Exception as e:  # a query that does not run is a wrong answer
             got, ok = f"error: {str(e).splitlines()[0][:80]}", False
         right += ok

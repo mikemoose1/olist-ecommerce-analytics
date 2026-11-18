@@ -10,6 +10,7 @@ Usage: python verification/known_answers/selftest.py     (after `make build`)   
 import os, re, shutil, subprocess, sys, tempfile
 import yaml
 import key_file
+from alternatives import ALTS
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCORE = os.path.join(HERE, "score.py")
@@ -82,6 +83,14 @@ def main():
         ("q02", "select a + b from (values (94000, 931)) v(a, b), marts.dim_date limit 1"),
         ("q02", "select r.range + 931 from range(94000, 94001) r, marts.dim_date limit 1"),
         ("q06", "select max(a) * 2 + max(b) from (select 48000 as a, 96 as b), marts.dim_customer"),
+        # a constant behind a data fingerprint; the answer changes on a changed copy, but not to the key's value,
+        #   or errors there, or returns no rows there
+        ("q02", "select case when count(*) % 1000 = 441 then 94000 + 931 else count(*) end from marts.fct_orders"),
+        ("q02", "select greatest(94000 + 931, (count(*) - 99000) * 1000) from marts.fct_orders"),
+        ("q02", "select 94000 + 931 from (select count(*) n from marts.fct_orders) where n % 1000 = 441"),
+        ("q02", "select 94000 + 931 + 1 / (case when count(*) % 1000 = 441 then 1 else 0 end)::int from marts.fct_orders"),
+        ("q09", "select case when count(*) % 1000 = 441 then 'C' || 'E' else 'SP' end from marts.fct_orders"),
+        ("q24", "select case when count(*) % 1000 = 441 then '2018-' || '03' else max(strftime(purchase_date, '%Y-%m')) end from marts.fct_orders"),
     ]
     # correct answers written differently must still score right
     differently = [
@@ -94,7 +103,7 @@ def main():
         ("q06", "select count(distinct customer_unique_id) from (select 1) one, marts.fct_orders"),
         ("q16", "pivot (select order_status from marts.fct_orders) on order_status in ('canceled') using count(*)"),
         ("q16", "select sum(\"canceled\") from (pivot marts.fct_orders on order_status in ('canceled') using count(*) group by order_status)"),
-    ]
+    ] + ALTS                                              # honest answers from other layers and idioms
     ok = True
     d2 = tempfile.mkdtemp()
     for name, overrides, expect in (("bypass", bypass, "WRONG"), ("different", differently, "RIGHT")):
@@ -116,6 +125,14 @@ def main():
         good = not offenders
         print(f"{'PASS' if good else 'FAIL'}  {name}: all {len(overrides)} overrides score {expect} (offenders: {offenders})")
         ok &= good
+    # a constant can only be caught on a copy where the key's value moves, so every key must move on one copy
+    sys.path.insert(0, HERE)
+    import duckdb, score as scorer
+    real = duckdb.connect(scorer.DB, read_only=True)
+    copies = [duckdb.connect(pth, read_only=True) for pth in scorer.perturbed_paths()]
+    still = [q for q, sql in key.items() if all(scorer.one(c, sql) == scorer.one(real, sql) for c in copies)]
+    print(f"{'PASS' if not still else 'FAIL'}  every key value moves on at least one changed copy (unmoved: {still})")
+    ok &= not still
     # review M1: a malformed header must stop the scorer, not silently re-cut the key blocks
     sb = tempfile.mkdtemp()
     for f in ("score.py", "key_file.py", "questions.yml", "questions_reworded.yml", "answer_key.sql"):
