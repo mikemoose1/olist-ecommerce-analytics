@@ -23,3 +23,13 @@ models:
           - relationships: {arguments: {to: ref('fct_orders'), field: order_id}}
       - name: is_late
         data_tests: [not_null]
+  - name: metric_repeat_rate_90d_people
+    description: The one definition of the 90-day repeat population (people eligible for a full 90 days) and of "came back" (C6 rule applied).
+    columns:
+      - name: customer_unique_id
+        data_tests:
+          - unique
+          - not_null
+          - relationships: {arguments: {to: ref('dim_customer'), field: customer_unique_id}}
+      - name: repeated
+        data_tests: [not_null]

@@ -126,7 +126,7 @@ con.close()
 # ---------------- C6 same-day rule in the 90-day repeat rate
 R["C6"] = {}
 for arm in ["any_later_order_24h", "different_calendar_day", "second_order_only"]:
-    db = arm_db("metric_repeat_rate_90d+", {"repeat_same_day_rule": arm})
+    db = arm_db("metric_repeat_rate_90d_people+", {"repeat_same_day_rule": arm})
     con = duckdb.connect(db, read_only=True)
     R["C6"][arm] = headline(con)["repeat_rate_90d"]
     con.close()
