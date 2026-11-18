@@ -130,7 +130,7 @@ nodes:
     sql: select sum(amount_paid) from judged where is_late
     fact_check: money.late_order_gmv_window
     counts: what customers paid for judged late orders; this money went through a late delivery, it was not lost
-    threshold: none on its own; it sizes the exposure, not a loss
+    threshold: no bar on its own; it sizes the exposure, not a loss
     models: [marts.fct_orders]
     claims: [columns.marts.fct_orders.amount_paid, terms.late]
     answerable: "yes"

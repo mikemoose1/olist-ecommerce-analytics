@@ -57,6 +57,15 @@ def mut_node(nid, **kw):
     return f
 
 
+def mut_qthr(q, text):
+    """Edit question_thresholds and regenerate QUESTIONS.md from it, as `python story/kpi_tree.py` would."""
+    def f():
+        t = copy.deepcopy(TREE)
+        t["question_thresholds"][q] = text
+        return {"tree": t, "questions": K.set_question_thresholds(t, QUESTIONS)}
+    return f
+
+
 CASES = [
     ("seller breakdown counts an order once per item", "sum", "late_by_seller",
      mut_sql("late_by_seller", "rows", "select distinct order_id, seller_id from marts.fct_order_items", "select order_id, seller_id from marts.fct_order_items")),
@@ -77,6 +86,12 @@ CASES = [
      mut_node("late_rate", threshold="a segment at 2x the overall rate that holds 10% of late orders is worth targeting")),
     ("QUESTIONS.md states a different bar than thresholds:", "thresholds", "QUESTIONS.md",
      lambda: {"questions": QUESTIONS.replace("at least 1.75 times the overall late rate", "at least 2 times the overall late rate", 1)}),
+    ("question_thresholds.Q2 typed as 'at least 2 times', QUESTIONS.md regenerated", "thresholds", "question_thresholds.Q2",
+     mut_qthr("Q2", "A segment is a target if its late rate is at least 2 times the overall late rate and it holds at least {segment_share}% of late orders.")),
+    ("node threshold written with number words, not bars", "thresholds", "late_rate",
+     mut_node("late_rate", threshold="a segment at twice the overall rate that holds a tenth of late orders is worth targeting")),
+    ("comment-text node re-edged as a component with its comment claim dropped", "association", "comment_not_arrived_share",
+     mut_node("comment_not_arrived_share", edge="component", claims=["terms.chosen_review"])),
     ("matched estimate without its association-only mark", "association", "excess_low_star_share",
      mut_node("excess_low_star_share", association=False, answerable="yes")),
     ("keyword rule widened to any comment containing a space", "labels", "holdout", lambda: {"rule": K.NOT_ARRIVED + "| "}),
