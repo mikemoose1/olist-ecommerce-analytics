@@ -3,8 +3,9 @@
 Numbers: every number carries a tag, and recommendation/memo_check.py checks it, the same check MEMO.md passes.
   <!--f:name-->  a memo fact from analyze.py, or a story caption fact (c_*) that story/story_data.py builds from the warehouse
   <!--d:name-->  a design constant: memo_check.DESIGN, or a story threshold below
-Shape: each question section (## Q...) opens with one bold one-sentence takeaway and holds exactly one chart, and the
-page holds both KPI tree markers. Exit 1 on any problem. story/selftest_story.py proves it fails on planted wrong captions.
+Shape: each question section (## Q...) opens with one bold one-sentence takeaway and holds exactly one chart; each chart's
+key numbers are also in its section's text (CHART_KEYS, for text-only readers); each lever in "What to do" names its driver
+in its bold lead (LEVER_DRIVERS); the page holds both KPI tree markers. Exit 1 on any problem. story/selftest_story.py proves it fails on planted wrong captions.
 """
 import json, re, sys
 from pathlib import Path
@@ -34,8 +35,40 @@ def body(text):
     return re.sub(r"\]\([^)]*\)\{[^}]*\}", "]()", text)
 
 
+# A text-only reader must get each chart's key numbers from the words: these facts must be tagged in the chart's own section.
+CHART_KEYS = {
+    "fig_cost.png": ["c_low_star_excess_exact", "c_low_star_all", "low_star_share_mid", "c_late_sales_year_m"],
+    "fig_where_when.png": ["nne_rate", "c_rest_rate", "month_2018-03", "month_2018-02", "month_2017-11", "c_segment_thr"],
+    "fig_handoff.png": ["late_if_handoff_late", "late_if_handoff_ok", "c_handoff_late_n", "c_handoff_orders", "seller_side_pct"],
+    "fig_comments.png": ["c_comment_pct", "survey_before_pct", "d:thr_comment_share"],
+    "fig_repeat.png": ["rep_matched", "rep_matched_lo", "rep_matched_hi"],
+}
+# Each lever in the recommendation must name its driver in its own bold lead sentence.
+LEVER_DRIVERS = [["late_if_handoff_late", "late_if_handoff_ok", "seller_side_pct"], ["nne_rate", "top3_months_late"]]
+
+
+def tags_in(chunk):
+    return {("d:" if k == "d" else "") + n.removeprefix("abs:") for k, n in re.findall(r"<!--(f|d):([^>]+?)-->", chunk)}
+
+
 def check_shape(text):
     problems = []
+    sections = {re.split(r"\n", s, maxsplit=1)[0]: s for s in re.split(r"^## ", text, flags=re.M)[1:]}
+    for fig, keys in CHART_KEYS.items():
+        sec = next((s for s in sections.values() if f"]({fig})" in s), None)
+        if sec is None:
+            problems.append(f"{fig}: not in the story")
+            continue
+        missing = [k for k in keys if k not in tags_in(sec)]
+        if missing:
+            problems.append(f"{fig}: key numbers only in the image, not the text: {missing}")
+    todo = next((s for h, s in sections.items() if h.startswith("What to do")), "")
+    items = re.findall(r"^\d+\. (\*\*.*?\*\*)", todo, re.M)
+    if len(items) != len(LEVER_DRIVERS):
+        problems.append(f"What to do: {len(items)} levers, want {len(LEVER_DRIVERS)}")
+    for i, (lead, want) in enumerate(zip(items, LEVER_DRIVERS), 1):
+        if not set(want) <= tags_in(lead):
+            problems.append(f"lever {i}: its bold lead does not name its driver {sorted(set(want) - tags_in(lead))}")
     if re.search(r"\d", re.match(r"\A---\n(.*?)\n---\n", text, re.S).group(1).split("format:")[0]):
         problems.append("title or subtitle holds a number (the header cannot carry tags)")
     for m in ("<!-- KPI_TREE_TOP -->", "<!-- KPI_TREE_FULL -->"):
