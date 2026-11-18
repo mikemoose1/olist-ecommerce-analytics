@@ -6,7 +6,12 @@ Each number is followed by an invisible tag:
   <!--d:ci_level-->         names a design constant (a definition or test design, not a measurement), see DESIGN
 Fails when a number has no tag, the tag names nothing, the value differs, or a tag follows no number.
 So a number edited or swapped without changing the fact behind it fails. Moving a number AND its tag together is a visible
-edit a reviewer can read; the check cannot know what the sentence means.
+edit a reviewer can read.
+Labels and directions are bound too, in the sentence that holds the number:
+  state_XX / month_YYYY-MM   the nearest state code / month before the number must be XX / YYYY-MM
+  a fact named *before* / *after*   the nearest "before" or "after" word must be the same one
+  abs: (a negative fact stated as a magnitude)   the sentence must not say higher, more, greater, rise or increase
+Known limit: beyond those, the check cannot know what a sentence means (a reworded claim with the right numbers passes).
 """
 import re
 
@@ -22,6 +27,37 @@ DESIGN = {
 }
 NUM = re.compile(r"R\$\d{1,3}(?:,\d{3})+(?:\.\d+)?(?: million)?|R\$\d+(?:\.\d+)?(?: million)?|\d+-\d+|(?<![\w])-\d+(?:\.\d+)?|\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?")
 TAG = re.compile(r"<!--(f|d):(abs:)?([^>]+?)-->")
+UP = re.compile(r"\b(higher|more|greater|rises?|rose|increase[sd]?)\b", re.I)
+TIMING = re.compile(r"\b(before|after)\b", re.I)
+
+
+def check_meaning(raw_text):
+    """Problems where a tagged number sits next to the wrong label or direction (see the module docstring)."""
+    clean, cut, spots = [], 0, []
+    for t in TAG.finditer(raw_text):
+        clean.append(raw_text[cut:t.start()]); cut = t.end()
+        spots.append((sum(map(len, clean)), t.group(2), t.group(3)))
+    clean = "".join(clean) + raw_text[cut:]
+    problems = []
+    for at, absolute, name in spots:
+        start = max(clean.rfind(c, 0, at) for c in (". ", ".\n", "\n", ": ")) + 1
+        ends = [e for e in (clean.find(c, at) for c in (". ", ".\n", "\n")) if e != -1]
+        before, after = clean[start:at], clean[at:min(ends) if ends else len(clean)]
+        label = re.match(r"(state|month)_(.+)$", name)
+        if label:
+            pat = r"\b[A-Z]{2}\b" if label.group(1) == "state" else r"\b\d{4}-\d{2}\b"
+            near = re.findall(pat, before)
+            if not near or near[-1] != label.group(2):
+                problems.append(f"tag {name} sits after {near[-1] if near else 'no label'}, not {label.group(2)}")
+        timing = {"before", "after"} & set(name.split("_"))
+        if timing:
+            words = [(len(before) - m.end(), m.group(1).lower()) for m in TIMING.finditer(before)]
+            words += [(m.start(), m.group(1).lower()) for m in TIMING.finditer(after)]
+            if not words or min(words)[1] not in timing:
+                problems.append(f"tag {name} sits next to {min(words)[1] if words else 'no before/after'}")
+        if absolute and UP.search(before + after):
+            problems.append(f"tag abs:{name} is a decrease, but its sentence says {UP.search(before + after).group(0)}")
+    return problems
 
 
 def check_memo(raw_text, facts):
@@ -43,4 +79,5 @@ def check_memo(raw_text, facts):
         elif (want.lstrip("-") != tok.lstrip("-")) if absolute else (want != tok):
             problems.append(f"{tok}: tag {kind}:{'abs:' if absolute else ''}{name} is {want}")
     problems += [f"tag {t.group(0)} follows no number" for t in TAG.finditer(raw_text) if t.start() not in claimed]
+    problems += check_meaning(raw_text)
     return n, problems

@@ -24,6 +24,13 @@ CASES = [  # (name, old text, new text, text the problem list must contain)
     ("a sign dropped where the prose says -0.10", "-0.10<!--f:rep_matched-->", "0.10<!--f:rep_matched-->", "rep_matched"),
     ("a tag that follows no number", "twice as often as average", "twice as often<!--f:late_rate--> as average", "follows no number"),
     ("a new bare number slipped into a sentence", "so a few days would", "so about 14 days would", "14: no tag"),
+    # review L2: a label or a direction swapped while every value and tag stays put
+    ("a state label swapped (AL -> SP)", "AL (21.6<!--f:state_AL-->%)", "SP (21.6<!--f:state_AL-->%)", "state_AL"),
+    ("two state labels swapped (AL <-> MA)", "AL (21.6<!--f:state_AL-->%), MA (17.7", "MA (21.6<!--f:state_AL-->%), AL (17.7", "state_AL"),
+    ("a month label swapped (2018-03 -> 2017-11)", "2018-03 (19.2<!--f:month_2018-03-->", "2017-11 (19.2<!--f:month_2018-03-->", "month_2018-03"),
+    ("a direction flipped (stars lower -> stars higher)", "1.96<!--f:abs:stars_matched--> stars lower", "1.96<!--f:abs:stars_matched--> stars higher", "stars_matched"),
+    ("survey timing swapped (surveyed after -> before)", "Late orders surveyed after delivery average", "Late orders surveyed before delivery average", "stars_sent_after"),
+    ("survey timing swapped in the 1-3 day split (before <-> after)", "before delivery, 3.53<!--f:survey_near_after--> after)", "after delivery, 3.53<!--f:survey_near_after--> before)", "survey_near"),
 ]
 
 
