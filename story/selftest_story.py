@@ -28,6 +28,7 @@ CASES = [
     ("number in the title", edit("more than a quarter of", "28.7% of")),
     ("seller lever loses its driver", edit("Hold sellers to their ship-by date, because late handoffs end late 21.2<!--f:late_if_handoff_late-->% of the time against 5.4<!--f:late_if_handoff_ok-->% and make up 27.8<!--f:seller_side_pct-->% of late orders.**",
                                             "Hold sellers to their ship-by date.**")),
+    ("buffer lever's bold lead loses its borderline hedge", edit("% late, a borderline pass, and three highest-lateness", "% late and three highest-lateness")),
     ("buffer lever names only one driver", edit(" and three highest-lateness months held 48.3<!--f:top3_months_late-->% of late orders.**", ".**")),
     ("chart's key number left only in the image", edit(", 12.0<!--f:c_segment_thr-->% (the dashed line),", "")),
     ("handoff denominator dropped from the text", edit(" out of 8,530<!--f:c_handoff_orders--> handed over after ship-by", "")),

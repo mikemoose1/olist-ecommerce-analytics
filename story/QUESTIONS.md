@@ -102,7 +102,7 @@ Each question names the decision it informs, the number that answers it, and the
 - **Decision.** Fund delivery tests at all, or spend the effort elsewhere.
 - **Metric.** Extra 1-2 star reviews linked to lateness, as a share of all 1-2 star reviews. Second metric: sales paid for late orders in the last 12 months of the window, as exposure.
 - **Threshold.** If lateness is linked to 10% or more of all 1-2 star reviews, it is a top ratings problem and worth a funded test.
-- **Answer.** 28.7% of the 11,635 1-2 star reviews on judged orders, range 27.7% to 29.4%. In the last 12 months, R$1.00 million of sales, 8.6%, went through a late delivery. Spread evenly over the 20-month window, it is R$0.7 million a year; the window average is lower because sales grew and the late share rose.
+- **Answer.** 28.7% of the 11,635 1-2 star reviews on judged orders (delivered single-seller orders), range 27.7% to 29.4%. In the last 12 months, R$1.00 million of sales, 8.6%, went through a late delivery. Spread evenly over the 20-month window, it is R$0.7 million a year; the window average is lower because sales grew and the late share rose.
 - **Claims.** `metrics.late_review_gap_raw`, `terms.chosen_review`, `terms.order_review_score`, `terms.late`, `columns.marts.fct_orders.amount_paid`.
 - **Limit.** The extra reviews come from a matched comparison, an association. The ontology has no column that turns a star into sales or commission.
 

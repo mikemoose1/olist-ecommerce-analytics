@@ -5,7 +5,7 @@ Numbers: every number carries a tag, and recommendation/memo_check.py checks it,
   <!--d:name-->  a design constant: memo_check.DESIGN, or a story threshold below
 Shape: each question section (## Q...) opens with one bold one-sentence takeaway and holds exactly one chart; each chart's
 key numbers are also in its section's text (CHART_KEYS, for text-only readers); each lever in "What to do" names its driver
-in its bold lead (LEVER_DRIVERS); the page holds both KPI tree markers.
+in its bold lead (LEVER_DRIVERS), and a lever resting on a borderline pass says so there (LEVER_HEDGES); the page holds both KPI tree markers.
 Number words: the title, subtitle, headings, bold lines and chart alt text cannot carry tags, so every number word there
 ("two in three", "about four times", "three ... months") must sit in a phrase of NUMBER_PHRASES that checks it against the
 facts, and alt text (either quote style) and every header string outside `format:` hold no numerals.
@@ -52,6 +52,8 @@ CHART_KEYS = {
     "fig_repeat.png": ["rep_matched", "rep_matched_lo", "rep_matched_hi"],
 }
 # Each lever in the recommendation must name its driver in its own bold lead sentence.
+# A lever that rests on a borderline pass must say so in its bold lead (wave-4 readers missed the hedge in the body).
+LEVER_HEDGES = [None, "borderline"]
 LEVER_DRIVERS = [["late_if_handoff_late", "late_if_handoff_ok", "seller_side_pct"], ["nne_rate", "top3_months_late"]]
 
 
@@ -163,6 +165,9 @@ def check_shape(text):
     for i, (lead, want) in enumerate(zip(items, LEVER_DRIVERS), 1):
         if not set(want) <= tags_in(lead):
             problems.append(f"lever {i}: its bold lead does not name its driver {sorted(set(want) - tags_in(lead))}")
+    for i, (lead, hedge) in enumerate(zip(items, LEVER_HEDGES), 1):
+        if hedge and hedge not in lead.lower():
+            problems.append(f"lever {i}: its bold lead does not say it rests on a {hedge} pass")
     for m in ("<!-- KPI_TREE_TOP -->", "<!-- KPI_TREE_FULL -->"):
         if m not in text:
             problems.append(f"missing {m}")
