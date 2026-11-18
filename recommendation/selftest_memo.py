@@ -31,6 +31,14 @@ CASES = [  # (name, old text, new text, text the problem list must contain)
     ("a direction flipped (stars lower -> stars higher)", "1.96<!--f:abs:stars_matched--> stars lower", "1.96<!--f:abs:stars_matched--> stars higher", "stars_matched"),
     ("survey timing swapped (surveyed after -> before)", "Late orders surveyed after delivery average", "Late orders surveyed before delivery average", "stars_sent_after"),
     ("survey timing swapped in the 1-3 day split (before <-> after)", "before delivery, 3.53<!--f:survey_near_after--> after)", "after delivery, 3.53<!--f:survey_near_after--> before)", "survey_near"),
+    # more direction words, the survey-gap sentence's before/after, and months with no tag
+    ("a direction flipped to 'better' (stars lower -> stars better)", "1.96<!--f:abs:stars_matched--> stars lower", "1.96<!--f:abs:stars_matched--> stars better", "stars_matched"),
+    ("a direction flipped to 'up' (stars lower -> stars up)", "1.96<!--f:abs:stars_matched--> stars lower", "1.96<!--f:abs:stars_matched--> stars up", "stars_matched"),
+    ("a direction flipped to 'above' (stars lower -> stars above)", "1.96<!--f:abs:stars_matched--> stars lower", "1.96<!--f:abs:stars_matched--> stars above", "stars_matched"),
+    ("the survey-gap sentence's timing swapped (before -> after)", "surveys sent before delivery still score", "surveys sent after delivery still score", "survey_gap_same_days"),
+    ("the analysis window's first month edited (2017-01 -> 2016-12)", "bought 2017-01", "bought 2016-12", "2016-12"),
+    ("the held-out window's first month edited (2018-05 -> 2018-04)", "held in 2018-05", "held in 2018-04", "2018-04"),
+    ("the spike window's first month edited (2017-11 -> 2017-10)", "late from 2017-11", "late from 2017-10", "2017-10"),
 ]
 
 

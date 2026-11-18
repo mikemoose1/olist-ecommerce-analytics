@@ -240,6 +240,12 @@ same = float(((by_day["mean"][False] - by_day["mean"][True]) * w_day).sum() / w_
 raw_gap = R["survey_timing"]["stars_late_sent_after"] - R["survey_timing"]["stars_late_sent_before"]
 R["survey_timing"]["same_days_late"] = {"days": [int(by_day.index.min()), int(by_day.index.max())], "gap": same, "raw_gap": raw_gap,
                                         "share_of_raw_pct": 100 * same / raw_gap}
+# the share depends on how the days are weighted: by the after-delivery group, by both, by the before group
+gap_day = by_day["mean"][False] - by_day["mean"][True]
+shares = {w: float(100 * (gap_day * wt).sum() / wt.sum() / raw_gap) for w, wt in
+          (("after_group", by_day["size"][False]), ("both", w_day), ("before_group", by_day["size"][True]))}
+R["survey_timing"]["same_days_late"]["share_by_weighting_pct"] = shares
+R["survey_timing"]["same_days_late"]["before_lower_every_day"] = bool((gap_day > 0).all())
 # the gap is the difference of the two figures as printed, so the memo's 2.38, 3.53 and gap always add up
 R["survey_timing"]["within_1_3_days_late"]["gap"] = (round(R["survey_timing"]["within_1_3_days_late"]["stars_sent_after"], 2)
                                                       - round(R["survey_timing"]["within_1_3_days_late"]["stars_sent_before"], 2))
@@ -317,12 +323,19 @@ facts.update({"survey_before_pct": f1(ST["sent_before_delivery_pct"]), "stars_se
               "survey_near_gap": f2(ST["within_1_3_days_late"]["gap"]),
               "survey_gap_raw": f2(ST["same_days_late"]["raw_gap"]), "survey_gap_same_days": f2(ST["same_days_late"]["gap"]),
               "survey_gap_same_days_pct": f"{round(ST['same_days_late']['share_of_raw_pct'] / 5) * 5:.0f}",   # "about 75%"
+              "survey_gap_share_lo": f"{min(ST['same_days_late']['share_by_weighting_pct'].values()):.0f}",
+              "survey_gap_share_hi": f"{max(ST['same_days_late']['share_by_weighting_pct'].values()):.0f}",
+              "matched_pct_all_late": f1(100 * S["all"]["matched"]["late_matched"] / total_late),
               "survey_same_days_min": str(ST["same_days_late"]["days"][0]), "survey_same_days_max": str(ST["same_days_late"]["days"][1]),
               "low_star_matched_n": n0(R["low_star"]["all"]["matched"]["late_matched"]),
               "low_star_matched_pct": f1(100 * R["low_star"]["all"]["matched"]["late_matched"] / R["low_star"]["all"]["matched"]["late_total"]),
               "late_reviewed_n": n0(R["money"]["low_star_reviews"]["late_reviewed"]),
               "rj_spike": f1(RJE["rj_spike_pct"]), "rj_other": f1(RJE["rj_other_pct"]),
-              "rest_spike": f1(RJE["rest_spike_pct"]), "rest_other": f1(RJE["rest_other_pct"])})
+              "rest_spike": f1(RJE["rest_spike_pct"]), "rest_other": f1(RJE["rest_other_pct"]),
+              # months the memo names
+              "window_first_month": str(orders.month.min()), "window_last_month": str(orders.month.max()),
+              "holdout_first_month": HOLDOUT_START[:7], "holdout_last_month": str(orders.month.max()),
+              "spike_first_month": SPIKE[0], "spike_last_month": SPIKE[-1]})
 for r in R["clusters"]["months_by_late_count"]:
     facts[f"month_{r['month']}"] = f1(r["late_rate_pct"])
 for r in R["stars_by_days_late"]:
