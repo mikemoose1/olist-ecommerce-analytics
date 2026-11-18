@@ -527,6 +527,9 @@ facts:
   - claim: Each person has exactly one seq = 1 order, so joining the cohort to it gives one row per person (the first-order state is unambiguous)
     sql: "select count(*) from metrics.metric_repeat_rate_90d_people p join marts.fct_orders o on o.customer_unique_id = p.customer_unique_id and o.customer_qualifying_order_seq = 1"
     expected: 77560
+  - claim: The sequence number follows purchased_at, so seq = 1 is the person's earliest qualifying order
+    sql: "select count(*) from marts.fct_orders a join marts.fct_orders b on a.customer_unique_id = b.customer_unique_id and a.customer_qualifying_order_seq < b.customer_qualifying_order_seq where a.purchased_at > b.purchased_at"
+    expected: 0
   - claim: Pairs of one person's qualifying orders placed in the same second
     sql: "select count(*) from (select 1 from marts.fct_orders where is_qualifying_order group by customer_unique_id, purchased_at having count(*) > 1)"
     expected: 281

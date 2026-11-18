@@ -89,7 +89,7 @@ def check_term_counts(con):
     for name, card in ONTO["terms"].items():
         schema, table, col = card["source"].split(".")
         if "values" in card:
-            got = {str(k): v for k, v in con.execute(f"select {col}, count(*) from {schema}.{table} group by 1").fetchall()}
+            got = {str(k): v for k, v in sorted(con.execute(f"select {col}, count(*) from {schema}.{table} group by 1").fetchall(), key=lambda r: str(r[0]))}
             want = {str(k): v for k, v in card["values"].items()}
             yield "term_count", name, got == want, f"{got}"
         for c in ([card["count"]] if "count" in card else []):

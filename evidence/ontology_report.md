@@ -1,6 +1,6 @@
 # Ontology check: every claim in ontology/ontology.yml against the warehouse
 
-108/108 PASS
+109/109 PASS
 
 | Kind | Claim | Result | Detail |
 |---|---|---|---|
@@ -60,10 +60,10 @@
 | column | metrics.repeat_rate_ever | PASS | marts.dim_customer.n_qualifying_orders |
 | column | metrics.review_score | PASS | marts.fct_orders.review_score |
 | column | metrics.late_review_gap_raw | PASS | metrics.metric_late_rate_orders.review_score |
-| term_count | order_status | PASS | {'approved': 2, 'shipped': 1107, 'unavailable': 609, 'processing': 301, 'canceled': 625, 'invoiced': 314, 'delivered': 96478, 'created': 5} |
+| term_count | order_status | PASS | {'approved': 2, 'canceled': 625, 'created': 5, 'delivered': 96478, 'invoiced': 314, 'processing': 301, 'shipped': 1107, 'unavailable': 609} |
 | term_count | canceled_order | PASS | order_status = 'canceled': 625 (card 625); order_status = 'canceled' and delivered_to_customer_at is not null: 6 (card 6); order_status = 'canceled' and delivery_state = 'status_date_conflict': 6 (card 6); order_status = 'canceled' and delivery_state = 'not_delivered': 619 (card 619); order_status = 'canceled' and n_items = 0: 164 (card 164) |
 | term_count | qualifying_order | PASS | is_qualifying_order: 98199 (card 98199); not is_qualifying_order: 1242 (card 1242) |
-| term_count | delivery_state | PASS | {'status_date_conflict': 14, 'delivered_on_time': 89936, 'delivered_late': 6534, 'not_delivered': 2957} |
+| term_count | delivery_state | PASS | {'delivered_late': 6534, 'delivered_on_time': 89936, 'not_delivered': 2957, 'status_date_conflict': 14} |
 | term_count | delivered | PASS | delivery_state in ('delivered_on_time', 'delivered_late'): 96470 (card 96470) |
 | term_count | multi_seller_order | PASS | n_parcels > 1: 1278 (card 1278) |
 | term_count | analysis_window | PASS | in_analysis_window: 99092 (card 99092); not in_analysis_window: 349 (card 349) |
@@ -96,6 +96,7 @@
 | fact | The newest qualifying purchase in the data is 2018-09-03 09:06:57, so the cohort cutoff is 2018-06-05 09:06:57 | PASS | count=1 (card 1) |
 | fact | first_order_at is the purchased_at of the person's seq = 1 order | PASS | count=0 (card 0) |
 | fact | Each person has exactly one seq = 1 order, so joining the cohort to it gives one row per person (the first-order state is unambiguous) | PASS | count=77560 (card 77560) |
+| fact | The sequence number follows purchased_at, so seq = 1 is the person's earliest qualifying order | PASS | count=0 (card 0) |
 | fact | Pairs of one person's qualifying orders placed in the same second | PASS | count=281 (card 281) |
 | fact | review_score on the order equals the score of the chosen response, and an order with no chosen response has a null score | PASS | count=0 (card 0) |
 | stage_rule | A late order arrived after the promised day | PASS | count=0 (card 0) |

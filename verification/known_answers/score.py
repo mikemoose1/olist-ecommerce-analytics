@@ -52,7 +52,10 @@ def sql_of(entry):
 
 
 def strip_strings(sql):
-    return re.sub(r"'(?:[^']|'')*'", "''", sql)
+    """Drop string literals and comments, and unquote identifiers, so a table name cannot hide in quotes."""
+    sql = re.sub(r"--[^\n]*|/\*.*?\*/", " ", sql, flags=re.S)
+    sql = re.sub(r"'(?:[^']|'')*'", "''", sql)
+    return sql.replace('"', "")
 
 
 def literal_re(key_values):
@@ -68,9 +71,9 @@ def literal_re(key_values):
 
 
 def check_hardcode(sql, literal, text_keys, forbidden):
-    if not re.search(r"\b(from|join)\s+(marts|metrics|intermediate|staging)\.", sql, re.I):
-        raise ValueError("answer must query a warehouse table, not hard-code a value")
     bare = strip_strings(sql)
+    if not re.search(r"\b(from|join)\s+(\w+\s*\.\s*)?(marts|metrics|intermediate|staging)\s*\.", bare, re.I):
+        raise ValueError("answer must query a warehouse table, not hard-code a value")
     m = literal.search(bare)
     if m:
         raise ValueError(f"hard-coded value {m.group(0)} copied from the ontology text or the key")
@@ -79,7 +82,7 @@ def check_hardcode(sql, literal, text_keys, forbidden):
             raise ValueError(f"hard-coded text answer '{t}'")
     for pat in forbidden:
         schema, _, table = pat.partition(".")
-        rx = rf"(?<![\w.]){re.escape(schema)}\s*\." + (r"\w+" if table in ("", "*") else re.escape(table) + r"\b")
+        rx = rf"(?<!\w){re.escape(schema)}\s*\.\s*" + (r"\w+" if table in ("", "*") else re.escape(table) + r"\b")
         if re.search(rx, bare, re.I):
             raise ValueError(f"reads forbidden table {pat}")
 
