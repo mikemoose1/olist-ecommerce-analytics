@@ -80,9 +80,44 @@ CASES = [
     ("Trend metrics never include a partial month",
      "metric_late_rate_monthly,test_name:expect_column_values_to_be_between",
      {"sql": ["insert into metrics.metric_late_rate_monthly values ('2018-09', 1, 16, 6.25)"]}),
+    # Ontology claims (ontology/check.py): a broken link between business things must fail the check.
+    ("Ontology: an order has exactly one row (no order with two customers)",
+     "ontology:entity order",
+     {"sql": ["insert into marts.fct_orders select * replace ('ghost-person' as customer_unique_id) from marts.fct_orders order by order_id limit 1"]}),
+    ("Ontology: every customer has at least one order",
+     "ontology:relationship customer places orders",
+     {"sql": ["insert into marts.dim_customer select * replace ('ghost-person' as customer_unique_id) from marts.dim_customer order by customer_unique_id limit 1"]}),
+    ("Ontology: every item's product exists",
+     "ontology:relationship product appears on items",
+     {"sql": ["update marts.fct_order_items set product_id = 'ghost-product' where (order_id, order_item_id) in (select (order_id, order_item_id) from marts.fct_order_items order by 1 limit 1)"]}),
+    ("Ontology: every survey response belongs to a real order",
+     "ontology:relationship order receives survey responses",
+     {"sql": ["update marts.fct_reviews set order_id = 'ghost-order' where (review_id, order_id) in (select (review_id, order_id) from marts.fct_reviews order by 1 limit 1)"]}),
+    ("Ontology: an order never has two chosen reviews",
+     "ontology:relationship order has one chosen review",
+     {"sql": ["update marts.fct_reviews set is_chosen_for_order = true where order_id in "
+              "(select order_id from marts.fct_reviews group by 1 having count(*) > 1 order by 1 limit 1)"]}),
+    ("Ontology: no new unknown ship-to locations beyond the documented 278",
+     "ontology:relationship order ships to a location",
+     {"sql": ["update marts.fct_orders set ship_to_zip_code_prefix = '00000' where order_id in (select order_id from marts.fct_orders order by order_id limit 1)"]}),
+    ("Ontology stage rule: late always means delivered after the promised day",
+     "ontology:stage_rule A late order arrived after the promised day",
+     {"sql": ["update marts.fct_orders set delivery_state = 'delivered_late' where order_id in "
+              "(select order_id from marts.fct_orders where delivery_state = 'delivered_on_time' order by order_id limit 1)"]}),
 ]
 
+def run_ontology_claim(claim, db):
+    env = dict(os.environ, OLIST_DB_PATH=db, ONTOLOGY_NO_REPORT="1")
+    p = subprocess.run([sys.executable, os.path.join(ROOT, "ontology", "check.py"), "--skip-semantic"],
+                       cwd=ROOT, env=env, capture_output=True, text=True)
+    kind, name = claim.split(" ", 1)
+    hits = [l for l in p.stdout.splitlines() if l[6:].startswith(f"{kind:12s} {name}:")]
+    res = [(claim, "pass" if l.startswith("PASS") else "fail", l.split(": ", 1)[1]) for l in hits]
+    return (0 if res and all(r[1] == "pass" for r in res) else 1), res
+
 def run_tests(selector, db, raw):
+    if selector.startswith("ontology:"):
+        return run_ontology_claim(selector[len("ontology:"):], db)
     env = dict(os.environ, OLIST_DB_PATH=db, OLIST_RAW_DIR=raw, DBT_PROFILES_DIR=ROOT)
     tp = tempfile.mkdtemp(prefix="dbt-target-")
     p = subprocess.run([DBT, "test", "--select", selector, "--target-path", tp, "--quiet"],
