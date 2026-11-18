@@ -9,6 +9,8 @@ every published number to equal the independent recomputation under the same rul
 
 Verdicts: VERIFIED (all compared values agree within the stated tolerance), NOT VERIFIED (a mismatch),
 INCONCLUSIVE (something could not be measured).
+Part C - story chart numbers. Every count behind a chart in story/ (story/data, drawn by story/build_story.py) must equal an
+independent recomputation from the raw CSVs (verification/story_numbers.py). verification/selftest_story_numbers.py proves it can fail.
 Usage: python verification/verify_headlines.py   (after `make build`)
 Output: evidence/verification_report.json, evidence/verification_report.md; exit 1 on any NOT VERIFIED.
 """
@@ -127,16 +129,30 @@ add("B", "late_review_gap_raw", B["late_review_gap_raw"], IB["late_review_gap_ra
 rows.append({"part": "B", "metric": "late_penalty_controlled (OLS)", "mart": B["late_penalty_controlled"], "independent": None, "first_pass": None,
              "tolerance": None, "note": sh_note + "; reported, no independent second path", "verdict": "REPORTED"})
 
+# ---- Part C: story chart numbers
+sys.path.insert(0, os.path.join(ROOT, "verification"))
+import story_numbers
+for name, ok, msg in story_numbers.compare(story_numbers.from_story(os.path.join(ROOT, "story", "data")), story_numbers.from_raw(RAW)):
+    rows.append({"part": "C", "metric": f"story {name}", "mart": None, "independent": None, "first_pass": None, "tolerance": 0,
+                 "note": msg, "verdict": "VERIFIED" if ok else "NOT VERIFIED"})
+
 os.makedirs(os.path.join(ROOT, "evidence"), exist_ok=True)
 json.dump(rows, open(os.path.join(ROOT, "evidence", "verification_report.json"), "w"), indent=1)
 fmt = lambda x: "-" if x is None else (f"{x['value']} ({x.get('num')}/{x.get('den')})" if x.get("den") else (f"{x['value']} CI {x['ci']}" if "ci" in x else f"{x['value']}"))
 with open(os.path.join(ROOT, "evidence", "verification_report.md"), "w") as f:
     f.write("# Headline reconciliation\n\n**Part A** rebuilds the metric layer with the first pass's rules and must reproduce the first pass AND an independent raw-CSV recomputation. "
-            "**Part B** checks the shipped numbers (rules picked by experiment) against the independent recomputation under the same rules.\n\n")
+            "**Part B** checks the shipped numbers (rules picked by experiment) against the independent recomputation under the same rules. "
+            "**Part C** checks every count behind a story chart against the raw CSVs (story count and raw count in the Mart column).\n\n")
     f.write("| Part | Metric | Mart | Independent (raw CSVs) | First pass | Verdict |\n|---|---|---|---|---|---|\n")
     for r in rows:
-        f.write(f"| {r['part']} | {r['metric']} | {fmt(r['mart'])} | {fmt(r['independent'])} | {r['first_pass'] if r['first_pass'] is not None else '-'} | **{r['verdict']}** |\n")
+        mart, ind = (r["note"], "-") if r["part"] == "C" else (fmt(r["mart"]), fmt(r["independent"]))
+        f.write(f"| {r['part']} | {r['metric']} | {mart} | {ind} | {r['first_pass'] if r['first_pass'] is not None else '-'} | **{r['verdict']}** |\n")
     f.write(f"\nPart A rules: {FIRST_PASS_RULES}. Part B rules: {SHIPPED}.\n")
 for r in rows:
+    if r["part"] == "C":
+        if r["verdict"] != "VERIFIED": print(f"{r['verdict']:13s} [C] {r['metric']}: {r['note']}")
+        continue
     print(f"{r['verdict']:13s} [{r['part']}] {r['metric']}: mart={fmt(r['mart'])} independent={fmt(r['independent'])} first_pass={r['first_pass']}")
+C = [r for r in rows if r["part"] == "C"]
+print(f"[C] {sum(r['verdict'] == 'VERIFIED' for r in C)}/{len(C)} story chart numbers VERIFIED against the raw CSVs")
 sys.exit(1 if any(r["verdict"] == "NOT VERIFIED" for r in rows) else 0)

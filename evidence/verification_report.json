@@ -204,5 +204,545 @@
   "tolerance": null,
   "note": "shipped rules: C1=exclude_multi_seller, C6=any_later_order_24h; reported, no independent second path",
   "verdict": "REPORTED"
+ },
+ {
+  "part": "C",
+  "metric": "story comment_delay_share",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 2499/3747 raw 2499/3747",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_handoff:Handed over after ship-by",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 1809/8530 raw 1809/8530",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_handoff:Handed over on time",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 4708/86400 raw 4708/86400",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_month:2017-01",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 22/746 raw 22/746",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_month:2017-02",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 49/1641 raw 49/1641",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_month:2017-03",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 116/2541 raw 116/2541",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_month:2017-04",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 150/2285 raw 150/2285",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_month:2017-05",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 106/3513 raw 106/3513",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_month:2017-06",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 95/3110 raw 95/3110",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_month:2017-07",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 108/3808 raw 108/3808",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_month:2017-08",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 121/4135 raw 121/4135",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_month:2017-09",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 182/4106 raw 182/4106",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_month:2017-10",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 187/4414 raw 187/4414",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_month:2017-11",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 902/7195 raw 902/7195",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_month:2017-12",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 408/5454 raw 408/5454",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_month:2018-01",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 403/6967 raw 403/6967",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_month:2018-02",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 925/6505 raw 925/6505",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_month:2018-03",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 1324/6913 raw 1324/6913",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_month:2018-04",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 306/6670 raw 306/6670",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_month:2018-05",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 442/6641 raw 442/6641",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_month:2018-06",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 71/5989 raw 71/5989",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_month:2018-07",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 208/6059 raw 208/6059",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_month:2018-08",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 393/6239 raw 393/6239",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_region:North and northeast",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 1302/10707 raw 1302/10707",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_region:Rest of Brazil",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 5216/84224 raw 5216/84224",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:AC",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 3/80 raw 3/80",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:AL",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 85/394 raw 85/394",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:AM",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 4/145 raw 4/145",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:AP",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 2/67 raw 2/67",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:BA",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 396/3217 raw 396/3217",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:CE",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 176/1262 raw 176/1262",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:DF",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 118/2050 raw 118/2050",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:ES",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 214/1965 raw 214/1965",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:GO",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 128/1920 raw 128/1920",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:MA",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 124/702 raw 124/702",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:MG",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 517/11157 raw 517/11157",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:MS",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 68/694 raw 68/694",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:MT",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 52/869 raw 52/869",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:PA",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 105/933 raw 105/933",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:PB",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 54/512 raw 54/512",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:PE",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 153/1579 raw 153/1579",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:PI",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 66/473 raw 66/473",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:PR",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 199/4843 raw 199/4843",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:RJ",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 1490/12154 raw 1490/12154",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:RN",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 44/466 raw 44/466",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:RO",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 7/241 raw 7/241",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:RR",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 5/40 raw 5/40",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:RS",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 325/5241 raw 325/5241",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:SC",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 291/3497 raw 291/3497",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:SE",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 51/329 raw 51/329",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:SP",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 1814/39834 raw 1814/39834",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_by_state:TO",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 27/267 raw 27/267",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_orders",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 6518/94931 raw 6518/94931",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story late_sales_window",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 1148081.0/None raw 1148081.0/None",
+  "verdict": "VERIFIED"
  }
 ]

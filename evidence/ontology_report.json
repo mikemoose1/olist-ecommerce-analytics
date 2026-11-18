@@ -781,6 +781,12 @@
  },
  {
   "kind": "column_fact",
+  "name": "marts.fct_reviews.review_comment_message",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 58247 (card 58247)"
+ },
+ {
+  "kind": "column_fact",
   "name": "marts.fct_reviews.review_created_at",
   "ok": true,
   "detail": "type TIMESTAMP (card TIMESTAMP); nulls 0 (card 0)"
@@ -1221,7 +1227,7 @@
   "kind": "coverage",
   "name": "allowlist reasons",
   "ok": true,
-  "detail": "45 exemptions, each with a reason"
+  "detail": "44 exemptions, each with a reason"
  },
  {
   "kind": "coverage",

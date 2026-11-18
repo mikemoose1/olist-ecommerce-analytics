@@ -125,6 +125,10 @@ and writes [experiments/results.json](experiments/results.json).
 
 [recommendation/MEMO.md](recommendation/MEMO.md) is a one-page memo. [recommendation/PLAN.md](recommendation/PLAN.md) holds the analysis plan and the predictions, committed before any outcome was measured, plus a labeled addendum for checks added afterwards. `recommendation/analyze.py` measures each effect two ways (exact matching on state, category, freight band and month, and a regression with the same controls), re-checks findings on held-out months 2018-05 to 2018-08, and writes [evidence/recommendation_report.md](evidence/recommendation_report.md). It runs in `make verify` and fails if any number in the memo is not one it produced, or if a number sits next to the wrong state, month, before/after word or direction (see `recommendation/memo_check.py`).
 
+## Data story
+
+`make story` builds `story/build/story.html`, one static page for an operations manager. The page opens with what late delivery costs, follows the KPI tree down to where late orders come from, and ends at the memo's two tests. [story/QUESTIONS.md](story/QUESTIONS.md) holds the KPI tree and the five questions. [story/TOOLS.md](story/TOOLS.md) records the Evidence, Quarto and Streamlit trials and why the page uses Quarto. `make verify` builds the page and runs four checks. The KPI tree's breakdowns must add up. Every chart count must match the raw CSVs (Part C of `verification/verify_headlines.py`). Every number in the text must be tied to a fact (`story/check_story.py`). Each check has a selftest that plants errors and requires a failure.
+
 ## What is in the repository
 
 ```
@@ -137,6 +141,7 @@ scripts/                                      reproduce.sh, fetch_data.sh, prove
 verification/                                 verify_headlines.py + first-pass baseline; known_answers/ (24-question test for an agent)
 experiments/                                  run_experiments.py + results.json
 recommendation/                               MEMO.md, PLAN.md, analyze.py (late-delivery cost and the tests to run)
+story/                                        data story: QUESTIONS.md (KPI tree), kpi_tree.yml, story.qmd, build_story.py, checks
 evidence/                                     latest verification, mutation and ontology reports
 analysis_design_phase/                        raw-data checks run before any SQL was written
 ```
