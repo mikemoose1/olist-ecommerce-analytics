@@ -73,3 +73,10 @@ Discovery months: 2017-01..2018-04. Held-out months: 2018-05..2018-08 (24,928 or
 
 - `recommendation/analyze.py`: computes every number, writes `evidence/recommendation_report.json` and `.md`, and checks that every number in `MEMO.md` matches the report. Runs in `make verify`.
 - `recommendation/MEMO.md`: one page for an e-commerce operations or marketplace manager. What it is, why it matters, what to do.
+
+## Addendum after the first run (added after outcomes were seen, so these are not predictions)
+
+The first run showed two held-out surprises, so three descriptive checks were added. They are labeled as added after seeing the data.
+- Rio de Janeiro (RJ) had a 14.8% late rate in discovery months and 4.2% in held-out months. Clusters are now also checked by month: share of late orders in the three worst months.
+- The star penalty was smaller in held-out months. Median days late per split is now reported, since stars fall with each extra day late.
+- Upper bound on late orders tied to sellers missing ship-by dates, and share of late orders that were 1-3 or 1-7 days late, to size the two actions.
