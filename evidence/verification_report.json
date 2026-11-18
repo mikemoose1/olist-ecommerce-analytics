@@ -737,6 +737,16 @@
  },
  {
   "part": "C",
+  "metric": "story late_sales_last12",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 998816.62/11619769.11 raw 998816.62/11619769.11",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
   "metric": "story late_sales_window",
   "mart": null,
   "independent": null,
