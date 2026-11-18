@@ -59,6 +59,7 @@ entities:
     rows: 103886
     raw_source: olist_order_payments_dataset.csv
   review:
+    doc_anchor: ["review", "response"]   # coverage.py: the row or sentence citing this card's numbers must name this
     meaning: One satisfaction-survey response attached to one order. The same response (review_id) can be attached to several orders.
     table: marts.fct_reviews
     key: [review_id, order_id]
@@ -374,6 +375,7 @@ terms:
     counterexamples: [counting only qualifying orders when the question says "placed an order" or "ever ordered" (loses 1,113 people whose every order was canceled, unavailable or empty), counting customer_id]
     decisions: [D1, D8]
   parcel_count:
+    doc_anchor: ["no items"]   # coverage.py: the row or sentence citing this card's numbers must name this
     meaning: How many sellers' parcels an order has (n_parcels, a whole number, never null). 0 means the order has no items, so no seller ships anything (775 orders, all with n_items = 0). 1 is a normal order. 2 or more is a multi-seller order.
     source: marts.fct_orders.n_parcels
     grain: order
@@ -382,6 +384,7 @@ terms:
     counterexamples: [treating n_parcels as null for an order with no items (it is 0), treating an order with no items as one parcel]
     decisions: [D2]
   order_review_score:
+    doc_anchor: ["review score", "survey response"]   # coverage.py: the row or sentence citing this card's numbers must name this
     meaning: The stars (1 to 5, whole numbers) of the order's chosen review, copied onto the order row (marts.fct_orders.review_score). Null when the order has no survey response (768 orders). It never holds an unchosen response.
     source: marts.fct_orders.review_score
     grain: order
@@ -921,9 +924,11 @@ columns:
 # Facts that span tables: a SQL query that returns one number and the number it must equal.
 facts:
   - claim: People with a qualifying order
+    doc_anchor: "people with a real purchase"   # coverage.py: the row or sentence citing this card's numbers must name this
     sql: select count(*) from marts.dim_customer where n_qualifying_orders >= 1
     expected: 94983
   - claim: People whose first qualifying order is too recent for a full 90 days
+    doc_anchor: "left out"   # coverage.py: the row or sentence citing this card's numbers must name this
     sql: "select count(*) from marts.fct_orders where customer_qualifying_order_seq = 1 and purchased_at > (select max(purchased_at) from marts.fct_orders where is_qualifying_order) - interval 90 day"
     expected: 17423
   - claim: The repeat cohort is exactly the people whose first qualifying order is old enough
@@ -942,9 +947,11 @@ facts:
     sql: "select count(*) from marts.fct_orders a join marts.fct_orders b on a.customer_unique_id = b.customer_unique_id and a.customer_qualifying_order_seq < b.customer_qualifying_order_seq where a.purchased_at > b.purchased_at"
     expected: 0
   - claim: Orders with more than one survey response
+    doc_anchor: "more than one"   # coverage.py: the row or sentence citing this card's numbers must name this
     sql: select count(*) from (select order_id from marts.fct_reviews group by 1 having count(*) > 1)
     expected: 547
   - claim: Survey responses (review_id) attached to more than one order
+    doc_anchor: "more than one order"   # coverage.py: the row or sentence citing this card's numbers must name this
     sql: select count(*) from (select review_id from marts.fct_reviews group by 1 having count(distinct order_id) > 1)
     expected: 789
   - claim: Survey responses chosen for an order (C4)
@@ -954,12 +961,15 @@ facts:
     sql: select count(*) from metrics.metric_late_rate_orders where is_late
     expected: 6518
   - claim: Survey responses sent on an earlier day than the delivery
+    doc_anchor: "sent before delivery"   # coverage.py: the row or sentence citing this card's numbers must name this
     sql: select count(*) from marts.fct_reviews where review_before_delivery
     expected: 5127
   - claim: Of those, responses sent on or after the promised date
+    doc_anchor: "on or after the promised date"   # coverage.py: the row or sentence citing this card's numbers must name this
     sql: select count(*) from marts.fct_reviews r join marts.fct_orders o using (order_id) where r.review_before_delivery and r.review_created_on >= o.estimated_delivery_date
     expected: 4713
   - claim: Of those, responses on orders whose delivery_state is delivered_late
+    doc_anchor: "late orders"   # coverage.py: the row or sentence citing this card's numbers must name this
     sql: select count(*) from marts.fct_reviews r join marts.fct_orders o using (order_id) where r.review_before_delivery and o.delivery_state = 'delivered_late'
     expected: 4777
   - claim: Pairs of one person's qualifying orders placed in the same second
@@ -995,6 +1005,7 @@ stage_rules:
     expected: 23
     exception: Raw timestamps out of order. Lateness uses only the delivery date and the promise, so it is unaffected.
   - rule: The survey goes out only when the order is delivered or the promised date arrives
+    doc_anchor: ["The survey goes out only when the order is delivered or the promised date arrives", "sent before both dates"]   # coverage.py: the row or sentence citing this card's numbers must name this
     model: {invariant: SurveyFollowsPolicy, result: holds}
     sql: "select count(*) from marts.fct_reviews r join marts.fct_orders o using (order_id) where r.review_created_on < least(coalesce(cast(o.delivered_to_customer_at as date), o.estimated_delivery_date), o.estimated_delivery_date)"
     expected: 606

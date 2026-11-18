@@ -1,7 +1,121 @@
 # Exemptions from ontology/coverage.py. Each entry needs a written reason. An entry that matches nothing fails the check,
 # so this file cannot fill up with dead lines. Prefer a card in ontology.yml over an exemption.
 tables: []
-numbers: []
+numbers:   # each entry exempts its value only inside its exact `context` phrase in ONTOLOGY.md (coverage.py)
+  - value: 5
+    context: "one 5-digit zip prefix"
+    reason: "Definition: Olist's zip prefix has five digits. Not a measured count."
+  - value: 90
+    context: "the 90-day repeat rate"
+    reason: "Design constant of the 90-day repeat window; facts.1, facts.2 and metrics.repeat_rate_90d check it in SQL against the warehouse."
+  - value: 1
+    context: "| 1, 1, 1 and 2 |"
+    reason: "Row counts of the one-row result tables; each is an entity with a rows value (late_rate_result, repeat_rate_90d_result, repeat_rate_ever_result, review_score_result) checked against the warehouse. One cell names four entities, so a single marker cannot bind it."
+  - value: 2
+    context: "| 1, 1, 1 and 2 |"
+    reason: "Same cell as above: review_score_result has 2 rows (entities.review_score_result.rows)."
+  - value: 90
+    context: "falls in the last 90 days of the data"
+    reason: "Design constant of the 90-day repeat window; facts.1, facts.2 and metrics.repeat_rate_90d check it in SQL against the warehouse."
+  - value: 90
+    context: "no full 90 days to come back"
+    reason: "Design constant of the 90-day repeat window; facts.1, facts.2 and metrics.repeat_rate_90d check it in SQL against the warehouse."
+  - value: 29
+    context: "TLC checked all 29 reachable states"
+    reason: "Output of the TLC model check in ontology/order_lifecycle, not a warehouse value."
+  - value: 8
+    context: "(8 delivered with no date"
+    reason: "Part of stage_rules.1's 14 exceptions, spelled out in its own `exception` text; 14 and the 6 are checked."
+  - value: 6
+    context: "6 canceled with a date)"
+    reason: "= terms.canceled_order.counts.1 (6), cited inside stage rule 1's row, which names no canceled-order card."
+  - value: 0
+    context: "`n_parcels` is 0, not null"
+    reason: "Definition of the column (n_parcels on an empty order); columns marts.fct_orders.n_parcels rules check it."
+  - value: 24
+    context: "The 24-hour rule"
+    reason: "Design constant of the repeat rate (a return counts from 24 hours); metrics.repeat_rate_90d's SQL applies it."
+  - value: 1
+    context: "`customer_qualifying_order_seq` is 1 on"
+    reason: "Definition of the sequence number (1 = first); facts.4 and facts.6 check it."
+  - value: 2
+    context: "order, 2 on the next"
+    reason: "Definition of the sequence number (2 = second)."
+  - value: 24
+    context: "at least 24 hours and at most 90 days"
+    reason: "Design constant of the repeat rate (a return counts from 24 hours); metrics.repeat_rate_90d's SQL applies it."
+  - value: 90
+    context: "at least 24 hours and at most 90 days"
+    reason: "Design constant of the 90-day repeat window; facts.1, facts.2 and metrics.repeat_rate_90d check it in SQL against the warehouse."
+  - value: 3
+    context: "an order 3 hours later"
+    reason: "A worked example in a definition card, not a measured value."
+  - value: 91
+    context: "day 91"
+    reason: "A worked example in a definition card, not a measured value."
+  - value: 90
+    context: "at least 90 days older than the newest"
+    reason: "Design constant of the 90-day repeat window; facts.1, facts.2 and metrics.repeat_rate_90d check it in SQL against the warehouse."
+  - value: "2018-09-03 09:06:57"
+    context: "newest qualifying purchase, 2018-09-03 09:06:57"
+    reason: "facts.3's SQL checks this exact timestamp against the warehouse."
+  - value: "2018-06-05 09:06:57"
+    context: "The cutoff is therefore 2018-06-05 09:06:57"
+    reason: "facts.3's SQL checks this exact timestamp against the warehouse."
+  - value: 1
+    context: "`seq = 1` order"
+    reason: "Definition: seq 1 is the first qualifying order."
+  - value: 0
+    context: "`n_parcels` is 0 on an order with no items"
+    reason: "Definition in the parcel_count card; columns marts.fct_orders.n_parcels rules check it."
+  - value: 1
+    context: "It is 1 on a normal order and 2 or more"
+    reason: "Definition in the parcel_count card."
+  - value: 2
+    context: "It is 1 on a normal order and 2 or more"
+    reason: "Definition in the parcel_count card."
+  - value: 1
+    context: "the stars, 1 to 5,"
+    reason: "Definition of the review scale."
+  - value: 5
+    context: "the stars, 1 to 5,"
+    reason: "Definition of the review scale."
+  - value: "23:00"
+    context: "same-day delivery at 23:00"
+    reason: "A worked example in a definition card, not a measured value."
+  - value: 2
+    context: "items from 2 or more sellers"
+    reason: "Definition of a multi-seller order."
+  - value: 3
+    context: "one seller shipping 3 items"
+    reason: "A worked example in a definition card, not a measured value."
+  - value: "2017-01"
+    context: "Full months 2017-01 through 2018-08"
+    reason: "Definition of the analysis window; the analysis_window counts check it in SQL."
+  - value: "2018-08"
+    context: "Full months 2017-01 through 2018-08"
+    reason: "Definition of the analysis window; the analysis_window counts check it in SQL."
+  - value: 90
+    context: "people with a full 90 days after"
+    reason: "Design constant of the 90-day repeat window; facts.1, facts.2 and metrics.repeat_rate_90d check it in SQL against the warehouse."
+  - value: 24
+    context: "a return must be 24 hours to 90 days later"
+    reason: "Design constant of the repeat rate (a return counts from 24 hours); metrics.repeat_rate_90d's SQL applies it."
+  - value: 90
+    context: "a return must be 24 hours to 90 days later"
+    reason: "Design constant of the 90-day repeat window; facts.1, facts.2 and metrics.repeat_rate_90d check it in SQL against the warehouse."
+  - value: "2026-11-17"
+    context: "on this warehouse (2026-11-17)"
+    reason: "Date the MetricFlow comparison was run; a fact about the document, not the data."
+  - value: 1
+    context: "| Setup | 1 package"
+    reason: "Notes on the MetricFlow trial setup, not a data value."
+  - value: 13
+    context: "13 s install"
+    reason: "Notes on the MetricFlow trial setup, not a data value."
+  - value: 75
+    context: "75-line YAML"
+    reason: "Notes on the MetricFlow trial setup, not a data value."
 columns:
   - match: marts.fct_reviews.review_comment_title
     reason: Free text typed by customers. No metric, rule or question uses it, and it has no fixed meaning to define. 87,656 of 99,224 are null.
