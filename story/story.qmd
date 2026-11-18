@@ -1,5 +1,5 @@
 ---
-title: "Late deliveries are linked to more than a quarter of Olist's bad reviews"
+title: "Late deliveries are linked to more than a quarter of the bad reviews on delivered single-seller Olist orders"
 subtitle: "Where they come from, and two tests that would show how many Olist can win back"
 format:
   html:
@@ -8,17 +8,17 @@ format:
     fig-align: left
 ---
 
-This page is for an Olist operations manager deciding where to cut late deliveries. It covers single-seller orders bought from 2017-01<!--f:window_first_month--> to 2018-08<!--f:window_last_month--> and delivered, 94,931<!--f:orders--> orders in all. An order is late when it arrives on a later day than the date Olist promised. Every range is a 95<!--d:ci_level-->% range.
+This page is for an Olist operations manager deciding where to cut late deliveries. It covers single-seller orders bought from 2017-01<!--f:window_first_month--> to 2018-08<!--f:window_last_month--> and delivered, 94,931<!--f:orders--> orders in all. An order is late when it arrives on a later day than the date Olist promised. Every range is a 95<!--d:ci_level-->% range. Each question has a bar that would change the action. The bars were set after the memo's analysis had already seen these numbers, so read them as judgment calls, not tests fixed in advance.
 
 ## Q1 What does late delivery cost Olist?
 
-**Late deliveries account for about 3,300<!--f:low_star_excess_mid--> of the 11,635<!--f:c_low_star_all--> reviews of 1<!--d:star_low_min--> or 2<!--d:star_low_max--> stars, 28.7<!--f:low_star_share_mid-->% of them.**
+**Late deliveries are linked to about 3,300<!--f:low_star_excess_mid--> of the 11,635<!--f:c_low_star_all--> reviews of 1<!--d:star_low_min--> or 2<!--d:star_low_max--> stars on these orders, 28.7<!--f:low_star_share_mid-->% of them.**
 
-![](fig_cost.png){fig-alt="Bar chart. Left, all one- and two-star reviews split into the part linked to late delivery and the rest. Right, yearly sales split into sales on late orders and the rest."}
+![](fig_cost.png){fig-alt="Bar chart. Left, all one- and two-star reviews split into the part linked to late delivery and the rest. Right, sales in the most recent year of the window split into sales on late orders and the rest."}
 
-The chart shows the exact estimate, 3,335<!--f:c_low_star_excess_exact--> reviews. The share's range is 27.7<!--f:low_star_share_lo-->% to 29.4<!--f:low_star_share_hi-->%. The figure comes from comparing each late order with on-time orders in the same state, product category, freight band and month. Late orders score 1.96<!--f:abs:stars_matched--> stars lower than those look-alikes. That comparison shows an association. It does not prove that lateness causes the bad reviews, because product or seller quality could drive both. The bar for treating lateness as a top ratings problem was 10<!--d:thr_low_star_share-->% of these reviews, and it clears that bar.
+The chart shows the exact estimate, 3,335<!--f:c_low_star_excess_exact--> reviews. The share's range is 27.7<!--f:low_star_share_lo-->% to 29.4<!--f:low_star_share_hi-->%. The figure comes from comparing each late order with on-time orders in the same state, product category, freight band and month. Late orders score 1.96<!--f:abs:stars_matched--> stars lower than those look-alikes. That comparison shows an association. It does not prove that lateness causes the bad reviews, because product or seller quality could drive both. Reviews on orders outside this page, such as multi-seller or undelivered orders, are not counted. The bar for treating lateness as a top ratings problem was 10<!--d:thr_low_star_share-->% of these reviews, and it clears that bar.
 
-Late orders also carried R$0.7 million<!--f:late_gmv_year--> of sales a year, R$0.69 million<!--f:c_late_sales_year_m--> before rounding, 7.6<!--f:c_late_sales_share-->% of the R$9.0 million<!--f:c_total_sales_year--> a year these orders brought in. That money went through a late delivery. It was not lost. The data has no column for Olist's commission or for what a star is worth in sales, so the cost here is counted in reviews, not in reais.
+In the last 12<!--f:c_last12_n--> months of the window, late orders carried R$1.00 million<!--f:c_late_sales_last12_m--> of sales, 8.6<!--f:c_late_sales_last12_share-->% of the R$11.6 million<!--f:c_total_sales_last12_m--> these orders brought in. Over the whole window the figure is R$1.15 million<!--f:c_late_sales_window-->. That money went through a late delivery. It was not lost. The data has no column for Olist's commission or for what a star is worth in sales, so the cost here is counted in reviews, not in reais.
 
 ## How the numbers fit together
 
@@ -34,11 +34,11 @@ Each part breaks down further. A solid arrow is arithmetic. "= sum of rows" mean
 
 ## Q2 Where and when do late orders pile up?
 
-**North and northeast addresses and three peak months hold far more than their share of late orders.**
+**North and northeast addresses and three highest-lateness months hold far more than their share of late orders.**
 
 ![](fig_where_when.png){fig-alt="Left, late rate for north and northeast addresses against the rest of Brazil with ranges. Right, late rate by purchase month with a shaded range and a dashed line at the target threshold."}
 
-North and northeast addresses run 12.2<!--f:nne_rate-->% late, range 11.6<!--f:c_nne_lo-->% to 12.8<!--f:c_nne_hi-->%, against 6.2<!--f:c_rest_rate-->% for the rest of Brazil. They hold 20.0<!--f:nne_share_late-->% of late orders. Three months held 48.3<!--f:top3_months_late-->% of late orders: 2018-03 (19.2<!--f:month_2018-03-->% late), 2018-02 (14.2<!--f:month_2018-02-->%) and 2017-11 (12.5<!--f:month_2017-11-->%). A segment counts as a target when it runs at least 1.75<!--d:thr_segment_ratio--> times the overall rate, 12.0<!--f:c_segment_thr-->% (the dashed line), and holds at least 10<!--d:thr_segment_share-->% of late orders. The region and all three months pass. In the most recent months the regional gap shrank to 6.8<!--f:nne_hold-->% against 4.2<!--f:rest_hold-->%, so the gap is real but not fixed in size.
+North and northeast addresses run 12.2<!--f:nne_rate-->% late, range 11.6<!--f:c_nne_lo-->% to 12.8<!--f:c_nne_hi-->%, against 6.2<!--f:c_rest_rate-->% for the rest of Brazil. They hold 20.0<!--f:nne_share_late-->% of late orders. Three months held 48.3<!--f:top3_months_late-->% of late orders: 2018-03 (19.2<!--f:month_2018-03-->% late), 2018-02 (14.2<!--f:month_2018-02-->%) and 2017-11 (12.5<!--f:month_2017-11-->%). A segment counts as a target when it runs at least 1.75<!--d:thr_segment_ratio--> times the overall rate, 12.0<!--f:c_segment_thr-->% (the dashed line), and holds at least 10<!--d:thr_segment_share-->% of late orders. The top two months pass clearly. North and northeast, and the third month, pass only narrowly: their ranges, 11.6<!--f:c_nne_lo-->% to 12.8<!--f:c_nne_hi-->% and 11.8<!--f:c_nov_lo-->% to 13.3<!--f:c_nov_hi-->%, straddle the bar, so treat them as borderline. In the most recent months the regional gap shrank to 6.8<!--f:nne_hold-->% against 4.2<!--f:rest_hold-->%, so the gap is real but not fixed in size.
 
 ## Q3 How much lateness starts with the seller?
 
@@ -46,15 +46,15 @@ North and northeast addresses run 12.2<!--f:nne_rate-->% late, range 11.6<!--f:c
 
 ![](fig_handoff.png){fig-alt="Bar chart of the late rate for orders handed to the carrier after the ship-by date and on time, with ranges."}
 
-Late handoffs end late 21.2<!--f:late_if_handoff_late-->% of the time, range 20.4<!--f:c_handoff_late_lo-->% to 22.1<!--f:c_handoff_late_hi-->%, against 5.4<!--f:late_if_handoff_ok-->% for on-time handoffs, 3.9<!--f:c_handoff_ratio--> times as often. They make up 27.8<!--f:seller_side_pct-->% of late orders: 1,809<!--f:c_handoff_late_n--> late orders out of 8,530<!--f:c_handoff_orders--> handed over after ship-by. A seller test is worth running when late handoffs are at least 20<!--d:thr_handoff_share-->% of late orders and run late at least twice as often. Both hold. At most about 1,300<!--f:avoidable_late--> late orders would have been on time if every late handoff had behaved like an on-time one. The carrier may have been late anyway, so the real number is lower.
+Late handoffs end late 21.2<!--f:late_if_handoff_late-->% of the time, range 20.4<!--f:c_handoff_late_lo-->% to 22.1<!--f:c_handoff_late_hi-->%, against 5.4<!--f:late_if_handoff_ok-->% for on-time handoffs, 3.9<!--f:c_handoff_ratio--> times as often. They make up 27.8<!--f:seller_side_pct-->% of late orders: 1,809<!--f:c_handoff_late_n--> late orders out of 8,530<!--f:c_handoff_orders--> handed over after ship-by. A seller test is worth running when late handoffs are at least 20<!--d:thr_handoff_share-->% of late orders and run late at least 2<!--d:thr_handoff_ratio--> times as often. Both hold. At most 1,344<!--f:c_avoidable_exact--> late orders, 20.6<!--f:avoidable_share-->%, would have been on time if every late handoff had behaved like an on-time one. The carrier may have been late anyway, so the real number is lower.
 
 ## Q4 What do customers with late orders write?
 
-**Two in three comments on late orders are about the parcel being late or missing, so the low stars point to delivery, not the product.**
+**Two in three comments on late orders are about the parcel being late or missing, which suggests the low stars are mostly about delivery.**
 
 ![](fig_comments.png){fig-alt="Bar chart. Share of late-order comments about delay or non-arrival, and share of reviewed late orders surveyed before the parcel arrived, each with a range and a dashed line at one half."}
 
-66.7<!--f:c_comment_pct-->% of the 3,747<!--f:c_comments_n--> comments on late orders say the product did not arrive, came late, or missed the deadline, range 65.2<!--f:c_comment_lo-->% to 68.2<!--f:c_comment_hi-->%. A keyword rule read the Portuguese text. It made 0<!--f:c_rule_false_matches--> false matches in 70<!--f:c_rule_labelled_n--> comments read by hand. In the 30<!--f:c_rule_holdout_n--> comments read after the rule was fixed, it missed 23<!--f:c_rule_holdout_missed-->% of the delay comments, so the true share is higher. Part of the reason is timing. Olist sends the survey around the promised date, and 74.5<!--f:survey_before_pct-->% of late orders got it before the parcel arrived, range 73.4<!--f:c_survey_lo-->% to 75.5<!--f:c_survey_hi-->%. The threshold was 50<!--d:thr_comment_share-->% of comments. Above it, the fix belongs to delivery, not to the product.
+66.7<!--f:c_comment_pct-->% of the 3,747<!--f:c_comments_n--> comments on late orders say the product did not arrive, came late, or missed the deadline, range 65.2<!--f:c_comment_lo-->% to 68.2<!--f:c_comment_hi-->%. A keyword rule read the Portuguese text. It made 0<!--f:c_rule_false_matches--> false matches in 70<!--f:c_rule_labelled_n--> comments read by hand, but only 20<!--f:c_rule_negatives_n--> of those were not about delay, so that is a small test. A later spot check found a clear false match: "chegou no prazo", which means it arrived on time. In the 30<!--f:c_rule_holdout_n--> comments read after the rule was fixed, it missed 23<!--f:c_rule_holdout_missed-->% of the delay comments. The rule both misses delay comments and counts some that are not, so 66.7<!--f:c_comment_pct-->% is an estimate, not a floor. Timing adds to the delivery signal. Olist sends the survey around the promised date, and 74.5<!--f:survey_before_pct-->% of late orders got it before the parcel arrived, range 73.4<!--f:c_survey_lo-->% to 75.5<!--f:c_survey_hi-->%. The bar was 50<!--d:thr_comment_share-->% of comments. Above it, this plan treats the low stars as a delivery problem and leaves product fixes out.
 
 ## Q5 Do late orders cost repeat purchases?
 
@@ -62,14 +62,14 @@ Late handoffs end late 21.2<!--f:late_if_handoff_late-->% of the time, range 20.
 
 ![](fig_repeat.png){fig-alt="Dot with a range line for the matched change in the share of customers who buy again, crossing the zero line."}
 
-Compared with matched on-time look-alikes, the share of customers who came back within 90<!--d:repeat_window_days--> days after a late first order differs by -0.10<!--f:rep_matched--> points, with a range of -0.52<!--f:rep_matched_lo--> to 0.22<!--f:rep_matched_hi-->. The range includes zero. Few customers buy twice at all, so lost repeat sales are at most about R$3,000<!--f:money_high--> a year. Repeat sales stay out of the case. The case rests on ratings.
+Compared with matched on-time look-alikes, the share of customers who came back within 90<!--d:repeat_window_days--> days after a late first order differs by -0.10<!--f:rep_matched--> points, with a range of -0.52<!--f:rep_matched_lo--> to 0.22<!--f:rep_matched_hi-->. The range includes zero. Before matching, the gap is -0.28<!--f:c_rep_raw--> points, range -0.55<!--f:c_rep_raw_lo--> to just below zero, which excludes zero. Matching on state, product category, freight band and month shrinks the gap and widens the range, so the raw gap may come from those differences. Few customers buy twice at all, so lost repeat sales are at most R$3,208<!--f:c_money_high_exact--> a year. Repeat sales stay out of the case. The case rests on ratings.
 
 ## What to do: two tests
 
-The reason to act is ratings. Late deliveries are linked to about 3,300<!--f:low_star_excess_mid--> extra reviews of 1<!--d:star_low_min--> or 2<!--d:star_low_max--> stars. Two drivers sit behind those late orders, and each lever below targets one. Neither lever is proven to work, because every link above is an association. So both are tests on a random half, not rollouts.
+The reason to act is ratings. Late deliveries are linked to about 3,300<!--f:low_star_excess_mid--> extra reviews of 1<!--d:star_low_min--> or 2<!--d:star_low_max--> stars. Two patterns in the late orders show where to test, and each lever below targets one. Neither lever is proven to work, because every link above is an association. So both are tests on a random half, not rollouts.
 
 1. **Hold sellers to their ship-by date, because late handoffs end late 21.2<!--f:late_if_handoff_late-->% of the time against 5.4<!--f:late_if_handoff_ok-->% and make up 27.8<!--f:seller_side_pct-->% of late orders.** Pick half of sellers at random. They get a reminder the day before each ship-by date and a visible on-time handoff score. Assign by seller, not by order. Measure late handoffs first, then the late rate and average stars, over 8<!--d:test_weeks--> weeks.
-2. **Add buffer days to the promise where and when lateness is likely, because north and northeast addresses run 12.2<!--f:nne_rate-->% late and three peak months held 48.3<!--f:top3_months_late-->% of late orders.** For north and northeast addresses, and in peak periods such as November, add buffer days to the promised date on a random half of orders at checkout. 56.1<!--f:late_within_7-->% of late orders were within 7<!--d:week_days--> days of the promise, so a few days would turn many of them into on-time orders. Measure the late rate, average stars and checkout conversion.
+2. **Add buffer days to the promise where and when lateness is likely, because north and northeast addresses run 12.2<!--f:nne_rate-->% late and three highest-lateness months held 48.3<!--f:top3_months_late-->% of late orders.** For north and northeast addresses, and in months that look like this window's highest-lateness months, add buffer days to the promised date on a random half of orders at checkout. 56.1<!--f:late_within_7-->% of late orders were within 7<!--d:week_days--> days of the promise, so a few days would turn many of them into on-time orders. Measure average stars and checkout conversion first. The late rate is a weak readout for this test, because a longer promise lowers it by definition.
 
 ## What this data cannot tell you
 

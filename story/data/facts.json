@@ -23,7 +23,8 @@
   -1.906045
  ],
  "late_sales_window": 1148081.0,
- "late_sales_per_year": 688848.6,
+ "late_sales_last12": 998816.62,
+ "total_sales_last12": 11619769.11,
  "handoff_late_share_of_late": 0.277539,
  "handoff_late_rate": 0.212075,
  "handoff_late_rate_ci": [
@@ -46,6 +47,11 @@
  "survey_before_share_ci": [
   0.733723,
   0.755144
+ ],
+ "repeat_raw_pts": -0.2759,
+ "repeat_raw_pts_ci": [
+  -0.5508,
+  -0.0011
  ],
  "repeat_effect_pts": -0.1042,
  "repeat_effect_pts_ci": [
@@ -88,20 +94,28 @@
   "c_late_rate_hi": "7.03",
   "c_low_star_all": "11,635",
   "c_late_sales_window": "R$1.15 million",
-  "c_total_sales_year": "R$9.0 million",
-  "c_late_sales_share": "7.6",
   "c_nne_lo": "11.6",
   "c_nne_hi": "12.8",
   "c_rest_rate": "6.2",
   "c_mar_lo": "18.2",
   "c_mar_hi": "20.1",
+  "c_nov_lo": "11.8",
+  "c_nov_hi": "13.3",
   "c_handoff_late_n": "1,809",
   "c_handoff_late_lo": "20.4",
   "c_handoff_late_hi": "22.1",
   "c_handoff_orders": "8,530",
   "c_segment_thr": "12.0",
+  "c_last12_n": "12",
+  "c_late_sales_last12_m": "R$1.00 million",
+  "c_total_sales_last12_m": "R$11.6 million",
+  "c_late_sales_last12_share": "8.6",
+  "c_avoidable_exact": "1,344",
+  "c_money_high_exact": "R$3,208",
+  "c_rep_raw": "-0.28",
+  "c_rep_raw_lo": "-0.55",
+  "c_rule_negatives_n": "20",
   "c_low_star_excess_exact": "3,335",
-  "c_late_sales_year_m": "R$0.69 million",
   "c_handoff_ratio": "3.9",
   "c_comment_pct": "66.7",
   "c_comment_lo": "65.2",

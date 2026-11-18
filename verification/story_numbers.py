@@ -20,6 +20,7 @@ def from_story(data_dir):
     out["late_orders"] = {"num": f["late_orders"], "den": f["judged_orders"], "rate": f["late_rate"]}
     out["comment_delay_share"] = {"num": round(f["comment_delay_share"] * f["comments_n"]), "den": f["comments_n"], "rate": f["comment_delay_share"]}
     out["late_sales_window"] = {"num": round(f["late_sales_window"], 2), "den": None}
+    out["late_sales_last12"] = {"num": round(f["late_sales_last12"], 2), "den": round(f["total_sales_last12"], 2)}
     return out
 
 
@@ -55,6 +56,8 @@ def from_raw(raw_dir):
                            from pop where late and msg is not null""").fetchone()
     out["comment_delay_share"] = {"num": int(k), "den": int(n)}
     out["late_sales_window"] = {"num": round(float(raw.execute("select sum(paid) from pop where late").fetchone()[0]), 2), "den": None}
+    l12, t12 = raw.execute("select sum(paid) filter (where late), sum(paid) from pop where ym >= '2017-09'").fetchone()
+    out["late_sales_last12"] = {"num": round(float(l12), 2), "den": round(float(t12), 2)}
     return out
 
 

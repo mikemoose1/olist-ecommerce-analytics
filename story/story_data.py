@@ -17,7 +17,7 @@ import kpi_tree as K
 ROOT = K.ROOT
 OUT = ROOT / "story" / "data"
 NNE = ("AC", "AL", "AM", "AP", "BA", "CE", "MA", "PA", "PB", "PE", "PI", "RN", "RO", "RR", "SE", "TO")
-WINDOW_MONTHS = 20
+LAST12_FROM = "2017-09-01"   # the last 12 months of the window: 2017-09 to 2018-08
 
 
 def wilson(k, n, z=1.959964):
@@ -74,13 +74,16 @@ def build():
         "low_star_excess_share_ci": [round(ls["share_of_all_low_star_pct"]["low"] / 100, 6), round(ls["share_of_all_low_star_pct"]["high"] / 100, 6)],
         "star_penalty": rep["stars"]["all"]["matched"]["effect"], "star_penalty_ci": rep["stars"]["all"]["matched"]["ci"],
         "late_sales_window": round(float(one("select sum(amount_paid) from judged where is_late")[0]), 2),
-        "late_sales_per_year": round(float(one("select sum(amount_paid) from judged where is_late")[0]) * 12 / WINDOW_MONTHS, 2),
+        "late_sales_last12": round(float(one(f"select sum(amount_paid) from judged where is_late and purchase_date >= date '{LAST12_FROM}'")[0]), 2),
+        "total_sales_last12": round(float(one(f"select sum(amount_paid) from judged where purchase_date >= date '{LAST12_FROM}'")[0]), 2),
         "handoff_late_share_of_late": round(hl["late"] / late, 6),
         "handoff_late_rate": hl["late_rate"], "handoff_late_rate_ci": [hl["ci_low"], hl["ci_high"]],
         "handoff_ok_rate": ho["late_rate"], "handoff_ok_rate_ci": [ho["ci_low"], ho["ci_high"]],
         "avoidable_late_upper": round(rep["who_caused"]["avoidable_upper_bound"]["late_orders"], 1),
         "comment_delay_share": round(com_k / com_n, 6), "comment_delay_share_ci": [round(x, 6) for x in wilson(com_k, com_n)], "comments_n": com_n,
         "survey_before_share": round(sv_k / sv_n, 6), "survey_before_share_ci": [round(x, 6) for x in wilson(sv_k, sv_n)],
+        "repeat_raw_pts": round(rep["repeat90"]["all"]["raw"]["effect"] * 100, 4),
+        "repeat_raw_pts_ci": [round(x * 100, 4) for x in rep["repeat90"]["all"]["raw"]["ci"]],
         "repeat_effect_pts": round(m["effect"] * 100, 4), "repeat_effect_pts_ci": [round(x * 100, 4) for x in m["ci"]],
         "lost_repeat_per_year": [round(rep["money"]["lost_repeat_gmv_per_year"][k], 1) for k in ("low", "mid", "high")],
         "label_eval": K.label_eval(),
@@ -88,33 +91,39 @@ def build():
     top3 = sorted(tables["late_by_month"], key=lambda r: -r["late"])[:3]
     facts["top3_months"] = [r["segment"] for r in top3]
     facts["top3_months_share_of_late"] = round(sum(r["late"] for r in top3) / late, 6)
-    facts["captions"] = captions(facts, tables, rep)
+    facts["captions"] = captions(facts, tables)
     return tables, facts
 
 
-def captions(f, t, rep):
+def captions(f, t):
     """Numbers as the story prints them. story/check_story.py ties each printed number to one of these names
     (or to a recommendation/analyze.py memo fact)."""
     pct = lambda x: f"{100 * x:.1f}"
     seg = lambda table, k: next(r for r in t[table] if r["segment"] == k)
     nne, rest = seg("late_by_region", "North and northeast"), seg("late_by_region", "Rest of Brazil")
-    mar = seg("late_by_month", "2018-03")
-    total_sales = rep["money"]["total_gmv_window"]
+    mar, nov = seg("late_by_month", "2018-03"), seg("late_by_month", "2017-11")
     lab = f["label_eval"]
+    bars = yaml.safe_load(K.TREE.read_text())["thresholds"]
     return {
         "c_late_rate_lo": f"{100 * f['late_rate_ci'][0]:.2f}", "c_late_rate_hi": f"{100 * f['late_rate_ci'][1]:.2f}",
         "c_low_star_all": f"{f['low_star_all']:,}",
         "c_late_sales_window": f"R${f['late_sales_window'] / 1e6:.2f} million",
-        "c_total_sales_year": f"R${total_sales * 12 / WINDOW_MONTHS / 1e6:.1f} million",
-        "c_late_sales_share": pct(f["late_sales_window"] / total_sales),
         "c_nne_lo": pct(nne["ci_low"]), "c_nne_hi": pct(nne["ci_high"]), "c_rest_rate": pct(rest["late_rate"]),
         "c_mar_lo": pct(mar["ci_low"]), "c_mar_hi": pct(mar["ci_high"]),
+        "c_nov_lo": pct(nov["ci_low"]), "c_nov_hi": pct(nov["ci_high"]),
         "c_handoff_late_n": f"{seg('late_by_handoff', 'Handed over after ship-by')['late']:,}",
         "c_handoff_late_lo": pct(f["handoff_late_rate_ci"][0]), "c_handoff_late_hi": pct(f["handoff_late_rate_ci"][1]),
         "c_handoff_orders": f"{seg('late_by_handoff', 'Handed over after ship-by')['orders']:,}",
-        "c_segment_thr": f"{1.75 * 100 * f['late_rate']:.1f}",
+        "c_segment_thr": f"{bars['segment_ratio'] * 100 * f['late_rate']:.1f}",
+        "c_last12_n": "12",
+        "c_late_sales_last12_m": f"R${f['late_sales_last12'] / 1e6:.2f} million",
+        "c_total_sales_last12_m": f"R${f['total_sales_last12'] / 1e6:.1f} million",
+        "c_late_sales_last12_share": pct(f["late_sales_last12"] / f["total_sales_last12"]),
+        "c_avoidable_exact": f"{f['avoidable_late_upper']:,.0f}",
+        "c_money_high_exact": f"R${f['lost_repeat_per_year'][2]:,.0f}",
+        "c_rep_raw": f"{f['repeat_raw_pts']:.2f}", "c_rep_raw_lo": f"{f['repeat_raw_pts_ci'][0]:.2f}",
+        "c_rule_negatives_n": str(sum(e["fp"] + e["tn"] for e in lab.values())),
         "c_low_star_excess_exact": f"{f['low_star_excess']:,.0f}",
-        "c_late_sales_year_m": f"R${f['late_sales_per_year'] / 1e6:.2f} million",
         "c_handoff_ratio": f"{f['handoff_late_rate'] / f['handoff_ok_rate']:.1f}",
         "c_comment_pct": pct(f["comment_delay_share"]),
         "c_comment_lo": pct(f["comment_delay_share_ci"][0]), "c_comment_hi": pct(f["comment_delay_share_ci"][1]),

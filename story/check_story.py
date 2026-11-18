@@ -5,19 +5,24 @@ Numbers: every number carries a tag, and recommendation/memo_check.py checks it,
   <!--d:name-->  a design constant: memo_check.DESIGN, or a story threshold below
 Shape: each question section (## Q...) opens with one bold one-sentence takeaway and holds exactly one chart; each chart's
 key numbers are also in its section's text (CHART_KEYS, for text-only readers); each lever in "What to do" names its driver
-in its bold lead (LEVER_DRIVERS); the page holds both KPI tree markers. Exit 1 on any problem. story/selftest_story.py proves it fails on planted wrong captions.
+in its bold lead (LEVER_DRIVERS); the page holds both KPI tree markers.
+Number words: the title, subtitle, headings, bold lines and chart alt text cannot carry tags, so every number word there
+("two in three", "about four times", "three ... months") must sit in a phrase of NUMBER_PHRASES that checks it against the
+facts, and alt text holds no numerals. Exit 1 on any problem. story/selftest_story.py proves it fails on planted wrong captions.
 """
 import json, re, sys
 from pathlib import Path
+
+import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "recommendation"))
 from memo_check import check_memo
 
-STORY_DESIGN = {   # thresholds from story/QUESTIONS.md, fixed before the charts were drawn
-    "thr_low_star_share": "10", "thr_segment_ratio": "1.75", "thr_segment_share": "10",
-    "thr_handoff_share": "20", "thr_comment_share": "50",
-}
+def design():
+    """Story design numbers: the bars in kpi_tree.yml `thresholds:` (the one source), as d:thr_<name> tags."""
+    bars = yaml.safe_load((ROOT / "story" / "kpi_tree.yml").read_text())["thresholds"]
+    return {f"thr_{k}": f"{v:g}" for k, v in bars.items()}
 
 
 def facts():
@@ -37,7 +42,7 @@ def body(text):
 
 # A text-only reader must get each chart's key numbers from the words: these facts must be tagged in the chart's own section.
 CHART_KEYS = {
-    "fig_cost.png": ["c_low_star_excess_exact", "c_low_star_all", "low_star_share_mid", "c_late_sales_year_m"],
+    "fig_cost.png": ["c_low_star_excess_exact", "c_low_star_all", "low_star_share_mid", "c_late_sales_last12_m", "c_late_sales_last12_share"],
     "fig_where_when.png": ["nne_rate", "c_rest_rate", "month_2018-03", "month_2018-02", "month_2017-11", "c_segment_thr"],
     "fig_handoff.png": ["late_if_handoff_late", "late_if_handoff_ok", "c_handoff_late_n", "c_handoff_orders", "seller_side_pct"],
     "fig_comments.png": ["c_comment_pct", "survey_before_pct", "d:thr_comment_share"],
@@ -45,6 +50,62 @@ CHART_KEYS = {
 }
 # Each lever in the recommendation must name its driver in its own bold lead sentence.
 LEVER_DRIVERS = [["late_if_handoff_late", "late_if_handoff_ok", "seller_side_pct"], ["nne_rate", "top3_months_late"]]
+
+
+WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10,
+         "eleven": 11, "twelve": 12}
+NUMBER_WORD = r"\b(?:" + "|".join(WORDS) + r"|half|halves|quarters?|thirds?|twice|double|triple|dozens?|majority)\b"
+
+
+def num(x):
+    return float(str(x).replace(",", "").replace("R$", ""))
+
+
+def _w(m, i=1):
+    return WORDS.get(m.group(i).lower())
+
+
+# phrase regex -> (what it claims, test against facts f and design d). A number word outside these phrases is a problem.
+NUMBER_PHRASES = [
+    (r"\b(\w+) in (\w+) comments", "comment share",
+     lambda m, f, d: _w(m) and _w(m, 2) and abs(100 * _w(m) / _w(m, 2) - num(f["c_comment_pct"])) <= 5),
+    (r"about (\w+) times as often", "late-handoff ratio",
+     lambda m, f, d: _w(m) == round(num(f["c_handoff_ratio"]))),
+    (r"more than a quarter", "low-star share", lambda m, f, d: num(f["low_star_share_lo"]) > 25),
+    (r"\b(\w+) (?:highest-lateness|peak) months", "number of top months",
+     lambda m, f, d: _w(m) == sum(k.startswith("month_") for k in f)),
+    (r"\b(\w+) tests\b", "number of levers", lambda m, f, d: _w(m) == len(LEVER_DRIVERS)),
+    (r"\bone- and two-star", "low-star definition", lambda m, f, d: (d["star_low_min"], d["star_low_max"]) == ("1", "2")),
+    (r"\bat one half\b", "comment bar", lambda m, f, d: d["thr_comment_share"] == "50"),
+]
+
+
+def untaggable(text):
+    """Text that cannot carry tags: title, subtitle, headings, bold spans, and chart alt text."""
+    head = re.match(r"\A---\n(.*?)\n---\n", text, re.S).group(1).split("format:")[0]
+    rest = text[len(head):]
+    bold = re.findall(r"\*\*(.+?)\*\*", rest, re.S)
+    heads = re.findall(r"^#+ (.*)$", rest, re.M)
+    alts = re.findall(r'fig-alt="([^"]*)"', rest)
+    clean = lambda t: re.sub(r"<!--.*?-->", "", t)
+    return [("header", head)] + [("bold", clean(b)) for b in bold] + [("heading", h) for h in heads] + [("alt", a) for a in alts]
+
+
+def check_number_words(text, f, d):
+    problems = []
+    for where, chunk in untaggable(text):
+        if where == "alt" and re.search(r"\d", chunk):
+            problems.append(f"alt text holds a numeral (it cannot carry a tag): {chunk[:70]!r}")
+        covered = set()
+        for pat, what, ok in NUMBER_PHRASES:
+            for m in re.finditer(pat, chunk, re.I):
+                covered |= set(range(*m.span()))
+                if not ok(m, f, d):
+                    problems.append(f"{where}: {m.group(0)!r} does not match the facts ({what})")
+        for m in re.finditer(NUMBER_WORD, chunk, re.I):
+            if m.start() not in covered:
+                problems.append(f"{where}: number word {m.group(0)!r} is not checked against a fact: {chunk[:70]!r}")
+    return problems
 
 
 def tags_in(chunk):
@@ -91,9 +152,11 @@ def check_shape(text):
     return problems
 
 
-def check(text, fx=None):
-    n, problems = check_memo(body(text), fx or facts(), STORY_DESIGN)
-    return n, problems + check_shape(text)
+def check(text, fx=None, design_numbers=None):
+    from memo_check import DESIGN
+    fx, d = fx or facts(), design_numbers or design()
+    n, problems = check_memo(body(text), fx, d)
+    return n, problems + check_shape(text) + check_number_words(text, fx, {**DESIGN, **d})
 
 
 def main():
