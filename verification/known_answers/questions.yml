@@ -1,0 +1,23 @@
+# Ten business questions with known answers. Give a fresh agent ONLY the ontology/ folder and this file.
+# The agent answers each with one DuckDB SQL query that returns a single value (one row, one column).
+# score.py runs the agent's SQL on the warehouse and compares it to answer_key.sql.
+- id: q01
+  question: What is Olist's late-delivery rate, as a percentage rounded to 2 decimals?
+- id: q02
+  question: How many orders are judged when computing the late-delivery rate?
+- id: q03
+  question: What is the 90-day repeat rate (the headline repeat metric), as a percentage rounded to 2 decimals?
+- id: q04
+  question: What is the average review score, in stars rounded to 3 decimals?
+- id: q05
+  question: What was the late-delivery rate for orders purchased in March 2018, as a percentage rounded to 2 decimals?
+- id: q06
+  question: How many distinct customers have ever placed an order?
+- id: q07
+  question: How many orders (any status) contain items from more than one seller?
+- id: q08
+  question: Among orders judged for lateness that have a review, what is the average review score of the late ones, rounded to 3 decimals?
+- id: q09
+  question: Which ship-to state (two-letter code) has the highest late-delivery rate among states with at least 1,000 orders judged for lateness?
+- id: q10
+  question: What percentage of all orders have the status canceled, rounded to 2 decimals?
