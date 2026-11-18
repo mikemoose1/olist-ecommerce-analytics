@@ -14,7 +14,7 @@ setup()       { venv; data; deps; }
 build()       { deps; "$BIN/dbt" build --fail-fast; }
 verify()      { "$BIN/python" verification/verify_headlines.py; ontology; recommendation; }
 recommendation() { "$BIN/python" recommendation/analyze.py; "$BIN/python" recommendation/selftest_memo.py; story_checks; }   # numbers tied to facts, then proof that check can fail
-story_checks() { "$BIN/python" story/kpi_tree.py --check; "$BIN/python" story/selftest_kpi_tree.py; }   # KPI tree adds up, and that check can fail
+story_checks() { "$BIN/python" story/kpi_tree.py --check; "$BIN/python" story/story_data.py --check; "$BIN/python" story/selftest_kpi_tree.py; }   # KPI tree adds up, and that check can fail
 # the revision the append-only guard compares with: unset = a local run, compare with the last commit;
 # a commit = CI's base; set but empty = the first push of a new branch, compare with origin/main; nothing to compare with = ""
 # (append_only.py fails closed on an empty revision). An empty value never quietly becomes HEAD.

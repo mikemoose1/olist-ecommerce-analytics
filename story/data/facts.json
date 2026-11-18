@@ -1,0 +1,86 @@
+{
+ "judged_orders": 94931,
+ "late_orders": 6518,
+ "late_rate": 0.06866,
+ "late_rate_ci": [
+  0.067069,
+  0.070287
+ ],
+ "low_star_excess": 3335.3,
+ "low_star_excess_ci": [
+  3226.7,
+  3417.6
+ ],
+ "low_star_all": 11635,
+ "low_star_excess_share": 0.286657,
+ "low_star_excess_share_ci": [
+  0.27733,
+  0.293736
+ ],
+ "star_penalty": -1.959818,
+ "star_penalty_ci": [
+  -2.006642,
+  -1.906045
+ ],
+ "late_sales_window": 1148081.0,
+ "late_sales_per_year": 688848.6,
+ "handoff_late_share_of_late": 0.277539,
+ "handoff_late_rate": 0.212075,
+ "handoff_late_rate_ci": [
+  0.203531,
+  0.220878
+ ],
+ "handoff_ok_rate": 0.054491,
+ "handoff_ok_rate_ci": [
+  0.052997,
+  0.056024
+ ],
+ "avoidable_late_upper": 1344.2,
+ "comment_delay_share": 0.666934,
+ "comment_delay_share_ci": [
+  0.651679,
+  0.681847
+ ],
+ "comments_n": 3747,
+ "survey_before_share": 0.744581,
+ "survey_before_share_ci": [
+  0.733723,
+  0.755144
+ ],
+ "repeat_effect_pts": -0.1042,
+ "repeat_effect_pts_ci": [
+  -0.5184,
+  0.2222
+ ],
+ "lost_repeat_per_year": [
+  0.0,
+  645.0,
+  3208.4
+ ],
+ "label_eval": {
+  "holdout": {
+   "n": 30,
+   "tp": 17,
+   "fp": 0,
+   "fn": 5,
+   "tn": 8,
+   "precision": 1.0,
+   "recall": 0.7727272727272727
+  },
+  "tuning": {
+   "n": 40,
+   "tp": 27,
+   "fp": 0,
+   "fn": 1,
+   "tn": 12,
+   "precision": 1.0,
+   "recall": 0.9642857142857143
+  }
+ },
+ "top3_months": [
+  "2018-03",
+  "2018-02",
+  "2017-11"
+ ],
+ "top3_months_share_of_late": 0.483431
+}
