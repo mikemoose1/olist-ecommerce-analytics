@@ -68,6 +68,7 @@
 | C | story late_by_state:SE | story 51/329 raw 51/329 | - | - | **VERIFIED** |
 | C | story late_by_state:SP | story 1814/39834 raw 1814/39834 | - | - | **VERIFIED** |
 | C | story late_by_state:TO | story 27/267 raw 27/267 | - | - | **VERIFIED** |
+| C | story late_first_last12 | story 5586/None raw 5586/None | - | - | **VERIFIED** |
 | C | story late_orders | story 6518/94931 raw 6518/94931 | - | - | **VERIFIED** |
 | C | story late_sales_last12 | story 998816.62/11619769.11 raw 998816.62/11619769.11 | - | - | **VERIFIED** |
 | C | story late_sales_window | story 1148081.0/None raw 1148081.0/None | - | - | **VERIFIED** |
