@@ -21,6 +21,7 @@ def from_story(data_dir):
     out["comment_delay_share"] = {"num": round(f["comment_delay_share"] * f["comments_n"]), "den": f["comments_n"], "rate": f["comment_delay_share"]}
     out["late_sales_window"] = {"num": round(f["late_sales_window"], 2), "den": None}
     out["late_sales_last12"] = {"num": round(f["late_sales_last12"], 2), "den": round(f["total_sales_last12"], 2)}
+    out["late_first_last12"] = {"num": f["late_first_last12"], "den": None}
     return out
 
 
@@ -35,11 +36,16 @@ def from_raw(raw_dir):
     create table rev1 as select * from (select *, row_number() over (partition by order_id order by review_answer_timestamp desc, review_id) rn
                                         from reviews) where rn = 1;
     create table pay as select order_id, sum(payment_value) paid from payments group by 1;
+    create table qseq as
+     select o.order_id, row_number() over (partition by c.customer_unique_id order by o.order_purchase_timestamp, o.order_id) seq
+     from orders o join customers c using(customer_id)
+     where o.order_status not in ('canceled', 'unavailable') and exists (select 1 from items i where i.order_id = o.order_id);
     create table pop as
      select o.order_id, c.customer_state state, strftime(o.order_purchase_timestamp, '%Y-%m') ym,
             (o.order_delivered_customer_date::date > o.order_estimated_delivery_date::date) late,
-            o.order_delivered_carrier_date carrier_at, ia.ship_by, r.review_comment_message msg, pay.paid
+            o.order_delivered_carrier_date carrier_at, ia.ship_by, r.review_comment_message msg, pay.paid, qseq.seq
      from orders o join ia using(order_id) join customers c using(customer_id) left join rev1 r using(order_id) left join pay using(order_id)
+       left join qseq using(order_id)
      where o.order_status = 'delivered' and o.order_delivered_customer_date is not null and ia.n_sellers = 1
        and o.order_purchase_timestamp >= '2017-01-01' and o.order_purchase_timestamp < '2018-09-01';""")
     out = {}
@@ -58,6 +64,8 @@ def from_raw(raw_dir):
     out["late_sales_window"] = {"num": round(float(raw.execute("select sum(paid) from pop where late").fetchone()[0]), 2), "den": None}
     l12, t12 = raw.execute("select sum(paid) filter (where late), sum(paid) from pop where ym >= '2017-09'").fetchone()
     out["late_sales_last12"] = {"num": round(float(l12), 2), "den": round(float(t12), 2)}
+    # late first orders in the last 12 months: the volume behind the per-year lost repeat sales
+    out["late_first_last12"] = {"num": int(raw.execute("select count(*) from pop where late and seq = 1 and ym >= '2017-09'").fetchone()[0]), "den": None}
     return out
 
 

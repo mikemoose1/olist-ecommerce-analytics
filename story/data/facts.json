@@ -58,10 +58,11 @@
   -0.5184,
   0.2222
  ],
- "lost_repeat_per_year": [
+ "late_first_last12": 5586,
+ "lost_repeat_last12": [
   0.0,
-  645.0,
-  3208.4
+  948.4,
+  4717.4
  ],
  "label_eval": {
   "holdout": {
@@ -111,7 +112,7 @@
   "c_total_sales_last12_m": "R$11.6 million",
   "c_late_sales_last12_share": "8.6",
   "c_avoidable_exact": "1,344",
-  "c_money_high_exact": "R$3,208",
+  "c_money_high_exact": "R$4,717",
   "c_rep_raw": "-0.28",
   "c_rep_raw_lo": "-0.55",
   "c_rule_negatives_n": "20",

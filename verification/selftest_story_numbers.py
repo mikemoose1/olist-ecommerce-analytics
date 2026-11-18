@@ -45,6 +45,7 @@ CASES = [
     ("late sales off by R$1", "late_sales_window", edit_fact("late_sales_window", lambda v: v + 1)),
     ("last-12-month late sales off by R$1", "late_sales_last12", edit_fact("late_sales_last12", lambda v: v + 1)),
     ("last-12-month total sales off by R$1", "late_sales_last12", edit_fact("total_sales_last12", lambda v: v + 1)),
+    ("last-12-month late first orders off by one", "late_first_last12", edit_fact("late_first_last12", lambda v: v + 1)),
 ]
 
 

@@ -85,7 +85,8 @@ def build():
         "repeat_raw_pts": round(rep["repeat90"]["all"]["raw"]["effect"] * 100, 4),
         "repeat_raw_pts_ci": [round(x * 100, 4) for x in rep["repeat90"]["all"]["raw"]["ci"]],
         "repeat_effect_pts": round(m["effect"] * 100, 4), "repeat_effect_pts_ci": [round(x * 100, 4) for x in m["ci"]],
-        "lost_repeat_per_year": [round(rep["money"]["lost_repeat_gmv_per_year"][k], 1) for k in ("low", "mid", "high")],
+        "late_first_last12": rep["money"]["late_first_orders_last12"],
+        "lost_repeat_last12": [round(rep["money"]["lost_repeat_gmv_last12"][k], 1) for k in ("low", "mid", "high")],
         "label_eval": K.label_eval(),
     }
     top3 = sorted(tables["late_by_month"], key=lambda r: -r["late"])[:3]
@@ -120,7 +121,7 @@ def captions(f, t):
         "c_total_sales_last12_m": f"R${f['total_sales_last12'] / 1e6:.1f} million",
         "c_late_sales_last12_share": pct(f["late_sales_last12"] / f["total_sales_last12"]),
         "c_avoidable_exact": f"{f['avoidable_late_upper']:,.0f}",
-        "c_money_high_exact": f"R${f['lost_repeat_per_year'][2]:,.0f}",
+        "c_money_high_exact": f"R${f['lost_repeat_last12'][2]:,.0f}",
         "c_rep_raw": f"{f['repeat_raw_pts']:.2f}", "c_rep_raw_lo": f"{f['repeat_raw_pts_ci'][0]:.2f}",
         "c_rule_negatives_n": str(sum(e["fp"] + e["tn"] for e in lab.values())),
         "c_low_star_excess_exact": f"{f['low_star_excess']:,.0f}",

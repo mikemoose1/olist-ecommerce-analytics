@@ -226,11 +226,11 @@ nodes:
     grain: customer's first judged order
     parent: cost
     edge: association
-    label: Lost repeat sales per year (low end floored at 0)
-    unit: R$ per year
-    fact: money.lost_repeat_gmv_per_year.mid
-    ci: [money.lost_repeat_gmv_per_year.low, money.lost_repeat_gmv_per_year.high]
-    counts: late first orders per year times the matched drop in 90-day repeat rate times a repeat buyer's 90-day spend
+    label: Lost repeat sales, last 12 months (95% range, low end floored at 0)
+    unit: R$ (last 12 months)
+    fact: money.lost_repeat_gmv_last12.mid
+    ci: [money.lost_repeat_gmv_last12.low, money.lost_repeat_gmv_last12.high]
+    counts: late first orders in the last 12 months times the matched drop in 90-day repeat rate times a repeat buyer's 90-day spend
     threshold: worth a retention budget only if the repeat drop's range excludes zero; it does not
     models: [marts.fct_orders, marts.dim_customer]
     claims: [metrics.repeat_rate_90d, terms.repeat_return]

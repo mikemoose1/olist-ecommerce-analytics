@@ -16,6 +16,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB = os.environ.get("OLIST_DB_PATH", os.path.join(ROOT, "olist.duckdb"))
 HOLDOUT_START = "2018-05-01"          # fixed in PLAN.md before measuring
 WINDOW_MONTHS = 20                    # 2017-01..2018-08 (D6)
+LAST12_FROM = "2017-09-01"            # the last 12 months of the window, for figures stated per year
 BOOT, SEED = 1000, 20261117
 CELL = ["ship_to_state", "cat30", "freight_q", "month"]
 
@@ -128,6 +129,13 @@ R["money"] = {"late_first_orders_window": late_first_all, "late_first_orders_per
               "late_order_gmv_window": float(orders[orders.late == 1].amount_paid.sum()),
               "late_order_gmv_per_year": float(orders[orders.late == 1].amount_paid.sum() * 12 / WINDOW_MONTHS),
               "total_gmv_window": float(orders.amount_paid.sum())}
+# Per-year money on the last 12 months, not the 20-month count times 12/20: sales grew, so the window average understates a year.
+recent = orders.purchase_date.astype(str) >= LAST12_FROM
+late_first_12 = int(orders[(orders.seq == 1) & (orders.late == 1) & recent].shape[0])
+R["money"].update({"late_first_orders_last12": late_first_12,
+                   "lost_repeat_gmv_last12": {k: late_first_12 * v * avg_repeat_spend for k, v in drop.items()},
+                   "late_order_gmv_last12": float(orders[(orders.late == 1) & recent].amount_paid.sum()),
+                   "total_gmv_last12": float(orders[recent].amount_paid.sum())})
 ls = R["low_star"]["all"]["matched"]
 n_late_rev = int(orders[(orders.late == 1) & orders.review_score.notna()].shape[0])
 n_low_all = int(orders.low_star.sum())
@@ -287,10 +295,12 @@ facts = {
     "rep_eligible": n0(R["population"]["eligible_people"]), "rep_eligible_late": n0(R["population"]["eligible_late_first"]),
     "repever_matched": f2(100 * R["repeat_ever"]["all"]["matched"]["effect"]),
     "repever_lo": f2(100 * R["repeat_ever"]["all"]["matched"]["ci"][0]), "repever_hi": f2(100 * R["repeat_ever"]["all"]["matched"]["ci"][1]),
-    "late_first_per_year": n0(round(M["late_first_orders_per_year"], -2)), "repeat_spend": f"R${M['avg_90d_repeat_spend']:,.0f}",
-    "money_low": rs(M["lost_repeat_gmv_per_year"]["low"]), "money_mid": rs(M["lost_repeat_gmv_per_year"]["mid"]),
-    "money_high": rs(M["lost_repeat_gmv_per_year"]["high"]),
-    "late_gmv_year": f"R${M['late_order_gmv_per_year'] / 1e6:.1f} million",
+    "last12_n": str(len(pd.period_range(LAST12_FROM, "2018-08", freq="M"))),
+    "late_first_last12": n0(M["late_first_orders_last12"]), "repeat_spend": f"R${M['avg_90d_repeat_spend']:,.0f}",
+    "money12_low": rs(M["lost_repeat_gmv_last12"]["low"]), "money12_mid": rs(M["lost_repeat_gmv_last12"]["mid"]),
+    "money12_high": rs(M["lost_repeat_gmv_last12"]["high"]),
+    "late_gmv_last12": f"R${M['late_order_gmv_last12'] / 1e6:.1f} million",
+    "late_gmv_last12_pct": f1(100 * M["late_order_gmv_last12"] / M["total_gmv_last12"]),
     "seller_side_pct": f1(R["who_caused"]["all"]["seller_side_pct"]), "seller_side_hold_pct": f1(R["who_caused"]["holdout"]["seller_side_pct"]),
     "late_if_handoff_late": f1(R["who_caused"]["all"]["late_rate_if_handoff_late_pct"]),
     "late_if_handoff_ok": f1(R["who_caused"]["all"]["late_rate_if_handoff_on_time_pct"]),

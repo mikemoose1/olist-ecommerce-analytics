@@ -37,7 +37,7 @@ flowchart TD
   late_by_month["Late orders by purchase month<br/>6,518<br/>top: 2018-03 1,324, 2018-02 925, 2017-11 902 (of 20)"]
   late_by_handoff["Late orders by seller handoff<br/>6,518<br/>top: handed over on time 4,708, handed over after ship-by 1,809, handoff not recorded 1 (of 3)"]
   late_by_seller["Late orders by seller<br/>6,518<br/>top: 4a3ca931 168, 1f50f920 124, 4869f7a5 118 (of 1272)"]
-  lost_repeat_sales["Lost repeat sales per year (low end floored at 0)<br/>R$ 645 [0 to 3,208]"]
+  lost_repeat_sales["Lost repeat sales, last 12 months (95% range, low end floored at 0)<br/>R$ 948 [0 to 4,717]"]
   commission["Olist commission lost<br/><i>not answerable</i>"]
   star_sales_value["Sales value of one star<br/><i>not answerable</i>"]
   carrier["Which carrier was late<br/><i>not answerable</i>"]
@@ -86,7 +86,7 @@ flowchart TD
 | **Late orders by purchase month** (`late_by_month`) | 6,518 | parent = sum of these rows | judged order | - | - | - | - | marts.fct_orders | metrics.late_rate_monthly | yes |
 | **Late orders by seller handoff** (`late_by_handoff`) | 6,518 | parent = sum of these rows | judged order | - | - | sellers missing their ship-by date | if late handoffs are 20% or more of late orders and run late at 2x the on-time-handoff rate, test seller reminders | marts.fct_orders | columns.marts.fct_orders.delivered_to_carrier_at, columns.marts.fct_orders.last_shipping_limit_at | yes |
 | **Late orders by seller** (`late_by_seller`) | 6,518 | parent = sum of these rows | judged order | each judged order has exactly one seller (single-parcel orders), so sellers split late orders without overlap. Category is not a breakdown here because one order can hold items from several categories. | - | - | - | marts.fct_orders, marts.fct_order_items | terms.multi_seller_order | yes |
-| **Lost repeat sales per year (low end floored at 0)** (`lost_repeat_sales`) | R$ 645 [0 to 3,208] | association only (matched comparison or text) | customer's first judged order | late first orders per year times the matched drop in 90-day repeat rate times a repeat buyer's 90-day spend | - | - | worth a retention budget only if the repeat drop's range excludes zero; it does not | marts.fct_orders, marts.dim_customer; recommendation_report.json: money.lost_repeat_gmv_per_year.mid | metrics.repeat_rate_90d, terms.repeat_return | association only |
+| **Lost repeat sales, last 12 months (95% range, low end floored at 0)** (`lost_repeat_sales`) | R$ 948 [0 to 4,717] | association only (matched comparison or text) | customer's first judged order | late first orders in the last 12 months times the matched drop in 90-day repeat rate times a repeat buyer's 90-day spend | - | - | worth a retention budget only if the repeat drop's range excludes zero; it does not | marts.fct_orders, marts.dim_customer; recommendation_report.json: money.lost_repeat_gmv_last12.mid | metrics.repeat_rate_90d, terms.repeat_return | association only |
 | **Olist commission lost** (`commission`) | - | no data | - | no commission or take-rate column in the data | - | - | - | - | - | no |
 | **Sales value of one star** (`star_sales_value`) | - | no data | - | no traffic, ranking or conversion data to price a star | - | - | - | - | - | no |
 | **Which carrier was late** (`carrier`) | - | no data | - | no carrier id in the data | - | - | - | - | - | no |

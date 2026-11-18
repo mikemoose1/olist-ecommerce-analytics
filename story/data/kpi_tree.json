@@ -5369,10 +5369,10 @@
  },
  "lost_repeat_sales": {
   "id": "lost_repeat_sales",
-  "value": 645.00481,
+  "value": 948.356724,
   "ci": [
    0.0,
-   3208.421607
+   4717.372893
   ]
  },
  "commission": {
