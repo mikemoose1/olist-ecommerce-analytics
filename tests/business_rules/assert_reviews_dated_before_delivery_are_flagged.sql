@@ -1,4 +1,4 @@
--- Rule: a review created before its order's recorded delivery is flagged, never silently mixed in.
+-- Rule: a review whose survey was sent (review_creation_date) before its order's recorded delivery is flagged, never silently mixed in.
 -- The comparison grain follows the project's chosen rule (var review_before_delivery_compare).
 -- Fails on any review whose flag disagrees with its dates, or that is unflagged on a delivered order.
 select r.review_id, r.order_id, r.review_before_delivery

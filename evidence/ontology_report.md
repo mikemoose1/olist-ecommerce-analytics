@@ -1,6 +1,6 @@
 # Ontology check: every claim in ontology/ontology.yml against the warehouse
 
-57/57 PASS
+62/62 PASS
 
 | Kind | Claim | Result | Detail |
 |---|---|---|---|
@@ -32,7 +32,7 @@
 | column | terms.qualifying_order | PASS | marts.fct_orders.is_qualifying_order |
 | column | terms.promised_date | PASS | marts.fct_orders.estimated_delivery_date |
 | column | terms.delivery_state | PASS | marts.fct_orders.delivery_state |
-| column | terms.delivered | PASS | marts.fct_orders.delivered_to_customer_at |
+| column | terms.delivered | PASS | marts.fct_orders.delivery_state |
 | column | terms.late | PASS | metrics.metric_late_rate_orders.is_late |
 | column | terms.multi_seller_order | PASS | marts.fct_orders.n_parcels |
 | column | terms.analysis_window | PASS | marts.fct_orders.in_analysis_window |
@@ -48,11 +48,16 @@
 | column | metrics.repeat_rate_ever | PASS | marts.dim_customer.n_qualifying_orders |
 | column | metrics.review_score | PASS | marts.fct_orders.review_score |
 | column | metrics.late_review_gap_raw | PASS | metrics.metric_late_rate_orders.review_score |
+| term_count | order_status | PASS | {'approved': 2, 'processing': 301, 'canceled': 625, 'invoiced': 314, 'shipped': 1107, 'unavailable': 609, 'delivered': 96478, 'created': 5} |
+| term_count | delivery_state | PASS | {'status_date_conflict': 14, 'delivered_late': 6534, 'not_delivered': 2957, 'delivered_on_time': 89936} |
+| term_count | delivered | PASS | delivery_state in ('delivered_on_time', 'delivered_late'): 96470 (card 96470) |
+| term_count | multi_seller_order | PASS | n_parcels > 1: 1278 (card 1278) |
 | stage_rule | A late order arrived after the promised day | PASS | count=0 (card 0) |
 | stage_rule | A delivery date exists exactly when the status is delivered | PASS | count=14 (card 14) |
 | stage_rule | The carrier gets the order after payment approval | PASS | count=1359 (card 1359) |
 | stage_rule | The customer gets the order after the carrier does | PASS | count=23 (card 23) |
 | stage_rule | The survey goes out only when the order is delivered or the promised date arrives | PASS | count=606 (card 606) |
+| stage_rule | The survey goes out on or after the purchase day | PASS | count=64 (card 64) |
 | stage_rule | Nobody answers the survey before the order is delivered | PASS | count=4367 (card 4367) |
 | metric | late_rate | PASS | table 6518/94931=6.87 (card 6518/94931=6.87); MetricFlow 6518/94931=0.068660 -> 6.87 |
 | metric | repeat_rate_90d | PASS | table 991/77560=1.28 (card 991/77560=1.28); MetricFlow 991/77560=0.012777 -> 1.28 |

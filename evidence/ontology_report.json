@@ -171,7 +171,7 @@
   "kind": "column",
   "name": "terms.delivered",
   "ok": true,
-  "detail": "marts.fct_orders.delivered_to_customer_at"
+  "detail": "marts.fct_orders.delivery_state"
  },
  {
   "kind": "column",
@@ -264,6 +264,30 @@
   "detail": "metrics.metric_late_rate_orders.review_score"
  },
  {
+  "kind": "term_count",
+  "name": "order_status",
+  "ok": true,
+  "detail": "{'approved': 2, 'processing': 301, 'canceled': 625, 'invoiced': 314, 'shipped': 1107, 'unavailable': 609, 'delivered': 96478, 'created': 5}"
+ },
+ {
+  "kind": "term_count",
+  "name": "delivery_state",
+  "ok": true,
+  "detail": "{'status_date_conflict': 14, 'delivered_late': 6534, 'not_delivered': 2957, 'delivered_on_time': 89936}"
+ },
+ {
+  "kind": "term_count",
+  "name": "delivered",
+  "ok": true,
+  "detail": "delivery_state in ('delivered_on_time', 'delivered_late'): 96470 (card 96470)"
+ },
+ {
+  "kind": "term_count",
+  "name": "multi_seller_order",
+  "ok": true,
+  "detail": "n_parcels > 1: 1278 (card 1278)"
+ },
+ {
   "kind": "stage_rule",
   "name": "A late order arrived after the promised day",
   "ok": true,
@@ -292,6 +316,12 @@
   "name": "The survey goes out only when the order is delivered or the promised date arrives",
   "ok": true,
   "detail": "count=606 (card 606)"
+ },
+ {
+  "kind": "stage_rule",
+  "name": "The survey goes out on or after the purchase day",
+  "ok": true,
+  "detail": "count=64 (card 64)"
  },
  {
   "kind": "stage_rule",

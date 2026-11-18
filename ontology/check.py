@@ -5,6 +5,7 @@ Checks, each a PASS/FAIL line:
   entity        table exists, key is unique and never null, row count equals the card
   relationship  no unexpected nulls or orphans; children per parent inside [min, max]
   column        every card's source (schema.table.column) exists
+  term_count    every count printed on a term card (values, count) equals the warehouse
   stage_rule    each order-stage rule's count equals the documented count
   metric        each verified card equals the metric table AND MetricFlow (`mf query`)
   diagram       the Mermaid diagram in ONTOLOGY.md equals the one generated from the YAML
@@ -82,6 +83,18 @@ def check_columns(con):
             yield "column", f"{kind}.{name}", card["source"] in cols, card["source"]
 
 
+def check_term_counts(con):
+    for name, card in ONTO["terms"].items():
+        schema, table, col = card["source"].split(".")
+        if "values" in card:
+            got = {str(k): v for k, v in con.execute(f"select {col}, count(*) from {schema}.{table} group by 1").fetchall()}
+            want = {str(k): v for k, v in card["values"].items()}
+            yield "term_count", name, got == want, f"{got}"
+        if "count" in card:
+            n = con.execute(f"select count(*) from {schema}.{table} where {card['count']['where']}").fetchone()[0]
+            yield "term_count", name, n == card["count"]["expected"], f"{card['count']['where']}: {n} (card {card['count']['expected']})"
+
+
 def check_stage_rules(con):
     for s in ONTO["stage_rules"]:
         n = con.execute(s["sql"]).fetchone()[0]
@@ -149,7 +162,7 @@ def main():
         mf["monthly"] = mf_monthly_late()
     con = duckdb.connect(DB, read_only=True)
     results = []
-    for gen in (check_entities(con), check_relationships(con), check_columns(con), check_stage_rules(con),
+    for gen in (check_entities(con), check_relationships(con), check_columns(con), check_term_counts(con), check_stage_rules(con),
                 check_metrics(con, mf), check_diagram()):
         for kind, name, ok, detail in gen:
             results.append({"kind": kind, "name": name, "ok": bool(ok), "detail": detail})

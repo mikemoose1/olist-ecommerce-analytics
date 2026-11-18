@@ -163,7 +163,8 @@ The chart hides the final "nothing more happens" step. Rules checked in the mode
 | A delivery date exists exactly when the status is delivered | holds | 14 exceptions (8 delivered with no date, 6 canceled with a date) | labeled `status_date_conflict`, left out of delivery metrics |
 | The carrier gets the order after payment approval | holds | 1,359 exceptions | raw timestamps out of order; no metric uses this gap |
 | The customer gets the order after the carrier does | holds | 23 exceptions | raw timestamps out of order; lateness uses only delivery date and promise |
-| The survey goes out only when the order is delivered or the promised date arrives | holds | 606 of 99,224 responses (64 before the purchase day) | kept; flagged when a delivery date exists |
+| The survey goes out only when the order is delivered or the promised date arrives | holds | 606 of 99,224 responses | kept; flagged when a delivery date exists |
+| The survey goes out on or after the purchase day | holds | 64 responses (part of the 606) | source data error; kept |
 | Nobody answers the survey before delivery | **breaks** | 4,367 responses answered on an earlier day than delivery | not a real rule, see below |
 
 The last rule is how people first state it, and the model shows why it is wrong. TLC's shortest path: the order is placed, the promised date passes, Olist emails the survey, and the customer answers, all before the parcel arrives. In the data, 4,713 of the 5,127 responses sent before delivery went out on or after the promised date, and 4,777 of those 5,127 belong to late orders. The early review is a symptom of lateness, which is why decision C2 keeps these reviews in the review score.
@@ -179,7 +180,7 @@ Every term below has a full card in ontology.yml with its source column, grain, 
 | person | A real buyer (`customer_unique_id`). "Customer" in every metric means person. | `customer_id`, which is one per order |
 | qualifying order | An order that counts as a real purchase. Not canceled or unavailable, with at least one item. | canceled, unavailable, or empty orders |
 | promised date | The delivery date promised at purchase. A date with no time. | |
-| delivered | Status is delivered and a delivery date exists. | delivered status without a date, shipped orders |
+| delivered | Status is delivered and a delivery date exists (96,470 orders). Use `delivery_state`, not "has a delivery date", which also catches 6 canceled orders. | delivered status without a date, shipped orders |
 | late | Delivered on a later calendar day than promised. | same-day delivery at 23:00, multi-seller orders, undelivered orders |
 | multi-seller order | An order with items from 2 or more sellers (1,278 orders). | one seller shipping 3 items |
 | analysis window | Full months 2017-01 through 2018-08. | partial edge months |

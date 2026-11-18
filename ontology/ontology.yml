@@ -178,9 +178,10 @@ terms:
     values: {delivered_on_time: 89936, delivered_late: 6534, not_delivered: 2957, status_date_conflict: 14}
     decisions: [D3]
   delivered:
-    meaning: Status is delivered AND a customer delivery date exists (delivery_state delivered_on_time or delivered_late).
-    source: marts.fct_orders.delivered_to_customer_at
-    counterexamples: [status delivered but no date (status_date_conflict), a date but status not delivered (status_date_conflict), shipped orders]
+    meaning: Status is delivered AND a customer delivery date exists. In SQL use delivery_state in ('delivered_on_time', 'delivered_late'), not "delivered_to_customer_at is not null" (that also catches 6 canceled orders).
+    source: marts.fct_orders.delivery_state
+    count: {where: "delivery_state in ('delivered_on_time', 'delivered_late')", expected: 96470}
+    counterexamples: [status delivered but no date (8, status_date_conflict), a delivery date on a canceled order (6, status_date_conflict), shipped orders]
   late:
     meaning: Delivered on a later calendar day than the promised date. Same-day delivery is on time.
     source: metrics.metric_late_rate_orders.is_late
@@ -193,7 +194,7 @@ terms:
     meaning: An order with items from two or more sellers (2+ parcels). Its parcels can arrive on different days, but Olist records one delivery date.
     source: marts.fct_orders.n_parcels
     grain: order
-    rows: 1278
+    count: {where: n_parcels > 1, expected: 1278}
     counterexamples: [one seller shipping 3 items (one parcel)]
     decisions: [D2, C1]
   analysis_window:
@@ -326,9 +327,14 @@ stage_rules:
     holds_in_model: true
     sql: "select count(*) from marts.fct_reviews r join marts.fct_orders o using (order_id) where r.review_created_on < least(coalesce(cast(o.delivered_to_customer_at as date), o.estimated_delivery_date), o.estimated_delivery_date)"
     expected: 606
-    exception: 606 of 99,224 responses were sent before both the delivery and the promised date (64 even before the purchase day). Kept; flagged by survey_sent_before_delivery when a delivery date exists.
+    exception: 606 of 99,224 responses were sent before both the delivery and the promised date. Kept; flagged by survey_sent_before_delivery when a delivery date exists.
+  - rule: The survey goes out on or after the purchase day
+    holds_in_model: true
+    sql: "select count(*) from marts.fct_reviews r join marts.fct_orders o using (order_id) where r.review_created_on < o.purchase_date"
+    expected: 64
+    exception: 64 responses carry a survey date before the order was placed. A source data error; kept, and they are part of the 606 above.
   - rule: Nobody answers the survey before the order is delivered
     holds_in_model: false
     sql: "select count(*) from marts.fct_reviews r join marts.fct_orders o using (order_id) where cast(r.review_answered_at as date) < cast(o.delivered_to_customer_at as date)"
     expected: 4367
-    exception: This is not a real rule. The model shows why. When the promised date passes first, the survey goes out and the customer can answer before the parcel arrives. 4,367 delivered orders' responses were answered on an earlier day than delivery, plus responses on orders never delivered.
+    exception: This is not a real rule. The model shows why. When the promised date passes first, the survey goes out and the customer can answer before the parcel arrives. 4,367 responses on delivered orders were answered on an earlier day than the delivery, plus responses on orders never delivered.
