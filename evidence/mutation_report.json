@@ -23,7 +23,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.6
+  "seconds": 10.9
  },
  {
   "rule": "Raw row counts are as published",
@@ -48,18 +48,18 @@
   ],
   "mutant": [
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
+    "dbt_expectations_source_expect_table_row_count_to_equal_olist_raw_olist_orders_dataset_99441",
     "fail",
     1
    ],
    [
-    "dbt_expectations_source_expect_table_row_count_to_equal_olist_raw_olist_orders_dataset_99441",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
     "fail",
     1
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.0
+  "seconds": 10.4
  },
  {
   "rule": "Staging keeps every raw row",
@@ -71,17 +71,17 @@
   },
   "baseline": [
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
-    "pass",
-    0
-   ],
-   [
     "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_delivery_ref_stg_orders_",
     "pass",
     0
    ],
    [
     "dbt_expectations_expect_table_row_count_to_equal_other_table_fct_orders_ref_stg_orders_",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
     "pass",
     0
    ],
@@ -93,11 +93,6 @@
   ],
   "mutant": [
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_delivery_ref_stg_orders_",
-    "fail",
-    1
-   ],
-   [
     "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
     "fail",
     1
@@ -108,13 +103,18 @@
     1
    ],
    [
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_delivery_ref_stg_orders_",
+    "fail",
+    1
+   ],
+   [
     "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
     "fail",
     1
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.5
+  "seconds": 10.0
  },
  {
   "rule": "Modeling never creates or loses money (no fan-out)",
@@ -139,7 +139,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.0
+  "seconds": 9.9
  },
  {
   "rule": "Repeat metrics count people, not per-order ids",
@@ -164,7 +164,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.7
+  "seconds": 9.5
  },
  {
   "rule": "A multi-seller order is never treated as a single observed parcel",
@@ -189,7 +189,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.5
+  "seconds": 9.6
  },
  {
   "rule": "A review dated before delivery is flagged",
@@ -214,7 +214,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.5
+  "seconds": 9.2
  },
  {
   "rule": "Paid equals items + freight, or the order is labeled",
@@ -266,7 +266,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.5
+  "seconds": 9.1
  },
  {
   "rule": "Only full months are in the analysis window",
@@ -291,7 +291,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.6
+  "seconds": 8.9
  },
  {
   "rule": "Delivery state agrees with status and dates",
@@ -316,7 +316,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 8.9
+  "seconds": 9.1
  },
  {
   "rule": "Orders without items are labeled no_items",
@@ -341,7 +341,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 8.9
+  "seconds": 9.4
  },
  {
   "rule": "Exactly one chosen review per reviewed order",
@@ -366,7 +366,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.6
+  "seconds": 14.6
  },
  {
   "rule": "Every order's purchase date exists in dim_date",
@@ -415,17 +415,17 @@
     4
    ],
    [
-    "relationships_fct_payments_order_id__order_id__ref_fct_orders_",
-    "pass",
-    0
-   ],
-   [
     "relationships_fct_order_items_order_id__order_id__ref_fct_orders_",
     "pass",
     0
    ],
    [
     "relationships_fct_orders_customer_unique_id__customer_unique_id__ref_dim_customer_",
+    "pass",
+    0
+   ],
+   [
+    "relationships_fct_payments_order_id__order_id__ref_fct_orders_",
     "pass",
     0
    ],
@@ -441,7 +441,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.3
+  "seconds": 9.4
  },
  {
   "rule": "One location per zip",
@@ -466,7 +466,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.0
+  "seconds": 9.2
  },
  {
   "rule": "Zip locations are inside Brazil",
@@ -501,7 +501,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.5
+  "seconds": 9.2
  },
  {
   "rule": "Payment types are known values",
@@ -526,7 +526,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.0
+  "seconds": 9.3
  },
  {
   "rule": "Trend metrics never include a partial month",
@@ -551,6 +551,2349 @@
    ]
   ],
   "verdict": "PROVEN",
+  "seconds": 9.2
+ },
+ {
+  "rule": "Ontology: an order has exactly one row (no order with two customers)",
+  "selector": "ontology:entity order",
+  "mutation": {
+   "sql": [
+    "insert into marts.fct_orders select * replace ('ghost-person' as customer_unique_id) from marts.fct_orders order by order_id limit 1"
+   ]
+  },
+  "baseline": [
+   [
+    "entity order",
+    "pass",
+    "rows=99441 (card 99441), distinct keys=99441, null keys=0"
+   ]
+  ],
+  "mutant": [
+   [
+    "entity order",
+    "fail",
+    "rows=99442 (card 99441), distinct keys=99441, null keys=0"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "Ontology: every customer has at least one order",
+  "selector": "ontology:relationship customer places orders",
+  "mutation": {
+   "sql": [
+    "insert into marts.dim_customer select * replace ('ghost-person' as customer_unique_id) from marts.dim_customer order by customer_unique_id limit 1"
+   ]
+  },
+  "baseline": [
+   [
+    "relationship customer places orders",
+    "pass",
+    "nulls=0 (card 0), orphans=0 (card 0), children per parent 1..17 (card 1..many)"
+   ]
+  ],
+  "mutant": [
+   [
+    "relationship customer places orders",
+    "fail",
+    "nulls=0 (card 0), orphans=0 (card 0), children per parent 0..17 (card 1..many)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 99.5
+ },
+ {
+  "rule": "Ontology: every item's product exists",
+  "selector": "ontology:relationship product appears on items",
+  "mutation": {
+   "sql": [
+    "update marts.fct_order_items set product_id = 'ghost-product' where (order_id, order_item_id) in (select (order_id, order_item_id) from marts.fct_order_items order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "relationship product appears on items",
+    "pass",
+    "nulls=0 (card 0), orphans=0 (card 0), children per parent 1..527 (card 1..many)"
+   ]
+  ],
+  "mutant": [
+   [
+    "relationship product appears on items",
+    "fail",
+    "nulls=0 (card 0), orphans=1 (card 0), children per parent 1..527 (card 1..many)"
+   ]
+  ],
+  "verdict": "PROVEN",
   "seconds": 8.9
+ },
+ {
+  "rule": "Ontology: every survey response belongs to a real order",
+  "selector": "ontology:relationship order receives survey responses",
+  "mutation": {
+   "sql": [
+    "update marts.fct_reviews set order_id = 'ghost-order' where (review_id, order_id) in (select (review_id, order_id) from marts.fct_reviews order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "relationship order receives survey responses",
+    "pass",
+    "nulls=0 (card 0), orphans=0 (card 0), children per parent 0..3 (card 0..many)"
+   ]
+  ],
+  "mutant": [
+   [
+    "relationship order receives survey responses",
+    "fail",
+    "nulls=0 (card 0), orphans=1 (card 0), children per parent 0..3 (card 0..many)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 6.7
+ },
+ {
+  "rule": "Ontology: an order never has two chosen reviews",
+  "selector": "ontology:relationship order has one chosen review",
+  "mutation": {
+   "sql": [
+    "update marts.fct_reviews set is_chosen_for_order = true where order_id in (select order_id from marts.fct_reviews group by 1 having count(*) > 1 order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "relationship order has one chosen review",
+    "pass",
+    "nulls=0 (card 0), orphans=0 (card 0), children per parent 0..1 (card 0..1)"
+   ]
+  ],
+  "mutant": [
+   [
+    "relationship order has one chosen review",
+    "fail",
+    "nulls=0 (card 0), orphans=0 (card 0), children per parent 0..2 (card 0..1)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 5.2
+ },
+ {
+  "rule": "Ontology: no new unknown ship-to locations beyond the documented 278",
+  "selector": "ontology:relationship order ships to a location",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set ship_to_zip_code_prefix = '00000' where order_id in (select order_id from marts.fct_orders order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "relationship order ships to a location",
+    "pass",
+    "nulls=0 (card 0), orphans=278 (card 278), children per parent 0..142 (card 0..many)"
+   ]
+  ],
+  "mutant": [
+   [
+    "relationship order ships to a location",
+    "fail",
+    "nulls=0 (card 0), orphans=279 (card 278), children per parent 0..142 (card 0..many)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.8
+ },
+ {
+  "rule": "Ontology stage rule: late always means delivered after the promised day",
+  "selector": "ontology:stage_rule A late order arrived after the promised day",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set delivery_state = 'delivered_late' where order_id in (select order_id from marts.fct_orders where delivery_state = 'delivered_on_time' order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "stage_rule A late order arrived after the promised day",
+    "pass",
+    "count=0 (card 0)"
+   ]
+  ],
+  "mutant": [
+   [
+    "stage_rule A late order arrived after the promised day",
+    "fail",
+    "count=1 (card 0)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 3.3
+ },
+ {
+  "rule": "Ontology: the repeat cohort has one row per person (no duplicate person)",
+  "selector": "ontology:entity repeat_cohort",
+  "mutation": {
+   "sql": [
+    "insert into metrics.metric_repeat_rate_90d_people select * from metrics.metric_repeat_rate_90d_people order by customer_unique_id limit 1"
+   ]
+  },
+  "baseline": [
+   [
+    "entity repeat_cohort",
+    "pass",
+    "rows=77560 (card 77560), distinct keys=77560, null keys=0"
+   ]
+  ],
+  "mutant": [
+   [
+    "entity repeat_cohort",
+    "fail",
+    "rows=77561 (card 77560), distinct keys=77560, null keys=0"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.8
+ },
+ {
+  "rule": "Ontology: every cohort person is a real customer",
+  "selector": "ontology:relationship customer is in the repeat cohort",
+  "mutation": {
+   "sql": [
+    "update metrics.metric_repeat_rate_90d_people set customer_unique_id = 'ghost-person' where customer_unique_id in (select customer_unique_id from metrics.metric_repeat_rate_90d_people order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "relationship customer is in the repeat cohort",
+    "pass",
+    "nulls=0 (card 0), orphans=0 (card 0), children per parent 0..1 (card 0..1)"
+   ]
+  ],
+  "mutant": [
+   [
+    "relationship customer is in the repeat cohort",
+    "fail",
+    "nulls=0 (card 0), orphans=1 (card 0), children per parent 0..1 (card 0..1)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.7
+ },
+ {
+  "rule": "Ontology: purchased_at is never null",
+  "selector": "ontology:column_fact marts.fct_orders.purchased_at",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set purchased_at = null where order_id in (select order_id from marts.fct_orders order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.purchased_at",
+    "pass",
+    "type TIMESTAMP (card TIMESTAMP); nulls 0 (card 0); holds [purchase_date = cast(purchased_at as date)]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.purchased_at",
+    "fail",
+    "type TIMESTAMP (card TIMESTAMP); nulls 1 (card 0); holds [purchase_date = cast(purchased_at as date)]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.7
+ },
+ {
+  "rule": "Ontology: purchased_at keeps its TIMESTAMP type (a DATE would lose the 24-hour rule)",
+  "selector": "ontology:column_fact marts.fct_orders.purchased_at",
+  "mutation": {
+   "sql": [
+    "alter table marts.fct_orders alter column purchased_at set data type date"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.purchased_at",
+    "pass",
+    "type TIMESTAMP (card TIMESTAMP); nulls 0 (card 0); holds [purchase_date = cast(purchased_at as date)]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.purchased_at",
+    "fail",
+    "type DATE (card TIMESTAMP); nulls 0 (card 0); holds [purchase_date = cast(purchased_at as date)]: 0 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 3.0
+ },
+ {
+  "rule": "Ontology: n_parcels is 0, not null, for an order with no items",
+  "selector": "ontology:column_fact marts.fct_orders.n_parcels",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set n_parcels = null where order_id in (select order_id from marts.fct_orders where n_items = 0 order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.n_parcels",
+    "pass",
+    "type BIGINT (card BIGINT); nulls 0 (card 0); holds [(n_parcels = 0) = (n_items = 0)]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.n_parcels",
+    "fail",
+    "type BIGINT (card BIGINT); nulls 1 (card 0); holds [(n_parcels = 0) = (n_items = 0)]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.7
+ },
+ {
+  "rule": "Ontology: in_analysis_window is never null",
+  "selector": "ontology:column_fact marts.fct_orders.in_analysis_window",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set in_analysis_window = null where order_id in (select order_id from marts.fct_orders order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.in_analysis_window",
+    "pass",
+    "type BOOLEAN (card BOOLEAN); nulls 0 (card 0); holds [in_analysis_window = (purchase_date between date '2017-01-01' and date '2018-08-31')]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.in_analysis_window",
+    "fail",
+    "type BOOLEAN (card BOOLEAN); nulls 1 (card 0); holds [in_analysis_window = (purchase_date between date '2017-01-01' and date '2018-08-31')]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.9
+ },
+ {
+  "rule": "Ontology: review_score is null only when the order has no response",
+  "selector": "ontology:column_fact marts.fct_orders.review_score",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set review_score = null where order_id in (select order_id from marts.fct_orders where review_score is not null order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.review_score",
+    "pass",
+    "type INTEGER (card INTEGER); nulls 768 (card 768); null exactly when [review_id is null]: 0 violations; holds [review_score is null or review_score between 1 and 5]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.review_score",
+    "fail",
+    "type INTEGER (card INTEGER); nulls 769 (card 768); null exactly when [review_id is null]: 1 violations; holds [review_score is null or review_score between 1 and 5]: 0 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "Ontology: review_score never holds a value outside 1 to 5",
+  "selector": "ontology:column_fact marts.fct_orders.review_score",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set review_score = 9 where order_id in (select order_id from marts.fct_orders where review_score is not null order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.review_score",
+    "pass",
+    "type INTEGER (card INTEGER); nulls 768 (card 768); null exactly when [review_id is null]: 0 violations; holds [review_score is null or review_score between 1 and 5]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.review_score",
+    "fail",
+    "type INTEGER (card INTEGER); nulls 768 (card 768); null exactly when [review_id is null]: 0 violations; holds [review_score is null or review_score between 1 and 5]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.8
+ },
+ {
+  "rule": "Ontology: the repeat flag is never null",
+  "selector": "ontology:column_fact metrics.metric_repeat_rate_90d_people.repeated",
+  "mutation": {
+   "sql": [
+    "update metrics.metric_repeat_rate_90d_people set repeated = null where customer_unique_id in (select customer_unique_id from metrics.metric_repeat_rate_90d_people order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact metrics.metric_repeat_rate_90d_people.repeated",
+    "pass",
+    "type BOOLEAN (card BOOLEAN); nulls 0 (card 0)"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact metrics.metric_repeat_rate_90d_people.repeated",
+    "fail",
+    "type BOOLEAN (card BOOLEAN); nulls 1 (card 0)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.7
+ },
+ {
+  "rule": "Ontology: the canceled count and the 6 canceled orders with a delivery date",
+  "selector": "ontology:term_count canceled_order",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set delivered_to_customer_at = null where order_id in (select order_id from marts.fct_orders where order_status = 'canceled' and delivered_to_customer_at is not null order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "term_count canceled_order",
+    "pass",
+    "order_status = 'canceled': 625 (card 625); order_status = 'canceled' and delivered_to_customer_at is not null: 6 (card 6); order_status = 'canceled' and delivery_state = 'status_date_conflict': 6 (card 6); order_status = 'canceled' and delivery_state = 'not_delivered': 619 (card 619); order_status = 'canceled' and n_items = 0: 164 (card 164)"
+   ]
+  ],
+  "mutant": [
+   [
+    "term_count canceled_order",
+    "fail",
+    "order_status = 'canceled': 625 (card 625); order_status = 'canceled' and delivered_to_customer_at is not null: 5 (card 6); order_status = 'canceled' and delivery_state = 'status_date_conflict': 6 (card 6); order_status = 'canceled' and delivery_state = 'not_delivered': 619 (card 619); order_status = 'canceled' and n_items = 0: 164 (card 164)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.6
+ },
+ {
+  "rule": "Ontology: placed an order versus qualifying order (1,113 people with no qualifying order)",
+  "selector": "ontology:term_count placed_an_order",
+  "mutation": {
+   "sql": [
+    "update marts.dim_customer set n_qualifying_orders = 0 where customer_unique_id in (select customer_unique_id from marts.dim_customer where n_qualifying_orders > 0 order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "term_count placed_an_order",
+    "pass",
+    "n_orders >= 1: 96096 (card 96096); n_qualifying_orders >= 1: 94983 (card 94983); n_qualifying_orders = 0: 1113 (card 1113)"
+   ]
+  ],
+  "mutant": [
+   [
+    "term_count placed_an_order",
+    "fail",
+    "n_orders >= 1: 96096 (card 96096); n_qualifying_orders >= 1: 94982 (card 94983); n_qualifying_orders = 0: 1114 (card 1113)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.7
+ },
+ {
+  "rule": "Ontology: the order count with no parcels (n_parcels = 0)",
+  "selector": "ontology:term_count parcel_count",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set n_parcels = 1 where order_id in (select order_id from marts.fct_orders where n_parcels = 0 order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "term_count parcel_count",
+    "pass",
+    "n_parcels = 0: 775 (card 775); n_parcels = 1: 97388 (card 97388); n_parcels > 1: 1278 (card 1278)"
+   ]
+  ],
+  "mutant": [
+   [
+    "term_count parcel_count",
+    "fail",
+    "n_parcels = 0: 774 (card 775); n_parcels = 1: 97389 (card 97388); n_parcels > 1: 1278 (card 1278)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "Ontology: the analysis-window flag counts (349 outside)",
+  "selector": "ontology:term_count analysis_window",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set in_analysis_window = false where order_id in (select order_id from marts.fct_orders where in_analysis_window order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "term_count analysis_window",
+    "pass",
+    "in_analysis_window: 99092 (card 99092); not in_analysis_window: 349 (card 349)"
+   ]
+  ],
+  "mutant": [
+   [
+    "term_count analysis_window",
+    "fail",
+    "in_analysis_window: 99091 (card 99092); not in_analysis_window: 350 (card 349)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.9
+ },
+ {
+  "rule": "Ontology: the repeat cohort is everyone old enough (77,560 and the 17,423 left out)",
+  "selector": "ontology:fact The repeat cohort is exactly the people whose first qualifying order is old enough",
+  "mutation": {
+   "sql": [
+    "delete from metrics.metric_repeat_rate_90d_people where customer_unique_id in (select customer_unique_id from metrics.metric_repeat_rate_90d_people order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "fact The repeat cohort is exactly the people whose first qualifying order is old enough",
+    "pass",
+    "count=0 (card 0)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact The repeat cohort is exactly the people whose first qualifying order is old enough",
+    "fail",
+    "count=1 (card 0)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.7
+ },
+ {
+  "rule": "Ontology: first_order_at is the purchased_at of the seq = 1 order",
+  "selector": "ontology:fact first_order_at is the purchased_at of the person's seq = 1 order",
+  "mutation": {
+   "sql": [
+    "update metrics.metric_repeat_rate_90d_people set first_order_at = first_order_at + interval 1 hour where customer_unique_id in (select customer_unique_id from metrics.metric_repeat_rate_90d_people order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "fact first_order_at is the purchased_at of the person's seq = 1 order",
+    "pass",
+    "count=0 (card 0)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact first_order_at is the purchased_at of the person's seq = 1 order",
+    "fail",
+    "count=1 (card 0)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.6
+ },
+ {
+  "rule": "Ontology: the headline metric table has its 5 rows",
+  "selector": "ontology:entity headline_metric",
+  "mutation": {
+   "sql": [
+    "delete from metrics.metrics_headline where metric_name = 'late_rate'"
+   ]
+  },
+  "baseline": [
+   [
+    "entity headline_metric",
+    "pass",
+    "rows=5 (card 5), distinct keys=5, null keys=0"
+   ]
+  ],
+  "mutant": [
+   [
+    "entity headline_metric",
+    "fail",
+    "rows=4 (card 5), distinct keys=4, null keys=0"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.6
+ },
+ {
+  "rule": "Ontology: is_qualifying_order follows its rule (status and items)",
+  "selector": "ontology:column_fact marts.fct_orders.is_qualifying_order",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set is_qualifying_order = not is_qualifying_order where order_id in (select order_id from marts.fct_orders order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.is_qualifying_order",
+    "pass",
+    "type BOOLEAN (card BOOLEAN); nulls 0 (card 0); holds [is_qualifying_order = (order_status not in ('canceled', 'unavailable') and n_items > 0)]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.is_qualifying_order",
+    "fail",
+    "type BOOLEAN (card BOOLEAN); nulls 0 (card 0); holds [is_qualifying_order = (order_status not in ('canceled', 'unavailable') and n_items > 0)]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "Ontology: qualifying order counts (98,199 qualifying, 1,242 not)",
+  "selector": "ontology:term_count qualifying_order",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set is_qualifying_order = true where order_id in (select order_id from marts.fct_orders where not is_qualifying_order order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "term_count qualifying_order",
+    "pass",
+    "is_qualifying_order: 98199 (card 98199); not is_qualifying_order: 1242 (card 1242)"
+   ]
+  ],
+  "mutant": [
+   [
+    "term_count qualifying_order",
+    "fail",
+    "is_qualifying_order: 98200 (card 98199); not is_qualifying_order: 1241 (card 1242)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "Ontology: the sequence number is null exactly for non-qualifying orders",
+  "selector": "ontology:column_fact marts.fct_orders.customer_qualifying_order_seq",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set customer_qualifying_order_seq = 1 where order_id in (select order_id from marts.fct_orders where customer_qualifying_order_seq is null order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.customer_qualifying_order_seq",
+    "pass",
+    "type BIGINT (card BIGINT); nulls 1242 (card 1242); null exactly when [not is_qualifying_order]: 0 violations; holds [customer_qualifying_order_seq is null or customer_qualifying_order_seq >= 1]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.customer_qualifying_order_seq",
+    "fail",
+    "type BIGINT (card BIGINT); nulls 1241 (card 1242); null exactly when [not is_qualifying_order]: 1 violations; holds [customer_qualifying_order_seq is null or customer_qualifying_order_seq >= 1]: 0 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "Ontology: purchase_date is the calendar day of purchased_at",
+  "selector": "ontology:column_fact marts.fct_orders.purchase_date",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set purchase_date = purchase_date + 1 where order_id in (select order_id from marts.fct_orders order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.purchase_date",
+    "pass",
+    "type DATE (card DATE); nulls 0 (card 0); holds [purchase_date = cast(purchased_at as date)]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.purchase_date",
+    "fail",
+    "type DATE (card DATE); nulls 0 (card 0); holds [purchase_date = cast(purchased_at as date)]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "Ontology: n_items is never null",
+  "selector": "ontology:column_fact marts.fct_orders.n_items",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set n_items = null where order_id in (select order_id from marts.fct_orders order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.n_items",
+    "pass",
+    "type BIGINT (card BIGINT); nulls 0 (card 0)"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.n_items",
+    "fail",
+    "type BIGINT (card BIGINT); nulls 1 (card 0)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "Ontology: delivered_to_customer_at has exactly 2,965 nulls",
+  "selector": "ontology:column_fact marts.fct_orders.delivered_to_customer_at",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set delivered_to_customer_at = null where order_id in (select order_id from marts.fct_orders where delivered_to_customer_at is not null order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.delivered_to_customer_at",
+    "pass",
+    "type TIMESTAMP (card TIMESTAMP); nulls 2965 (card 2965)"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.delivered_to_customer_at",
+    "fail",
+    "type TIMESTAMP (card TIMESTAMP); nulls 2966 (card 2965)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "Ontology: every person has at least one order (n_orders >= 1)",
+  "selector": "ontology:column_fact marts.dim_customer.n_orders",
+  "mutation": {
+   "sql": [
+    "update marts.dim_customer set n_orders = 0 where customer_unique_id in (select customer_unique_id from marts.dim_customer order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.dim_customer.n_orders",
+    "pass",
+    "type BIGINT (card BIGINT); nulls 0 (card 0); holds [n_orders >= 1]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.dim_customer.n_orders",
+    "fail",
+    "type BIGINT (card BIGINT); nulls 0 (card 0); holds [n_orders >= 1]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.6
+ },
+ {
+  "rule": "Ontology: qualifying orders never exceed orders",
+  "selector": "ontology:column_fact marts.dim_customer.n_qualifying_orders",
+  "mutation": {
+   "sql": [
+    "update marts.dim_customer set n_qualifying_orders = n_orders + 1 where customer_unique_id in (select customer_unique_id from marts.dim_customer order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.dim_customer.n_qualifying_orders",
+    "pass",
+    "type BIGINT (card BIGINT); nulls 0 (card 0); holds [n_qualifying_orders <= n_orders]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.dim_customer.n_qualifying_orders",
+    "fail",
+    "type BIGINT (card BIGINT); nulls 0 (card 0); holds [n_qualifying_orders <= n_orders]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.9
+ },
+ {
+  "rule": "Ontology: first_qualifying_order_at is null exactly when a person has no qualifying order",
+  "selector": "ontology:column_fact marts.dim_customer.first_qualifying_order_at",
+  "mutation": {
+   "sql": [
+    "update marts.dim_customer set first_qualifying_order_at = null where customer_unique_id in (select customer_unique_id from marts.dim_customer where n_qualifying_orders > 0 order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.dim_customer.first_qualifying_order_at",
+    "pass",
+    "type TIMESTAMP (card TIMESTAMP); nulls 1113 (card 1113); null exactly when [n_qualifying_orders = 0]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.dim_customer.first_qualifying_order_at",
+    "fail",
+    "type TIMESTAMP (card TIMESTAMP); nulls 1114 (card 1113); null exactly when [n_qualifying_orders = 0]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "Ontology: the cohort person id is never null",
+  "selector": "ontology:column_fact metrics.metric_repeat_rate_90d_people.customer_unique_id",
+  "mutation": {
+   "sql": [
+    "update metrics.metric_repeat_rate_90d_people set customer_unique_id = null where customer_unique_id in (select customer_unique_id from metrics.metric_repeat_rate_90d_people order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact metrics.metric_repeat_rate_90d_people.customer_unique_id",
+    "pass",
+    "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact metrics.metric_repeat_rate_90d_people.customer_unique_id",
+    "fail",
+    "type VARCHAR (card VARCHAR); nulls 1 (card 0)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "Ontology: first_order_at is never null",
+  "selector": "ontology:column_fact metrics.metric_repeat_rate_90d_people.first_order_at",
+  "mutation": {
+   "sql": [
+    "update metrics.metric_repeat_rate_90d_people set first_order_at = null where customer_unique_id in (select customer_unique_id from metrics.metric_repeat_rate_90d_people order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact metrics.metric_repeat_rate_90d_people.first_order_at",
+    "pass",
+    "type TIMESTAMP (card TIMESTAMP); nulls 0 (card 0)"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact metrics.metric_repeat_rate_90d_people.first_order_at",
+    "fail",
+    "type TIMESTAMP (card TIMESTAMP); nulls 1 (card 0)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "Ontology: first_order_date is the calendar day of first_order_at",
+  "selector": "ontology:column_fact metrics.metric_repeat_rate_90d_people.first_order_date",
+  "mutation": {
+   "sql": [
+    "update metrics.metric_repeat_rate_90d_people set first_order_date = first_order_date + 1 where customer_unique_id in (select customer_unique_id from metrics.metric_repeat_rate_90d_people order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact metrics.metric_repeat_rate_90d_people.first_order_date",
+    "pass",
+    "type DATE (card DATE); nulls 0 (card 0); holds [first_order_date = cast(first_order_at as date)]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact metrics.metric_repeat_rate_90d_people.first_order_date",
+    "fail",
+    "type DATE (card DATE); nulls 0 (card 0); holds [first_order_date = cast(first_order_at as date)]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "Ontology: the headline numerator is null only for the review gap",
+  "selector": "ontology:column_fact metrics.metrics_headline.numerator",
+  "mutation": {
+   "sql": [
+    "update metrics.metrics_headline set numerator = null where metric_name = 'late_rate'"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact metrics.metrics_headline.numerator",
+    "pass",
+    "type HUGEINT (card HUGEINT); nulls 1 (card 1); null exactly when [metric_name = 'late_review_gap_raw']: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact metrics.metrics_headline.numerator",
+    "fail",
+    "type HUGEINT (card HUGEINT); nulls 2 (card 1); null exactly when [metric_name = 'late_review_gap_raw']: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "Ontology: the headline denominator is never null",
+  "selector": "ontology:column_fact metrics.metrics_headline.denominator",
+  "mutation": {
+   "sql": [
+    "update metrics.metrics_headline set denominator = null where metric_name = 'late_rate'"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact metrics.metrics_headline.denominator",
+    "pass",
+    "type BIGINT (card BIGINT); nulls 0 (card 0)"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact metrics.metrics_headline.denominator",
+    "fail",
+    "type BIGINT (card BIGINT); nulls 1 (card 0)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.6
+ },
+ {
+  "rule": "Ontology: the headline value is never null",
+  "selector": "ontology:column_fact metrics.metrics_headline.value_pct",
+  "mutation": {
+   "sql": [
+    "update metrics.metrics_headline set value_pct = null where metric_name = 'late_rate'"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact metrics.metrics_headline.value_pct",
+    "pass",
+    "type DOUBLE (card DOUBLE); nulls 0 (card 0)"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact metrics.metrics_headline.value_pct",
+    "fail",
+    "type DOUBLE (card DOUBLE); nulls 1 (card 0)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "Ontology: the headline metric name is never null",
+  "selector": "ontology:column_fact metrics.metrics_headline.metric_name",
+  "mutation": {
+   "sql": [
+    "update metrics.metrics_headline set metric_name = null where metric_name = 'late_rate'"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact metrics.metrics_headline.metric_name",
+    "pass",
+    "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact metrics.metrics_headline.metric_name",
+    "fail",
+    "type VARCHAR (card VARCHAR); nulls 1 (card 0)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.3
+ },
+ {
+  "rule": "Ontology: the review score count (768 orders with none)",
+  "selector": "ontology:term_count order_review_score",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set review_score = 3 where order_id in (select order_id from marts.fct_orders where review_score is null order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "term_count order_review_score",
+    "pass",
+    "review_score is null: 768 (card 768)"
+   ]
+  ],
+  "mutant": [
+   [
+    "term_count order_review_score",
+    "fail",
+    "review_score is null: 767 (card 768)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.3
+ },
+ {
+  "rule": "Ontology fact: people with a qualifying order (94,983)",
+  "selector": "ontology:fact People with a qualifying order",
+  "mutation": {
+   "sql": [
+    "update marts.dim_customer set n_qualifying_orders = 0 where customer_unique_id in (select customer_unique_id from marts.dim_customer where n_qualifying_orders > 0 order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "fact People with a qualifying order",
+    "pass",
+    "count=94983 (card 94983)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact People with a qualifying order",
+    "fail",
+    "count=94982 (card 94983)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "Ontology fact: people left out of the cohort as too recent (17,423)",
+  "selector": "ontology:fact People whose first qualifying order is too recent for a full 90 days",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set purchased_at = timestamp '2018-09-03 09:06:56' where order_id in (select order_id from marts.fct_orders where customer_qualifying_order_seq = 1 and purchased_at < timestamp '2017-02-01' order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "fact People whose first qualifying order is too recent for a full 90 days",
+    "pass",
+    "count=17423 (card 17423)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact People whose first qualifying order is too recent for a full 90 days",
+    "fail",
+    "count=17424 (card 17423)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.6
+ },
+ {
+  "rule": "Ontology fact: the newest qualifying purchase and the cohort cutoff",
+  "selector": "ontology:fact The newest qualifying purchase in the data is 2018-09-03 09:06:57, so the cohort cutoff is 2018-06-05 09:06:57",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set purchased_at = timestamp '2018-09-04 00:00:00' where order_id in (select order_id from marts.fct_orders where is_qualifying_order order by purchased_at desc limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "fact The newest qualifying purchase in the data is 2018-09-03 09:06:57, so the cohort cutoff is 2018-06-05 09:06:57",
+    "pass",
+    "count=1 (card 1)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact The newest qualifying purchase in the data is 2018-09-03 09:06:57, so the cohort cutoff is 2018-06-05 09:06:57",
+    "fail",
+    "count=0 (card 1)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "Ontology fact: one seq = 1 order per cohort person (the first-order state is unambiguous)",
+  "selector": "ontology:fact Each person has exactly one seq = 1 order, so joining the cohort to it gives one row per person (the first-order state is unambiguous)",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set customer_qualifying_order_seq = 2 where order_id in (select o.order_id from marts.fct_orders o join metrics.metric_repeat_rate_90d_people p on p.customer_unique_id = o.customer_unique_id and o.customer_qualifying_order_seq = 1 order by o.order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "fact Each person has exactly one seq = 1 order, so joining the cohort to it gives one row per person (the first-order state is unambiguous)",
+    "pass",
+    "count=77560 (card 77560)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact Each person has exactly one seq = 1 order, so joining the cohort to it gives one row per person (the first-order state is unambiguous)",
+    "fail",
+    "count=77559 (card 77560)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "Ontology fact: seq = 1 is the earliest qualifying order",
+  "selector": "ontology:fact The sequence number follows purchased_at, so seq = 1 is the person's earliest qualifying order",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set purchased_at = purchased_at + interval 3650 day where order_id in (select order_id from marts.fct_orders where customer_qualifying_order_seq = 1 and customer_unique_id in (select customer_unique_id from marts.fct_orders where customer_qualifying_order_seq = 2) order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "fact The sequence number follows purchased_at, so seq = 1 is the person's earliest qualifying order",
+    "pass",
+    "count=0 (card 0)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact The sequence number follows purchased_at, so seq = 1 is the person's earliest qualifying order",
+    "fail",
+    "count=1 (card 0)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "Ontology fact: same-second qualifying orders (281 pairs)",
+  "selector": "ontology:fact Pairs of one person's qualifying orders placed in the same second",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set purchased_at = purchased_at + interval 1 second where order_id in (select max(order_id) from marts.fct_orders where is_qualifying_order group by customer_unique_id, purchased_at having count(*) > 1 order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "fact Pairs of one person's qualifying orders placed in the same second",
+    "pass",
+    "count=281 (card 281)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact Pairs of one person's qualifying orders placed in the same second",
+    "fail",
+    "count=280 (card 281)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "Ontology fact: the order's review_score equals the chosen response's score",
+  "selector": "ontology:fact review_score on the order equals the score of the chosen response, and an order with no chosen response has a null score",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set review_score = 6 - review_score where order_id in (select order_id from marts.fct_orders where review_score is not null order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "fact review_score on the order equals the score of the chosen response, and an order with no chosen response has a null score",
+    "pass",
+    "count=0 (card 0)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact review_score on the order equals the score of the chosen response, and an order with no chosen response has a null score",
+    "fail",
+    "count=1 (card 0)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "Ontology card: promised_days is the days from purchase to the promised date",
+  "selector": "ontology:column_fact marts.fct_orders.promised_days",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set promised_days = promised_days + 1 where order_id in (select order_id from marts.fct_orders order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.promised_days",
+    "pass",
+    "type BIGINT (card BIGINT); nulls 0 (card 0); holds [promised_days = date_diff('day', purchase_date, estimated_delivery_date)]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.promised_days",
+    "fail",
+    "type BIGINT (card BIGINT); nulls 0 (card 0); holds [promised_days = date_diff('day', purchase_date, estimated_delivery_date)]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.3
+ },
+ {
+  "rule": "Ontology card: paid_minus_due is amount_paid minus amount_due",
+  "selector": "ontology:column_fact marts.fct_orders.paid_minus_due",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set paid_minus_due = paid_minus_due + 1 where order_id in (select order_id from marts.fct_orders where paid_minus_due is not null order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.paid_minus_due",
+    "pass",
+    "type DECIMAL(38,2) (card DECIMAL(38,2)); nulls 776 (card 776); holds [paid_minus_due is null or paid_minus_due = amount_paid - amount_due]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.paid_minus_due",
+    "fail",
+    "type DECIMAL(38,2) (card DECIMAL(38,2)); nulls 776 (card 776); holds [paid_minus_due is null or paid_minus_due = amount_paid - amount_due]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "Ontology card: amount_due is null only on orders with no items",
+  "selector": "ontology:column_fact marts.fct_orders.amount_due",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set amount_due = null where order_id in (select order_id from marts.fct_orders where n_items > 0 order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.amount_due",
+    "pass",
+    "type DECIMAL(38,2) (card DECIMAL(38,2)); nulls 775 (card 775); null exactly when [n_items = 0]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.amount_due",
+    "fail",
+    "type DECIMAL(38,2) (card DECIMAL(38,2)); nulls 776 (card 775); null exactly when [n_items = 0]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.3
+ },
+ {
+  "rule": "Ontology fact: 5,127 survey responses were sent before delivery",
+  "selector": "ontology:fact Survey responses sent on an earlier day than the delivery",
+  "mutation": {
+   "sql": [
+    "update marts.fct_reviews set review_before_delivery = false where review_id in (select review_id from marts.fct_reviews where review_before_delivery limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "fact Survey responses sent on an earlier day than the delivery",
+    "pass",
+    "count=5127 (card 5127)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact Survey responses sent on an earlier day than the delivery",
+    "fail",
+    "count=5126 (card 5127)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "G7 coverage: a metric table cited only as a card's model has no entity",
+  "selector": "ontology:coverage tables",
+  "mutation": {
+   "yml_drop_card": "late_rate_month"
+  },
+  "baseline": [
+   [
+    "coverage tables",
+    "pass",
+    "16 tables; undescribed: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage tables",
+    "fail",
+    "16 tables; undescribed: ['metrics.metric_late_rate_monthly']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.2
+ },
+ {
+  "rule": "G7 coverage: a column cited only as a metric's source has no contract",
+  "selector": "ontology:coverage columns",
+  "mutation": {
+   "yml_drop_card": "metrics.metric_late_rate_orders.is_late"
+  },
+  "baseline": [
+   [
+    "coverage columns",
+    "pass",
+    "127 columns; undescribed: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage columns",
+    "fail",
+    "127 columns; undescribed: ['metrics.metric_late_rate_orders.is_late']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.2
+ },
+ {
+  "rule": "G7 entity: the judged-order table has one row per judged order",
+  "selector": "ontology:entity late_rate_order",
+  "mutation": {
+   "sql": [
+    "delete from metrics.metric_late_rate_orders where order_id in (select order_id from metrics.metric_late_rate_orders order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "entity late_rate_order",
+    "pass",
+    "rows=94931 (card 94931), distinct keys=94931, null keys=0"
+   ]
+  ],
+  "mutant": [
+   [
+    "entity late_rate_order",
+    "fail",
+    "rows=94930 (card 94931), distinct keys=94930, null keys=0"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "G7 entity: the monthly table has one row per month",
+  "selector": "ontology:entity late_rate_month",
+  "mutation": {
+   "sql": [
+    "insert into metrics.metric_late_rate_monthly select * from metrics.metric_late_rate_monthly limit 1"
+   ]
+  },
+  "baseline": [
+   [
+    "entity late_rate_month",
+    "pass",
+    "rows=20 (card 20), distinct keys=20, null keys=0"
+   ]
+  ],
+  "mutant": [
+   [
+    "entity late_rate_month",
+    "fail",
+    "rows=21 (card 20), distinct keys=20, null keys=0"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.3
+ },
+ {
+  "rule": "G7 entity: a result table has exactly the rows on its card",
+  "selector": "ontology:entity review_score_result",
+  "mutation": {
+   "sql": [
+    "insert into metrics.metric_review_score values ('stray', 'x', 1, 1, 1.0)"
+   ]
+  },
+  "baseline": [
+   [
+    "entity review_score_result",
+    "pass",
+    "rows=2 (card 2), distinct keys=2, null keys=0"
+   ]
+  ],
+  "mutant": [
+   [
+    "entity review_score_result",
+    "fail",
+    "rows=3 (card 2), distinct keys=3, null keys=0"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.3
+ },
+ {
+  "rule": "G7 link: every judged order is an order",
+  "selector": "ontology:relationship late-rate verdict covers an order",
+  "mutation": {
+   "sql": [
+    "update metrics.metric_late_rate_orders set order_id = 'no-such-order' where order_id in (select order_id from metrics.metric_late_rate_orders order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "relationship late-rate verdict covers an order",
+    "pass",
+    "nulls=0 (card 0), orphans=0 (card 0), children per parent 0..1 (card 0..1)"
+   ]
+  ],
+  "mutant": [
+   [
+    "relationship late-rate verdict covers an order",
+    "fail",
+    "nulls=0 (card 0), orphans=1 (card 0), children per parent 0..1 (card 0..1)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.7
+ },
+ {
+  "rule": "G7 card: is_late is exactly delivery_state = delivered_late",
+  "selector": "ontology:column_fact metrics.metric_late_rate_orders.is_late",
+  "mutation": {
+   "sql": [
+    "update metrics.metric_late_rate_orders set is_late = not is_late where order_id in (select order_id from metrics.metric_late_rate_orders order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact metrics.metric_late_rate_orders.is_late",
+    "pass",
+    "type BOOLEAN (card BOOLEAN); nulls 0 (card 0); holds [is_late = (delivery_state = 'delivered_late')]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact metrics.metric_late_rate_orders.is_late",
+    "fail",
+    "type BOOLEAN (card BOOLEAN); nulls 0 (card 0); holds [is_late = (delivery_state = 'delivered_late')]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.6
+ },
+ {
+  "rule": "G7 card: a judged order's review score is 1 to 5 or null",
+  "selector": "ontology:column_fact metrics.metric_late_rate_orders.review_score",
+  "mutation": {
+   "sql": [
+    "update metrics.metric_late_rate_orders set review_score = 6 where order_id in (select order_id from metrics.metric_late_rate_orders where review_score is not null order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact metrics.metric_late_rate_orders.review_score",
+    "pass",
+    "type INTEGER (card INTEGER); nulls 629 (card 629); holds [review_score is null or review_score between 1 and 5]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact metrics.metric_late_rate_orders.review_score",
+    "fail",
+    "type INTEGER (card INTEGER); nulls 629 (card 629); holds [review_score is null or review_score between 1 and 5]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "G7 card: the monthly table holds only months inside the window",
+  "selector": "ontology:column_fact metrics.metric_late_rate_monthly.year_month",
+  "mutation": {
+   "sql": [
+    "update metrics.metric_late_rate_monthly set year_month = '2018-09' where year_month = '2018-08'"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact metrics.metric_late_rate_monthly.year_month",
+    "pass",
+    "type VARCHAR (card VARCHAR); nulls 0 (card 0); holds [year_month between '2017-01' and '2018-08']: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact metrics.metric_late_rate_monthly.year_month",
+    "fail",
+    "type VARCHAR (card VARCHAR); nulls 0 (card 0); holds [year_month between '2017-01' and '2018-08']: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "G7 fact: 6,518 judged orders are late",
+  "selector": "ontology:fact Judged orders marked late",
+  "mutation": {
+   "sql": [
+    "update metrics.metric_late_rate_orders set is_late = true where order_id in (select order_id from metrics.metric_late_rate_orders where not is_late order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "fact Judged orders marked late",
+    "pass",
+    "count=6518 (card 6518)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact Judged orders marked late",
+    "fail",
+    "count=6519 (card 6518)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.6
+ },
+ {
+  "rule": "Card: recon_status uses only the six named values",
+  "selector": "ontology:column_fact marts.fct_orders.recon_status",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set recon_status = 'refunded' where order_id in (select order_id from marts.fct_orders order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_orders.recon_status",
+    "pass",
+    "type VARCHAR (card VARCHAR); nulls 0 (card 0); holds [recon_status in ('match', 'minor', 'overpaid', 'underpaid', 'no_items', 'no_payment')]: 0 violations; holds [(recon_status = 'no_items') = (n_items = 0)]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_orders.recon_status",
+    "fail",
+    "type VARCHAR (card VARCHAR); nulls 0 (card 0); holds [recon_status in ('match', 'minor', 'overpaid', 'underpaid', 'no_items', 'no_payment')]: 1 violations; holds [(recon_status = 'no_items') = (n_items = 0)]: 0 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "Card: review_created_on is the day of review_created_at",
+  "selector": "ontology:column_fact marts.fct_reviews.review_created_on",
+  "mutation": {
+   "sql": [
+    "update marts.fct_reviews set review_created_on = review_created_on + 1 where review_id in (select review_id from marts.fct_reviews order by review_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "column_fact marts.fct_reviews.review_created_on",
+    "pass",
+    "type DATE (card DATE); nulls 0 (card 0); holds [review_created_on = cast(review_created_at as date)]: 0 violations"
+   ]
+  ],
+  "mutant": [
+   [
+    "column_fact marts.fct_reviews.review_created_on",
+    "fail",
+    "type DATE (card DATE); nulls 0 (card 0); holds [review_created_on = cast(review_created_at as date)]: 1 violations"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "Fact: one chosen response per order that has any",
+  "selector": "ontology:fact Survey responses chosen for an order (C4)",
+  "mutation": {
+   "sql": [
+    "update marts.fct_reviews set is_chosen_for_order = false where review_id in (select review_id from marts.fct_reviews where is_chosen_for_order order by review_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "fact Survey responses chosen for an order (C4)",
+    "pass",
+    "count=98673 (card 98673)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact Survey responses chosen for an order (C4)",
+    "fail",
+    "count=98672 (card 98673)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.7
+ },
+ {
+  "rule": "Coverage: removing a column card leaves the column undescribed",
+  "selector": "ontology:coverage columns",
+  "mutation": {
+   "yml_drop_card": "marts.fct_orders.max_installments"
+  },
+  "baseline": [
+   [
+    "coverage columns",
+    "pass",
+    "127 columns; undescribed: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage columns",
+    "fail",
+    "127 columns; undescribed: ['marts.fct_orders.max_installments']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "Coverage: a new warehouse column with no card fails",
+  "selector": "ontology:coverage columns",
+  "mutation": {
+   "sql": [
+    "alter table marts.dim_seller add column seller_tier varchar"
+   ]
+  },
+  "baseline": [
+   [
+    "coverage columns",
+    "pass",
+    "127 columns; undescribed: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage columns",
+    "fail",
+    "128 columns; undescribed: ['marts.dim_seller.seller_tier']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "Coverage: a new warehouse table with no card fails",
+  "selector": "ontology:coverage tables",
+  "mutation": {
+   "sql": [
+    "create table marts.fct_refunds as select 1 as refund_id"
+   ]
+  },
+  "baseline": [
+   [
+    "coverage tables",
+    "pass",
+    "16 tables; undescribed: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage tables",
+    "fail",
+    "17 tables; undescribed: ['marts.fct_refunds']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "Coverage: a number shown in ONTOLOGY.md that ontology.yml does not hold fails",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "md_append": "\nOrders shipped in 2017: 98,765.\n"
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "71 numbers each bound to the ontology.yml value they state; problems: ['98,765: no <!--n:path--> marker (line 274)']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.3
+ },
+ {
+  "rule": "Coverage (S5): swapping the customer count for the late-rate denominator fails, though 94,931 exists elsewhere in the YAML",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "md_replace": [
+    [
+     "96,096<!--n:entities.customer.rows-->",
+     "94,931<!--n:entities.customer.rows-->"
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "70 numbers each bound to the ontology.yml value they state; problems: ['94931: marker entities.customer.rows holds 96096']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.2
+ },
+ {
+  "rule": "Coverage (S5): swapping the late rate for the review average fails, though 4.156 exists elsewhere in the YAML",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "md_replace": [
+    [
+     "6.87<!--n:metrics.late_rate.verified.value_pct-->",
+     "4.156<!--n:metrics.late_rate.verified.value_pct-->"
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "70 numbers each bound to the ontology.yml value they state; problems: ['4.156: marker metrics.late_rate.verified.value_pct holds 6.87']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.3
+ },
+ {
+  "rule": "Coverage (S5): a number with its marker removed fails",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "md_replace": [
+    [
+     "<!--n:entities.order.rows-->",
+     ""
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "70 numbers each bound to the ontology.yml value they state; problems: ['99,441: no <!--n:path--> marker (line 102)']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "Coverage (S5): a marker that points at nothing fails",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "md_replace": [
+    [
+     "<!--n:entities.order.rows-->",
+     "<!--n:entities.order.no_such_value-->"
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "70 numbers each bound to the ontology.yml value they state; problems: ['99441: marker entities.order.no_such_value is not a value in ontology.yml']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.3
+ },
+ {
+  "rule": "Coverage (S5): a marker that follows no number fails",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "md_append": "\nSome words<!--n:entities.order.rows--> with no number.\n"
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "71 numbers each bound to the ontology.yml value they state; problems: ['marker entities.order.rows follows no number']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.3
+ },
+ {
+  "rule": "Model (S6): the Model column says 'holds' for a rule no invariant checks (the reviewer's exact case)",
+  "selector": "ontology:model_link The carrier gets the order after payment approval",
+  "mutation": {
+   "md_replace": [
+    [
+     "| The carrier gets the order after payment approval | not modeled |",
+     "| The carrier gets the order after payment approval | holds |"
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "model_link The carrier gets the order after payment approval",
+    "pass",
+    "no invariant in the model; ONTOLOGY.md Model column shows 'not modeled', card says 'not modeled'"
+   ]
+  ],
+  "mutant": [
+   [
+    "model_link The carrier gets the order after payment approval",
+    "fail",
+    "no invariant in the model; ONTOLOGY.md Model column shows 'holds', card says 'not modeled'"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.3
+ },
+ {
+  "rule": "Model (S6): a card names an invariant the TLA+ model does not define",
+  "selector": "ontology:model_link A delivery date exists exactly when the status is delivered",
+  "mutation": {
+   "yml_replace": [
+    [
+     "    model: not_modeled\n    sql: \"select count(*) from marts.fct_orders where (order_status = 'delivered')",
+     "    model: {invariant: NoSuchInvariant, result: holds}\n    sql: \"select count(*) from marts.fct_orders where (order_status = 'delivered')"
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "model_link A delivery date exists exactly when the status is delivered",
+    "pass",
+    "no invariant in the model; ONTOLOGY.md Model column shows 'not modeled', card says 'not modeled'"
+   ]
+  ],
+  "mutant": [
+   [
+    "model_link A delivery date exists exactly when the status is delivered",
+    "fail",
+    "invariant NoSuchInvariant: defined=False in cfg=False report says holds=False; ONTOLOGY.md Model column shows 'not modeled', card says 'holds'"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.3
+ },
+ {
+  "rule": "Model (S6): a card claims a result that TLC's report does not record",
+  "selector": "ontology:model_link A late order arrived after the promised day",
+  "mutation": {
+   "yml_replace": [
+    [
+     "{invariant: LateMeansArrivedAfterPromise, result: holds}",
+     "{invariant: LateMeansArrivedAfterPromise, result: breaks}"
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "model_link A late order arrived after the promised day",
+    "pass",
+    "invariant LateMeansArrivedAfterPromise: defined=True in cfg=True report says holds=True; ONTOLOGY.md Model column shows 'holds', card says 'holds'"
+   ]
+  ],
+  "mutant": [
+   [
+    "model_link A late order arrived after the promised day",
+    "fail",
+    "invariant LateMeansArrivedAfterPromise: defined=True in cfg=True report says breaks=False; ONTOLOGY.md Model column shows 'holds', card says '**breaks**'"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "Coverage: a number shown in ONTOLOGY.md that ontology.yml only mentions in prose fails",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "yml_replace": [
+    [
+     "    expected: 547\n",
+     "    expected: 546\n"
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "70 numbers each bound to the ontology.yml value they state; problems: ['547: marker facts.7.expected holds 546']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "Ontology fact: 547 orders have more than one survey response",
+  "selector": "ontology:fact Orders with more than one survey response",
+  "mutation": {
+   "sql": [
+    "insert into marts.fct_reviews select * from marts.fct_reviews where order_id in (select order_id from marts.fct_reviews group by 1 having count(*) = 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "fact Orders with more than one survey response",
+    "pass",
+    "count=547 (card 547)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact Orders with more than one survey response",
+    "fail",
+    "count=548 (card 547)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "Ontology fact: 789 review_ids sit on more than one order",
+  "selector": "ontology:fact Survey responses (review_id) attached to more than one order",
+  "mutation": {
+   "sql": [
+    "insert into marts.fct_reviews select * replace ('zzz_fake_order' as order_id) from marts.fct_reviews where review_id in (select review_id from marts.fct_reviews group by 1 having count(distinct order_id) = 1) limit 1"
+   ]
+  },
+  "baseline": [
+   [
+    "fact Survey responses (review_id) attached to more than one order",
+    "pass",
+    "count=789 (card 789)"
+   ]
+  ],
+  "mutant": [
+   [
+    "fact Survey responses (review_id) attached to more than one order",
+    "fail",
+    "count=790 (card 789)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.7
+ },
+ {
+  "rule": "Coverage: an exemption with no written reason fails",
+  "selector": "ontology:coverage allowlist reasons",
+  "mutation": {
+   "allowlist_append": "  - match: marts.fct_orders.max_installments\n    reason: ''\n"
+  },
+  "baseline": [
+   [
+    "coverage allowlist reasons",
+    "pass",
+    "44 exemptions, each with a reason"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage allowlist reasons",
+    "fail",
+    "missing reason or match: ['columns:marts.fct_orders.max_installments']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.3
+ },
+ {
+  "rule": "Coverage (M5): a small count is edited (14 exceptions -> 41)",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "md_replace": [
+    [
+     "14<!--n:stage_rules.1.expected--> exceptions",
+     "41<!--n:stage_rules.1.expected--> exceptions"
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "70 numbers each bound to the ontology.yml value they state; problems: ['41: marker stage_rules.1.expected holds 14']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "Coverage (M5): a one-digit count is edited (7 sellers -> 70)",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "md_replace": [
+    [
+     "7<!--n:relationships.11.orphans--> sellers",
+     "70<!--n:relationships.11.orphans--> sellers"
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "70 numbers each bound to the ontology.yml value they state; problems: ['70: marker relationships.11.orphans holds 7']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "Coverage (M5): the headline-metric row count is edited (5 -> 6)",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "md_replace": [
+    [
+     "5<!--n:entities.headline_metric.rows-->",
+     "6<!--n:entities.headline_metric.rows-->"
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "70 numbers each bound to the ontology.yml value they state; problems: ['6: marker entities.headline_metric.rows holds 5']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "Coverage (M5): an exempt number is edited inside its phrase (29 reachable states -> 92)",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "md_replace": [
+    [
+     "all 29 reachable states",
+     "all 92 reachable states"
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "71 numbers each bound to the ontology.yml value they state; problems: ['92: no <!--n:path--> marker (line 127)']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "Coverage (M5): a timestamp is edited (the cohort cutoff)",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "md_replace": [
+    [
+     "The cutoff is therefore 2018-06-05 09:06:57",
+     "The cutoff is therefore 2018-06-06 09:06:57"
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "71 numbers each bound to the ontology.yml value they state; problems: ['2018-06-06 09:06:57: no <!--n:path--> marker (line 221)']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.5
+ },
+ {
+  "rule": "Coverage (M5): a duration is edited (at most 90 days -> 60)",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "md_replace": [
+    [
+     "at least 24 hours and at most 90 days",
+     "at least 24 hours and at most 60 days"
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "71 numbers each bound to the ontology.yml value they state; problems: ['24: no <!--n:path--> marker (line 220)', '60: no <!--n:path--> marker (line 220)']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.6
+ },
+ {
+  "rule": "Coverage (M5): a duration is edited (24 hours -> 12)",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "md_replace": [
+    [
+     "a return must be 24 hours to 90 days later",
+     "a return must be 12 hours to 90 days later"
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "71 numbers each bound to the ontology.yml value they state; problems: ['12: no <!--n:path--> marker (line 242)', '90: no <!--n:path--> marker (line 242)']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "Coverage (M5): a month is edited (window end 2018-08 -> 2018-09)",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "md_replace": [
+    [
+     "Full months 2017-01 through 2018-08",
+     "Full months 2017-01 through 2018-09"
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "71 numbers each bound to the ontology.yml value they state; problems: ['2017-01: no <!--n:path--> marker (line 231)', '2018-09: no <!--n:path--> marker (line 231)']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.3
+ },
+ {
+  "rule": "Coverage (M5): number AND marker swapped together (96,096 customer -> 99,441 order) fails on the row's owner",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "md_replace": [
+    [
+     "96,096<!--n:entities.customer.rows-->",
+     "99,441<!--n:entities.order.rows-->"
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "70 numbers each bound to the ontology.yml value they state; problems: [\"99441: marker entities.order.rows belongs to ['order'], which its row or sentence does not name\"]"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "Coverage (M5): a fact marker moved to a sentence that does not name it",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "md_replace": [
+    [
+     "17,423<!--n:facts.1.expected--> people left out",
+     "17,423<!--n:facts.1.expected--> people dropped"
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "70 numbers each bound to the ontology.yml value they state; problems: [\"17423: marker facts.1.expected belongs to ['left out'], which its row or sentence does not name\"]"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "Coverage (M5): an exemption with a bare value and no context phrase fails",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "allowlist_replace": [
+    [
+     "context: \"TLC checked all 29 reachable states\"",
+     "context: \"\""
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "71 numbers each bound to the ontology.yml value they state; problems: ['29: no <!--n:path--> marker (line 127)', 'numbers:29 needs a context phrase that contains it']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
+ },
+ {
+  "rule": "Coverage: an exemption that matches nothing fails",
+  "selector": "ontology:coverage allowlist is current",
+  "mutation": {
+   "allowlist_append": "  - match: marts.dim_seller.no_such_column\n    reason: stale on purpose\n"
+  },
+  "baseline": [
+   [
+    "coverage allowlist is current",
+    "pass",
+    "entries matching nothing: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage allowlist is current",
+    "fail",
+    "entries matching nothing: ['columns:marts.dim_seller.no_such_column']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.4
  }
 ]

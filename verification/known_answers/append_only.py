@@ -1,0 +1,214 @@
+#!/usr/bin/env python3
+"""Questions are append-only. An existing question may not disappear or change without a written reason.
+
+What is guarded, per question id: the original wording, the reworded wording (with forbidden_tables), and the key SQL.
+  questions_baseline.json   fingerprint (sha256 of normalized content) of every adopted question. Grows only.
+  questions_changelog.yml   every change: id, field (original | reworded | key), old_sha, new_sha, date, gap, reason.
+                            A `field: note` entry (id, date, reason, no shas) records a decision NOT to change a question.
+
+Rules (all checked on every run, and in CI):
+  1. every baselined id still exists in both question files and in answer_key.sql
+  2. each fingerprint equals the baseline, or the changelog chains baseline -> current (old_sha -> new_sha, each with a reason)
+  3. an id that is not in the baseline fails: finish the key by hand, then run `append_only.py --adopt`
+     (adopt refuses ids with no key, no reworded twin, or a null key)
+  4. with --against REV (CI passes the base commit): every baseline entry and changelog entry at REV is still present, unchanged.
+     This stops anyone editing the baseline or deleting history to hide a change. It fails closed: a REV that does not
+     resolve, or is not an ancestor of HEAD (a force-push), fails. A REV from before the baseline existed is compared
+     through the commit in REV..HEAD that first added the baseline, so the comparison is never skipped.
+  5. answer_key.sql is read by key_file.py, the parser score.py uses too: a malformed or repeated header fails, and so
+     does a key block or a question id that appears twice or has no question.
+
+Usage:  python append_only.py [--against REV] [--adopt] [--print-sha ID FIELD]
+"""
+from collections import Counter
+import argparse, hashlib, json, os, re, subprocess, sys
+import yaml
+import key_file
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+_top = subprocess.run(["git", "rev-parse", "--show-toplevel"], cwd=HERE, capture_output=True, text=True).stdout.strip()
+REL = os.path.relpath(HERE, _top) if _top else "."
+FILES = {"original": "questions.yml", "reworded": "questions_reworded.yml"}
+BASELINE, CHANGELOG, KEY = "questions_baseline.json", "questions_changelog.yml", "answer_key.sql"
+FIELDS = ("original", "reworded", "key")
+
+
+def sha(obj):
+    return hashlib.sha256(json.dumps(obj, sort_keys=True).encode()).hexdigest()[:16]
+
+
+def norm(text):
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def load_questions(read):
+    out = {}
+    for field, f in FILES.items():
+        seen = Counter(q["id"] for q in yaml.safe_load(read(f)) or [])
+        twice = sorted(i for i, n in seen.items() if n > 1)
+        if twice:
+            raise key_file.KeyFileError(f"{f}: id {', '.join(twice)} appears twice")
+        for q in yaml.safe_load(read(f)) or []:
+            out.setdefault(q["id"], {})[field] = sha({"question": norm(q["question"]), "forbidden_tables": q.get("forbidden_tables", [])})
+    return out
+
+
+def load_keys(read):
+    """fingerprint of each key block's SQL (whole-line comments dropped, whitespace normalized)"""
+    keys = {k: [l for l in v if not l.strip().startswith("--")] for k, v in key_file.parse(read(KEY)).items()}
+    return {k: sha(norm("\n".join(v))) for k, v in keys.items() if norm("\n".join(v))}
+
+
+def current(read=None):
+    read = read or (lambda f: open(os.path.join(HERE, f)).read())
+    qs, keys = load_questions(read), load_keys(read)
+    orphans = sorted(set(keys) - set(qs))
+    if orphans:
+        raise key_file.KeyFileError(f"answer_key.sql has a block for {', '.join(orphans)}, which no question file has")
+    for qid in qs:
+        if qid in keys:
+            qs[qid]["key"] = keys[qid]
+    return qs
+
+
+def resolve_against(rev):
+    """The commit to compare with, or a problem. Fails closed: never returns 'skip'."""
+    git = lambda *a: subprocess.run(["git", *a], cwd=HERE, capture_output=True, text=True)
+    p = git("rev-parse", "--verify", "--quiet", f"{rev}^{{commit}}")
+    if p.returncode:
+        return None, f"--against {rev}: does not resolve to a commit, so history cannot be compared (failing closed)"
+    full = p.stdout.strip()
+    if git("merge-base", "--is-ancestor", full, "HEAD").returncode:
+        return None, f"--against {rev}: is not an ancestor of HEAD (history was rewritten?), so it cannot be compared (failing closed)"
+    if git_show(full, BASELINE) is not None:
+        return full, None
+    first = git("log", "--diff-filter=A", "--reverse", "--format=%H", f"{full}..HEAD", "--", BASELINE).stdout.split()   # the pathspec is relative to cwd=HERE
+    if not first:
+        return None, f"--against {rev}: has no {BASELINE} and no commit since added one (failing closed)"
+    print(f"note: {rev} predates {BASELINE}; comparing with {first[0][:7]}, the commit that first added it")
+    return first[0], None
+
+
+def git_show(rev, name):
+    p = subprocess.run(["git", "show", f"{rev}:{REL}/{name}"], cwd=HERE, capture_output=True, text=True)
+    return p.stdout if p.returncode == 0 else None
+
+
+def chain(start, qid, field, log):
+    """Follow the changelog from the baseline fingerprint. Returns (final_sha, problems)."""
+    cur, seen, problems = start, {start}, []
+    while True:
+        nxt = [e for e in log if e["id"] == qid and e["field"] == field and e["old_sha"] == cur]
+        if not nxt:
+            return cur, problems
+        if len(nxt) > 1:
+            return cur, [f"{qid} {field}: two changelog entries start from {cur}"]
+        e = nxt[0]
+        if len(str(e.get("reason", "")).strip()) < 15:
+            problems.append(f"{qid} {field}: changelog entry {cur}->{e['new_sha']} has no real reason")
+        cur = e["new_sha"]
+        if cur in seen:
+            return cur, problems + [f"{qid} {field}: changelog loops"]
+        seen.add(cur)
+
+
+def check(against=None):
+    base = json.load(open(os.path.join(HERE, BASELINE)))
+    log = yaml.safe_load(open(os.path.join(HERE, CHANGELOG))) or []
+    try:
+        cur = current()
+    except key_file.KeyFileError as e:
+        return base, {}, [str(e)]
+    problems = []
+    for e in log:
+        # a `note` records a decision NOT to change a question (id, field note, date, reason); every other entry is a change
+        need = ("id", "field", "date", "reason") if e.get("field") == "note" else ("id", "field", "old_sha", "new_sha", "date", "reason")
+        for k in need:
+            if not e.get(k):
+                problems.append(f"changelog entry {e} is missing '{k}'")
+        if e.get("field") == "note" and len(str(e.get("reason", "")).strip()) < 15:
+            problems.append(f"note on {e.get('id')} has no real reason")
+    full_log = log
+    log = [e for e in log if e.get("field") != "note"]
+    for qid, fields in base.items():
+        if qid not in cur:
+            problems.append(f"{qid}: removed (questions are append-only)")
+            continue
+        for field, start in fields.items():
+            if field not in cur[qid]:
+                problems.append(f"{qid}: {field} is gone")
+                continue
+            end, pr = chain(start, qid, field, log)
+            problems += pr
+            if end != cur[qid][field]:
+                problems.append(f"{qid} {field}: changed ({start} -> {cur[qid][field]}) without a changelog entry that reaches it")
+    for qid in sorted(set(cur) - set(base)):
+        problems.append(f"{qid}: not adopted. Hand-compute its key, then run: python append_only.py --adopt")
+    if against:
+        rev, problem = resolve_against(against)
+        if problem:
+            problems.append(problem)
+        else:
+            old_base = git_show(rev, BASELINE)
+            old_log = git_show(rev, CHANGELOG)
+            for qid, fields in json.loads(old_base).items():
+                if base.get(qid) != fields:
+                    problems.append(f"{qid}: baseline entry differs from the one at {against}")
+                # independent of the working-tree baseline: a question that existed at REV must still exist and
+                # be unchanged (or chain to its current wording through the changelog from the fingerprint at REV)
+                if qid not in cur:
+                    problems.append(f"{qid}: existed at {against} but is gone (questions are append-only)")
+                    continue
+                for field, start in fields.items():
+                    if field not in cur[qid]:
+                        problems.append(f"{qid}: {field} existed at {against} but is gone")
+                    elif chain(start, qid, field, log)[0] != cur[qid][field]:
+                        problems.append(f"{qid} {field}: differs from {against} without a changelog entry that reaches it")
+            # compare the FULL log (notes included) as a multiset: several identical-looking entries must each survive
+            now = Counter(json.dumps(e, sort_keys=True, default=str) for e in full_log)
+            for e in yaml.safe_load(old_log or "") or []:
+                key = json.dumps(e, sort_keys=True, default=str)
+                if now[key] <= 0:
+                    problems.append(f"changelog entry {e['id']} {e['field']} {e.get('old_sha', '')}->{e.get('new_sha', '')} was edited or removed")
+                else:
+                    now[key] -= 1
+    return base, cur, problems
+
+
+def adopt():
+    base = json.load(open(os.path.join(HERE, BASELINE)))
+    cur = current()
+    problems = []
+    for qid in sorted(set(cur) - set(base)):
+        if set(cur[qid]) != set(FIELDS):
+            problems.append(f"{qid}: needs both wordings and a key (has {sorted(cur[qid])})")
+            continue
+        base[qid] = cur[qid]
+        print(f"adopted {qid}")
+    if problems:
+        sys.exit("\n".join(problems))
+    json.dump(base, open(os.path.join(HERE, BASELINE), "w"), indent=1, sort_keys=True)
+    open(os.path.join(HERE, BASELINE), "a").write("\n")
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--against")
+    ap.add_argument("--adopt", action="store_true")
+    ap.add_argument("--print-sha", nargs=2, metavar=("ID", "FIELD"))
+    a = ap.parse_args()
+    if a.print_sha:
+        print(current()[a.print_sha[0]][a.print_sha[1]])
+        return
+    if a.adopt:
+        adopt()
+    base, cur, problems = check(a.against)
+    if problems:
+        print("QUESTIONS APPEND-ONLY: FAIL")
+        print("\n".join("  - " + p for p in problems))
+        sys.exit(1)
+    print(f"questions append-only: PASS ({len(base)} questions fingerprinted, {sum(1 for _ in yaml.safe_load(open(os.path.join(HERE, CHANGELOG))) or [])} recorded changes)")
+
+
+if __name__ == "__main__":
+    main()

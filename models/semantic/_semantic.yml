@@ -1,0 +1,75 @@
+version: 2
+semantic_models:
+  - name: orders
+    description: One row per order (fct_orders).
+    model: ref('fct_orders')
+    defaults: {agg_time_dimension: purchase_date}
+    entities:
+      - {name: order, type: primary, expr: order_id}
+      - {name: customer, type: foreign, expr: customer_unique_id}
+    dimensions:
+      - {name: purchase_date, type: time, type_params: {time_granularity: day}}
+      - {name: order_status, type: categorical}
+      - {name: delivery_state, type: categorical}
+      - {name: delivery_evidence, type: categorical}
+      - {name: ship_to_state, type: categorical}
+      - {name: in_analysis_window, type: categorical}
+      - {name: has_items, type: categorical, expr: "n_items > 0"}
+    measures:
+      - {name: order_count, agg: count, expr: order_id}
+      - {name: review_score_sum, agg: sum, expr: review_score}
+      - {name: reviewed_order_count, agg: count, expr: review_score}
+  - name: late_rate_orders
+    description: Late-rate population, one row per judged order (metric_late_rate_orders, C1 applied).
+    model: ref('metric_late_rate_orders')
+    defaults: {agg_time_dimension: judged_purchase_date}
+    entities:
+      - {name: judged_order, type: primary, expr: order_id}
+      - {name: order, type: foreign, expr: order_id}
+    dimensions:
+      - {name: judged_purchase_date, type: time, expr: purchase_date, type_params: {time_granularity: day}}
+      - {name: is_late, type: categorical}
+    measures:
+      - {name: judged_orders, agg: count, expr: order_id}
+      - {name: late_orders, agg: sum, expr: "case when is_late then 1 else 0 end"}
+  - name: repeat_people
+    description: 90-day repeat population, one row per eligible person (metric_repeat_rate_90d_people, C6 applied).
+    model: ref('metric_repeat_rate_90d_people')
+    defaults: {agg_time_dimension: first_order_date}
+    entities:
+      - {name: person, type: primary, expr: customer_unique_id}
+    dimensions:
+      - {name: first_order_date, type: time, type_params: {time_granularity: day}}
+    measures:
+      - {name: eligible_people, agg: count, expr: customer_unique_id}
+      - {name: repeat_people_90d, agg: sum, expr: "case when repeated then 1 else 0 end"}
+metrics:
+  - {name: judged_orders, label: Orders judged for lateness, type: simple, type_params: {measure: judged_orders}}
+  - {name: late_orders, label: Late orders, type: simple, type_params: {measure: late_orders}}
+  - {name: eligible_people, label: People eligible for 90-day repeat, type: simple, type_params: {measure: eligible_people}}
+  - {name: repeat_people_90d, label: People who came back within 90 days, type: simple, type_params: {measure: repeat_people_90d}}
+  - name: review_score_sum
+    label: Sum of chosen review scores (delivered population)
+    type: simple
+    type_params: {measure: review_score_sum}
+    filter: &delivered_pop |
+      {{ Dimension('order__delivery_state') }} in ('delivered_on_time', 'delivered_late')
+      and {{ Dimension('order__has_items') }}
+      and {{ Dimension('order__in_analysis_window') }}
+  - name: reviewed_orders
+    label: Delivered orders with a review
+    type: simple
+    type_params: {measure: reviewed_order_count}
+    filter: *delivered_pop
+  - name: late_rate
+    label: Late rate (fraction)
+    type: ratio
+    type_params: {numerator: late_orders, denominator: judged_orders}
+  - name: repeat_rate_90d
+    label: 90-day repeat rate (fraction)
+    type: ratio
+    type_params: {numerator: repeat_people_90d, denominator: eligible_people}
+  - name: review_score
+    label: Average review score (stars)
+    type: ratio
+    type_params: {numerator: review_score_sum, denominator: reviewed_orders}

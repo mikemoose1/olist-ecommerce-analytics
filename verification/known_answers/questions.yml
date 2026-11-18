@@ -1,0 +1,57 @@
+# Business questions with known answers (q01-q10 first, q11-q22 added to close ontology gaps). Give a fresh agent ONLY the ontology/ folder and this file.
+# The agent answers each with one DuckDB SQL query that returns a single value (one row, one column).
+# score.py runs the agent's SQL on the warehouse and compares it to answer_key.sql.
+- id: q01
+  question: What is Olist's late-delivery rate, as a percentage rounded to 2 decimals?
+- id: q02
+  question: How many orders are judged when computing the late-delivery rate?
+- id: q03
+  question: What is the 90-day repeat rate (the headline repeat metric), as a percentage rounded to 2 decimals?
+- id: q04
+  question: What is Olist's average review score, as defined by its review-score metric, in stars rounded to 3 decimals?
+- id: q05
+  question: What was the late-delivery rate for orders purchased in March 2018, as a percentage rounded to 2 decimals?
+- id: q06
+  question: How many distinct customers have ever placed an order?
+- id: q07
+  question: How many orders (any status) contain items from more than one seller?
+- id: q08
+  question: Among orders judged for lateness that have a review, what is the average review score of the late ones, rounded to 3 decimals?
+- id: q09
+  question: Which ship-to state (two-letter code) has the highest late-delivery rate among states with at least 1,000 orders judged for lateness?
+- id: q10
+  question: What percentage of all orders have the status canceled, rounded to 2 decimals?
+
+# Gap-closing questions (q11-q22). Added after the first fresh-AI run found gaps in the ontology.
+# forbidden_tables: tables the answer's SQL may not read; the answer must be rebuilt from base tables.
+- id: q11
+  question: Rebuild the 90-day repeat rate (the headline repeat metric) as a percentage rounded to 2 decimals, from the order-level warehouse tables. Do not read any table in the metrics schema.
+  forbidden_tables: ["metrics.*"]
+- id: q12
+  question: How many people count as repeat buyers in the 90-day repeat rate (its numerator)? Compute it without reading any table in the metrics schema.
+  forbidden_tables: ["metrics.*"]
+- id: q13
+  question: How many people are judged in the 90-day repeat rate (its denominator)? Compute it without reading any table in the metrics schema.
+  forbidden_tables: ["metrics.*"]
+- id: q14
+  question: What is the 90-day repeat rate, as a percentage rounded to 2 decimals, for people whose first qualifying order was placed in March 2017?
+- id: q15
+  question: What is the 90-day repeat rate, as a percentage rounded to 2 decimals, for people whose first qualifying order was shipped to the state GO?
+- id: q16
+  question: How many orders have the status canceled?
+- id: q17
+  question: Among orders with the status canceled, what percentage have a customer delivery date recorded, rounded to 2 decimals?
+- id: q18
+  question: How many orders have no parcels, meaning no seller ships anything for them?
+- id: q19
+  question: How many orders were purchased outside the analysis window?
+- id: q20
+  question: How many orders purchased inside the analysis window have no review score?
+- id: q21
+  question: How many people placed at least one order but never made a qualifying purchase?
+- id: q22
+  question: How many people have made at least one qualifying purchase?
+- id: q23
+  question: How many orders judged for lateness were late and have no review score?
+- id: q24
+  question: Which purchase month (YYYY-MM) has the highest late-delivery rate?

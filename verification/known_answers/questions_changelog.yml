@@ -1,0 +1,70 @@
+# Every change to an adopted question (wording, reworded twin, key SQL) is recorded here with a reason.
+# append_only.py checks the chain old_sha -> new_sha from questions_baseline.json. Do not edit or delete entries.
+- id: q09
+  field: reworded
+  old_sha: f35747a579bb11d4
+  new_sha: 408c6a1a85538110
+  date: 2026-11-17
+  gap: G6
+  reason: >-
+    Round-2 reader A flagged "largest share of late deliveries" as ambiguous: it can mean a state's own late rate
+    or that state's share of all late orders. The intended meaning is the late rate, so the wording now defines it.
+    Key CE is unchanged (the key SQL did not change); the original wording already said "highest late-delivery rate".
+- id: q04
+  field: original
+  old_sha: 83e6380d8f911f94
+  new_sha: cc5b9ef1c9491dbc
+  date: 2026-11-17
+  gap: G8
+  reason: >-
+    Reader B, round 2 flagged the original wording as leaving the population implicit. It was a real ambiguity, not a style point:
+    the average over every order with a chosen review is 4.086, the review-score metric's population gives 4.156 (measured on the warehouse).
+    The wording now names the review-score metric, as q01 names the late-delivery rate. Key is unchanged (4.156).
+- id: q09
+  field: reworded
+  old_sha: 408c6a1a85538110
+  new_sha: 3ec2775b5a23c6c3
+  date: 2026-11-17
+  gap: G8
+  reason: >-
+    Reader B and reader A, round 2 both noted the twin says "states" where the original says "ship-to state". Measured: ship-to state and the
+    customer's latest state both give CE, but the seller's state gives SP, so the geography was open. The wording now says ship-to state (the state an order was
+    delivered to). Meaning and key (CE) are unchanged; the original already said ship-to.
+- id: q03
+  field: note
+  date: 2026-11-17
+  gap: G8
+  reason: >-
+    Reader B, round 2 noted "within 90 days" in the reworded twin sounds like it would include same-day repeats and ignore the cohort cutoff.
+    Not changed: the wording names the target ("Olist's headline repeat-buying measure"), and the 24-hour gap and cohort cutoff are the
+    definition the ontology must supply. Spelling them out in the question would hand the answer path to the reader and stop testing the card.
+    Both readers scored it right in rounds 1 and 2.
+- id: q11
+  field: note
+  date: 2026-11-17
+  gap: G8
+  reason: >-
+    Same as the q03 note: the reworded twin names the headline repeat-buying percentage, and "people who came back within 90 days" is a plain-words gloss of it.
+    The cohort cutoff and 24-hour gap come from the card, which is what the question is there to test. Left as written.
+- id: q12
+  field: note
+  date: 2026-11-17
+  gap: G8
+  reason: >-
+    Reader B, round 2 noted the original does not state the cohort restriction. Not changed: it asks for "the 90-day repeat rate (its numerator)", so the target is fully
+    named, and which people are judged is part of the rate's definition (the repeat_cohort entity and the repeat_rate_90d card). Rule used for all of these:
+    tighten a wording when it leaves the TARGET open (which metric, which geography); leave it when it names the target and the open part is the ontology's job.
+- id: q15
+  field: note
+  date: 2026-11-17
+  gap: G8
+  reason: >-
+    Reader B, round 2 read the twin's two-sentence framing as possibly widening the denominator. Not changed: the second sentence says "under Olist's headline repeat measure",
+    which names the target, and the repeat_slice card defines the denominator. Readers were right on both wordings.
+- id: q20
+  field: note
+  date: 2026-11-17
+  gap: G8
+  reason: >-
+    Both readers, round 2 both noted neither wording filters by status. That is the intended reading ("orders purchased inside the analysis window", any status),
+    the key counts all statuses, and the 768 no-response count is on the order card. Left as written.

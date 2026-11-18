@@ -2,9 +2,9 @@
 
 ## In plain language
 
-Olist is a Brazilian online marketplace. This project takes about 99,000 of its real orders from 2016 to 2018 and turns nine messy spreadsheets into a set of organized, checked tables that a business can trust. The data had several traps. Every order got a new customer ID, so repeat buyers looked like strangers. Orders with several sellers were marked delivered on one date even though the packages arrive separately. Some reviews were written before the recorded delivery.
+Olist is a Brazilian online marketplace. This project takes about 99,000 of its real orders from 2016 to 2018 and turns nine messy spreadsheets into a set of organized, checked tables that a business can trust. The data had several traps. Every order got a new customer ID, so repeat buyers looked like strangers. Orders with several sellers were marked delivered on one date even though the packages arrive separately. Some review surveys went out, and some were answered, before the recorded delivery, because Olist emails the survey on the promised date when the order is late.
 
-The main finding is that late delivery is the biggest driver of bad reviews. Orders that arrive late score about 2 stars lower, and only 6.87% of orders are late. Only 1.28% of customers place a second order within 90 days.
+The main finding is that late delivery goes with much worse reviews. Orders that arrive late score about 2 stars lower than on-time orders, and only 6.87% of orders are late. That is a comparison, not proof of cause: the project did not test any other driver of bad reviews. Only 1.28% of customers place a second order within 90 days.
 
 Those numbers only matter if they are right, so each known data problem has an automatic check, and each check was shown to fail when given bad data. A separate recalculation straight from the original files confirms every headline number. One command rebuilds everything from scratch, and GitHub reruns all checks on every change.
 
@@ -41,7 +41,7 @@ make            # or, without make:  bash scripts/reproduce.sh
 That one command (it starts a script that does everything below) creates `.venv`, downloads the nine CSVs from the
 [Hugging Face mirror](https://huggingface.co/datasets/bulutttt/olist-raw-data) and checks their sha256, builds and tests every layer
 (`dbt build`), reconciles the headline numbers, and generates dbt docs plus [the lineage graph](docs/LINEAGE.md).
-About a minute on a laptop. Needs Python 3.12+, `curl`, and network access.
+About a minute on a laptop. Needs Python 3.12+ (with the `venv` module; on Ubuntu or Debian install `python3-venv`), `curl`, and network access.
 
 ## Headline numbers
 
@@ -109,22 +109,28 @@ and writes [experiments/results.json](experiments/results.json).
 | Choice | Pick | Measured |
 |---|---|---|
 | C1 multi-seller orders in late rate | exclude | Order-level date says 1.02% late vs 6.87% for single-seller, yet 46.9% of their "on-time" reviews are 1-2 stars (8.7% for single-seller) |
-| C2 review dated before delivery | compare by calendar day; keep in review score | Creation dates have a time part on only 85 of 99,224 rows; timestamp compare flags 3,164 same-day reviews |
+| C2 survey sent before delivery | compare by calendar day; keep in review score | `review_creation_date` is the day Olist sent the survey (Olist data card). It has a time part on only 85 of 99,224 rows; timestamp compare flags 3,164 same-day reviews |
 | C3 incremental vs full rebuild | full rebuild | Same rows either way; a full rebuild takes seconds and never misses a status change on an old order |
 | C4 which review represents an order | latest answer | Changes the score on 188 of 547 multi-review orders; metric moves by at most 0.001 |
 | C5 customer address | latest on `dim_customer`, order-time on `fct_orders` | 39 people moved state; geography metrics use the order-time address |
 | C6 same-day rule in 90-day repeat | any later order >= 24h | 30 people placed a same-day second order and then came back; "second order only" misses them |
 
+## Ontology: one map of the business
+
+[ontology/ONTOLOGY.md](ontology/ONTOLOGY.md) names every business thing (customer, order, item, parcel, seller, product, payment, review, location, date), how they connect, and what each term and metric means, with examples that do not count. [ontology/ontology.yml](ontology/ontology.yml) holds the definition cards. `make ontology` (part of `make verify`) proves every card against the warehouse: row counts, keys, links, stage-rule exceptions, and each metric through both the dbt metric tables and MetricFlow. The MetricFlow semantic layer in `models/semantic/` answers metric questions by name, for example `mf query --metrics late_rate --group-by metric_time__month`.
+
 ## What is in the repository
 
 ```
 models/{staging,intermediate,marts,metrics}   dbt models + YAML tests
+models/semantic/                              MetricFlow semantic models and metrics
+ontology/                                     ontology.yml, check.py, ONTOLOGY.md, order_lifecycle/ (TLA+ model)
 tests/business_rules/                         singular business-rule tests
 seeds/                                        raw file hashes, category translation patch
 scripts/                                      reproduce.sh, fetch_data.sh, prove_tests_fail.py, doctor.sh, lineage_mermaid.py
-verification/                                 verify_headlines.py + first-pass baseline
+verification/                                 verify_headlines.py + first-pass baseline; known_answers/ (24-question test for an agent)
 experiments/                                  run_experiments.py + results.json
-evidence/                                     latest verification and mutation reports
+evidence/                                     latest verification, mutation and ontology reports
 analysis_design_phase/                        raw-data checks run before any SQL was written
 ```
 

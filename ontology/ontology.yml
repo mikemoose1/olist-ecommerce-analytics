@@ -1,0 +1,1022 @@
+# Olist ontology: the business things, how they connect, and what every term and metric means.
+# One source of truth. ontology/check.py proves every claim below against the built warehouse
+# (row counts, keys, links, link counts, columns, stage-rule exceptions, metric values).
+# Counts are from the pinned raw snapshot (seeds/raw_file_manifest.csv); a changed count fails the check.
+version: 1
+
+entities:
+  customer:
+    meaning: One real person who buys. Olist's customer_unique_id; the same person keeps it across orders.
+    table: marts.dim_customer
+    key: customer_unique_id
+    one_row_is: one person
+    rows: 96096
+    raw_source: olist_customers_dataset.csv
+    not_this: customer_id is a new id on every order (a receipt number), so it can never show a repeat buyer. 99,441 customer_ids for 99,441 orders.
+    decisions: [D1, C5]
+  order:
+    meaning: One checkout by one customer. It can contain items from several sellers.
+    table: marts.fct_orders
+    key: order_id
+    one_row_is: one order, any status
+    rows: 99441
+    raw_source: olist_orders_dataset.csv
+  item:
+    meaning: One line on an order (one unit of one product from one seller). Quantity 3 shows as 3 items.
+    table: marts.fct_order_items
+    key: [order_id, order_item_id]
+    one_row_is: one item line
+    rows: 112650
+    raw_source: olist_order_items_dataset.csv
+  parcel:
+    meaning: The part of an order that one seller ships (order x seller). A multi-seller order has several parcels but only one recorded delivery date.
+    table: intermediate.int_parcels
+    key: parcel_key
+    one_row_is: one seller's share of one order
+    rows: 100010
+    raw_source: derived from olist_order_items_dataset.csv (order_id, seller_id)
+    scope: supporting   # not in the core list; needed to explain C1
+    decisions: [D2, C1]
+  seller:
+    meaning: A merchant selling through Olist.
+    table: marts.dim_seller
+    key: seller_id
+    one_row_is: one seller
+    rows: 3095
+    raw_source: olist_sellers_dataset.csv
+  product:
+    meaning: A catalog product. Category is the English name (translated, with 2 patched names).
+    table: marts.dim_product
+    key: product_id
+    one_row_is: one product
+    rows: 32951
+    raw_source: olist_products_dataset.csv, product_category_name_translation.csv
+  payment:
+    meaning: One payment method used on an order (an order can be split across a card and vouchers).
+    table: marts.fct_payments
+    key: [order_id, payment_sequential]
+    one_row_is: one payment line
+    rows: 103886
+    raw_source: olist_order_payments_dataset.csv
+  review:
+    doc_anchor: ["review", "response"]   # coverage.py: the row or sentence citing this card's numbers must name this
+    meaning: One satisfaction-survey response attached to one order. The same response (review_id) can be attached to several orders.
+    table: marts.fct_reviews
+    key: [review_id, order_id]
+    one_row_is: one survey response on one order
+    rows: 99224
+    raw_source: olist_order_reviews_dataset.csv
+    not_this: review_id alone is not unique; 789 review_ids sit on more than one order.
+    decisions: [D5, C4, C2]
+  location:
+    meaning: A Brazilian zip code prefix (first 5 digits) with one map point and its city and state.
+    table: intermediate.int_geo_zip
+    key: zip_code_prefix
+    one_row_is: one zip prefix
+    rows: 19015
+    raw_source: olist_geolocation_dataset.csv (1,000,163 raw points, median per prefix)
+    decisions: [D7]
+  date:
+    meaning: A calendar day, with its month and whether it is inside the analysis window.
+    table: marts.dim_date
+    key: date_day
+    one_row_is: one day (2016-09-01 to 2018-10-31)
+    rows: 791
+    decisions: [D6]
+  repeat_cohort:
+    meaning: The people the 90-day repeat rate is judged on, one row each. A person is in it when their first qualifying order is at least 90 days older than the newest qualifying purchase in the data, so everyone had a full 90 days to come back. This table is the repeat rate's denominator (rows) and numerator (repeated = true).
+    table: metrics.metric_repeat_rate_90d_people
+    key: customer_unique_id
+    one_row_is: one eligible person
+    rows: 77560
+    raw_source: derived from marts.fct_orders (is_qualifying_order, customer_qualifying_order_seq, purchased_at)
+    scope: supporting   # not in the core list; it is the repeat metric's population
+    not_this: not every person. 94,983 people have a qualifying order; 17,423 of them are too recent to have a full 90 days and are left out. Not the 96,096 people who ever placed an order.
+    decisions: [C6, D1, D8]
+  headline_metric:
+    meaning: One row per headline number, with its numerator, denominator and value. The table every verified card below is compared to.
+    table: metrics.metrics_headline
+    key: metric_name
+    one_row_is: one metric
+    rows: 5
+    raw_source: derived from the metric tables
+    scope: supporting
+
+# from = the "many" side, to = the "one" side. Each from-row points to exactly one to-row (to's key is unique).
+# children_per_parent = [min, max] rows on the from side for each to-row (max null = no limit).
+# orphans = from-rows whose value is not found on the to side; nulls = from-rows with no value.
+  late_rate_order:
+    meaning: The orders the late rate is judged on, one row each, with the verdict (is_late). The row-level base of the late rate, the monthly late rate and the review gap. 94,931 orders are judged; multi-seller orders are not (C1).
+    table: metrics.metric_late_rate_orders
+    key: order_id
+    one_row_is: one order judged for lateness
+    rows: 94931
+    raw_source: derived from marts.fct_orders (delivered, with items, in the analysis window, single seller)
+    scope: supporting
+    not_this: not every order. Canceled, undelivered, multi-seller and out-of-window orders are not in it.
+    decisions: [C1, D2]
+  late_rate_month:
+    meaning: The late rate for each purchase month, 2017-01 to 2018-08, on the same population as late_rate_order.
+    table: metrics.metric_late_rate_monthly
+    key: year_month
+    one_row_is: one purchase month
+    rows: 20
+    raw_source: derived from metrics.metric_late_rate_orders
+    scope: supporting
+    not_this: no partial month. September 2018 and later are outside the analysis window.
+  late_rate_result:
+    meaning: The one-row result of the late rate, with its numerator, denominator and percentage.
+    table: metrics.metric_late_rate
+    key: metric_name
+    one_row_is: the late-rate result
+    rows: 1
+    raw_source: derived from metrics.metric_late_rate_orders
+    scope: supporting
+  repeat_rate_90d_result:
+    meaning: The one-row result of the 90-day repeat rate.
+    table: metrics.metric_repeat_rate_90d
+    key: metric_name
+    one_row_is: the 90-day repeat-rate result
+    rows: 1
+    raw_source: derived from metrics.metric_repeat_rate_90d_people
+    scope: supporting
+  repeat_rate_ever_result:
+    meaning: The one-row result of the repeat rate with no time limit (a second order at any time counts).
+    table: metrics.metric_repeat_rate_ever
+    key: metric_name
+    one_row_is: the all-time repeat-rate result
+    rows: 1
+    raw_source: derived from marts.fct_orders (qualifying orders)
+    scope: supporting
+    not_this: not the headline. The headline is the 90-day rate.
+  review_score_result:
+    meaning: Two rows. The average review score of orders with a chosen review, and the raw on-time minus late review gap.
+    table: metrics.metric_review_score
+    key: metric_name
+    one_row_is: one review metric
+    rows: 2
+    raw_source: derived from marts.fct_orders and metrics.metric_late_rate_orders
+    scope: supporting
+
+relationships:
+  - name: customer places orders
+    from: {entity: order, column: customer_unique_id}
+    to: customer
+    children_per_parent: [1, null]
+    note: Every person has at least one order. Repeat buyers have more.
+  - name: order contains items
+    from: {entity: item, column: order_id}
+    to: order
+    children_per_parent: [0, null]
+    note: 775 orders have no items (canceled or unavailable before items were recorded).
+  - name: order splits into parcels
+    from: {entity: parcel, column: order_id}
+    to: order
+    children_per_parent: [0, null]
+  - name: parcel groups items
+    from: {entity: item, column: parcel_key}
+    to: parcel
+    children_per_parent: [1, null]
+  - name: seller ships parcels
+    from: {entity: parcel, column: seller_id}
+    to: seller
+    children_per_parent: [1, null]
+  - name: seller sells items
+    from: {entity: item, column: seller_id}
+    to: seller
+    children_per_parent: [1, null]
+  - name: product appears on items
+    from: {entity: item, column: product_id}
+    to: product
+    children_per_parent: [1, null]
+  - name: order is paid by payments
+    from: {entity: payment, column: order_id}
+    to: order
+    children_per_parent: [0, null]
+    note: 1 order has no payment row.
+  - name: order receives survey responses
+    from: {entity: review, column: order_id}
+    to: order
+    children_per_parent: [0, null]
+    note: 768 orders have no response; 547 have more than one.
+  - name: order has one chosen review
+    from: {entity: review, column: order_id, where: is_chosen_for_order}
+    to: order
+    children_per_parent: [0, 1]
+    note: C4 picks the latest-answered response, so an order never has two.
+  - name: order ships to a location
+    from: {entity: order, column: ship_to_zip_code_prefix}
+    to: location
+    children_per_parent: [0, null]
+    orphans: 278
+    note: 278 orders ship to a zip prefix missing from Olist's geolocation file. They are kept, with no map point.
+  - name: seller is based at a location
+    from: {entity: seller, column: zip_code_prefix}
+    to: location
+    children_per_parent: [0, null]
+    orphans: 7
+  - name: order is purchased on a date
+    from: {entity: order, column: purchase_date}
+    to: date
+    children_per_parent: [0, null]
+  - name: customer is in the repeat cohort
+    from: {entity: repeat_cohort, column: customer_unique_id}
+    to: customer
+    children_per_parent: [0, 1]
+    note: Each eligible person appears once. People whose first purchase is too recent, or who never made a qualifying purchase, are not in it.
+  - name: late-rate verdict covers an order
+    from: {entity: late_rate_order, column: order_id}
+    to: order
+    children_per_parent: [0, 1]
+    note: An order has a verdict only when it is judged for lateness. 94,931 of 99,441 orders are.
+
+# Definition cards. source = schema.table.column (checked to exist). Every card says what does NOT count.
+terms:
+  person:
+    meaning: A real buyer, identified by customer_unique_id. "Customer" in every metric means person.
+    source: marts.dim_customer.customer_unique_id
+    grain: one row per person
+    counterexamples: [customer_id (one per order, never repeats)]
+    decisions: [D1]
+  order_status:
+    meaning: Olist's own status label for an order.
+    source: marts.fct_orders.order_status
+    values: {delivered: 96478, shipped: 1107, canceled: 625, unavailable: 609, invoiced: 314, processing: 301, created: 5, approved: 2}
+    counterexamples: [status 'delivered' with no delivery date (8 orders), status 'canceled' with a delivery date (6 orders); both become delivery_state status_date_conflict]
+  canceled_order:
+    meaning: An order whose Olist status (order_status) is 'canceled'. All 625 count as canceled, including the 6 that still carry a delivery date. For a share of canceled orders, the denominator is every order of any status.
+    source: marts.fct_orders.order_status
+    grain: order
+    rule: order_status = 'canceled'. Status decides this, never the dates. delivery_state is a separate label about delivery, so a canceled order that has a delivery date is both canceled (status) and status_date_conflict (delivery_state).
+    counts:
+      - {where: "order_status = 'canceled'", expected: 625}
+      - {where: "order_status = 'canceled' and delivered_to_customer_at is not null", expected: 6}
+      - {where: "order_status = 'canceled' and delivery_state = 'status_date_conflict'", expected: 6}
+      - {where: "order_status = 'canceled' and delivery_state = 'not_delivered'", expected: 619}
+      - {where: "order_status = 'canceled' and n_items = 0", expected: 164}
+    counterexamples: [status 'unavailable' (a different status, 609 orders), an order that was never delivered but is not canceled (shipped, invoiced), counting canceled as delivery_state not_delivered only (misses the 6 that carry a date)]
+    decisions: [D3]
+  qualifying_order:
+    meaning: An order that counts as a real purchase for repeat metrics. Not canceled or unavailable, and has at least one item.
+    source: marts.fct_orders.is_qualifying_order
+    grain: order
+    rule: order_status not in ('canceled', 'unavailable') and n_items > 0. The column is a true/false flag that is never null. A shipped order with no delivery date yet still qualifies.
+    counts: [{where: is_qualifying_order, expected: 98199}, {where: "not is_qualifying_order", expected: 1242}]
+    counterexamples: [a canceled order, an unavailable order, an order with no items]
+  promised_date:
+    meaning: The delivery date Olist promised the customer at purchase. It is a date with no time.
+    source: marts.fct_orders.estimated_delivery_date
+    grain: order
+    time_rule: calendar day; 0 of 99,441 rows carry a time part
+    decisions: [D4]
+  delivery_state:
+    meaning: Exactly one delivery outcome per order, so status and dates can never disagree silently.
+    source: marts.fct_orders.delivery_state
+    values: {delivered_on_time: 89936, delivered_late: 6534, not_delivered: 2957, status_date_conflict: 14}
+    decisions: [D3]
+  delivered:
+    meaning: Status is delivered AND a customer delivery date exists. In SQL use delivery_state in ('delivered_on_time', 'delivered_late'), not "delivered_to_customer_at is not null" (that also catches 6 canceled orders).
+    source: marts.fct_orders.delivery_state
+    count: {where: "delivery_state in ('delivered_on_time', 'delivered_late')", expected: 96470}
+    counterexamples: [status delivered but no date (8, status_date_conflict), a delivery date on a canceled order (6, status_date_conflict), shipped orders]
+  late:
+    meaning: Delivered on a later calendar day than the promised date. Same-day delivery is on time.
+    source: metrics.metric_late_rate_orders.is_late
+    grain: order
+    population: the late-rate population (see metric late_rate)
+    time_rule: compare cast(delivered_to_customer_at as date) > estimated_delivery_date
+    counterexamples: [delivered at 23:00 on the promised day (on time), a multi-seller order (not judged, C1), an undelivered order past its promise (not judged; it is not delivered)]
+    decisions: [D4, C1]
+  multi_seller_order:
+    meaning: An order with items from two or more sellers (2+ parcels). Its parcels can arrive on different days, but Olist records one delivery date.
+    source: marts.fct_orders.n_parcels
+    grain: order
+    count: {where: n_parcels > 1, expected: 1278}
+    counterexamples: [one seller shipping 3 items (one parcel)]
+    decisions: [D2, C1]
+  analysis_window:
+    meaning: Full months 2017-01 through 2018-08. Edge months are partial and are left out of every rate.
+    source: marts.fct_orders.in_analysis_window
+    rule: purchase_date between 2017-01-01 and 2018-08-31. A true/false flag that is never null, so "outside the window" is simply the flag being false.
+    counts: [{where: in_analysis_window, expected: 99092}, {where: "not in_analysis_window", expected: 349}]
+    decisions: [D6]
+  survey_sent:
+    meaning: The date Olist emailed the satisfaction survey (Olist's data card. review_creation_date is when the survey was SENT, not when the customer wrote). Olist sends it when the order is delivered or when the promised date arrives, whichever comes first.
+    source: marts.fct_reviews.review_created_on
+    time_rule: calendar day (only 85 of 99,224 raw values carry a time)
+  survey_answered:
+    meaning: When the customer submitted the survey answer.
+    source: marts.fct_reviews.review_answered_at
+  chosen_review:
+    meaning: The one response used for an order when it has several. The latest-answered one wins.
+    source: marts.fct_reviews.is_chosen_for_order
+    grain: at most one per order
+    counterexamples: [an earlier answer on the same order]
+    decisions: [C4]
+  survey_sent_before_delivery:
+    meaning: The survey went out on an earlier calendar day than the recorded delivery. Usually because the promised date came first and the order was late. Kept in review metrics.
+    source: marts.fct_reviews.review_before_delivery
+    population: responses on orders with a delivery date (null otherwise)
+    time_rule: review_created_on < cast(delivered_to_customer_at as date)
+    counterexamples: [a survey sent the same day as delivery (not flagged), a response on an undelivered order (null, not false)]
+    decisions: [C2]
+  ship_to_address:
+    meaning: Where THIS order was shipped, as it was at order time. Geography metrics use this.
+    source: marts.fct_orders.ship_to_state
+    counterexamples: [marts.dim_customer.state, which is the person's latest address (C5)]
+    decisions: [C5]
+  payment_recon:
+    meaning: Whether what the customer paid equals items plus freight. match within R$0.01, minor within R$1, else overpaid or underpaid; no_items and no_payment get their own label.
+    source: marts.fct_orders.recon_status
+    grain: order
+  purchase_time:
+    meaning: The exact moment the order was placed, to the second (marts.fct_orders.purchased_at, a TIMESTAMP, never null). purchase_date is only its calendar day. Any rule measured in hours or days from the purchase (the 24-hour rule in the repeat rate) uses purchased_at, not purchase_date.
+    source: marts.fct_orders.purchased_at
+    grain: order
+    time_rule: purchase_date = cast(purchased_at as date). A gap of "24 hours" is purchased_at difference, so two orders on different dates can still be under 24 hours apart.
+    counterexamples: [purchase_date (a DATE with no time, cannot apply a 24-hour rule), delivered_to_customer_at (delivery time, not purchase time)]
+    decisions: [C6]
+  qualifying_order_seq:
+    meaning: The order's place in the person's list of qualifying orders, oldest purchased_at first (1 = the first real purchase). Null exactly when the order is not qualifying.
+    source: marts.fct_orders.customer_qualifying_order_seq
+    grain: order
+    time_rule: ordered by purchased_at. When one person has two qualifying orders in the same second (281 such pairs), the numbering between them is arbitrary, but the rule never depends on it because the 24-hour gap uses timestamps.
+    counterexamples: [a canceled order (null), the person's first order of any status (seq counts only qualifying orders)]
+    decisions: [C6]
+  repeat_return:
+    meaning: How "came back" is decided for the 90-day repeat rate. For a person in the repeat cohort, a return is another qualifying order with purchased_at at least 24 hours and at most 90 days after the purchased_at of their first qualifying order (seq = 1).
+    source: metrics.metric_repeat_rate_90d_people.repeated
+    grain: person
+    time_rule: first.purchased_at + 1 day <= other.purchased_at <= first.purchased_at + 90 days, both ends included.
+    counterexamples: [a second order 3 hours after the first (same trip), a second order that is canceled or unavailable (not qualifying), a return on day 91 or later, two orders in the same second]
+    decisions: [C6]
+  repeat_cohort_member:
+    meaning: A person included in the repeat rate's denominator. Their first qualifying order (seq = 1) has purchased_at no later than the newest qualifying purchased_at in the data minus 90 days (2018-09-03 09:06:57 minus 90 days is 2018-06-05 09:06:57).
+    source: metrics.metric_repeat_rate_90d_people.customer_unique_id
+    grain: person
+    population: people with at least one qualifying order whose first qualifying purchase is old enough to have had a full 90 days
+    time_rule: first purchased_at <= max(purchased_at over qualifying orders) - 90 days
+    counterexamples: [a person whose only qualifying order was in the last 90 days of the data, a person with only canceled or unavailable orders]
+    decisions: [C6, D8]
+  repeat_slice:
+    meaning: How to break the 90-day repeat rate down. By first-order month, group the repeat cohort by the month of first_order_date (the date of their first qualifying purchase). By first-order state, join the cohort to marts.fct_orders on customer_unique_id with customer_qualifying_order_seq = 1 and use that order's ship_to_state. The cohort table itself has no state or month column other than first_order_date.
+    source: metrics.metric_repeat_rate_90d_people.first_order_date
+    grain: person
+    counterexamples: [marts.dim_customer.state (the person's latest address, not where the first order went, C5), grouping by the month of the second order, grouping by purchase month of all orders]
+    decisions: [C5, C6]
+  placed_an_order:
+    meaning: A person "placed an order" when they have at least one order of ANY status, canceled and unavailable included. That is every row of marts.dim_customer (n_orders >= 1), 96,096 people. A person with a real purchase is a different, smaller count (n_qualifying_orders >= 1, 94,983 people).
+    source: marts.dim_customer.n_orders
+    grain: one row per person
+    counts:
+      - {where: "n_orders >= 1", expected: 96096}
+      - {where: "n_qualifying_orders >= 1", expected: 94983}
+      - {where: "n_qualifying_orders = 0", expected: 1113}
+    counterexamples: [counting only qualifying orders when the question says "placed an order" or "ever ordered" (loses 1,113 people whose every order was canceled, unavailable or empty), counting customer_id]
+    decisions: [D1, D8]
+  parcel_count:
+    doc_anchor: ["no items"]   # coverage.py: the row or sentence citing this card's numbers must name this
+    meaning: How many sellers' parcels an order has (n_parcels, a whole number, never null). 0 means the order has no items, so no seller ships anything (775 orders, all with n_items = 0). 1 is a normal order. 2 or more is a multi-seller order.
+    source: marts.fct_orders.n_parcels
+    grain: order
+    rule: (n_parcels = 0) is true exactly when (n_items = 0). To count orders with no items, use n_parcels = 0; n_parcels is null for nobody.
+    counts: [{where: "n_parcels = 0", expected: 775}, {where: "n_parcels = 1", expected: 97388}, {where: "n_parcels > 1", expected: 1278}]
+    counterexamples: [treating n_parcels as null for an order with no items (it is 0), treating an order with no items as one parcel]
+    decisions: [D2]
+  order_review_score:
+    doc_anchor: ["review score", "survey response"]   # coverage.py: the row or sentence citing this card's numbers must name this
+    meaning: The stars (1 to 5, whole numbers) of the order's chosen review, copied onto the order row (marts.fct_orders.review_score). Null when the order has no survey response (768 orders). It never holds an unchosen response.
+    source: marts.fct_orders.review_score
+    grain: order
+    rule: review_score is null exactly when review_id is null, and equals marts.fct_reviews.review_score of the response where is_chosen_for_order.
+    counts: [{where: "review_score is null", expected: 768}]
+    counterexamples: [an earlier answer on the same order, a score of 0 for no response (it is null, and null is skipped by avg())]
+    decisions: [C4]
+
+metrics:
+  late_rate:
+    meaning: Share of judged delivered orders that arrived after the promised day.
+    model: metrics.metric_late_rate
+    semantic_metric: late_rate
+    semantic_parts: [late_orders, judged_orders]
+    grain: order
+    population: delivered orders (delivery_state delivered_on_time or delivered_late) with at least one item, purchased in the analysis window, excluding multi-seller orders (C1)
+    numerator: orders in the population where late is true
+    denominator: orders in the population
+    time_rule: purchase date decides the month and the window; lateness is by calendar day
+    source: metrics.metric_late_rate_orders.is_late
+    counterexamples: [a multi-seller order (1,272 left out of the population, late or not), a shipped order past its promise (not delivered), an order bought 2018-09 (outside window)]
+    decisions: [C1, D4, D6]
+    verified: {numerator: 6518, denominator: 94931, value_pct: 6.87}
+  late_rate_monthly:
+    meaning: The late rate per purchase month, same population and rule as late_rate.
+    model: metrics.metric_late_rate_monthly
+    semantic_metric: late_rate   # group by metric_time__month
+    grain: purchase month
+    source: metrics.metric_late_rate_monthly.year_month
+    counterexamples: [2016-12 or 2018-09 (partial months, never shown)]
+    decisions: [D6]
+  repeat_rate_90d:
+    meaning: HEADLINE. Share of people who came back for another real purchase 1 to 90 days after their first.
+    model: metrics.metric_repeat_rate_90d
+    semantic_metric: repeat_rate_90d
+    semantic_parts: [repeat_people_90d, eligible_people]
+    grain: person
+    population: people whose first qualifying order was at least 90 days before the last qualifying purchase in the data (everyone had a full 90 days). One row each in metrics.metric_repeat_rate_90d_people (entity repeat_cohort).
+    numerator: people with another qualifying order at least 24 hours and at most 90 days after their first (repeated = true in the cohort table)
+    denominator: people in the population (the rows of the cohort table)
+    time_rule: clock starts at the first qualifying purchase timestamp (marts.fct_orders.purchased_at of the order with customer_qualifying_order_seq = 1); a second order within 24 hours does not count (C6)
+    rebuild_from_orders: >-
+      Without the metrics tables: take marts.fct_orders rows where is_qualifying_order; each person's first is the row with
+      customer_qualifying_order_seq = 1 (its purchased_at is the clock start); keep people whose first purchased_at is at or
+      before max(purchased_at over qualifying rows) minus 90 days; a person repeated when any qualifying row of theirs has
+      purchased_at between first + 1 day and first + 90 days. The rate is repeated people over kept people, as a percentage.
+    slices: first-order month = month of first_order_date; first-order state = ship_to_state of the person's seq = 1 order (see term repeat_slice)
+    source: metrics.metric_repeat_rate_90d_people.repeated
+    counterexamples: [a second order 3 hours after the first (same trip, not a return), a return on day 120, two customer_ids that are the same person (counted once)]
+    decisions: [C6, D1, D8]
+    verified: {numerator: 991, denominator: 77560, value_pct: 1.28}
+  repeat_rate_ever:
+    meaning: Secondary. Share of people with more than one qualifying order, at any time, same-day orders included.
+    model: metrics.metric_repeat_rate_ever
+    grain: person
+    population: people with at least one qualifying order
+    numerator: people with 2+ qualifying orders
+    denominator: people in the population
+    source: marts.dim_customer.n_qualifying_orders
+    counterexamples: [this is NOT the 90-day headline; it counts same-day second orders and has no time limit]
+    decisions: [D8]
+    verified: {numerator: 2887, denominator: 94983, value_pct: 3.04}
+  review_score:
+    meaning: Average stars (1-5) of the chosen review on delivered orders.
+    model: metrics.metric_review_score
+    semantic_metric: review_score
+    semantic_parts: [review_score_sum, reviewed_orders]
+    grain: order (one chosen review each)
+    population: delivered orders with at least one item, purchased in the analysis window, with a review. Multi-seller orders ARE included (their reviews are fully observed).
+    numerator: sum of chosen review scores
+    denominator: orders in the population
+    source: marts.fct_orders.review_score
+    counterexamples: [a second response on the same order (only the chosen one counts), a review on an undelivered order (excluded)]
+    decisions: [C4, C2, R1]
+    verified: {numerator: 397176, denominator: 95560, value_pct: 4.156}
+  late_review_gap_raw:
+    meaning: Average stars of on-time orders minus late orders, in the late-rate population. Not adjusted for anything else.
+    model: metrics.metric_review_score
+    grain: order
+    population: the late-rate population, orders with a review
+    source: metrics.metric_late_rate_orders.review_score
+    counterexamples: [the controlled penalty (-2.012, from a regression) is a different number]
+    verified: {denominator: 94302, value_pct: 2.04}
+
+# Column facts: the type, the nulls and any row rule of columns the cards lean on. type is DuckDB's data_type.
+# nulls = exact count of null values. holds = a SQL condition that must be true for EVERY row (a null result counts as false).
+# null_when = the column is null exactly when this condition is true. check.py proves each line against the warehouse.
+columns:
+  marts.fct_orders.purchased_at:
+    type: TIMESTAMP
+    nulls: 0
+    meaning: When the order was placed, to the second. The only column with the time of day of the purchase.
+    holds: [purchase_date = cast(purchased_at as date)]
+  marts.fct_orders.purchase_date:
+    type: DATE
+    nulls: 0
+    meaning: The calendar day of purchased_at. It has no time, so it cannot apply a 24-hour rule.
+    holds: [purchase_date = cast(purchased_at as date)]
+  marts.fct_orders.is_qualifying_order:
+    type: BOOLEAN
+    nulls: 0
+    meaning: True for a real purchase (see term qualifying_order).
+    holds: ["is_qualifying_order = (order_status not in ('canceled', 'unavailable') and n_items > 0)"]
+  marts.fct_orders.customer_qualifying_order_seq:
+    type: BIGINT
+    nulls: 1242
+    meaning: 1 for the person's first qualifying order, 2 for the next, and so on. Null for a non-qualifying order.
+    null_when: not is_qualifying_order
+    holds: [customer_qualifying_order_seq is null or customer_qualifying_order_seq >= 1]
+  marts.fct_orders.n_items:
+    type: BIGINT
+    nulls: 0
+    meaning: Number of item lines on the order. 0 for an order with no items.
+  marts.fct_orders.n_parcels:
+    type: BIGINT
+    nulls: 0
+    meaning: Number of sellers' parcels. 0 (not null) for an order with no items.
+    holds: [(n_parcels = 0) = (n_items = 0)]
+  marts.fct_orders.in_analysis_window:
+    type: BOOLEAN
+    nulls: 0
+    meaning: True when purchase_date is in 2017-01-01..2018-08-31. Never null; false for edge months.
+    holds: [in_analysis_window = (purchase_date between date '2017-01-01' and date '2018-08-31')]
+  marts.fct_orders.review_score:
+    type: INTEGER
+    nulls: 768
+    meaning: Stars (1-5) of the chosen review. Null when the order has no response.
+    null_when: review_id is null
+    holds:
+      - "review_score is null or review_score between 1 and 5"
+  marts.fct_orders.delivered_to_customer_at:
+    type: TIMESTAMP
+    nulls: 2965
+    meaning: Delivery time to the customer. Null when not delivered, but also present on 6 canceled orders (use delivery_state to decide delivered).
+  marts.dim_customer.n_orders:
+    type: BIGINT
+    nulls: 0
+    meaning: Orders of any status by this person. At least 1 for everyone in the table.
+    holds: [n_orders >= 1]
+  marts.dim_customer.n_qualifying_orders:
+    type: BIGINT
+    nulls: 0
+    meaning: Qualifying orders by this person. 0 for 1,113 people who only ever had canceled, unavailable or empty orders.
+    holds: [n_qualifying_orders <= n_orders]
+  marts.dim_customer.first_qualifying_order_at:
+    type: TIMESTAMP
+    nulls: 1113
+    meaning: purchased_at of the person's first qualifying order. Null when they have none.
+    null_when: n_qualifying_orders = 0
+  metrics.metric_repeat_rate_90d_people.customer_unique_id:
+    type: VARCHAR
+    nulls: 0
+    meaning: The eligible person (primary key of the cohort table).
+  metrics.metric_repeat_rate_90d_people.first_order_at:
+    type: TIMESTAMP
+    nulls: 0
+    meaning: purchased_at of the person's first qualifying order (seq = 1). The clock start of the 90-day window.
+  metrics.metric_repeat_rate_90d_people.first_order_date:
+    type: DATE
+    nulls: 0
+    meaning: The calendar day of first_order_at. Group by its month to slice the repeat rate by first-order month.
+    holds: [first_order_date = cast(first_order_at as date)]
+  metrics.metric_repeat_rate_90d_people.repeated:
+    type: BOOLEAN
+    nulls: 0
+    meaning: True when the person came back 24 hours to 90 days after first_order_at. Never null.
+  metrics.metrics_headline.metric_name:
+    type: VARCHAR
+    nulls: 0
+    meaning: Name of the metric (repeat_rate_90d, repeat_rate_ever, late_rate, review_score, late_review_gap_raw).
+  metrics.metrics_headline.numerator:
+    type: HUGEINT
+    nulls: 1
+    meaning: Count (or sum) on top. Null only for late_review_gap_raw, which is a difference of averages.
+    null_when: metric_name = 'late_review_gap_raw'
+  metrics.metrics_headline.denominator:
+    type: BIGINT
+    nulls: 0
+    meaning: Count underneath.
+  metrics.metrics_headline.value_pct:
+    type: DOUBLE
+    nulls: 0
+    meaning: The value rounded for display (a percentage, or stars for review_score and the review gap).
+  marts.dim_customer.zip_code_prefix:
+    type: VARCHAR
+    nulls: 0
+    meaning: The person's latest zip prefix (5 digits). Where the person lives now, not where an old order shipped (C5).
+  marts.dim_customer.city:
+    type: VARCHAR
+    nulls: 0
+    meaning: The person's latest city, lowercase, as Olist wrote it.
+  marts.dim_customer.state:
+    type: VARCHAR
+    nulls: 0
+    meaning: The person's latest two-letter state. Not the state an order shipped to (use fct_orders.ship_to_state, C5).
+  marts.dim_customer.lat:
+    type: DOUBLE
+    nulls: 269
+    meaning: Map latitude of the latest zip prefix. Null when the prefix is missing from the geolocation file.
+  marts.dim_customer.lng:
+    type: DOUBLE
+    nulls: 269
+    meaning: Map longitude of the latest zip prefix. Null when the prefix is missing from the geolocation file.
+  marts.dim_customer.first_order_at_any_status:
+    type: TIMESTAMP
+    nulls: 0
+    meaning: purchased_at of the person's first order of any status. Differs from first_qualifying_order_at when the first order was canceled.
+  marts.dim_date.month_start:
+    type: DATE
+    nulls: 0
+    meaning: First day of the month of date_day.
+    holds:
+    - month_start = date_trunc('month', date_day)
+  marts.dim_date.year_month:
+    type: VARCHAR
+    nulls: 0
+    meaning: The month as text, YYYY-MM.
+    holds:
+    - year_month = strftime(date_day, '%Y-%m')
+  marts.dim_date.day_of_week:
+    type: BIGINT
+    nulls: 0
+    meaning: 0 to 6, one value per weekday.
+    holds:
+    - day_of_week between 0 and 6
+  marts.dim_date.in_analysis_window:
+    type: BOOLEAN
+    nulls: 0
+    meaning: True for days from 2017-01-01 to 2018-08-31. fct_orders.in_analysis_window is this flag looked up on the purchase date.
+  marts.dim_product.product_category_name:
+    type: VARCHAR
+    nulls: 610
+    meaning: Olist's category name in Portuguese. Null on the 610 products with no category.
+  marts.dim_product.category:
+    type: VARCHAR
+    nulls: 0
+    meaning: English category name (translated, 2 names patched). Never null; products with no category show a placeholder.
+  marts.dim_seller.city:
+    type: VARCHAR
+    nulls: 0
+    meaning: The seller's city as Olist wrote it. A few rows hold a zip code or other text instead of a city name.
+  marts.dim_seller.state:
+    type: VARCHAR
+    nulls: 0
+    meaning: The seller's two-letter state.
+  marts.dim_seller.lat:
+    type: DOUBLE
+    nulls: 7
+    meaning: Map latitude of the seller's zip prefix. Null for the 7 sellers whose prefix is missing from the geolocation file.
+  marts.dim_seller.lng:
+    type: DOUBLE
+    nulls: 7
+    meaning: Map longitude of the seller's zip prefix. Null for the 7 sellers whose prefix is missing from the geolocation file.
+  marts.fct_order_items.shipping_limit_at:
+    type: TIMESTAMP
+    nulls: 0
+    meaning: The seller's ship-by deadline for this item. A few raw values lie in 2020, a source quirk kept as is.
+  marts.fct_order_items.price:
+    type: DECIMAL(12,2)
+    nulls: 0
+    meaning: Item price in R$ before freight.
+    holds:
+    - price > 0
+  marts.fct_order_items.freight_value:
+    type: DECIMAL(12,2)
+    nulls: 0
+    meaning: Freight charged for this item line in R$.
+    holds:
+    - freight_value >= 0
+  marts.fct_orders.delivery_evidence:
+    type: VARCHAR
+    nulls: 0
+    meaning: 'How far the delivery date can be trusted: order_level_single_parcel (one seller), order_level_multi_parcel (one date for several parcels), no_parcels (no items).'
+  marts.fct_orders.delivered_to_carrier_at:
+    type: TIMESTAMP
+    nulls: 1783
+    meaning: When the seller handed the order to the carrier. Null when that never happened. Can be later than the delivery time in raw data (see stage rules).
+  marts.fct_orders.last_shipping_limit_at:
+    type: TIMESTAMP
+    nulls: 775
+    meaning: The latest ship-by deadline among the order's items. Null for an order with no items.
+    null_when: n_items = 0
+  marts.fct_orders.days_past_promise:
+    type: BIGINT
+    nulls: 2965
+    meaning: Calendar days between the promised date and the delivery date. Positive means late, zero or negative means on time. Null when there is no delivery date.
+    null_when: delivered_to_customer_at is null
+    holds:
+    - days_past_promise is null or days_past_promise = date_diff('day', estimated_delivery_date, cast(delivered_to_customer_at as date))
+  marts.fct_orders.promised_days:
+    type: BIGINT
+    nulls: 0
+    meaning: Calendar days from purchase_date to the promised date. Never null.
+    holds:
+    - promised_days = date_diff('day', purchase_date, estimated_delivery_date)
+  marts.fct_orders.amount_due:
+    type: DECIMAL(38,2)
+    nulls: 775
+    meaning: Sum of item prices plus freight for the order in R$. Null on an order with no items.
+    null_when: n_items = 0
+  marts.fct_orders.amount_paid:
+    type: DECIMAL(38,2)
+    nulls: 1
+    meaning: Sum of the order's payments in R$. Null on the one order with no payment row.
+  marts.fct_orders.paid_minus_due:
+    type: DECIMAL(38,2)
+    nulls: 776
+    meaning: amount_paid minus amount_due in R$. Null when either side is null.
+    holds:
+    - paid_minus_due is null or paid_minus_due = amount_paid - amount_due
+  marts.fct_orders.max_installments:
+    type: INTEGER
+    nulls: 1
+    meaning: The largest installment count among the order's payments. Null on the order with no payment row.
+  marts.fct_orders.ship_to_city:
+    type: VARCHAR
+    nulls: 0
+    meaning: City this order shipped to, lowercase, as it was at order time.
+  marts.fct_orders.ship_to_lat:
+    type: DOUBLE
+    nulls: 279
+    meaning: Map latitude of the ship-to zip prefix. Null when the prefix is missing from the geolocation file.
+  marts.fct_orders.ship_to_lng:
+    type: DOUBLE
+    nulls: 279
+    meaning: Map longitude of the ship-to zip prefix. Null when the prefix is missing from the geolocation file.
+  marts.fct_orders.review_id:
+    type: VARCHAR
+    nulls: 768
+    meaning: Id of the chosen review. Null on the 768 orders with no response.
+    null_when: review_score is null
+  marts.fct_orders.review_before_delivery:
+    type: BOOLEAN
+    nulls: 3611
+    meaning: True when the survey was sent on an earlier calendar day than delivery (survey_sent_before_delivery). Null without a chosen review or without a delivery date.
+  marts.fct_payments.payment_type:
+    type: VARCHAR
+    nulls: 0
+    meaning: 'How this payment line was paid: credit_card, boleto, voucher, debit_card or not_defined.'
+  marts.fct_payments.payment_installments:
+    type: INTEGER
+    nulls: 0
+    meaning: Number of installments on this payment line.
+  marts.fct_payments.payment_value:
+    type: DECIMAL(12,2)
+    nulls: 0
+    meaning: Amount of this payment line in R$.
+    holds:
+    - payment_value >= 0
+  marts.fct_reviews.review_score:
+    type: INTEGER
+    nulls: 0
+    meaning: Stars, 1 to 5, of this response.
+    holds:
+    - review_score between 1 and 5
+  marts.fct_reviews.review_created_at:
+    type: TIMESTAMP
+    nulls: 0
+    meaning: The survey send date and time exactly as in the source. review_created_on is the day.
+  metrics.metric_late_rate.metric_name:
+    type: VARCHAR
+    nulls: 0
+    meaning: Always late_rate.
+  metrics.metric_late_rate.rule:
+    type: VARCHAR
+    nulls: 0
+    meaning: The population rule, exclude_multi_seller (C1).
+  metrics.metric_late_rate.numerator:
+    type: BIGINT
+    nulls: 0
+    meaning: Late orders in the late-rate population.
+  metrics.metric_late_rate.denominator:
+    type: BIGINT
+    nulls: 0
+    meaning: Orders in the late-rate population.
+  metrics.metric_late_rate.value_pct:
+    type: DOUBLE
+    nulls: 0
+    meaning: numerator over denominator as a percentage, rounded to 2 decimals.
+  metrics.metric_late_rate_monthly.numerator:
+    type: BIGINT
+    nulls: 0
+    meaning: Late orders in that purchase month's late-rate population.
+  metrics.metric_late_rate_monthly.denominator:
+    type: BIGINT
+    nulls: 0
+    meaning: Orders in that purchase month's late-rate population.
+  metrics.metric_late_rate_monthly.value_pct:
+    type: DOUBLE
+    nulls: 0
+    meaning: Late rate for the month as a percentage, rounded to 2 decimals.
+  metrics.metric_late_rate_orders.order_id:
+    type: VARCHAR
+    nulls: 0
+    meaning: The judged order (primary key). One row per order in the late-rate population.
+  metrics.metric_late_rate_orders.purchase_date:
+    type: DATE
+    nulls: 0
+    meaning: The order's purchase day. Decides the month.
+  metrics.metric_late_rate_orders.delivery_state:
+    type: VARCHAR
+    nulls: 0
+    meaning: delivered_on_time or delivered_late. No other value appears here.
+  metrics.metric_late_rate_orders.delivery_evidence:
+    type: VARCHAR
+    nulls: 0
+    meaning: Always order_level_single_parcel here, because multi-seller orders are left out (C1).
+  metrics.metric_late_rate_orders.ship_to_state:
+    type: VARCHAR
+    nulls: 0
+    meaning: State the order shipped to. Use this to slice the late rate by state.
+  metrics.metric_late_rate_orders.review_before_delivery:
+    type: BOOLEAN
+    nulls: 629
+    meaning: Same flag as fct_orders.review_before_delivery. Null when the order has no review.
+  metrics.metric_repeat_rate_90d.metric_name:
+    type: VARCHAR
+    nulls: 0
+    meaning: Always repeat_rate_90d.
+  metrics.metric_repeat_rate_90d.rule:
+    type: VARCHAR
+    nulls: 0
+    meaning: The 24-hour rule in use, any_later_order_24h (C6).
+  metrics.metric_repeat_rate_90d.numerator:
+    type: BIGINT
+    nulls: 0
+    meaning: People in the repeat cohort who repeated.
+  metrics.metric_repeat_rate_90d.denominator:
+    type: BIGINT
+    nulls: 0
+    meaning: People in the repeat cohort.
+  metrics.metric_repeat_rate_90d.value_pct:
+    type: DOUBLE
+    nulls: 0
+    meaning: numerator over denominator as a percentage, rounded to 2 decimals.
+  metrics.metric_repeat_rate_ever.metric_name:
+    type: VARCHAR
+    nulls: 0
+    meaning: Always repeat_rate_ever.
+  metrics.metric_repeat_rate_ever.rule:
+    type: VARCHAR
+    nulls: 0
+    meaning: all_time_including_same_day. A second order at any time counts.
+  metrics.metric_repeat_rate_ever.numerator:
+    type: BIGINT
+    nulls: 0
+    meaning: People with 2 or more qualifying orders.
+  metrics.metric_repeat_rate_ever.denominator:
+    type: BIGINT
+    nulls: 0
+    meaning: People with at least one qualifying order.
+  metrics.metric_repeat_rate_ever.value_pct:
+    type: DOUBLE
+    nulls: 0
+    meaning: numerator over denominator as a percentage, rounded to 2 decimals.
+  metrics.metric_review_score.metric_name:
+    type: VARCHAR
+    nulls: 0
+    meaning: review_score or late_review_gap_raw.
+  metrics.metric_review_score.rule:
+    type: VARCHAR
+    nulls: 0
+    meaning: The rule text for each metric. Names the chosen-review rule or the on-time minus late difference.
+  metrics.metric_review_score.numerator:
+    type: HUGEINT
+    nulls: 1
+    meaning: Sum of chosen review scores for review_score. Null for late_review_gap_raw.
+  metrics.metric_review_score.denominator:
+    type: BIGINT
+    nulls: 0
+    meaning: Orders in that metric's population.
+  metrics.metric_review_score.value_pct:
+    type: DOUBLE
+    nulls: 0
+    meaning: Average stars for review_score, or the on-time minus late gap in stars. Not a percentage despite the name.
+  metrics.metrics_headline.rule:
+    type: VARCHAR
+    nulls: 0
+    meaning: The rule text of the metric. Same as the rule column of the metric's own table.
+  metrics.metrics_headline.is_headline:
+    type: BOOLEAN
+    nulls: 0
+    meaning: True only for repeat_rate_90d.
+  marts.fct_orders.estimated_delivery_date:
+    type: DATE
+    nulls: 0
+    meaning: The delivery date Olist promised at purchase. A calendar date, so lateness is judged by calendar day.
+    holds: [promised_days >= 0]
+  marts.fct_orders.recon_status:
+    type: VARCHAR
+    nulls: 0
+    meaning: How the payments compare with items plus freight - match, minor (a small gap), overpaid, underpaid, no_items (nothing to pay for) or no_payment.
+    holds:
+      - "recon_status in ('match', 'minor', 'overpaid', 'underpaid', 'no_items', 'no_payment')"
+      - "(recon_status = 'no_items') = (n_items = 0)"
+  marts.fct_orders.ship_to_state:
+    type: VARCHAR
+    nulls: 0
+    meaning: Two-letter state the order shipped to, as at order time (C5). Use this for geography, not dim_customer.state.
+    holds: [length(ship_to_state) = 2]
+  marts.fct_reviews.review_created_on:
+    type: DATE
+    nulls: 0
+    meaning: The calendar day the survey was sent (the day of review_created_at), not the day the customer answered.
+    holds: [review_created_on = cast(review_created_at as date)]
+  marts.fct_reviews.review_answered_at:
+    type: TIMESTAMP
+    nulls: 0
+    meaning: When the customer answered. Decision C4 picks the latest-answered response as the chosen one for an order.
+    holds: [review_answered_at >= review_created_at]
+  marts.fct_reviews.is_chosen_for_order:
+    type: BOOLEAN
+    nulls: 0
+    meaning: True on the response C4 chose for its order (latest answered). fct_orders.review_score is the score of this response.
+  marts.fct_reviews.review_before_delivery:
+    type: BOOLEAN
+    nulls: 2865
+    meaning: True when the survey was sent on an earlier calendar day than the delivery. Null when the order has no delivery date.
+  metrics.metric_late_rate_orders.is_late:
+    type: BOOLEAN
+    nulls: 0
+    meaning: True when the order was delivered after its promised date (delivery_state delivered_late). Never null, because every judged order was delivered.
+    holds: [is_late = (delivery_state = 'delivered_late')]
+  metrics.metric_late_rate_orders.review_score:
+    type: INTEGER
+    nulls: 629
+    meaning: The chosen review's stars, 1 to 5. Null when the order has no review.
+    holds:
+      - "review_score is null or review_score between 1 and 5"
+  metrics.metric_late_rate_monthly.year_month:
+    type: VARCHAR
+    nulls: 0
+    meaning: The purchase month as text, YYYY-MM. One row per month from 2017-01 to 2018-08.
+    holds:
+      - "year_month between '2017-01' and '2018-08'"
+
+# Facts that span tables: a SQL query that returns one number and the number it must equal.
+facts:
+  - claim: People with a qualifying order
+    doc_anchor: "people with a real purchase"   # coverage.py: the row or sentence citing this card's numbers must name this
+    sql: select count(*) from marts.dim_customer where n_qualifying_orders >= 1
+    expected: 94983
+  - claim: People whose first qualifying order is too recent for a full 90 days
+    doc_anchor: "left out"   # coverage.py: the row or sentence citing this card's numbers must name this
+    sql: "select count(*) from marts.fct_orders where customer_qualifying_order_seq = 1 and purchased_at > (select max(purchased_at) from marts.fct_orders where is_qualifying_order) - interval 90 day"
+    expected: 17423
+  - claim: The repeat cohort is exactly the people whose first qualifying order is old enough
+    sql: "select count(*) from marts.fct_orders o full join metrics.metric_repeat_rate_90d_people p on p.customer_unique_id = o.customer_unique_id where o.customer_qualifying_order_seq = 1 and (o.purchased_at <= (select max(purchased_at) from marts.fct_orders where is_qualifying_order) - interval 90 day) is distinct from (p.customer_unique_id is not null)"
+    expected: 0
+  - claim: The newest qualifying purchase in the data is 2018-09-03 09:06:57, so the cohort cutoff is 2018-06-05 09:06:57
+    sql: "select count(*) from (select max(purchased_at) m from marts.fct_orders where is_qualifying_order) where m = timestamp '2018-09-03 09:06:57' and m - interval 90 day = timestamp '2018-06-05 09:06:57'"
+    expected: 1
+  - claim: first_order_at is the purchased_at of the person's seq = 1 order
+    sql: "select count(*) from metrics.metric_repeat_rate_90d_people p join marts.fct_orders o on o.customer_unique_id = p.customer_unique_id and o.customer_qualifying_order_seq = 1 where o.purchased_at <> p.first_order_at"
+    expected: 0
+  - claim: Each person has exactly one seq = 1 order, so joining the cohort to it gives one row per person (the first-order state is unambiguous)
+    sql: "select count(*) from metrics.metric_repeat_rate_90d_people p join marts.fct_orders o on o.customer_unique_id = p.customer_unique_id and o.customer_qualifying_order_seq = 1"
+    expected: 77560
+  - claim: The sequence number follows purchased_at, so seq = 1 is the person's earliest qualifying order
+    sql: "select count(*) from marts.fct_orders a join marts.fct_orders b on a.customer_unique_id = b.customer_unique_id and a.customer_qualifying_order_seq < b.customer_qualifying_order_seq where a.purchased_at > b.purchased_at"
+    expected: 0
+  - claim: Orders with more than one survey response
+    doc_anchor: "more than one"   # coverage.py: the row or sentence citing this card's numbers must name this
+    sql: select count(*) from (select order_id from marts.fct_reviews group by 1 having count(*) > 1)
+    expected: 547
+  - claim: Survey responses (review_id) attached to more than one order
+    doc_anchor: "more than one order"   # coverage.py: the row or sentence citing this card's numbers must name this
+    sql: select count(*) from (select review_id from marts.fct_reviews group by 1 having count(distinct order_id) > 1)
+    expected: 789
+  - claim: Survey responses chosen for an order (C4)
+    sql: select count(*) from marts.fct_reviews where is_chosen_for_order
+    expected: 98673
+  - claim: Judged orders marked late
+    sql: select count(*) from metrics.metric_late_rate_orders where is_late
+    expected: 6518
+  - claim: Survey responses sent on an earlier day than the delivery
+    doc_anchor: "sent before delivery"   # coverage.py: the row or sentence citing this card's numbers must name this
+    sql: select count(*) from marts.fct_reviews where review_before_delivery
+    expected: 5127
+  - claim: Of those, responses sent on or after the promised date
+    doc_anchor: "on or after the promised date"   # coverage.py: the row or sentence citing this card's numbers must name this
+    sql: select count(*) from marts.fct_reviews r join marts.fct_orders o using (order_id) where r.review_before_delivery and r.review_created_on >= o.estimated_delivery_date
+    expected: 4713
+  - claim: Of those, responses on orders whose delivery_state is delivered_late
+    doc_anchor: "late orders"   # coverage.py: the row or sentence citing this card's numbers must name this
+    sql: select count(*) from marts.fct_reviews r join marts.fct_orders o using (order_id) where r.review_before_delivery and o.delivery_state = 'delivered_late'
+    expected: 4777
+  - claim: Pairs of one person's qualifying orders placed in the same second
+    sql: "select count(*) from (select 1 from marts.fct_orders where is_qualifying_order group by customer_unique_id, purchased_at having count(*) > 1)"
+    expected: 281
+  - claim: review_score on the order equals the score of the chosen response, and an order with no chosen response has a null score
+    sql: "select count(*) from marts.fct_orders o left join marts.fct_reviews r on r.order_id = o.order_id and r.is_chosen_for_order where o.review_score is distinct from r.review_score"
+    expected: 0
+
+# Order-stage rules. Each rule either holds in the data (expected 0) or is a documented exception with its exact count;
+# the check recounts them. `model:` says whether the TLA+ model in ontology/order_lifecycle has an invariant for the rule
+# (`invariant` is a named invariant in OrderLifecycle.tla and listed in OrderLifecycle.cfg; `result` is what TLC found,
+# recorded in report.md) or `not_modeled`. check.py cross-checks all three files and the Model column of ONTOLOGY.md.
+# TLC itself is not run in CI (it needs Java).
+stage_rules:
+  - rule: A late order arrived after the promised day
+    model: {invariant: LateMeansArrivedAfterPromise, result: holds}
+    sql: "select count(*) from marts.fct_orders where delivery_state in ('delivered_on_time','delivered_late') and ((delivery_state = 'delivered_late') <> (cast(delivered_to_customer_at as date) > estimated_delivery_date))"
+    expected: 0
+  - rule: A delivery date exists exactly when the status is delivered
+    model: not_modeled
+    sql: "select count(*) from marts.fct_orders where (order_status = 'delivered') <> (delivered_to_customer_at is not null)"
+    expected: 14
+    exception: 8 delivered orders have no date and 6 canceled orders have one. They are labeled status_date_conflict and kept out of every delivery metric.
+  - rule: The carrier gets the order after payment approval
+    model: not_modeled
+    sql: "select count(*) from staging.stg_orders where delivered_to_carrier_at < approved_at"
+    expected: 1359
+    exception: Raw timestamps out of order (often same day). No metric uses approval-to-carrier time.
+  - rule: The customer gets the order after the carrier does
+    model: not_modeled
+    sql: "select count(*) from staging.stg_orders where delivered_to_customer_at < delivered_to_carrier_at"
+    expected: 23
+    exception: Raw timestamps out of order. Lateness uses only the delivery date and the promise, so it is unaffected.
+  - rule: The survey goes out only when the order is delivered or the promised date arrives
+    doc_anchor: ["The survey goes out only when the order is delivered or the promised date arrives", "sent before both dates"]   # coverage.py: the row or sentence citing this card's numbers must name this
+    model: {invariant: SurveyFollowsPolicy, result: holds}
+    sql: "select count(*) from marts.fct_reviews r join marts.fct_orders o using (order_id) where r.review_created_on < least(coalesce(cast(o.delivered_to_customer_at as date), o.estimated_delivery_date), o.estimated_delivery_date)"
+    expected: 606
+    exception: 606 of 99,224 responses were sent before both the delivery and the promised date. Kept; flagged by survey_sent_before_delivery when a delivery date exists.
+  - rule: The survey goes out on or after the purchase day
+    model: not_modeled
+    sql: "select count(*) from marts.fct_reviews r join marts.fct_orders o using (order_id) where r.review_created_on < o.purchase_date"
+    expected: 64
+    exception: 64 responses carry a survey date before the order was placed. A source data error; kept, and they are part of the 606 above.
+  - rule: Nobody answers the survey before the order is delivered
+    model: {invariant: NoReviewBeforeDelivery, result: breaks}
+    sql: "select count(*) from marts.fct_reviews r join marts.fct_orders o using (order_id) where cast(r.review_answered_at as date) < cast(o.delivered_to_customer_at as date)"
+    expected: 4367
+    exception: This is not a real rule. The model shows why. When the promised date passes first, the survey goes out and the customer can answer before the parcel arrives. 4,367 responses on delivered orders were answered on an earlier day than the delivery, plus responses on orders never delivered.
