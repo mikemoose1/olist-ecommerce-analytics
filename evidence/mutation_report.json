@@ -23,7 +23,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.6
+  "seconds": 10.7
  },
  {
   "rule": "Raw row counts are as published",
@@ -36,30 +36,30 @@
   },
   "baseline": [
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
+    "dbt_expectations_source_expect_table_row_count_to_equal_olist_raw_olist_orders_dataset_99441",
     "pass",
     0
    ],
    [
-    "dbt_expectations_source_expect_table_row_count_to_equal_olist_raw_olist_orders_dataset_99441",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
     "pass",
     0
    ]
   ],
   "mutant": [
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
+    "dbt_expectations_source_expect_table_row_count_to_equal_olist_raw_olist_orders_dataset_99441",
     "fail",
     1
    ],
    [
-    "dbt_expectations_source_expect_table_row_count_to_equal_olist_raw_olist_orders_dataset_99441",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
     "fail",
     1
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.0
+  "seconds": 10.7
  },
  {
   "rule": "Staging keeps every raw row",
@@ -71,7 +71,7 @@
   },
   "baseline": [
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_fct_orders_ref_stg_orders_",
     "pass",
     0
    ],
@@ -81,7 +81,7 @@
     0
    ],
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_fct_orders_ref_stg_orders_",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
     "pass",
     0
    ],
@@ -98,12 +98,12 @@
     1
    ],
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_fct_orders_ref_stg_orders_",
     "fail",
     1
    ],
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_fct_orders_ref_stg_orders_",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
     "fail",
     1
    ],
@@ -114,7 +114,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.5
+  "seconds": 10.8
  },
  {
   "rule": "Modeling never creates or loses money (no fan-out)",
@@ -139,7 +139,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.0
+  "seconds": 10.5
  },
  {
   "rule": "Repeat metrics count people, not per-order ids",
@@ -164,7 +164,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.7
+  "seconds": 11.0
  },
  {
   "rule": "A multi-seller order is never treated as a single observed parcel",
@@ -189,7 +189,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.5
+  "seconds": 10.3
  },
  {
   "rule": "A review dated before delivery is flagged",
@@ -214,7 +214,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.5
+  "seconds": 10.6
  },
  {
   "rule": "Paid equals items + freight, or the order is labeled",
@@ -239,7 +239,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.4
+  "seconds": 10.2
  },
  {
   "rule": "Real payment gaps stay under 0.5% of orders",
@@ -266,7 +266,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.5
+  "seconds": 9.9
  },
  {
   "rule": "Only full months are in the analysis window",
@@ -291,7 +291,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.6
+  "seconds": 9.7
  },
  {
   "rule": "Delivery state agrees with status and dates",
@@ -316,7 +316,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 8.9
+  "seconds": 9.9
  },
  {
   "rule": "Orders without items are labeled no_items",
@@ -341,7 +341,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 8.9
+  "seconds": 10.2
  },
  {
   "rule": "Exactly one chosen review per reviewed order",
@@ -366,7 +366,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.6
+  "seconds": 10.1
  },
  {
   "rule": "Every order's purchase date exists in dim_date",
@@ -383,17 +383,17 @@
     0
    ],
    [
-    "relationships_fct_orders_customer_unique_id__customer_unique_id__ref_dim_customer_",
-    "pass",
-    0
-   ],
-   [
     "relationships_fct_payments_order_id__order_id__ref_fct_orders_",
     "pass",
     0
    ],
    [
     "relationships_fct_order_items_order_id__order_id__ref_fct_orders_",
+    "pass",
+    0
+   ],
+   [
+    "relationships_fct_orders_customer_unique_id__customer_unique_id__ref_dim_customer_",
     "pass",
     0
    ],
@@ -420,12 +420,12 @@
     0
    ],
    [
-    "relationships_fct_order_items_order_id__order_id__ref_fct_orders_",
+    "relationships_fct_orders_customer_unique_id__customer_unique_id__ref_dim_customer_",
     "pass",
     0
    ],
    [
-    "relationships_fct_orders_customer_unique_id__customer_unique_id__ref_dim_customer_",
+    "relationships_fct_order_items_order_id__order_id__ref_fct_orders_",
     "pass",
     0
    ],
@@ -441,7 +441,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.3
+  "seconds": 11.1
  },
  {
   "rule": "One location per zip",
@@ -466,7 +466,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.0
+  "seconds": 10.6
  },
  {
   "rule": "Zip locations are inside Brazil",
@@ -478,12 +478,12 @@
   },
   "baseline": [
    [
-    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lat__5_3___33_8",
+    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lng___34_7___74_0",
     "pass",
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lng___34_7___74_0",
+    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lat__5_3___33_8",
     "pass",
     0
    ]
@@ -501,7 +501,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.5
+  "seconds": 10.0
  },
  {
   "rule": "Payment types are known values",
@@ -526,7 +526,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.0
+  "seconds": 11.3
  },
  {
   "rule": "Trend metrics never include a partial month",
@@ -551,6 +551,181 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 8.9
+  "seconds": 9.7
+ },
+ {
+  "rule": "Ontology: an order has exactly one row (no order with two customers)",
+  "selector": "ontology:entity order",
+  "mutation": {
+   "sql": [
+    "insert into marts.fct_orders select * replace ('ghost-person' as customer_unique_id) from marts.fct_orders order by order_id limit 1"
+   ]
+  },
+  "baseline": [
+   [
+    "entity order",
+    "pass",
+    "rows=99441 (card 99441), distinct keys=99441, null keys=0"
+   ]
+  ],
+  "mutant": [
+   [
+    "entity order",
+    "fail",
+    "rows=99442 (card 99441), distinct keys=99441, null keys=0"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.0
+ },
+ {
+  "rule": "Ontology: every customer has at least one order",
+  "selector": "ontology:relationship customer places orders",
+  "mutation": {
+   "sql": [
+    "insert into marts.dim_customer select * replace ('ghost-person' as customer_unique_id) from marts.dim_customer order by customer_unique_id limit 1"
+   ]
+  },
+  "baseline": [
+   [
+    "relationship customer places orders",
+    "pass",
+    "nulls=0 (card 0), orphans=0 (card 0), children per parent 1..17 (card 1..many)"
+   ]
+  ],
+  "mutant": [
+   [
+    "relationship customer places orders",
+    "fail",
+    "nulls=0 (card 0), orphans=0 (card 0), children per parent 0..17 (card 1..many)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.0
+ },
+ {
+  "rule": "Ontology: every item's product exists",
+  "selector": "ontology:relationship product appears on items",
+  "mutation": {
+   "sql": [
+    "update marts.fct_order_items set product_id = 'ghost-product' where (order_id, order_item_id) in (select (order_id, order_item_id) from marts.fct_order_items order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "relationship product appears on items",
+    "pass",
+    "nulls=0 (card 0), orphans=0 (card 0), children per parent 1..527 (card 1..many)"
+   ]
+  ],
+  "mutant": [
+   [
+    "relationship product appears on items",
+    "fail",
+    "nulls=0 (card 0), orphans=1 (card 0), children per parent 1..527 (card 1..many)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.1
+ },
+ {
+  "rule": "Ontology: every survey response belongs to a real order",
+  "selector": "ontology:relationship order receives survey responses",
+  "mutation": {
+   "sql": [
+    "update marts.fct_reviews set order_id = 'ghost-order' where (review_id, order_id) in (select (review_id, order_id) from marts.fct_reviews order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "relationship order receives survey responses",
+    "pass",
+    "nulls=0 (card 0), orphans=0 (card 0), children per parent 0..3 (card 0..many)"
+   ]
+  ],
+  "mutant": [
+   [
+    "relationship order receives survey responses",
+    "fail",
+    "nulls=0 (card 0), orphans=1 (card 0), children per parent 0..3 (card 0..many)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 1.8
+ },
+ {
+  "rule": "Ontology: an order never has two chosen reviews",
+  "selector": "ontology:relationship order has one chosen review",
+  "mutation": {
+   "sql": [
+    "update marts.fct_reviews set is_chosen_for_order = true where order_id in (select order_id from marts.fct_reviews group by 1 having count(*) > 1 order by 1 limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "relationship order has one chosen review",
+    "pass",
+    "nulls=0 (card 0), orphans=0 (card 0), children per parent 0..1 (card 0..1)"
+   ]
+  ],
+  "mutant": [
+   [
+    "relationship order has one chosen review",
+    "fail",
+    "nulls=0 (card 0), orphans=0 (card 0), children per parent 0..2 (card 0..1)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 1.7
+ },
+ {
+  "rule": "Ontology: no new unknown ship-to locations beyond the documented 278",
+  "selector": "ontology:relationship order ships to a location",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set ship_to_zip_code_prefix = '00000' where order_id in (select order_id from marts.fct_orders order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "relationship order ships to a location",
+    "pass",
+    "nulls=0 (card 0), orphans=278 (card 278), children per parent 0..142 (card 0..many)"
+   ]
+  ],
+  "mutant": [
+   [
+    "relationship order ships to a location",
+    "fail",
+    "nulls=0 (card 0), orphans=279 (card 278), children per parent 0..142 (card 0..many)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 1.8
+ },
+ {
+  "rule": "Ontology stage rule: late always means delivered after the promised day",
+  "selector": "ontology:stage_rule A late order arrived after the promised day",
+  "mutation": {
+   "sql": [
+    "update marts.fct_orders set delivery_state = 'delivered_late' where order_id in (select order_id from marts.fct_orders where delivery_state = 'delivered_on_time' order by order_id limit 1)"
+   ]
+  },
+  "baseline": [
+   [
+    "stage_rule A late order arrived after the promised day",
+    "pass",
+    "count=0 (card 0)"
+   ]
+  ],
+  "mutant": [
+   [
+    "stage_rule A late order arrived after the promised day",
+    "fail",
+    "count=1 (card 0)"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 1.6
  }
 ]
