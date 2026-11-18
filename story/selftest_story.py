@@ -38,6 +38,32 @@ CASES = [
     ("unchecked number word added to a takeaway", edit("hold far more than their share of late orders.**", "hold twice their share of late orders.**")),
     ("numeral planted in a chart's alt text", edit('fig-alt="Bar chart of the late rate', 'fig-alt="Bar chart of the late rate, 91.5%,')),
     ("bar moved in kpi_tree.yml but not in the text", lambda: (TEXT, FACTS, {**C.design(), "thr_segment_ratio": "2"})),
+    # wrong values in the accepted variants, and the cheap bypasses
+    ("variant with a wrong value: nearly ten times", edit("about four times as often.**", "nearly ten times as often.**")),
+    ("variant with a wrong value: over a third", edit("more than a quarter of", "over a third of")),
+    ("variant with a wrong value: nine tenths of comments", edit("**Two in three comments on late orders", "**Nine tenths of comments on late orders")),
+    ("variant with a wrong value: the five months with the highest late rate",
+     edit("addresses and three highest-lateness months hold", "addresses and the five months with the highest late rate hold")),
+    ("numeral in single-quoted alt text", edit('fig-alt="Bar chart of the late rate for orders handed to the carrier after the ship-by date and on time, with ranges."',
+                                                "fig-alt='Bar chart of the late rate, 91.5%, for orders handed over late and on time.'")),
+    ("numeral after an escaped quote in alt text", edit('fig-alt="Bar chart of the late rate', 'fig-alt="Bar chart of \\"the\\" late rate, 91.5%,')),
+    ("numeral in another header key", edit("    fig-align: left\n---", '    fig-align: left\nabstract: "Lateness is behind 91.5% of bad reviews"\n---')),
+    ("number word missing from the old list: sixty", edit("**Two in three comments on late orders", "**Sixty percent of comments on late orders")),
+    ("number word missing from the old list: none", edit("hold far more than their share of late orders.**", "hold far more than their share of late orders, and none of the rest do.**")),
+]
+
+# Honest edits with no wrong number. Each must leave the story with no problems.
+MUST_PASS = [
+    ("number-free subtitle: the tests", edit("and two tests that would show", "and the tests that would show")),
+    ("number-free heading: run these tests", edit("## What to do: two tests", "## What to do: run these tests")),
+    ("number-free takeaway: the highest-lateness months", edit("addresses and three highest-lateness months hold", "addresses and the highest-lateness months hold")),
+    ("number-free takeaway: these peak months", edit("addresses and three highest-lateness months hold", "addresses and these peak months hold")),
+    ("number-free takeaway: Delays in late comments", edit("**Two in three comments on late orders are about", "**Delays in late comments are mostly about")),
+    ("variant: nearly four times as often", edit("about four times as often.**", "nearly four times as often.**")),
+    ("variant: over a quarter", edit("more than a quarter of", "over a quarter of")),
+    ("variant: two thirds of comments", edit("**Two in three comments on late orders", "**Two thirds of comments on late orders")),
+    ("variant: the three months with the highest late rate",
+     edit("addresses and three highest-lateness months hold", "addresses and the three months with the highest late rate hold")),
 ]
 
 
@@ -50,7 +76,13 @@ def main():
         _, problems = C.check(text, fx, *design)
         fails |= not problems
         print(f"{'PASS' if problems else 'FAIL'}  {name}: " + (f"caught ({problems[0]})" if problems else "NOT caught"))
-    print("SELFTEST FAILED" if fails else f"{len(CASES) + 1}/{len(CASES) + 1} story caption selftest cases PASS")
+    for name, make in MUST_PASS:
+        text, fx, *design = make()
+        _, problems = C.check(text, fx, *design)
+        fails |= bool(problems)
+        print(f"{'PASS' if not problems else 'FAIL'}  honest edit accepted: {name}" + (f": REJECTED ({problems[0]})" if problems else ""))
+    total = len(CASES) + len(MUST_PASS) + 1
+    print("SELFTEST FAILED" if fails else f"{total}/{total} story caption selftest cases PASS")
     sys.exit(1 if fails else 0)
 
 
