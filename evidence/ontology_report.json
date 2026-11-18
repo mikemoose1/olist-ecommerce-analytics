@@ -1,0 +1,344 @@
+[
+ {
+  "kind": "entity",
+  "name": "customer",
+  "ok": true,
+  "detail": "rows=96096 (card 96096), distinct keys=96096, null keys=0"
+ },
+ {
+  "kind": "entity",
+  "name": "order",
+  "ok": true,
+  "detail": "rows=99441 (card 99441), distinct keys=99441, null keys=0"
+ },
+ {
+  "kind": "entity",
+  "name": "item",
+  "ok": true,
+  "detail": "rows=112650 (card 112650), distinct keys=112650, null keys=0"
+ },
+ {
+  "kind": "entity",
+  "name": "parcel",
+  "ok": true,
+  "detail": "rows=100010 (card 100010), distinct keys=100010, null keys=0"
+ },
+ {
+  "kind": "entity",
+  "name": "seller",
+  "ok": true,
+  "detail": "rows=3095 (card 3095), distinct keys=3095, null keys=0"
+ },
+ {
+  "kind": "entity",
+  "name": "product",
+  "ok": true,
+  "detail": "rows=32951 (card 32951), distinct keys=32951, null keys=0"
+ },
+ {
+  "kind": "entity",
+  "name": "payment",
+  "ok": true,
+  "detail": "rows=103886 (card 103886), distinct keys=103886, null keys=0"
+ },
+ {
+  "kind": "entity",
+  "name": "review",
+  "ok": true,
+  "detail": "rows=99224 (card 99224), distinct keys=99224, null keys=0"
+ },
+ {
+  "kind": "entity",
+  "name": "location",
+  "ok": true,
+  "detail": "rows=19015 (card 19015), distinct keys=19015, null keys=0"
+ },
+ {
+  "kind": "entity",
+  "name": "date",
+  "ok": true,
+  "detail": "rows=791 (card 791), distinct keys=791, null keys=0"
+ },
+ {
+  "kind": "relationship",
+  "name": "customer places orders",
+  "ok": true,
+  "detail": "nulls=0 (card 0), orphans=0 (card 0), children per parent 1..17 (card 1..many)"
+ },
+ {
+  "kind": "relationship",
+  "name": "order contains items",
+  "ok": true,
+  "detail": "nulls=0 (card 0), orphans=0 (card 0), children per parent 0..21 (card 0..many)"
+ },
+ {
+  "kind": "relationship",
+  "name": "order splits into parcels",
+  "ok": true,
+  "detail": "nulls=0 (card 0), orphans=0 (card 0), children per parent 0..5 (card 0..many)"
+ },
+ {
+  "kind": "relationship",
+  "name": "parcel groups items",
+  "ok": true,
+  "detail": "nulls=0 (card 0), orphans=0 (card 0), children per parent 1..21 (card 1..many)"
+ },
+ {
+  "kind": "relationship",
+  "name": "seller ships parcels",
+  "ok": true,
+  "detail": "nulls=0 (card 0), orphans=0 (card 0), children per parent 1..1854 (card 1..many)"
+ },
+ {
+  "kind": "relationship",
+  "name": "seller sells items",
+  "ok": true,
+  "detail": "nulls=0 (card 0), orphans=0 (card 0), children per parent 1..2033 (card 1..many)"
+ },
+ {
+  "kind": "relationship",
+  "name": "product appears on items",
+  "ok": true,
+  "detail": "nulls=0 (card 0), orphans=0 (card 0), children per parent 1..527 (card 1..many)"
+ },
+ {
+  "kind": "relationship",
+  "name": "order is paid by payments",
+  "ok": true,
+  "detail": "nulls=0 (card 0), orphans=0 (card 0), children per parent 0..29 (card 0..many)"
+ },
+ {
+  "kind": "relationship",
+  "name": "order receives survey responses",
+  "ok": true,
+  "detail": "nulls=0 (card 0), orphans=0 (card 0), children per parent 0..3 (card 0..many)"
+ },
+ {
+  "kind": "relationship",
+  "name": "order has one chosen review",
+  "ok": true,
+  "detail": "nulls=0 (card 0), orphans=0 (card 0), children per parent 0..1 (card 0..1)"
+ },
+ {
+  "kind": "relationship",
+  "name": "order ships to a location",
+  "ok": true,
+  "detail": "nulls=0 (card 0), orphans=278 (card 278), children per parent 0..142 (card 0..many)"
+ },
+ {
+  "kind": "relationship",
+  "name": "seller is based at a location",
+  "ok": true,
+  "detail": "nulls=0 (card 0), orphans=7 (card 7), children per parent 0..49 (card 0..many)"
+ },
+ {
+  "kind": "relationship",
+  "name": "order is purchased on a date",
+  "ok": true,
+  "detail": "nulls=0 (card 0), orphans=0 (card 0), children per parent 0..1176 (card 0..many)"
+ },
+ {
+  "kind": "column",
+  "name": "terms.person",
+  "ok": true,
+  "detail": "marts.dim_customer.customer_unique_id"
+ },
+ {
+  "kind": "column",
+  "name": "terms.order_status",
+  "ok": true,
+  "detail": "marts.fct_orders.order_status"
+ },
+ {
+  "kind": "column",
+  "name": "terms.qualifying_order",
+  "ok": true,
+  "detail": "marts.fct_orders.is_qualifying_order"
+ },
+ {
+  "kind": "column",
+  "name": "terms.promised_date",
+  "ok": true,
+  "detail": "marts.fct_orders.estimated_delivery_date"
+ },
+ {
+  "kind": "column",
+  "name": "terms.delivery_state",
+  "ok": true,
+  "detail": "marts.fct_orders.delivery_state"
+ },
+ {
+  "kind": "column",
+  "name": "terms.delivered",
+  "ok": true,
+  "detail": "marts.fct_orders.delivered_to_customer_at"
+ },
+ {
+  "kind": "column",
+  "name": "terms.late",
+  "ok": true,
+  "detail": "metrics.metric_late_rate_orders.is_late"
+ },
+ {
+  "kind": "column",
+  "name": "terms.multi_seller_order",
+  "ok": true,
+  "detail": "marts.fct_orders.n_parcels"
+ },
+ {
+  "kind": "column",
+  "name": "terms.analysis_window",
+  "ok": true,
+  "detail": "marts.fct_orders.in_analysis_window"
+ },
+ {
+  "kind": "column",
+  "name": "terms.survey_sent",
+  "ok": true,
+  "detail": "marts.fct_reviews.review_created_on"
+ },
+ {
+  "kind": "column",
+  "name": "terms.survey_answered",
+  "ok": true,
+  "detail": "marts.fct_reviews.review_answered_at"
+ },
+ {
+  "kind": "column",
+  "name": "terms.chosen_review",
+  "ok": true,
+  "detail": "marts.fct_reviews.is_chosen_for_order"
+ },
+ {
+  "kind": "column",
+  "name": "terms.survey_sent_before_delivery",
+  "ok": true,
+  "detail": "marts.fct_reviews.review_before_delivery"
+ },
+ {
+  "kind": "column",
+  "name": "terms.ship_to_address",
+  "ok": true,
+  "detail": "marts.fct_orders.ship_to_state"
+ },
+ {
+  "kind": "column",
+  "name": "terms.payment_recon",
+  "ok": true,
+  "detail": "marts.fct_orders.recon_status"
+ },
+ {
+  "kind": "column",
+  "name": "metrics.late_rate",
+  "ok": true,
+  "detail": "metrics.metric_late_rate_orders.is_late"
+ },
+ {
+  "kind": "column",
+  "name": "metrics.late_rate_monthly",
+  "ok": true,
+  "detail": "metrics.metric_late_rate_monthly.year_month"
+ },
+ {
+  "kind": "column",
+  "name": "metrics.repeat_rate_90d",
+  "ok": true,
+  "detail": "metrics.metric_repeat_rate_90d_people.repeated"
+ },
+ {
+  "kind": "column",
+  "name": "metrics.repeat_rate_ever",
+  "ok": true,
+  "detail": "marts.dim_customer.n_qualifying_orders"
+ },
+ {
+  "kind": "column",
+  "name": "metrics.review_score",
+  "ok": true,
+  "detail": "marts.fct_orders.review_score"
+ },
+ {
+  "kind": "column",
+  "name": "metrics.late_review_gap_raw",
+  "ok": true,
+  "detail": "metrics.metric_late_rate_orders.review_score"
+ },
+ {
+  "kind": "stage_rule",
+  "name": "A late order arrived after the promised day",
+  "ok": true,
+  "detail": "count=0 (card 0)"
+ },
+ {
+  "kind": "stage_rule",
+  "name": "A delivery date exists exactly when the status is delivered",
+  "ok": true,
+  "detail": "count=14 (card 14)"
+ },
+ {
+  "kind": "stage_rule",
+  "name": "The carrier gets the order after payment approval",
+  "ok": true,
+  "detail": "count=1359 (card 1359)"
+ },
+ {
+  "kind": "stage_rule",
+  "name": "The customer gets the order after the carrier does",
+  "ok": true,
+  "detail": "count=23 (card 23)"
+ },
+ {
+  "kind": "stage_rule",
+  "name": "The survey goes out only when the order is delivered or the promised date arrives",
+  "ok": true,
+  "detail": "count=606 (card 606)"
+ },
+ {
+  "kind": "stage_rule",
+  "name": "Nobody answers the survey before the order is delivered",
+  "ok": true,
+  "detail": "count=4367 (card 4367)"
+ },
+ {
+  "kind": "metric",
+  "name": "late_rate",
+  "ok": true,
+  "detail": "table 6518/94931=6.87 (card 6518/94931=6.87); MetricFlow 6518/94931=0.068660 -> 6.87"
+ },
+ {
+  "kind": "metric",
+  "name": "repeat_rate_90d",
+  "ok": true,
+  "detail": "table 991/77560=1.28 (card 991/77560=1.28); MetricFlow 991/77560=0.012777 -> 1.28"
+ },
+ {
+  "kind": "metric",
+  "name": "repeat_rate_ever",
+  "ok": true,
+  "detail": "table 2887/94983=3.04 (card 2887/94983=3.04)"
+ },
+ {
+  "kind": "metric",
+  "name": "review_score",
+  "ok": true,
+  "detail": "table 397176/95560=4.156 (card 397176/95560=4.156); MetricFlow 397176/95560=4.156300 -> 4.156"
+ },
+ {
+  "kind": "metric",
+  "name": "late_review_gap_raw",
+  "ok": true,
+  "detail": "table None/94302=2.04 (card -/94302=2.04)"
+ },
+ {
+  "kind": "metric",
+  "name": "late_rate_monthly",
+  "ok": true,
+  "detail": "MetricFlow by month vs table: 20/20 months identical (numerator and denominator)"
+ },
+ {
+  "kind": "diagram",
+  "name": "ONTOLOGY.md entity diagram",
+  "ok": true,
+  "detail": "regenerate with: python ontology/check.py --mermaid"
+ }
+]

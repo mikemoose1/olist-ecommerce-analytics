@@ -1,0 +1,61 @@
+---
+title: "Olist order: stages, promise date and survey"
+---
+stateDiagram-v2
+  direction LR
+  state "Legend" as legend {
+    lg0: Breaks NoReviewBeforeDelivery in some cases
+    lg1: Path to the NoReviewBeforeDelivery bug
+  }
+  class lg0 mayBreak
+  class lg1 bugPath
+  state "At the same time" as all {
+    state "Order" as r0 {
+      s0: Placed
+      s1: Paid
+      s2: Canceled
+      s3: Unavailable
+      s4: With carrier
+      s5: Delivered on time
+      s6: Delivered late
+      [*] --> s0
+      s0 --> s1: payment is approved
+      s0 --> s2: order is canceled
+      s1 --> s2: order is canceled
+      s1 --> s3: seller can't fill it
+      s1 --> s4: seller hands it to the carrier
+      s4 --> s2: order is canceled
+      s4 --> s5: carrier delivers [when Promise is Before promise date and Survey is No survey]
+      s4 --> s6: carrier delivers [when Promise is Promise date passed]
+    }
+    --
+    state "Promise" as r1 {
+      s7: Before promise date
+      s8: Promise date passed
+      [*] --> s7
+      s7 --> s8: the promised date arrives
+    }
+    --
+    state "Survey" as r2 {
+      s9: No survey
+      s10: Survey sent
+      s11: Survey answered
+      [*] --> s9
+      s9 --> s10: Olist emails the survey [when Order is one of Delivered late, Delivered on time or Promise is Promise date passed]
+      s10 --> s11: customer answers the survey
+    }
+  }
+  classDef mayBreak fill:#fff3e6,stroke:#e8730c,stroke-width:2.5px,color:#b85a06
+  class s0 mayBreak
+  class s0 bugPath
+  class s1 mayBreak
+  class s2 mayBreak
+  class s3 mayBreak
+  class s4 mayBreak
+  class s7 bugPath
+  class s8 mayBreak
+  class s8 bugPath
+  class s9 bugPath
+  class s10 bugPath
+  class s11 mayBreak
+  class s11 bugPath

@@ -1,0 +1,171 @@
+#!/usr/bin/env python3
+"""Prove ontology/ontology.yml against the built warehouse.
+
+Checks, each a PASS/FAIL line:
+  entity        table exists, key is unique and never null, row count equals the card
+  relationship  no unexpected nulls or orphans; children per parent inside [min, max]
+  column        every card's source (schema.table.column) exists
+  stage_rule    each order-stage rule's count equals the documented count
+  metric        each verified card equals the metric table AND MetricFlow (`mf query`)
+  diagram       the Mermaid diagram in ONTOLOGY.md equals the one generated from the YAML
+
+Usage:  python ontology/check.py [--skip-semantic]   (after `make build`; OLIST_DB_PATH picks the warehouse)
+        python ontology/check.py --mermaid           (print the entity diagram)
+Output: evidence/ontology_report.md and .json; exit 1 on any FAIL.
+"""
+import csv, json, os, subprocess, sys, tempfile
+import duckdb, yaml
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ONTO = yaml.safe_load(open(os.path.join(ROOT, "ontology", "ontology.yml")))
+DB = os.environ.get("OLIST_DB_PATH", os.path.join(ROOT, "olist.duckdb"))
+MF = os.path.join(os.path.dirname(sys.executable), "mf")
+E = ONTO["entities"]
+
+
+def keys(entity):
+    k = E[entity]["key"]
+    return k if isinstance(k, list) else [k]
+
+
+def mermaid():
+    ends = {0: "o", 1: "|"}
+    lines = ["erDiagram"]
+    for name, e in E.items():
+        lines.append(f"    {name.upper()} {{")
+        lines += [f"        string {k} PK" for k in keys(name)]
+        lines.append("    }")
+    for r in ONTO["relationships"]:
+        lo, hi = r["children_per_parent"]
+        child = ("|o" if hi == 1 else "o{") if lo == 0 else ("||" if hi == 1 else "|{")
+        lines.append(f'    {r["to"].upper()} ||--{child} {r["from"]["entity"].upper()} : "{r["name"]}"')
+    return "\n".join(lines)
+
+
+def check_entities(con):
+    for name, e in E.items():
+        k = ", ".join(keys(name))
+        nulls = " or ".join(f"{c} is null" for c in keys(name))
+        n, d, nn = con.execute(f"select count(*), (select count(*) from (select distinct {k} from {e['table']})), "
+                               f"count(*) filter (where {nulls}) from {e['table']}").fetchone()
+        yield "entity", name, n == e["rows"] and d == n and nn == 0, \
+            f"rows={n} (card {e['rows']}), distinct keys={d}, null keys={nn}"
+
+
+def check_relationships(con):
+    for r in ONTO["relationships"]:
+        child, col = E[r["from"]["entity"]], r["from"]["column"]
+        parent_key = keys(r["to"])[0]
+        parent = E[r["to"]]["table"]
+        where = f"where {r['from']['where']}" if r["from"].get("where") else ""
+        ch = f"(select * from {child['table']} {where})"
+        nulls, orphans = con.execute(
+            f"select count(*) filter (where c.{col} is null), "
+            f"count(*) filter (where c.{col} is not null and p.{parent_key} is null) "
+            f"from {ch} c left join {parent} p on p.{parent_key} = c.{col}").fetchone()
+        lo, hi = con.execute(
+            f"select min(n), max(n) from (select p.{parent_key}, count(c.{col}) n from {parent} p "
+            f"left join {ch} c on c.{col} = p.{parent_key} group by 1)").fetchone()
+        want_lo, want_hi = r["children_per_parent"]
+        ok = (nulls == r.get("nulls", 0) and orphans == r.get("orphans", 0) and lo >= want_lo
+              and (want_hi is None or hi <= want_hi))
+        yield "relationship", r["name"], ok, (f"nulls={nulls} (card {r.get('nulls', 0)}), orphans={orphans} "
+                                              f"(card {r.get('orphans', 0)}), children per parent {lo}..{hi} "
+                                              f"(card {want_lo}..{want_hi if want_hi is not None else 'many'})")
+
+
+def check_columns(con):
+    cols = {f"{s}.{t}.{c}" for s, t, c in con.execute(
+        "select table_schema, table_name, column_name from information_schema.columns").fetchall()}
+    for kind in ("terms", "metrics"):
+        for name, card in ONTO[kind].items():
+            yield "column", f"{kind}.{name}", card["source"] in cols, card["source"]
+
+
+def check_stage_rules(con):
+    for s in ONTO["stage_rules"]:
+        n = con.execute(s["sql"]).fetchone()[0]
+        yield "stage_rule", s["rule"], n == s["expected"], f"count={n} (card {s['expected']})"
+
+
+def mf_rows(names, group_by=None):
+    out = os.path.join(tempfile.mkdtemp(), "mf.csv")
+    env = dict(os.environ, DBT_PROFILES_DIR=ROOT, OLIST_DB_PATH=DB)
+    cmd = [MF, "query", "--metrics", ",".join(names), "--decimals", "6", "--csv", out]
+    p = subprocess.run(cmd + (["--group-by", group_by] if group_by else []), cwd=ROOT, env=env, capture_output=True, text=True)
+    if p.returncode != 0 or not os.path.exists(out):
+        raise RuntimeError(p.stdout[-2000:] + p.stderr[-2000:])
+    return list(csv.DictReader(open(out)))
+
+
+def mf_values(names):
+    return {k: float(v) for k, v in mf_rows(names)[0].items()}
+
+
+def mf_monthly_late():
+    return {r["metric_time__month"][:7]: (round(float(r["late_orders"])), round(float(r["judged_orders"])))
+            for r in mf_rows(["late_orders", "judged_orders"], "metric_time__month")}
+
+
+CARDS = {n: m for n, m in ONTO["metrics"].items() if "verified" in m}
+
+
+def check_metrics(con, mf):
+    table = {r[0]: r[1:] for r in con.execute(
+        "select metric_name, numerator, denominator, value_pct from metrics.metrics_headline").fetchall()}
+    for name, m in CARDS.items():
+        v = m["verified"]
+        num, den, val = table[name]
+        ok = den == v["denominator"] and float(val) == v["value_pct"] and (
+            "numerator" not in v or float(num) == v["numerator"])
+        detail = f"table {num}/{den}={val} (card {v.get('numerator', '-')}/{v['denominator']}={v['value_pct']})"
+        if m.get("semantic_metric") and mf:
+            got = mf[m["semantic_metric"]]
+            shown = round(got * 100, 2) if name != "review_score" else round(got, 3)
+            n, d = (mf[x] for x in m["semantic_parts"])
+            ok = ok and shown == v["value_pct"] and n == v["numerator"] and d == v["denominator"]
+            detail += f"; MetricFlow {n:.0f}/{d:.0f}={got:.6f} -> {shown}"
+        yield "metric", name, ok, detail
+    if mf:
+        table_m = {r[0]: (r[1], r[2]) for r in con.execute(
+            "select year_month, numerator, denominator from metrics.metric_late_rate_monthly").fetchall()}
+        same = sum(mf["monthly"].get(m) == v for m, v in table_m.items())
+        yield "metric", "late_rate_monthly", same == len(table_m) == len(mf["monthly"]), \
+            f"MetricFlow by month vs table: {same}/{len(table_m)} months identical (numerator and denominator)"
+
+
+def check_diagram():
+    doc = open(os.path.join(ROOT, "ontology", "ONTOLOGY.md")).read()
+    yield "diagram", "ONTOLOGY.md entity diagram", mermaid() in doc, "regenerate with: python ontology/check.py --mermaid"
+
+
+def main():
+    if "--mermaid" in sys.argv:
+        print(mermaid()); return
+    mf = {}
+    if "--skip-semantic" not in sys.argv:  # MetricFlow opens the file itself, so query it before we hold a connection
+        mf = mf_values([x for m in CARDS.values() if m.get("semantic_metric")
+                        for x in [m["semantic_metric"], *m["semantic_parts"]]])
+        mf["monthly"] = mf_monthly_late()
+    con = duckdb.connect(DB, read_only=True)
+    results = []
+    for gen in (check_entities(con), check_relationships(con), check_columns(con), check_stage_rules(con),
+                check_metrics(con, mf), check_diagram()):
+        for kind, name, ok, detail in gen:
+            results.append({"kind": kind, "name": name, "ok": bool(ok), "detail": detail})
+            print(f"{'PASS' if ok else 'FAIL'}  {kind:12s} {name}: {detail}", flush=True)
+    bad = [r for r in results if not r["ok"]]
+    if not os.environ.get("ONTOLOGY_NO_REPORT"):
+        os.makedirs(os.path.join(ROOT, "evidence"), exist_ok=True)
+        json.dump(results, open(os.path.join(ROOT, "evidence", "ontology_report.json"), "w"), indent=1)
+        with open(os.path.join(ROOT, "evidence", "ontology_report.md"), "w") as f:
+            f.write("# Ontology check: every claim in ontology/ontology.yml against the warehouse\n\n")
+            f.write(f"{len(results) - len(bad)}/{len(results)} PASS\n\n| Kind | Claim | Result | Detail |\n|---|---|---|---|\n")
+            for r in results:
+                f.write(f"| {r['kind']} | {r['name']} | {'PASS' if r['ok'] else '**FAIL**'} | {r['detail']} |\n")
+    print(f"\n{len(results) - len(bad)}/{len(results)} ontology claims PASS")
+    sys.exit(1 if bad else 0)
+
+
+if __name__ == "__main__":
+    main()

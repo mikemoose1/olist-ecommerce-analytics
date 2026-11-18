@@ -1,0 +1,334 @@
+# Olist ontology: the business things, how they connect, and what every term and metric means.
+# One source of truth. ontology/check.py proves every claim below against the built warehouse
+# (row counts, keys, links, link counts, columns, stage-rule exceptions, metric values).
+# Counts are from the pinned raw snapshot (seeds/raw_file_manifest.csv); a changed count fails the check.
+version: 1
+
+entities:
+  customer:
+    meaning: One real person who buys. Olist's customer_unique_id; the same person keeps it across orders.
+    table: marts.dim_customer
+    key: customer_unique_id
+    one_row_is: one person
+    rows: 96096
+    raw_source: olist_customers_dataset.csv
+    not_this: customer_id is a new id on every order (a receipt number), so it can never show a repeat buyer. 99,441 customer_ids for 99,441 orders.
+    decisions: [D1, C5]
+  order:
+    meaning: One checkout by one customer. It can contain items from several sellers.
+    table: marts.fct_orders
+    key: order_id
+    one_row_is: one order, any status
+    rows: 99441
+    raw_source: olist_orders_dataset.csv
+  item:
+    meaning: One line on an order (one unit of one product from one seller). Quantity 3 shows as 3 items.
+    table: marts.fct_order_items
+    key: [order_id, order_item_id]
+    one_row_is: one item line
+    rows: 112650
+    raw_source: olist_order_items_dataset.csv
+  parcel:
+    meaning: The part of an order that one seller ships (order x seller). A multi-seller order has several parcels but only one recorded delivery date.
+    table: intermediate.int_parcels
+    key: parcel_key
+    one_row_is: one seller's share of one order
+    rows: 100010
+    raw_source: derived from olist_order_items_dataset.csv (order_id, seller_id)
+    scope: supporting   # not in the core list; needed to explain C1
+    decisions: [D2, C1]
+  seller:
+    meaning: A merchant selling through Olist.
+    table: marts.dim_seller
+    key: seller_id
+    one_row_is: one seller
+    rows: 3095
+    raw_source: olist_sellers_dataset.csv
+  product:
+    meaning: A catalog product. Category is the English name (translated, with 2 patched names).
+    table: marts.dim_product
+    key: product_id
+    one_row_is: one product
+    rows: 32951
+    raw_source: olist_products_dataset.csv, product_category_name_translation.csv
+  payment:
+    meaning: One payment method used on an order (an order can be split across a card and vouchers).
+    table: marts.fct_payments
+    key: [order_id, payment_sequential]
+    one_row_is: one payment line
+    rows: 103886
+    raw_source: olist_order_payments_dataset.csv
+  review:
+    meaning: One satisfaction-survey response attached to one order. The same response (review_id) can be attached to several orders.
+    table: marts.fct_reviews
+    key: [review_id, order_id]
+    one_row_is: one survey response on one order
+    rows: 99224
+    raw_source: olist_order_reviews_dataset.csv
+    not_this: review_id alone is not unique; 789 review_ids sit on more than one order.
+    decisions: [D5, C4, C2]
+  location:
+    meaning: A Brazilian zip code prefix (first 5 digits) with one map point and its city and state.
+    table: intermediate.int_geo_zip
+    key: zip_code_prefix
+    one_row_is: one zip prefix
+    rows: 19015
+    raw_source: olist_geolocation_dataset.csv (1,000,163 raw points, median per prefix)
+    decisions: [D7]
+  date:
+    meaning: A calendar day, with its month and whether it is inside the analysis window.
+    table: marts.dim_date
+    key: date_day
+    one_row_is: one day (2016-09-01 to 2018-10-31)
+    rows: 791
+    decisions: [D6]
+
+# from = the "many" side, to = the "one" side. Each from-row points to exactly one to-row (to's key is unique).
+# children_per_parent = [min, max] rows on the from side for each to-row (max null = no limit).
+# orphans = from-rows whose value is not found on the to side; nulls = from-rows with no value.
+relationships:
+  - name: customer places orders
+    from: {entity: order, column: customer_unique_id}
+    to: customer
+    children_per_parent: [1, null]
+    note: Every person has at least one order. Repeat buyers have more.
+  - name: order contains items
+    from: {entity: item, column: order_id}
+    to: order
+    children_per_parent: [0, null]
+    note: 775 orders have no items (canceled or unavailable before items were recorded).
+  - name: order splits into parcels
+    from: {entity: parcel, column: order_id}
+    to: order
+    children_per_parent: [0, null]
+  - name: parcel groups items
+    from: {entity: item, column: parcel_key}
+    to: parcel
+    children_per_parent: [1, null]
+  - name: seller ships parcels
+    from: {entity: parcel, column: seller_id}
+    to: seller
+    children_per_parent: [1, null]
+  - name: seller sells items
+    from: {entity: item, column: seller_id}
+    to: seller
+    children_per_parent: [1, null]
+  - name: product appears on items
+    from: {entity: item, column: product_id}
+    to: product
+    children_per_parent: [1, null]
+  - name: order is paid by payments
+    from: {entity: payment, column: order_id}
+    to: order
+    children_per_parent: [0, null]
+    note: 1 order has no payment row.
+  - name: order receives survey responses
+    from: {entity: review, column: order_id}
+    to: order
+    children_per_parent: [0, null]
+    note: 768 orders have no response; 547 have more than one.
+  - name: order has one chosen review
+    from: {entity: review, column: order_id, where: is_chosen_for_order}
+    to: order
+    children_per_parent: [0, 1]
+    note: C4 picks the latest-answered response, so an order never has two.
+  - name: order ships to a location
+    from: {entity: order, column: ship_to_zip_code_prefix}
+    to: location
+    children_per_parent: [0, null]
+    orphans: 278
+    note: 278 orders ship to a zip prefix missing from Olist's geolocation file. They are kept, with no map point.
+  - name: seller is based at a location
+    from: {entity: seller, column: zip_code_prefix}
+    to: location
+    children_per_parent: [0, null]
+    orphans: 7
+  - name: order is purchased on a date
+    from: {entity: order, column: purchase_date}
+    to: date
+    children_per_parent: [0, null]
+
+# Definition cards. source = schema.table.column (checked to exist). Every card says what does NOT count.
+terms:
+  person:
+    meaning: A real buyer, identified by customer_unique_id. "Customer" in every metric means person.
+    source: marts.dim_customer.customer_unique_id
+    grain: one row per person
+    counterexamples: [customer_id (one per order, never repeats)]
+    decisions: [D1]
+  order_status:
+    meaning: Olist's own status label for an order.
+    source: marts.fct_orders.order_status
+    values: {delivered: 96478, shipped: 1107, canceled: 625, unavailable: 609, invoiced: 314, processing: 301, created: 5, approved: 2}
+    counterexamples: [status 'delivered' with no delivery date (8 orders), status 'canceled' with a delivery date (6 orders); both become delivery_state status_date_conflict]
+  qualifying_order:
+    meaning: An order that counts as a real purchase for repeat metrics. Not canceled or unavailable, and has at least one item.
+    source: marts.fct_orders.is_qualifying_order
+    grain: order
+    counterexamples: [a canceled order, an unavailable order, an order with no items]
+  promised_date:
+    meaning: The delivery date Olist promised the customer at purchase. It is a date with no time.
+    source: marts.fct_orders.estimated_delivery_date
+    grain: order
+    time_rule: calendar day; 0 of 99,441 rows carry a time part
+    decisions: [D4]
+  delivery_state:
+    meaning: Exactly one delivery outcome per order, so status and dates can never disagree silently.
+    source: marts.fct_orders.delivery_state
+    values: {delivered_on_time: 89936, delivered_late: 6534, not_delivered: 2957, status_date_conflict: 14}
+    decisions: [D3]
+  delivered:
+    meaning: Status is delivered AND a customer delivery date exists (delivery_state delivered_on_time or delivered_late).
+    source: marts.fct_orders.delivered_to_customer_at
+    counterexamples: [status delivered but no date (status_date_conflict), a date but status not delivered (status_date_conflict), shipped orders]
+  late:
+    meaning: Delivered on a later calendar day than the promised date. Same-day delivery is on time.
+    source: metrics.metric_late_rate_orders.is_late
+    grain: order
+    population: the late-rate population (see metric late_rate)
+    time_rule: compare cast(delivered_to_customer_at as date) > estimated_delivery_date
+    counterexamples: [delivered at 23:00 on the promised day (on time), a multi-seller order (not judged, C1), an undelivered order past its promise (not judged; it is not delivered)]
+    decisions: [D4, C1]
+  multi_seller_order:
+    meaning: An order with items from two or more sellers (2+ parcels). Its parcels can arrive on different days, but Olist records one delivery date.
+    source: marts.fct_orders.n_parcels
+    grain: order
+    rows: 1278
+    counterexamples: [one seller shipping 3 items (one parcel)]
+    decisions: [D2, C1]
+  analysis_window:
+    meaning: Full months 2017-01 through 2018-08. Edge months are partial and are left out of every rate.
+    source: marts.fct_orders.in_analysis_window
+    decisions: [D6]
+  survey_sent:
+    meaning: The date Olist emailed the satisfaction survey (Olist's data card. review_creation_date is when the survey was SENT, not when the customer wrote). Olist sends it when the order is delivered or when the promised date arrives, whichever comes first.
+    source: marts.fct_reviews.review_created_on
+    time_rule: calendar day (only 85 of 99,224 raw values carry a time)
+  survey_answered:
+    meaning: When the customer submitted the survey answer.
+    source: marts.fct_reviews.review_answered_at
+  chosen_review:
+    meaning: The one response used for an order when it has several. The latest-answered one wins.
+    source: marts.fct_reviews.is_chosen_for_order
+    grain: at most one per order
+    counterexamples: [an earlier answer on the same order]
+    decisions: [C4]
+  survey_sent_before_delivery:
+    meaning: The survey went out on an earlier calendar day than the recorded delivery. Usually because the promised date came first and the order was late. Kept in review metrics.
+    source: marts.fct_reviews.review_before_delivery
+    population: responses on orders with a delivery date (null otherwise)
+    time_rule: review_created_on < cast(delivered_to_customer_at as date)
+    counterexamples: [a survey sent the same day as delivery (not flagged), a response on an undelivered order (null, not false)]
+    decisions: [C2]
+  ship_to_address:
+    meaning: Where THIS order was shipped, as it was at order time. Geography metrics use this.
+    source: marts.fct_orders.ship_to_state
+    counterexamples: [marts.dim_customer.state, which is the person's latest address (C5)]
+    decisions: [C5]
+  payment_recon:
+    meaning: Whether what the customer paid equals items plus freight. match within R$0.01, minor within R$1, else overpaid or underpaid; no_items and no_payment get their own label.
+    source: marts.fct_orders.recon_status
+    grain: order
+
+metrics:
+  late_rate:
+    meaning: Share of judged delivered orders that arrived after the promised day.
+    model: metrics.metric_late_rate
+    semantic_metric: late_rate
+    semantic_parts: [late_orders, judged_orders]
+    grain: order
+    population: delivered orders (delivery_state delivered_on_time or delivered_late) with at least one item, purchased in the analysis window, excluding multi-seller orders (C1)
+    numerator: orders in the population where late is true
+    denominator: orders in the population
+    time_rule: purchase date decides the month and the window; lateness is by calendar day
+    source: metrics.metric_late_rate_orders.is_late
+    counterexamples: [a multi-seller order (1,272 left out of the population, late or not), a shipped order past its promise (not delivered), an order bought 2018-09 (outside window)]
+    decisions: [C1, D4, D6]
+    verified: {numerator: 6518, denominator: 94931, value_pct: 6.87}
+  late_rate_monthly:
+    meaning: The late rate per purchase month, same population and rule as late_rate.
+    model: metrics.metric_late_rate_monthly
+    semantic_metric: late_rate   # group by metric_time__month
+    grain: purchase month
+    source: metrics.metric_late_rate_monthly.year_month
+    counterexamples: [2016-12 or 2018-09 (partial months, never shown)]
+    decisions: [D6]
+  repeat_rate_90d:
+    meaning: HEADLINE. Share of people who came back for another real purchase 1 to 90 days after their first.
+    model: metrics.metric_repeat_rate_90d
+    semantic_metric: repeat_rate_90d
+    semantic_parts: [repeat_people_90d, eligible_people]
+    grain: person
+    population: people whose first qualifying order was at least 90 days before the last qualifying purchase in the data (everyone had a full 90 days)
+    numerator: people with another qualifying order at least 24 hours and at most 90 days after their first
+    denominator: people in the population
+    time_rule: clock starts at the first qualifying purchase timestamp; a second order within 24 hours does not count (C6)
+    source: metrics.metric_repeat_rate_90d_people.repeated
+    counterexamples: [a second order 3 hours after the first (same trip, not a return), a return on day 120, two customer_ids that are the same person (counted once)]
+    decisions: [C6, D1, D8]
+    verified: {numerator: 991, denominator: 77560, value_pct: 1.28}
+  repeat_rate_ever:
+    meaning: Secondary. Share of people with more than one qualifying order, at any time, same-day orders included.
+    model: metrics.metric_repeat_rate_ever
+    grain: person
+    population: people with at least one qualifying order
+    numerator: people with 2+ qualifying orders
+    denominator: people in the population
+    source: marts.dim_customer.n_qualifying_orders
+    counterexamples: [this is NOT the 90-day headline; it counts same-day second orders and has no time limit]
+    decisions: [D8]
+    verified: {numerator: 2887, denominator: 94983, value_pct: 3.04}
+  review_score:
+    meaning: Average stars (1-5) of the chosen review on delivered orders.
+    model: metrics.metric_review_score
+    semantic_metric: review_score
+    semantic_parts: [review_score_sum, reviewed_orders]
+    grain: order (one chosen review each)
+    population: delivered orders with at least one item, purchased in the analysis window, with a review. Multi-seller orders ARE included (their reviews are fully observed).
+    numerator: sum of chosen review scores
+    denominator: orders in the population
+    source: marts.fct_orders.review_score
+    counterexamples: [a second response on the same order (only the chosen one counts), a review on an undelivered order (excluded)]
+    decisions: [C4, C2, R1]
+    verified: {numerator: 397176, denominator: 95560, value_pct: 4.156}
+  late_review_gap_raw:
+    meaning: Average stars of on-time orders minus late orders, in the late-rate population. Not adjusted for anything else.
+    model: metrics.metric_review_score
+    grain: order
+    population: the late-rate population, orders with a review
+    source: metrics.metric_late_rate_orders.review_score
+    counterexamples: [the controlled penalty (-2.012, from a regression) is a different number]
+    verified: {denominator: 94302, value_pct: 2.04}
+
+# Order-stage rules from ontology/order_lifecycle (TLA+ model, checked with TLC). Each rule either holds
+# in the data (expected 0) or is a documented exception with its exact count. The check recounts them.
+stage_rules:
+  - rule: A late order arrived after the promised day
+    holds_in_model: true
+    sql: "select count(*) from marts.fct_orders where delivery_state in ('delivered_on_time','delivered_late') and ((delivery_state = 'delivered_late') <> (cast(delivered_to_customer_at as date) > estimated_delivery_date))"
+    expected: 0
+  - rule: A delivery date exists exactly when the status is delivered
+    holds_in_model: true
+    sql: "select count(*) from marts.fct_orders where (order_status = 'delivered') <> (delivered_to_customer_at is not null)"
+    expected: 14
+    exception: 8 delivered orders have no date and 6 canceled orders have one. They are labeled status_date_conflict and kept out of every delivery metric.
+  - rule: The carrier gets the order after payment approval
+    holds_in_model: true
+    sql: "select count(*) from staging.stg_orders where delivered_to_carrier_at < approved_at"
+    expected: 1359
+    exception: Raw timestamps out of order (often same day). No metric uses approval-to-carrier time.
+  - rule: The customer gets the order after the carrier does
+    holds_in_model: true
+    sql: "select count(*) from staging.stg_orders where delivered_to_customer_at < delivered_to_carrier_at"
+    expected: 23
+    exception: Raw timestamps out of order. Lateness uses only the delivery date and the promise, so it is unaffected.
+  - rule: The survey goes out only when the order is delivered or the promised date arrives
+    holds_in_model: true
+    sql: "select count(*) from marts.fct_reviews r join marts.fct_orders o using (order_id) where r.review_created_on < least(coalesce(cast(o.delivered_to_customer_at as date), o.estimated_delivery_date), o.estimated_delivery_date)"
+    expected: 606
+    exception: 606 of 99,224 responses were sent before both the delivery and the promised date (64 even before the purchase day). Kept; flagged by survey_sent_before_delivery when a delivery date exists.
+  - rule: Nobody answers the survey before the order is delivered
+    holds_in_model: false
+    sql: "select count(*) from marts.fct_reviews r join marts.fct_orders o using (order_id) where cast(r.review_answered_at as date) < cast(o.delivered_to_customer_at as date)"
+    expected: 4367
+    exception: This is not a real rule. The model shows why. When the promised date passes first, the survey goes out and the customer can answer before the parcel arrives. 4,367 delivered orders' responses were answered on an earlier day than delivery, plus responses on orders never delivered.
