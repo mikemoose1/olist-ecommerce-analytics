@@ -17,7 +17,7 @@
 - id: q08
   question: Look only at orders that count toward the late-delivery rate, arrived late, and have a review. What is their mean star rating, to 3 decimals?
 - id: q09
-  question: Considering only states with at least 1,000 orders in the lateness population, which two-letter state code has the largest share of late deliveries?
+  question: Considering only states with at least 1,000 orders in the lateness population, compute each state's own late rate (its late orders divided by its own judged orders, not its share of all late orders). Which two-letter state code has the highest of those rates?
 - id: q10
   question: Across every order Olist has recorded, what percentage was canceled? Give it to 2 decimals.
 

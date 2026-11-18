@@ -14,7 +14,12 @@ setup()       { venv; data; deps; }
 build()       { deps; "$BIN/dbt" build --fail-fast; }
 verify()      { "$BIN/python" verification/verify_headlines.py; ontology; recommendation; }
 recommendation() { "$BIN/python" recommendation/analyze.py; }
-ontology()    { "$BIN/python" ontology/check.py; "$BIN/python" verification/known_answers/selftest.py; }
+ontology()    {
+  "$BIN/python" ontology/check.py                                          # claims + coverage
+  "$BIN/python" verification/known_answers/selftest.py                    # scorer
+  "$BIN/python" verification/known_answers/append_only.py ${APPEND_ONLY_BASE:+--against "$APPEND_ONLY_BASE"}   # questions never change silently
+  "$BIN/python" verification/known_answers/selftest_append_only.py        # ...and that guard can fail
+}
 prove_tests() { "$BIN/python" scripts/prove_tests_fail.py; }
 experiments() { "$BIN/python" experiments/run_experiments.py; }
 docs()        { "$BIN/dbt" docs generate --quiet; "$BIN/python" scripts/lineage_mermaid.py; }

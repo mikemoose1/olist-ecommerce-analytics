@@ -1,6 +1,6 @@
 # Ontology check: every claim in ontology/ontology.yml against the warehouse
 
-109/109 PASS
+188/188 PASS
 
 | Kind | Claim | Result | Detail |
 |---|---|---|---|
@@ -90,6 +90,75 @@
 | column_fact | metrics.metrics_headline.numerator | PASS | type HUGEINT (card HUGEINT); nulls 1 (card 1); null exactly when [metric_name = 'late_review_gap_raw']: 0 violations |
 | column_fact | metrics.metrics_headline.denominator | PASS | type BIGINT (card BIGINT); nulls 0 (card 0) |
 | column_fact | metrics.metrics_headline.value_pct | PASS | type DOUBLE (card DOUBLE); nulls 0 (card 0) |
+| column_fact | marts.dim_customer.zip_code_prefix | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0) |
+| column_fact | marts.dim_customer.city | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0) |
+| column_fact | marts.dim_customer.state | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0) |
+| column_fact | marts.dim_customer.lat | PASS | type DOUBLE (card DOUBLE); nulls 269 (card 269) |
+| column_fact | marts.dim_customer.lng | PASS | type DOUBLE (card DOUBLE); nulls 269 (card 269) |
+| column_fact | marts.dim_customer.first_order_at_any_status | PASS | type TIMESTAMP (card TIMESTAMP); nulls 0 (card 0) |
+| column_fact | marts.dim_date.month_start | PASS | type DATE (card DATE); nulls 0 (card 0); holds [month_start = date_trunc('month', date_day)]: 0 violations |
+| column_fact | marts.dim_date.year_month | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0); holds [year_month = strftime(date_day, '%Y-%m')]: 0 violations |
+| column_fact | marts.dim_date.day_of_week | PASS | type BIGINT (card BIGINT); nulls 0 (card 0); holds [day_of_week between 0 and 6]: 0 violations |
+| column_fact | marts.dim_date.in_analysis_window | PASS | type BOOLEAN (card BOOLEAN); nulls 0 (card 0) |
+| column_fact | marts.dim_product.product_category_name | PASS | type VARCHAR (card VARCHAR); nulls 610 (card 610) |
+| column_fact | marts.dim_product.category | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0) |
+| column_fact | marts.dim_seller.city | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0) |
+| column_fact | marts.dim_seller.state | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0) |
+| column_fact | marts.dim_seller.lat | PASS | type DOUBLE (card DOUBLE); nulls 7 (card 7) |
+| column_fact | marts.dim_seller.lng | PASS | type DOUBLE (card DOUBLE); nulls 7 (card 7) |
+| column_fact | marts.fct_order_items.shipping_limit_at | PASS | type TIMESTAMP (card TIMESTAMP); nulls 0 (card 0) |
+| column_fact | marts.fct_order_items.price | PASS | type DECIMAL(12,2) (card DECIMAL(12,2)); nulls 0 (card 0); holds [price > 0]: 0 violations |
+| column_fact | marts.fct_order_items.freight_value | PASS | type DECIMAL(12,2) (card DECIMAL(12,2)); nulls 0 (card 0); holds [freight_value >= 0]: 0 violations |
+| column_fact | marts.fct_orders.delivery_evidence | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0) |
+| column_fact | marts.fct_orders.delivered_to_carrier_at | PASS | type TIMESTAMP (card TIMESTAMP); nulls 1783 (card 1783) |
+| column_fact | marts.fct_orders.last_shipping_limit_at | PASS | type TIMESTAMP (card TIMESTAMP); nulls 775 (card 775); null exactly when [n_items = 0]: 0 violations |
+| column_fact | marts.fct_orders.days_past_promise | PASS | type BIGINT (card BIGINT); nulls 2965 (card 2965); null exactly when [delivered_to_customer_at is null]: 0 violations; holds [days_past_promise is null or days_past_promise = date_diff('day', estimated_delivery_date, cast(delivered_to_customer_at as date))]: 0 violations |
+| column_fact | marts.fct_orders.promised_days | PASS | type BIGINT (card BIGINT); nulls 0 (card 0); holds [promised_days = date_diff('day', purchase_date, estimated_delivery_date)]: 0 violations |
+| column_fact | marts.fct_orders.amount_due | PASS | type DECIMAL(38,2) (card DECIMAL(38,2)); nulls 775 (card 775); null exactly when [n_items = 0]: 0 violations |
+| column_fact | marts.fct_orders.amount_paid | PASS | type DECIMAL(38,2) (card DECIMAL(38,2)); nulls 1 (card 1) |
+| column_fact | marts.fct_orders.paid_minus_due | PASS | type DECIMAL(38,2) (card DECIMAL(38,2)); nulls 776 (card 776); holds [paid_minus_due is null or paid_minus_due = amount_paid - amount_due]: 0 violations |
+| column_fact | marts.fct_orders.max_installments | PASS | type INTEGER (card INTEGER); nulls 1 (card 1) |
+| column_fact | marts.fct_orders.ship_to_city | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0) |
+| column_fact | marts.fct_orders.ship_to_lat | PASS | type DOUBLE (card DOUBLE); nulls 279 (card 279) |
+| column_fact | marts.fct_orders.ship_to_lng | PASS | type DOUBLE (card DOUBLE); nulls 279 (card 279) |
+| column_fact | marts.fct_orders.review_id | PASS | type VARCHAR (card VARCHAR); nulls 768 (card 768); null exactly when [review_score is null]: 0 violations |
+| column_fact | marts.fct_orders.review_before_delivery | PASS | type BOOLEAN (card BOOLEAN); nulls 3611 (card 3611) |
+| column_fact | marts.fct_payments.payment_type | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0) |
+| column_fact | marts.fct_payments.payment_installments | PASS | type INTEGER (card INTEGER); nulls 0 (card 0) |
+| column_fact | marts.fct_payments.payment_value | PASS | type DECIMAL(12,2) (card DECIMAL(12,2)); nulls 0 (card 0); holds [payment_value >= 0]: 0 violations |
+| column_fact | marts.fct_reviews.review_score | PASS | type INTEGER (card INTEGER); nulls 0 (card 0); holds [review_score between 1 and 5]: 0 violations |
+| column_fact | marts.fct_reviews.review_created_at | PASS | type TIMESTAMP (card TIMESTAMP); nulls 0 (card 0) |
+| column_fact | metrics.metric_late_rate.metric_name | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0) |
+| column_fact | metrics.metric_late_rate.rule | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0) |
+| column_fact | metrics.metric_late_rate.numerator | PASS | type BIGINT (card BIGINT); nulls 0 (card 0) |
+| column_fact | metrics.metric_late_rate.denominator | PASS | type BIGINT (card BIGINT); nulls 0 (card 0) |
+| column_fact | metrics.metric_late_rate.value_pct | PASS | type DOUBLE (card DOUBLE); nulls 0 (card 0) |
+| column_fact | metrics.metric_late_rate_monthly.numerator | PASS | type BIGINT (card BIGINT); nulls 0 (card 0) |
+| column_fact | metrics.metric_late_rate_monthly.denominator | PASS | type BIGINT (card BIGINT); nulls 0 (card 0) |
+| column_fact | metrics.metric_late_rate_monthly.value_pct | PASS | type DOUBLE (card DOUBLE); nulls 0 (card 0) |
+| column_fact | metrics.metric_late_rate_orders.order_id | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0) |
+| column_fact | metrics.metric_late_rate_orders.purchase_date | PASS | type DATE (card DATE); nulls 0 (card 0) |
+| column_fact | metrics.metric_late_rate_orders.delivery_state | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0) |
+| column_fact | metrics.metric_late_rate_orders.delivery_evidence | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0) |
+| column_fact | metrics.metric_late_rate_orders.ship_to_state | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0) |
+| column_fact | metrics.metric_late_rate_orders.review_before_delivery | PASS | type BOOLEAN (card BOOLEAN); nulls 629 (card 629) |
+| column_fact | metrics.metric_repeat_rate_90d.metric_name | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0) |
+| column_fact | metrics.metric_repeat_rate_90d.rule | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0) |
+| column_fact | metrics.metric_repeat_rate_90d.numerator | PASS | type BIGINT (card BIGINT); nulls 0 (card 0) |
+| column_fact | metrics.metric_repeat_rate_90d.denominator | PASS | type BIGINT (card BIGINT); nulls 0 (card 0) |
+| column_fact | metrics.metric_repeat_rate_90d.value_pct | PASS | type DOUBLE (card DOUBLE); nulls 0 (card 0) |
+| column_fact | metrics.metric_repeat_rate_ever.metric_name | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0) |
+| column_fact | metrics.metric_repeat_rate_ever.rule | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0) |
+| column_fact | metrics.metric_repeat_rate_ever.numerator | PASS | type BIGINT (card BIGINT); nulls 0 (card 0) |
+| column_fact | metrics.metric_repeat_rate_ever.denominator | PASS | type BIGINT (card BIGINT); nulls 0 (card 0) |
+| column_fact | metrics.metric_repeat_rate_ever.value_pct | PASS | type DOUBLE (card DOUBLE); nulls 0 (card 0) |
+| column_fact | metrics.metric_review_score.metric_name | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0) |
+| column_fact | metrics.metric_review_score.rule | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0) |
+| column_fact | metrics.metric_review_score.numerator | PASS | type HUGEINT (card HUGEINT); nulls 1 (card 1) |
+| column_fact | metrics.metric_review_score.denominator | PASS | type BIGINT (card BIGINT); nulls 0 (card 0) |
+| column_fact | metrics.metric_review_score.value_pct | PASS | type DOUBLE (card DOUBLE); nulls 0 (card 0) |
+| column_fact | metrics.metrics_headline.rule | PASS | type VARCHAR (card VARCHAR); nulls 0 (card 0) |
+| column_fact | metrics.metrics_headline.is_headline | PASS | type BOOLEAN (card BOOLEAN); nulls 0 (card 0) |
 | fact | People with a qualifying order | PASS | count=94983 (card 94983) |
 | fact | People whose first qualifying order is too recent for a full 90 days | PASS | count=17423 (card 17423) |
 | fact | The repeat cohort is exactly the people whose first qualifying order is old enough | PASS | count=0 (card 0) |
@@ -97,6 +166,11 @@
 | fact | first_order_at is the purchased_at of the person's seq = 1 order | PASS | count=0 (card 0) |
 | fact | Each person has exactly one seq = 1 order, so joining the cohort to it gives one row per person (the first-order state is unambiguous) | PASS | count=77560 (card 77560) |
 | fact | The sequence number follows purchased_at, so seq = 1 is the person's earliest qualifying order | PASS | count=0 (card 0) |
+| fact | Orders with more than one survey response | PASS | count=547 (card 547) |
+| fact | Survey responses (review_id) attached to more than one order | PASS | count=789 (card 789) |
+| fact | Survey responses sent on an earlier day than the delivery | PASS | count=5127 (card 5127) |
+| fact | Of those, responses sent on or after the promised date | PASS | count=4713 (card 4713) |
+| fact | Of those, responses on orders whose delivery_state is delivered_late | PASS | count=4777 (card 4777) |
 | fact | Pairs of one person's qualifying orders placed in the same second | PASS | count=281 (card 281) |
 | fact | review_score on the order equals the score of the chosen response, and an order with no chosen response has a null score | PASS | count=0 (card 0) |
 | stage_rule | A late order arrived after the promised day | PASS | count=0 (card 0) |
@@ -106,6 +180,11 @@
 | stage_rule | The survey goes out only when the order is delivered or the promised date arrives | PASS | count=606 (card 606) |
 | stage_rule | The survey goes out on or after the purchase day | PASS | count=64 (card 64) |
 | stage_rule | Nobody answers the survey before the order is delivered | PASS | count=4367 (card 4367) |
+| coverage | allowlist reasons | PASS | 6 exemptions, each with a reason |
+| coverage | tables | PASS | 16 tables; undescribed: none |
+| coverage | columns | PASS | 127 columns; undescribed: none |
+| coverage | numbers in ONTOLOGY.md | PASS | 41 numbers shown; not a checked value in ontology.yml: none |
+| coverage | allowlist is current | PASS | entries matching nothing: none |
 | metric | late_rate | PASS | table 6518/94931=6.87 (card 6518/94931=6.87); MetricFlow 6518/94931=0.068660 -> 6.87 |
 | metric | repeat_rate_90d | PASS | table 991/77560=1.28 (card 991/77560=1.28); MetricFlow 991/77560=0.012777 -> 1.28 |
 | metric | repeat_rate_ever | PASS | table 2887/94983=3.04 (card 2887/94983=3.04) |

@@ -1,0 +1,12 @@
+# Every change to an adopted question (wording, reworded twin, key SQL) is recorded here with a reason.
+# append_only.py checks the chain old_sha -> new_sha from questions_baseline.json. Do not edit or delete entries.
+- id: q09
+  field: reworded
+  old_sha: f35747a579bb11d4
+  new_sha: 408c6a1a85538110
+  date: 2026-11-17
+  gap: G6
+  reason: >-
+    Round-2 reader A flagged "largest share of late deliveries" as ambiguous: it can mean a state's own late rate
+    or that state's share of all late orders. The intended meaning is the late rate, so the wording now defines it.
+    Key CE is unchanged (the key SQL did not change); the original wording already said "highest late-delivery rate".
