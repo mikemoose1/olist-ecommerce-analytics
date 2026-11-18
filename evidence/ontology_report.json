@@ -1170,6 +1170,54 @@
   "detail": "count=4367 (card 4367)"
  },
  {
+  "kind": "model_link",
+  "name": "A late order arrived after the promised day",
+  "ok": true,
+  "detail": "invariant LateMeansArrivedAfterPromise: defined=True in cfg=True report says holds=True; ONTOLOGY.md Model column shows 'holds', card says 'holds'"
+ },
+ {
+  "kind": "model_link",
+  "name": "A delivery date exists exactly when the status is delivered",
+  "ok": true,
+  "detail": "no invariant in the model; ONTOLOGY.md Model column shows 'not modeled', card says 'not modeled'"
+ },
+ {
+  "kind": "model_link",
+  "name": "The carrier gets the order after payment approval",
+  "ok": true,
+  "detail": "no invariant in the model; ONTOLOGY.md Model column shows 'not modeled', card says 'not modeled'"
+ },
+ {
+  "kind": "model_link",
+  "name": "The customer gets the order after the carrier does",
+  "ok": true,
+  "detail": "no invariant in the model; ONTOLOGY.md Model column shows 'not modeled', card says 'not modeled'"
+ },
+ {
+  "kind": "model_link",
+  "name": "The survey goes out only when the order is delivered or the promised date arrives",
+  "ok": true,
+  "detail": "invariant SurveyFollowsPolicy: defined=True in cfg=True report says holds=True; ONTOLOGY.md Model column shows 'holds', card says 'holds'"
+ },
+ {
+  "kind": "model_link",
+  "name": "The survey goes out on or after the purchase day",
+  "ok": true,
+  "detail": "no invariant in the model; ONTOLOGY.md Model column shows 'not modeled', card says 'not modeled'"
+ },
+ {
+  "kind": "model_link",
+  "name": "Nobody answers the survey before the order is delivered",
+  "ok": true,
+  "detail": "invariant NoReviewBeforeDelivery: defined=True in cfg=True report says breaks=True; ONTOLOGY.md Model column shows '**breaks**', card says '**breaks**'"
+ },
+ {
+  "kind": "model_link",
+  "name": "every invariant TLC checks backs a rule",
+  "ok": true,
+  "detail": "invariants in the cfg that no rule claims: none"
+ },
+ {
   "kind": "coverage",
   "name": "allowlist reasons",
   "ok": true,
@@ -1191,7 +1239,7 @@
   "kind": "coverage",
   "name": "numbers in ONTOLOGY.md",
   "ok": true,
-  "detail": "41 numbers shown; not a checked value in ontology.yml: none"
+  "detail": "60 numbers each bound to the ontology.yml value they state; problems: none"
  },
  {
   "kind": "coverage",

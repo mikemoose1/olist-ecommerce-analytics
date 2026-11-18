@@ -292,6 +292,30 @@ CASES = [
     ("Coverage: a number shown in ONTOLOGY.md that ontology.yml does not hold fails",
      "ontology:coverage numbers in ONTOLOGY.md",
      {"md_append": "\nOrders shipped in 2017: 98,765.\n"}),
+    ("Coverage (S5): swapping the customer count for the late-rate denominator fails, though 94,931 exists elsewhere in the YAML",
+     "ontology:coverage numbers in ONTOLOGY.md",
+     {"md_replace": [("96,096<!--n:entities.customer.rows-->", "94,931<!--n:entities.customer.rows-->")]}),
+    ("Coverage (S5): swapping the late rate for the review average fails, though 4.156 exists elsewhere in the YAML",
+     "ontology:coverage numbers in ONTOLOGY.md",
+     {"md_replace": [("6.87<!--n:metrics.late_rate.verified.value_pct-->", "4.156<!--n:metrics.late_rate.verified.value_pct-->")]}),
+    ("Coverage (S5): a number with its marker removed fails",
+     "ontology:coverage numbers in ONTOLOGY.md",
+     {"md_replace": [("<!--n:entities.order.rows-->", "")]}),
+    ("Coverage (S5): a marker that points at nothing fails",
+     "ontology:coverage numbers in ONTOLOGY.md",
+     {"md_replace": [("<!--n:entities.order.rows-->", "<!--n:entities.order.no_such_value-->")]}),
+    ("Coverage (S5): a marker that follows no number fails",
+     "ontology:coverage numbers in ONTOLOGY.md",
+     {"md_append": "\nSome words<!--n:entities.order.rows--> with no number.\n"}),
+    ("Model (S6): the Model column says 'holds' for a rule no invariant checks (the reviewer's exact case)",
+     "ontology:model_link The carrier gets the order after payment approval",
+     {"md_replace": [("| The carrier gets the order after payment approval | not modeled |", "| The carrier gets the order after payment approval | holds |")]}),
+    ("Model (S6): a card names an invariant the TLA+ model does not define",
+     "ontology:model_link A delivery date exists exactly when the status is delivered",
+     {"yml_replace": [("    model: not_modeled\n    sql: \"select count(*) from marts.fct_orders where (order_status = 'delivered')", "    model: {invariant: NoSuchInvariant, result: holds}\n    sql: \"select count(*) from marts.fct_orders where (order_status = 'delivered')")]}),
+    ("Model (S6): a card claims a result that TLC's report does not record",
+     "ontology:model_link A late order arrived after the promised day",
+     {"yml_replace": [("{invariant: LateMeansArrivedAfterPromise, result: holds}", "{invariant: LateMeansArrivedAfterPromise, result: breaks}")]}),
     ("Coverage: a number shown in ONTOLOGY.md that ontology.yml only mentions in prose fails",
      "ontology:coverage numbers in ONTOLOGY.md",
      {"yml_replace": [("    expected: 547\n", "    expected: 546\n")]}),
@@ -329,6 +353,9 @@ def edited_docs(mut, work):
     for old, new in mut.get("yml_replace", []):      # edit a value in the copy of ontology.yml
         assert old in yml, f"no {old!r} in ontology.yml"
         yml = yml.replace(old, new, 1)
+    for old, new in mut.get("md_replace", []):       # edit the prose in the copy of ONTOLOGY.md
+        assert old in md, f"no {old!r} in ONTOLOGY.md"
+        md = md.replace(old, new, 1)
     md += mut.get("md_append", "")
     allow += mut.get("allowlist_append", "")
     env = {}
@@ -391,7 +418,7 @@ def main():
         b_rc, b_res = run_tests(selector, base_db, raw_clean)
         mut_db = os.path.join(work, "mutant.duckdb"); shutil.copy(DB, mut_db)
         raw_mut = raw_copy(mut.get("raw_edit"))
-        doc_env = edited_docs(mut, work) if {"yml_drop_card", "yml_replace", "md_append", "allowlist_append"} & set(mut) else None
+        doc_env = edited_docs(mut, work) if {"yml_drop_card", "yml_replace", "md_replace", "md_append", "allowlist_append"} & set(mut) else None
         if "sql" in mut:
             con = duckdb.connect(mut_db)
             for s in mut["sql"]:
@@ -419,7 +446,7 @@ def main():
         f.write("| Rule | Tests | Known-bad rows injected | Baseline | Mutant (failing rows) | Verdict |\n|---|---|---|---|---|---|\n")
         for r in report:
             m = r["mutation"]
-            mut = m.get("sql") or [f"{k}: {m[k]}" for k in ("raw_edit", "yml_drop_card", "yml_replace", "md_append", "allowlist_append") if k in m]
+            mut = m.get("sql") or [f"{k}: {m[k]}" for k in ("raw_edit", "yml_drop_card", "yml_replace", "md_replace", "md_append", "allowlist_append") if k in m]
             f.write(f"| {r['rule']} | `{r['selector']}` | {'<br>'.join('`'+m.replace('|','\\|')+'`' for m in mut)} | "
                     f"{', '.join(s for _, s, _ in r['baseline'])} | {', '.join(f'{s} ({n})' for _, s, n in r['mutant'])} | **{r['verdict']}** |\n")
     bad = [r for r in report if r["verdict"] != "PROVEN"]

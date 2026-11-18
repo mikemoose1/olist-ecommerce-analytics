@@ -4,7 +4,7 @@
 
 Olist is a Brazilian online marketplace. This project takes about 99,000 of its real orders from 2016 to 2018 and turns nine messy spreadsheets into a set of organized, checked tables that a business can trust. The data had several traps. Every order got a new customer ID, so repeat buyers looked like strangers. Orders with several sellers were marked delivered on one date even though the packages arrive separately. Some review surveys went out, and some were answered, before the recorded delivery, because Olist emails the survey on the promised date when the order is late.
 
-The main finding is that late delivery is the biggest driver of bad reviews. Orders that arrive late score about 2 stars lower, and only 6.87% of orders are late. Only 1.28% of customers place a second order within 90 days.
+The main finding is that late delivery goes with much worse reviews. Orders that arrive late score about 2 stars lower than on-time orders, and only 6.87% of orders are late. That is a comparison, not proof of cause: the project did not test any other driver of bad reviews. Only 1.28% of customers place a second order within 90 days.
 
 [recommendation/MEMO.md](recommendation/MEMO.md) turns that into a decision for an operations manager: what late delivery costs, where it clusters, and two changes Olist could test. The cost shows up in ratings. A late first order shows no clear effect on whether people come back.
 
@@ -43,7 +43,7 @@ make            # or, without make:  bash scripts/reproduce.sh
 That one command (it starts a script that does everything below) creates `.venv`, downloads the nine CSVs from the
 [Hugging Face mirror](https://huggingface.co/datasets/bulutttt/olist-raw-data) and checks their sha256, builds and tests every layer
 (`dbt build`), reconciles the headline numbers, and generates dbt docs plus [the lineage graph](docs/LINEAGE.md).
-About a minute on a laptop. Needs Python 3.12+, `curl`, and network access.
+About a minute on a laptop. Needs Python 3.12+ (with the `venv` module; on Ubuntu or Debian install `python3-venv`), `curl`, and network access.
 
 ## Headline numbers
 
@@ -134,7 +134,7 @@ ontology/                                     ontology.yml, check.py, ONTOLOGY.m
 tests/business_rules/                         singular business-rule tests
 seeds/                                        raw file hashes, category translation patch
 scripts/                                      reproduce.sh, fetch_data.sh, prove_tests_fail.py, doctor.sh, lineage_mermaid.py
-verification/                                 verify_headlines.py + first-pass baseline; known_answers/ (10-question test for an agent)
+verification/                                 verify_headlines.py + first-pass baseline; known_answers/ (24-question test for an agent)
 experiments/                                  run_experiments.py + results.json
 recommendation/                               MEMO.md, PLAN.md, analyze.py (late-delivery cost and the tests to run)
 evidence/                                     latest verification, mutation and ontology reports
