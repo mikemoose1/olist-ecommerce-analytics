@@ -1,0 +1,233 @@
+# KPI tree for the data story. Reader: an Olist operations manager deciding where to reduce late deliveries.
+# Grain of every measured node: one judged order = a single-seller order bought 2017-01..2018-08 and delivered
+# (the late-rate population, ontology metrics.late_rate). `judged` below is that population, built from marts.fct_orders.
+#
+# edge (how the node relates to its parent):
+#   sum           the parent equals the sum of this node's rows (a breakdown); story/kpi_tree.py checks it exactly
+#   product       the parent equals the product of its product children; checked within `tol`
+#   component     one of the parent's separately measured parts (different units, not added)
+#   association   linked to the parent only by a matched comparison or text evidence; drawn dashed, "association only"
+#   not_answerable the data has no column for it (reason says why); drawn grey
+# value: `sql` (a scalar over `judged`, marts.fct_orders or marts.fct_reviews), `rows` (a breakdown: segment, value), or
+#        `fact` (a key path in evidence/recommendation_report.json, for matched estimates that analyze.py computes).
+judged_sql: >
+  select *, cast(delivered_to_customer_at as date) > estimated_delivery_date as is_late
+  from marts.fct_orders
+  where order_status = 'delivered' and delivered_to_customer_at is not null and n_items > 0 and n_parcels = 1
+    and purchase_date between date '2017-01-01' and date '2018-08-31'
+nodes:
+  - id: cost
+    label: Cost of late delivery to Olist
+    counts: two parts measured separately, ratings at risk and sales that went through a late delivery (plus a repeat-revenue part the data cannot tell from zero)
+    claims: [metrics.late_rate, metrics.late_review_gap_raw]
+    answerable: "yes"
+  - id: low_star_excess
+    parent: cost
+    edge: component
+    label: Extra 1-2 star reviews linked to lateness
+    unit: reviews (20-month window)
+    fact: money.low_star_reviews.excess_from_lateness.mid
+    counts: reviewed late orders times the matched gap in the share of 1-2 star reviews
+    denominator: none (a count)
+    why_moves: more late orders, or a wider star gap between late orders and on-time look-alikes
+    threshold: above 10% of all 1-2 star reviews, lateness is a top ratings problem worth a funded test
+    models: [marts.fct_orders, marts.fct_reviews]
+    claims: [terms.chosen_review, terms.order_review_score, metrics.late_review_gap_raw]
+    answerable: "yes"
+  - id: late_reviewed
+    parent: low_star_excess
+    edge: product
+    label: Late orders with a review
+    unit: orders
+    sql: select count(*) from judged where is_late and review_score is not null
+    counts: judged late orders whose chosen review has a score
+    models: [marts.fct_orders]
+    claims: [terms.late, terms.chosen_review]
+    answerable: "yes"
+  - id: excess_low_star_share
+    parent: low_star_excess
+    edge: product
+    label: Matched gap in 1-2 star share (late minus look-alike)
+    unit: share
+    fact: low_star.all.matched.effect
+    ci: [low_star.all.matched.ci]
+    counts: late orders' 1-2 star share minus that of on-time orders in the same state, category, freight band and month
+    why_moves: product and seller quality differences the match cannot see would move it too
+    models: [marts.fct_orders]
+    claims: [metrics.late_review_gap_raw]
+    answerable: "association only"
+    association: true
+  - id: star_penalty
+    parent: excess_low_star_share
+    edge: association
+    label: Star penalty of a late order (matched)
+    unit: stars
+    fact: stars.all.matched.effect
+    ci: [stars.all.matched.ci]
+    counts: average stars of late orders minus matched on-time look-alikes
+    threshold: a penalty under 0.5 star would make ratings a weak reason to act
+    models: [marts.fct_orders]
+    claims: [metrics.review_score, metrics.late_review_gap_raw]
+    answerable: "association only"
+  - id: survey_before_share
+    parent: star_penalty
+    edge: association
+    label: Late orders surveyed before the parcel arrived
+    unit: share of reviewed late orders
+    sql: select avg(review_before_delivery::int) from judged where is_late and review_score is not null
+    counts: reviewed late orders whose survey went out on an earlier day than the delivery
+    why_moves: Olist sends the survey on the promised date when the parcel has not arrived
+    models: [marts.fct_orders]
+    claims: [terms.survey_sent_before_delivery]
+    answerable: "yes"
+  - id: comment_not_arrived_share
+    parent: star_penalty
+    edge: association
+    label: Late-order comments about delay or non-arrival
+    unit: share of late orders with a comment
+    sql: >
+      select avg(regexp_matches(strip_accents(lower(review_comment_message)), '{{NOT_ARRIVED}}')::int)
+      from judged j join marts.fct_reviews r on r.order_id = j.order_id and r.is_chosen_for_order
+      where j.is_late and r.review_comment_message is not null
+    counts: chosen-review comments on late orders that mention not receiving the product, delay or the deadline (Portuguese keyword rule)
+    why_moves: more parcels still on the way when the survey arrives
+    models: [marts.fct_reviews]
+    claims: [columns.marts.fct_reviews.review_comment_message, terms.chosen_review]
+    answerable: "yes (text evidence)"
+  - id: late_sales
+    parent: cost
+    edge: component
+    label: Sales on late orders
+    unit: R$ (20-month window)
+    sql: select sum(amount_paid) from judged where is_late
+    fact_check: money.late_order_gmv_window
+    counts: what customers paid for judged late orders; this money went through a late delivery, it was not lost
+    threshold: none on its own; it sizes the exposure, not a loss
+    models: [marts.fct_orders]
+    claims: [columns.marts.fct_orders.amount_paid, terms.late]
+    answerable: "yes"
+  - id: late_orders
+    parent: late_sales
+    edge: product
+    label: Late orders
+    unit: orders
+    sql: select count(*) from judged where is_late
+    counts: judged orders delivered on a later calendar day than promised
+    denominator: none (a count)
+    models: [marts.fct_orders]
+    claims: [terms.late, metrics.late_rate]
+    answerable: "yes"
+  - id: avg_late_order_value
+    parent: late_sales
+    edge: product
+    label: Average late-order value
+    unit: R$
+    sql: select avg(amount_paid) from judged where is_late
+    models: [marts.fct_orders]
+    claims: [columns.marts.fct_orders.amount_paid]
+    answerable: "yes"
+  - id: judged_orders
+    parent: late_orders
+    edge: product
+    label: Judged orders
+    unit: orders
+    sql: select count(*) from judged
+    models: [marts.fct_orders]
+    claims: [metrics.late_rate, terms.analysis_window, terms.multi_seller_order]
+    answerable: "yes"
+  - id: late_rate
+    parent: late_orders
+    edge: product
+    label: Late rate
+    unit: share
+    sql: select avg(is_late::int) from judged
+    denominator: judged orders
+    why_moves: carrier delays, seller handoffs after ship-by, promises too short for the route or season
+    threshold: a segment at 2x the overall rate that holds 10% or more of late orders is worth targeting
+    models: [marts.fct_orders]
+    claims: [metrics.late_rate, terms.late]
+    answerable: "yes"
+  - id: late_by_state
+    parent: late_orders
+    edge: sum
+    label: Late orders by ship-to state
+    unit: orders
+    rows: select ship_to_state, count(*) from judged where is_late group by 1 order by 2 desc, 1
+    models: [marts.fct_orders]
+    claims: [terms.ship_to_address]
+    answerable: "yes"
+  - id: late_by_month
+    parent: late_orders
+    edge: sum
+    label: Late orders by purchase month
+    unit: orders
+    rows: select strftime(purchase_date, '%Y-%m'), count(*) from judged where is_late group by 1 order by 1
+    models: [marts.fct_orders]
+    claims: [metrics.late_rate_monthly]
+    answerable: "yes"
+  - id: late_by_handoff
+    parent: late_orders
+    edge: sum
+    label: Late orders by seller handoff
+    unit: orders
+    rows: >
+      select case when delivered_to_carrier_at is null then 'handoff not recorded'
+                  when delivered_to_carrier_at > last_shipping_limit_at then 'handed over after ship-by'
+                  else 'handed over on time' end, count(*)
+      from judged where is_late group by 1 order by 2 desc, 1
+    why_moves: sellers missing their ship-by date
+    threshold: if late handoffs are 20% or more of late orders and run late at 2x the on-time-handoff rate, test seller reminders
+    models: [marts.fct_orders]
+    claims: [columns.marts.fct_orders.delivered_to_carrier_at, columns.marts.fct_orders.last_shipping_limit_at]
+    answerable: "yes"
+  - id: late_by_seller
+    parent: late_orders
+    edge: sum
+    label: Late orders by seller
+    unit: orders
+    rows: >
+      select i.seller_id, count(*) from judged j
+      join (select distinct order_id, seller_id from marts.fct_order_items) i on i.order_id = j.order_id
+      where j.is_late group by 1 order by 2 desc, 1
+    counts: each judged order has exactly one seller (single-parcel orders), so sellers split late orders without overlap.
+      Category is not a breakdown here because one order can hold items from several categories.
+    models: [marts.fct_orders, marts.fct_order_items]
+    claims: [terms.multi_seller_order]
+    answerable: "yes"
+  - id: lost_repeat_sales
+    parent: cost
+    edge: association
+    label: Lost repeat sales per year
+    unit: R$ per year
+    fact: money.lost_repeat_gmv_per_year.mid
+    ci: [money.lost_repeat_gmv_per_year.low, money.lost_repeat_gmv_per_year.high]
+    counts: late first orders per year times the matched drop in 90-day repeat rate times a repeat buyer's 90-day spend
+    threshold: worth a retention budget only if the repeat drop's range excludes zero; it does not
+    models: [marts.fct_orders, marts.dim_customer]
+    claims: [metrics.repeat_rate_90d, terms.repeat_return]
+    answerable: "association only"
+  - id: commission
+    parent: cost
+    edge: not_answerable
+    label: Olist commission lost
+    reason: no commission or take-rate column in the data
+    answerable: "no"
+  - id: star_sales_value
+    parent: low_star_excess
+    edge: not_answerable
+    label: Sales value of one star
+    reason: no traffic, ranking or conversion data to price a star
+    answerable: "no"
+  - id: carrier
+    parent: late_rate
+    edge: not_answerable
+    label: Which carrier was late
+    reason: no carrier id in the data
+    answerable: "no"
+  - id: multi_seller_arrival
+    parent: late_rate
+    edge: not_answerable
+    label: Lateness of multi-seller orders
+    reason: one delivery date for several parcels, so these orders are left out of the late rate (decision C1)
+    claims: [terms.multi_seller_order]
+    answerable: "no"
