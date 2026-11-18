@@ -36,18 +36,18 @@ flowchart TD
   late_by_month["Late orders by purchase month<br/>6,518<br/>top: 2018-03 1,324, 2018-02 925, 2017-11 902 (of 20)"]
   late_by_handoff["Late orders by seller handoff<br/>6,518<br/>top: handed over on time 4,708, handed over after ship-by 1,809, handoff not recorded 1 (of 3)"]
   late_by_seller["Late orders by seller<br/>6,518<br/>top: 4a3ca931 168, 1f50f920 124, 4869f7a5 118 (of 1272)"]
-  lost_repeat_sales["Lost repeat sales per year<br/>R$ 645 [0 to 3,208]"]
+  lost_repeat_sales["Lost repeat sales per year (low end floored at 0)<br/>R$ 645 [0 to 3,208]"]
   commission["Olist commission lost<br/><i>not answerable</i>"]
   star_sales_value["Sales value of one star<br/><i>not answerable</i>"]
   carrier["Which carrier was late<br/><i>not answerable</i>"]
   multi_seller_arrival["Lateness of multi-seller orders<br/><i>not answerable</i>"]
-  cost -->|part of| low_star_excess
+  cost -.->|"part of, association only"| low_star_excess
   low_star_excess -->|"= x"| late_reviewed
   low_star_excess -.->|"= x, association only"| excess_low_star_share
   excess_low_star_share -.->|association only| star_penalty
   star_penalty -.->|association only| survey_before_share
   star_penalty -.->|association only| comment_not_arrived_share
-  cost -->|part of| late_sales
+  cost -->|"exposed, not lost"| late_sales
   late_sales -->|"= x"| late_orders
   late_sales -->|"= x"| avg_late_order_value
   late_orders -->|"= x"| judged_orders
@@ -64,13 +64,13 @@ flowchart TD
   classDef na fill:#eee,stroke:#999,color:#777,stroke-dasharray:4 3
   classDef assoc stroke-dasharray:4 3
   class commission,star_sales_value,carrier,multi_seller_arrival na
-  class excess_low_star_share,star_penalty,survey_before_share,comment_not_arrived_share,lost_repeat_sales assoc
+  class low_star_excess,excess_low_star_share,star_penalty,survey_before_share,comment_not_arrived_share,lost_repeat_sales assoc
 ```
 
 | Node | Value | Edge to parent | Grain | Counts | Denominator | Why it moves | Threshold that changes the action | Model / metric | Ontology claims | Answerable |
 |---|---|---|---|---|---|---|---|---|---|---|
 | **Cost of late delivery to Olist** (`cost`) | - | root | judged order | two parts measured separately, ratings at risk and sales that went through a late delivery (plus a repeat-revenue part the data cannot tell from zero) | - | - | - | - | metrics.late_rate, metrics.late_review_gap_raw | yes |
-| **Extra 1-2 star reviews linked to lateness** (`low_star_excess`) | 3,335 | one measured part of the parent | reviewed judged order | reviewed late orders times the matched gap in the share of 1-2 star reviews | none (a count) | more late orders, or a wider star gap between late orders and on-time look-alikes | above 10% of all 1-2 star reviews, lateness is a top ratings problem worth a funded test | marts.fct_orders, marts.fct_reviews; recommendation_report.json: money.low_star_reviews.excess_from_lateness.mid | terms.chosen_review, terms.order_review_score, metrics.late_review_gap_raw | association only (rests on the matched gap) |
+| **Extra 1-2 star reviews linked to lateness** (`low_star_excess`) | 3,335 | one measured part of the parent (association only) | reviewed judged order | reviewed late orders times the matched gap in the share of 1-2 star reviews | none (a count) | more late orders, or a wider star gap between late orders and on-time look-alikes | above 10% of all 1-2 star reviews, lateness is a top ratings problem worth a funded test | marts.fct_orders, marts.fct_reviews; recommendation_report.json: money.low_star_reviews.excess_from_lateness.mid | terms.chosen_review, terms.order_review_score, metrics.late_review_gap_raw | association only (rests on the matched gap) |
 | **Late orders with a review** (`late_reviewed`) | 6,366 | parent = product of the x children | judged order | judged late orders whose chosen review has a score | - | - | - | marts.fct_orders | terms.late, terms.chosen_review | yes |
 | **Matched gap in 1-2 star share (late minus look-alike)** (`excess_low_star_share`) | 52.4% [50.7% to 53.7%] | parent = product of the x children (association only) | reviewed judged order, compared within matched cells (state x category x freight band x month) | late orders' 1-2 star share minus that of on-time orders in the same state, category, freight band and month | - | product and seller quality differences the match cannot see would move it too | - | marts.fct_orders; recommendation_report.json: low_star.all.matched.effect | metrics.late_review_gap_raw | association only |
 | **Star penalty of a late order (matched)** (`star_penalty`) | -1.96 stars [-2.01 to -1.91] | association only (matched comparison or text) | reviewed judged order, within matched cells | average stars of late orders minus matched on-time look-alikes | - | - | a penalty under 0.5 star would make ratings a weak reason to act | marts.fct_orders; recommendation_report.json: stars.all.matched.effect | metrics.review_score, metrics.late_review_gap_raw | association only |
@@ -80,12 +80,12 @@ flowchart TD
 | **Late orders** (`late_orders`) | 6,518 | parent = product of the x children | judged order | judged orders delivered on a later calendar day than promised | none (a count) | - | - | marts.fct_orders | terms.late, metrics.late_rate | yes |
 | **Average late-order value** (`avg_late_order_value`) | R$ 176 | parent = product of the x children | judged order | - | - | - | - | marts.fct_orders | columns.marts.fct_orders.amount_paid | yes |
 | **Judged orders** (`judged_orders`) | 94,931 | parent = product of the x children | judged order | - | - | - | - | marts.fct_orders | metrics.late_rate, terms.analysis_window, terms.multi_seller_order | yes |
-| **Late rate** (`late_rate`) | 6.9% | parent = product of the x children | judged order | - | judged orders | carrier delays, seller handoffs after ship-by, promises too short for the route or season | a segment at 2x the overall rate that holds 10% or more of late orders is worth targeting | marts.fct_orders | metrics.late_rate, terms.late | yes |
+| **Late rate** (`late_rate`) | 6.9% | parent = product of the x children | judged order | - | judged orders | carrier delays, seller handoffs after ship-by, promises too short for the route or season | a segment at 1.75x the overall rate that holds 10% or more of late orders is worth targeting | marts.fct_orders | metrics.late_rate, terms.late | yes |
 | **Late orders by ship-to state** (`late_by_state`) | 6,518 | parent = sum of these rows | judged order | - | - | - | - | marts.fct_orders | terms.ship_to_address | yes |
 | **Late orders by purchase month** (`late_by_month`) | 6,518 | parent = sum of these rows | judged order | - | - | - | - | marts.fct_orders | metrics.late_rate_monthly | yes |
 | **Late orders by seller handoff** (`late_by_handoff`) | 6,518 | parent = sum of these rows | judged order | - | - | sellers missing their ship-by date | if late handoffs are 20% or more of late orders and run late at 2x the on-time-handoff rate, test seller reminders | marts.fct_orders | columns.marts.fct_orders.delivered_to_carrier_at, columns.marts.fct_orders.last_shipping_limit_at | yes |
 | **Late orders by seller** (`late_by_seller`) | 6,518 | parent = sum of these rows | judged order | each judged order has exactly one seller (single-parcel orders), so sellers split late orders without overlap. Category is not a breakdown here because one order can hold items from several categories. | - | - | - | marts.fct_orders, marts.fct_order_items | terms.multi_seller_order | yes |
-| **Lost repeat sales per year** (`lost_repeat_sales`) | R$ 645 [0 to 3,208] | association only (matched comparison or text) | customer's first judged order | late first orders per year times the matched drop in 90-day repeat rate times a repeat buyer's 90-day spend | - | - | worth a retention budget only if the repeat drop's range excludes zero; it does not | marts.fct_orders, marts.dim_customer; recommendation_report.json: money.lost_repeat_gmv_per_year.mid | metrics.repeat_rate_90d, terms.repeat_return | association only |
+| **Lost repeat sales per year (low end floored at 0)** (`lost_repeat_sales`) | R$ 645 [0 to 3,208] | association only (matched comparison or text) | customer's first judged order | late first orders per year times the matched drop in 90-day repeat rate times a repeat buyer's 90-day spend | - | - | worth a retention budget only if the repeat drop's range excludes zero; it does not | marts.fct_orders, marts.dim_customer; recommendation_report.json: money.lost_repeat_gmv_per_year.mid | metrics.repeat_rate_90d, terms.repeat_return | association only |
 | **Olist commission lost** (`commission`) | - | no data | - | no commission or take-rate column in the data | - | - | - | - | - | no |
 | **Sales value of one star** (`star_sales_value`) | - | no data | - | no traffic, ranking or conversion data to price a star | - | - | - | - | - | no |
 | **Which carrier was late** (`carrier`) | - | no data | - | no carrier id in the data | - | - | - | - | - | no |
@@ -100,7 +100,7 @@ Each question names the decision it informs, the number that answers it, and the
 
 - **Decision.** Fund delivery tests at all, or spend the effort elsewhere.
 - **Metric.** Extra 1-2 star reviews linked to lateness, as a share of all 1-2 star reviews. Second metric: sales paid for late orders per year, as exposure.
-- **Threshold.** If lateness accounts for 10% or more of all 1-2 star reviews, it is a top ratings problem and worth a funded test.
+- **Threshold.** If lateness is linked to 10% or more of all 1-2 star reviews, it is a top ratings problem and worth a funded test.
 - **Answer.** 28.7%, range 27.7% to 29.4%. R$0.7 million a year of sales went through a late delivery.
 - **Claims.** `metrics.late_review_gap_raw`, `terms.chosen_review`, `terms.order_review_score`, `terms.late`, `columns.marts.fct_orders.amount_paid`.
 - **Limit.** The extra reviews come from a matched comparison, an association. The ontology has no column that turns a star into sales or commission.
@@ -109,7 +109,7 @@ Each question names the decision it informs, the number that answers it, and the
 
 - **Decision.** Which addresses and which months get extra buffer days on the promised date.
 - **Metric.** Late rate by ship-to state and by purchase month, with each segment's share of all late orders.
-- **Threshold.** A segment is a target if its late rate is at least 1.75 times the overall 6.9%, about 12%, and it holds at least 10% of late orders.
+- **Threshold.** A segment is a target if its late rate is at least 1.75 times the overall late rate and it holds at least 10% of late orders.
 - **Answer.** North and northeast addresses run at 12.2% and hold 20% of late orders. March 2018, February 2018 and November 2017 run at 19.2%, 14.2% and 12.5% and together hold 48% of late orders. Rio de Janeiro runs at 12.3%, but most of that is a spike in a few months.
 - **Claims.** `metrics.late_rate`, `metrics.late_rate_monthly`, `terms.ship_to_address`, `terms.promised_date`.
 
@@ -117,7 +117,7 @@ Each question names the decision it informs, the number that answers it, and the
 
 - **Decision.** Whether to test holding sellers to their ship-by date.
 - **Metric.** Share of late orders whose seller handed the parcel to the carrier after the ship-by date, and the late rate of those orders against orders handed over on time.
-- **Threshold.** Test the seller fix if late handoffs are 20% or more of late orders and run late at least twice as often as on-time handoffs.
+- **Threshold.** Test the seller fix if late handoffs are 20% or more of late orders and run late at least 2 times as often as on-time handoffs.
 - **Answer.** 27.8% of late orders, 1,809 of 6,518. Late handoffs end late 21.2% of the time, against 5.4% for on-time handoffs, 3.9 times as often.
 - **Claims.** `columns.marts.fct_orders.delivered_to_carrier_at`, `columns.marts.fct_orders.last_shipping_limit_at`, `terms.late`.
 - **Limit.** A late handoff comes before the late delivery, but the carrier may have been late anyway. At most about 1,300 late orders, 20.6%, would have been on time with an on-time handoff.
@@ -126,7 +126,7 @@ Each question names the decision it informs, the number that answers it, and the
 
 - **Decision.** Treat the lower stars as a delivery problem, or look for a product problem first.
 - **Metric.** Share of late-order comments that say the product did not arrive, arrived late, or missed the deadline, read from the Portuguese `review_comment_message` text with a keyword rule. Second metric: share of reviewed late orders whose survey went out before the parcel arrived.
-- **Threshold.** If half or more of late-order comments are about delay or non-arrival, the stars measure delivery, and product fixes stay out of this plan.
+- **Threshold.** If 50% or more of late-order comments are about delay or non-arrival, this plan treats the low stars as a delivery problem and leaves product fixes out.
 - **Answer.** 66.7% of late-order comments. The rule found no false matches in 70 hand-labelled comments, but it missed 23% of delay comments in the 30 labelled after it was frozen, so 66.7% is a floor. 74.5% of reviewed late orders got the survey before the parcel arrived.
 - **Claims.** `columns.marts.fct_reviews.review_comment_message`, `terms.chosen_review`, `terms.survey_sent_before_delivery`.
 

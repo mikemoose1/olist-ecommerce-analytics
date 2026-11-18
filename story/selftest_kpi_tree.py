@@ -19,11 +19,14 @@ def node(t, nid):
     return next(n for n in t["nodes"] if n["id"] == nid)
 
 
-def run(tree=None, report=None, rule=None):
+QUESTIONS = (K.ROOT / "story" / "QUESTIONS.md").read_text()
+
+
+def run(tree=None, report=None, rule=None, questions=None):
     tree = tree or TREE
     vals = K.compute(tree, report=report or REPORT)
     vals["labels"] = K.label_eval(rule=rule)
-    return K.check(tree, vals)
+    return K.check(tree, vals) + K.check_thresholds(tree, questions or QUESTIONS)
 
 
 def mut_sql(nid, key, old, new):
@@ -70,6 +73,12 @@ CASES = [
     ("report's late-order sales drift by R$1", "fact", "late_sales", mut_report("money.late_order_gmv_window", 1.0)),
     ("claim id that the ontology does not have", "claims", "late_rate", mut_node("late_rate", claims=["metrics.late_rate", "metrics.late_rate_wrong"])),
     ("not-answerable node marked answerable", "shape", "carrier", mut_node("carrier", answerable="yes")),
+    ("a node's threshold typed as a literal bar, not from thresholds:", "thresholds", "late_rate",
+     mut_node("late_rate", threshold="a segment at 2x the overall rate that holds 10% of late orders is worth targeting")),
+    ("QUESTIONS.md states a different bar than thresholds:", "thresholds", "QUESTIONS.md",
+     lambda: {"questions": QUESTIONS.replace("at least 1.75 times the overall late rate", "at least 2 times the overall late rate", 1)}),
+    ("matched estimate without its association-only mark", "association", "excess_low_star_share",
+     mut_node("excess_low_star_share", association=False, answerable="yes")),
     ("keyword rule widened to any comment containing a space", "labels", "holdout", lambda: {"rule": K.NOT_ARRIVED + "| "}),
 ]
 

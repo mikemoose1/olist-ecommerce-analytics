@@ -11,6 +11,9 @@ Checks (exit 1 if any fails):
   labels   the comment keyword rule keeps precision >= 0.9 on hand-labelled late-order comments
            (story/comment_labels.csv; "holdout" rows were labelled after the rule was frozen)
   shape    every parent exists; association / not_answerable nodes carry the right marks
+  association  a node whose value is a matched estimate (`fact`) or comment text is marked association only
+  thresholds   node threshold text names its bars as {placeholders} from `thresholds:` (no typed numbers), and the
+           "Threshold." lines in QUESTIONS.md match question_thresholds (this script writes them)
 """
 import json, math, re, sys
 from pathlib import Path
@@ -88,6 +91,9 @@ def check(tree, vals, ontology=None):
         e = n.get("edge")
         if e == "not_answerable":
             res.append(("shape", n["id"], n.get("answerable") == "no" and bool(n.get("reason")), "not_answerable needs answerable: no and a reason"))
+        if n.get("fact") or "columns.marts.fct_reviews.review_comment_message" in n.get("claims", []):
+            res.append(("association", n["id"], e == "association" or bool(n.get("association")),
+                        "matched estimate or comment text is marked association only"))
         if e == "association" or n.get("association"):
             res.append(("shape", n["id"], str(n.get("answerable", "")).startswith(("association", "yes")), "association node marked"))
         for c in n.get("claims", []):
@@ -150,6 +156,8 @@ def mermaid(tree, vals):
             continue
         if e == "product" and n.get("association"):
             L.append(f'  {p} -.->|"= x, association only"| {n["id"]}')
+        elif e == "component" and n.get("association"):
+            L.append(f'  {p} -.->|"{n.get("edge_label", "part of")}, association only"| {n["id"]}')
         elif e == "association":
             L.append(f'  {p} -.->|association only| {n["id"]}')
         elif e == "not_answerable":
@@ -159,7 +167,7 @@ def mermaid(tree, vals):
         elif e == "product":
             L.append(f'  {p} -->|"= x"| {n["id"]}')
         else:
-            L.append(f'  {p} -->|part of| {n["id"]}')
+            L.append(f'  {p} -->|"{n.get("edge_label", "part of")}"| {n["id"]}')
     L.append("  classDef na fill:#eee,stroke:#999,color:#777,stroke-dasharray:4 3")
     L.append("  classDef assoc stroke-dasharray:4 3")
     na = [n["id"] for n in tree["nodes"] if n.get("edge") == "not_answerable"]
@@ -174,6 +182,43 @@ EDGE_TEXT = {"sum": "parent = sum of these rows", "product": "parent = product o
              "not_answerable": "no data"}
 
 
+def fmt_num(x):
+    return f"{x:g}"
+
+
+def threshold_text(tree, n):
+    return n.get("threshold", "").format(**{k: fmt_num(v) for k, v in tree["thresholds"].items()})
+
+
+def check_thresholds(tree, questions):
+    """The bars come from one place: `thresholds:` in kpi_tree.yml."""
+    res = []
+    for n in tree["nodes"]:
+        t = n.get("threshold", "")
+        names = re.findall(r"\{(\w+)\}", t)
+        typed = re.findall(r"\d+(?:\.\d+)?", re.sub(r"\{\w+\}|1-2 star", "", t))
+        unknown = [x for x in names if x not in tree["thresholds"]]
+        res.append(("thresholds", n["id"], not typed and not unknown,
+                    "threshold text uses {bars} only" + (f"; typed {typed}" if typed else "") + (f"; unknown {unknown}" if unknown else "")))
+    same = set_question_thresholds(tree, questions) == questions
+    res.append(("thresholds", "QUESTIONS.md", same, "Threshold lines match question_thresholds in kpi_tree.yml"
+                + ("" if same else " (run python story/kpi_tree.py and commit)")))
+    return res
+
+
+def set_question_thresholds(tree, questions):
+    """Rewrite the "- **Threshold.**" line under each "### Qn." heading from question_thresholds."""
+    bars = {k: fmt_num(v) for k, v in tree["thresholds"].items()}
+    out, q = [], None
+    for line in questions.splitlines(keepends=True):
+        m = re.match(r"### (Q\d+)\.", line)
+        q = m.group(1) if m else q
+        if line.startswith("- **Threshold.**") and q in tree["question_thresholds"]:
+            line = "- **Threshold.** " + tree["question_thresholds"][q].format(**bars) + "\n"
+        out.append(line)
+    return "".join(out)
+
+
 def node_table(tree, vals):
     H = ["| Node | Value | Edge to parent | Grain | Counts | Denominator | Why it moves | Threshold that changes the action | Model / metric | Ontology claims | Answerable |",
          "|---|---|---|---|---|---|---|---|---|---|---|"]
@@ -183,7 +228,7 @@ def node_table(tree, vals):
         src = n.get("fact") and f"recommendation_report.json: {n['fact']}"
         H.append("| " + " | ".join(cell(x) for x in [
             f"**{n['label']}** (`{n['id']}`)", fmt(n, vals[n["id"]]), e, n.get("grain", "judged order" if n.get("edge") != "not_answerable" else ""),
-            n.get("counts") or n.get("reason"), n.get("denominator"), n.get("why_moves"), n.get("threshold"),
+            n.get("counts") or n.get("reason"), n.get("denominator"), n.get("why_moves"), threshold_text(tree, n),
             ", ".join(n.get("models", [])) + (f"; {src}" if src else ""), ", ".join(n.get("claims", [])), n.get("answerable")]) + " |")
     return "\n".join(H) + "\n"
 
@@ -204,7 +249,7 @@ def main():
     tree = yaml.safe_load(TREE.read_text())
     vals = compute(tree)
     vals["labels"] = label_eval()
-    res = check(tree, vals)
+    res = check(tree, vals) + check_thresholds(tree, (ROOT / "story" / "QUESTIONS.md").read_text())
     bad = [r for r in res if not r[2]]
     for kind, nid, ok, msg in res:
         if not ok or kind in ("sum", "product", "fact", "labels"):
@@ -223,7 +268,7 @@ def main():
         (ROOT / "story" / "data").mkdir(exist_ok=True)
         out.write_text(fresh)
         qp = ROOT / "story" / "QUESTIONS.md"
-        qp.write_text(splice(qp.read_text(), questions_block(tree, vals)))
+        qp.write_text(set_question_thresholds(tree, splice(qp.read_text(), questions_block(tree, vals))))
         (ROOT / "story" / "kpi_tree.mmd").write_text(mermaid(tree, vals))
     sys.exit(1 if bad else 0)
 

@@ -8,8 +8,27 @@
 #   component     one of the parent's separately measured parts (different units, not added)
 #   association   linked to the parent only by a matched comparison or text evidence; drawn dashed, "association only"
 #   not_answerable the data has no column for it (reason says why); drawn grey
+# edge_label: optional text on a component edge (default "part of"); association: true marks a matched estimate.
 # value: `sql` (a scalar over `judged`, marts.fct_orders or marts.fct_reviews), `rows` (a breakdown: segment, value), or
 #        `fact` (a key path in evidence/recommendation_report.json, for matched estimates that analyze.py computes).
+# thresholds: the one source for every bar that changes the action. Node `threshold:` text refers to them as
+# {name}; story/kpi_tree.py fills them in, check_story.py reads them as design numbers, build_story.py draws them.
+# They were set after the memo's analysis had seen the numbers (see QUESTIONS.md).
+thresholds:
+  low_star_share: 10
+  star_penalty: 0.5
+  segment_ratio: 1.75
+  segment_share: 10
+  handoff_share: 20
+  handoff_ratio: 2
+  comment_share: 50
+# The "Threshold." line of each question in QUESTIONS.md, written there by story/kpi_tree.py.
+question_thresholds:
+  Q1: If lateness is linked to {low_star_share}% or more of all 1-2 star reviews, it is a top ratings problem and worth a funded test.
+  Q2: A segment is a target if its late rate is at least {segment_ratio} times the overall late rate and it holds at least {segment_share}% of late orders.
+  Q3: Test the seller fix if late handoffs are {handoff_share}% or more of late orders and run late at least {handoff_ratio} times as often as on-time handoffs.
+  Q4: If {comment_share}% or more of late-order comments are about delay or non-arrival, this plan treats the low stars as a delivery problem and leaves product fixes out.
+  Q5: Count repeat sales in the case only if the difference's range excludes zero.
 judged_sql: >
   select *, cast(delivered_to_customer_at as date) > estimated_delivery_date as is_late
   from marts.fct_orders
@@ -32,10 +51,11 @@ nodes:
     counts: reviewed late orders times the matched gap in the share of 1-2 star reviews
     denominator: none (a count)
     why_moves: more late orders, or a wider star gap between late orders and on-time look-alikes
-    threshold: above 10% of all 1-2 star reviews, lateness is a top ratings problem worth a funded test
+    threshold: above {low_star_share}% of all 1-2 star reviews, lateness is a top ratings problem worth a funded test
     models: [marts.fct_orders, marts.fct_reviews]
     claims: [terms.chosen_review, terms.order_review_score, metrics.late_review_gap_raw]
     answerable: "association only (rests on the matched gap)"
+    association: true
   - id: late_reviewed
     grain: judged order
     parent: low_star_excess
@@ -70,7 +90,7 @@ nodes:
     fact: stars.all.matched.effect
     ci: [stars.all.matched.ci]
     counts: average stars of late orders minus matched on-time look-alikes
-    threshold: a penalty under 0.5 star would make ratings a weak reason to act
+    threshold: a penalty under {star_penalty} star would make ratings a weak reason to act
     models: [marts.fct_orders]
     claims: [metrics.review_score, metrics.late_review_gap_raw]
     answerable: "association only"
@@ -105,6 +125,7 @@ nodes:
     parent: cost
     edge: component
     label: Sales on late orders
+    edge_label: exposed, not lost
     unit: R$ (20-month window)
     sql: select sum(amount_paid) from judged where is_late
     fact_check: money.late_order_gmv_window
@@ -150,7 +171,7 @@ nodes:
     sql: select avg(is_late::int) from judged
     denominator: judged orders
     why_moves: carrier delays, seller handoffs after ship-by, promises too short for the route or season
-    threshold: a segment at 2x the overall rate that holds 10% or more of late orders is worth targeting
+    threshold: a segment at {segment_ratio}x the overall rate that holds {segment_share}% or more of late orders is worth targeting
     models: [marts.fct_orders]
     claims: [metrics.late_rate, terms.late]
     answerable: "yes"
@@ -183,7 +204,7 @@ nodes:
                   else 'handed over on time' end, count(*)
       from judged where is_late group by 1 order by 2 desc, 1
     why_moves: sellers missing their ship-by date
-    threshold: if late handoffs are 20% or more of late orders and run late at 2x the on-time-handoff rate, test seller reminders
+    threshold: if late handoffs are {handoff_share}% or more of late orders and run late at {handoff_ratio}x the on-time-handoff rate, test seller reminders
     models: [marts.fct_orders]
     claims: [columns.marts.fct_orders.delivered_to_carrier_at, columns.marts.fct_orders.last_shipping_limit_at]
     answerable: "yes"
@@ -205,7 +226,7 @@ nodes:
     grain: customer's first judged order
     parent: cost
     edge: association
-    label: Lost repeat sales per year
+    label: Lost repeat sales per year (low end floored at 0)
     unit: R$ per year
     fact: money.lost_repeat_gmv_per_year.mid
     ci: [money.lost_repeat_gmv_per_year.low, money.lost_repeat_gmv_per_year.high]
