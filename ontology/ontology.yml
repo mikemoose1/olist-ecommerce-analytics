@@ -506,6 +506,306 @@ columns:
     type: DOUBLE
     nulls: 0
     meaning: The value rounded for display (a percentage, or stars for review_score and the review gap).
+  marts.dim_customer.zip_code_prefix:
+    type: VARCHAR
+    nulls: 0
+    meaning: The person's latest zip prefix (5 digits). Where the person lives now, not where an old order shipped (C5).
+  marts.dim_customer.city:
+    type: VARCHAR
+    nulls: 0
+    meaning: The person's latest city, lowercase, as Olist wrote it.
+  marts.dim_customer.state:
+    type: VARCHAR
+    nulls: 0
+    meaning: The person's latest two-letter state. Not the state an order shipped to (use fct_orders.ship_to_state, C5).
+  marts.dim_customer.lat:
+    type: DOUBLE
+    nulls: 269
+    meaning: Map latitude of the latest zip prefix. Null when the prefix is missing from the geolocation file.
+  marts.dim_customer.lng:
+    type: DOUBLE
+    nulls: 269
+    meaning: Map longitude of the latest zip prefix. Null when the prefix is missing from the geolocation file.
+  marts.dim_customer.first_order_at_any_status:
+    type: TIMESTAMP
+    nulls: 0
+    meaning: purchased_at of the person's first order of any status. Differs from first_qualifying_order_at when the first order was canceled.
+  marts.dim_date.month_start:
+    type: DATE
+    nulls: 0
+    meaning: First day of the month of date_day.
+    holds:
+    - month_start = date_trunc('month', date_day)
+  marts.dim_date.year_month:
+    type: VARCHAR
+    nulls: 0
+    meaning: The month as text, YYYY-MM.
+    holds:
+    - year_month = strftime(date_day, '%Y-%m')
+  marts.dim_date.day_of_week:
+    type: BIGINT
+    nulls: 0
+    meaning: 0 to 6, one value per weekday.
+    holds:
+    - day_of_week between 0 and 6
+  marts.dim_date.in_analysis_window:
+    type: BOOLEAN
+    nulls: 0
+    meaning: True for days from 2017-01-01 to 2018-08-31. fct_orders.in_analysis_window is this flag looked up on the purchase date.
+  marts.dim_product.product_category_name:
+    type: VARCHAR
+    nulls: 610
+    meaning: Olist's category name in Portuguese. Null on the 610 products with no category.
+  marts.dim_product.category:
+    type: VARCHAR
+    nulls: 0
+    meaning: English category name (translated, 2 names patched). Never null; products with no category show a placeholder.
+  marts.dim_seller.city:
+    type: VARCHAR
+    nulls: 0
+    meaning: The seller's city as Olist wrote it. A few rows hold a zip code or other text instead of a city name.
+  marts.dim_seller.state:
+    type: VARCHAR
+    nulls: 0
+    meaning: The seller's two-letter state.
+  marts.dim_seller.lat:
+    type: DOUBLE
+    nulls: 7
+    meaning: Map latitude of the seller's zip prefix. Null for the 7 sellers whose prefix is missing from the geolocation file.
+  marts.dim_seller.lng:
+    type: DOUBLE
+    nulls: 7
+    meaning: Map longitude of the seller's zip prefix. Null for the 7 sellers whose prefix is missing from the geolocation file.
+  marts.fct_order_items.shipping_limit_at:
+    type: TIMESTAMP
+    nulls: 0
+    meaning: The seller's ship-by deadline for this item. A few raw values lie in 2020, a source quirk kept as is.
+  marts.fct_order_items.price:
+    type: DECIMAL(12,2)
+    nulls: 0
+    meaning: Item price in R$ before freight.
+    holds:
+    - price > 0
+  marts.fct_order_items.freight_value:
+    type: DECIMAL(12,2)
+    nulls: 0
+    meaning: Freight charged for this item line in R$.
+    holds:
+    - freight_value >= 0
+  marts.fct_orders.delivery_evidence:
+    type: VARCHAR
+    nulls: 0
+    meaning: 'How far the delivery date can be trusted: order_level_single_parcel (one seller), order_level_multi_parcel (one date for several parcels), no_parcels (no items).'
+  marts.fct_orders.delivered_to_carrier_at:
+    type: TIMESTAMP
+    nulls: 1783
+    meaning: When the seller handed the order to the carrier. Null when that never happened. Can be later than the delivery time in raw data (see stage rules).
+  marts.fct_orders.last_shipping_limit_at:
+    type: TIMESTAMP
+    nulls: 775
+    meaning: The latest ship-by deadline among the order's items. Null for an order with no items.
+    null_when: n_items = 0
+  marts.fct_orders.days_past_promise:
+    type: BIGINT
+    nulls: 2965
+    meaning: Calendar days between the promised date and the delivery date. Positive means late, zero or negative means on time. Null when there is no delivery date.
+    null_when: delivered_to_customer_at is null
+    holds:
+    - days_past_promise is null or days_past_promise = date_diff('day', estimated_delivery_date, cast(delivered_to_customer_at as date))
+  marts.fct_orders.promised_days:
+    type: BIGINT
+    nulls: 0
+    meaning: Calendar days from purchase_date to the promised date. Never null.
+    holds:
+    - promised_days = date_diff('day', purchase_date, estimated_delivery_date)
+  marts.fct_orders.amount_due:
+    type: DECIMAL(38,2)
+    nulls: 775
+    meaning: Sum of item prices plus freight for the order in R$. Null on an order with no items.
+    null_when: n_items = 0
+  marts.fct_orders.amount_paid:
+    type: DECIMAL(38,2)
+    nulls: 1
+    meaning: Sum of the order's payments in R$. Null on the one order with no payment row.
+  marts.fct_orders.paid_minus_due:
+    type: DECIMAL(38,2)
+    nulls: 776
+    meaning: amount_paid minus amount_due in R$. Null when either side is null.
+    holds:
+    - paid_minus_due is null or paid_minus_due = amount_paid - amount_due
+  marts.fct_orders.max_installments:
+    type: INTEGER
+    nulls: 1
+    meaning: The largest installment count among the order's payments. Null on the order with no payment row.
+  marts.fct_orders.ship_to_city:
+    type: VARCHAR
+    nulls: 0
+    meaning: City this order shipped to, lowercase, as it was at order time.
+  marts.fct_orders.ship_to_lat:
+    type: DOUBLE
+    nulls: 279
+    meaning: Map latitude of the ship-to zip prefix. Null when the prefix is missing from the geolocation file.
+  marts.fct_orders.ship_to_lng:
+    type: DOUBLE
+    nulls: 279
+    meaning: Map longitude of the ship-to zip prefix. Null when the prefix is missing from the geolocation file.
+  marts.fct_orders.review_id:
+    type: VARCHAR
+    nulls: 768
+    meaning: Id of the chosen review. Null on the 768 orders with no response.
+    null_when: review_score is null
+  marts.fct_orders.review_before_delivery:
+    type: BOOLEAN
+    nulls: 3611
+    meaning: True when the survey was sent on an earlier calendar day than delivery (survey_sent_before_delivery). Null without a chosen review or without a delivery date.
+  marts.fct_payments.payment_type:
+    type: VARCHAR
+    nulls: 0
+    meaning: 'How this payment line was paid: credit_card, boleto, voucher, debit_card or not_defined.'
+  marts.fct_payments.payment_installments:
+    type: INTEGER
+    nulls: 0
+    meaning: Number of installments on this payment line.
+  marts.fct_payments.payment_value:
+    type: DECIMAL(12,2)
+    nulls: 0
+    meaning: Amount of this payment line in R$.
+    holds:
+    - payment_value >= 0
+  marts.fct_reviews.review_score:
+    type: INTEGER
+    nulls: 0
+    meaning: Stars, 1 to 5, of this response.
+    holds:
+    - review_score between 1 and 5
+  marts.fct_reviews.review_created_at:
+    type: TIMESTAMP
+    nulls: 0
+    meaning: The survey send date and time exactly as in the source. review_created_on is the day.
+  metrics.metric_late_rate.metric_name:
+    type: VARCHAR
+    nulls: 0
+    meaning: Always late_rate.
+  metrics.metric_late_rate.rule:
+    type: VARCHAR
+    nulls: 0
+    meaning: The population rule, exclude_multi_seller (C1).
+  metrics.metric_late_rate.numerator:
+    type: BIGINT
+    nulls: 0
+    meaning: Late orders in the late-rate population.
+  metrics.metric_late_rate.denominator:
+    type: BIGINT
+    nulls: 0
+    meaning: Orders in the late-rate population.
+  metrics.metric_late_rate.value_pct:
+    type: DOUBLE
+    nulls: 0
+    meaning: numerator over denominator as a percentage, rounded to 2 decimals.
+  metrics.metric_late_rate_monthly.numerator:
+    type: BIGINT
+    nulls: 0
+    meaning: Late orders in that purchase month's late-rate population.
+  metrics.metric_late_rate_monthly.denominator:
+    type: BIGINT
+    nulls: 0
+    meaning: Orders in that purchase month's late-rate population.
+  metrics.metric_late_rate_monthly.value_pct:
+    type: DOUBLE
+    nulls: 0
+    meaning: Late rate for the month as a percentage, rounded to 2 decimals.
+  metrics.metric_late_rate_orders.order_id:
+    type: VARCHAR
+    nulls: 0
+    meaning: The judged order (primary key). One row per order in the late-rate population.
+  metrics.metric_late_rate_orders.purchase_date:
+    type: DATE
+    nulls: 0
+    meaning: The order's purchase day. Decides the month.
+  metrics.metric_late_rate_orders.delivery_state:
+    type: VARCHAR
+    nulls: 0
+    meaning: delivered_on_time or delivered_late. No other value appears here.
+  metrics.metric_late_rate_orders.delivery_evidence:
+    type: VARCHAR
+    nulls: 0
+    meaning: Always order_level_single_parcel here, because multi-seller orders are left out (C1).
+  metrics.metric_late_rate_orders.ship_to_state:
+    type: VARCHAR
+    nulls: 0
+    meaning: State the order shipped to. Use this to slice the late rate by state.
+  metrics.metric_late_rate_orders.review_before_delivery:
+    type: BOOLEAN
+    nulls: 629
+    meaning: Same flag as fct_orders.review_before_delivery. Null when the order has no review.
+  metrics.metric_repeat_rate_90d.metric_name:
+    type: VARCHAR
+    nulls: 0
+    meaning: Always repeat_rate_90d.
+  metrics.metric_repeat_rate_90d.rule:
+    type: VARCHAR
+    nulls: 0
+    meaning: The 24-hour rule in use, any_later_order_24h (C6).
+  metrics.metric_repeat_rate_90d.numerator:
+    type: BIGINT
+    nulls: 0
+    meaning: People in the repeat cohort who repeated.
+  metrics.metric_repeat_rate_90d.denominator:
+    type: BIGINT
+    nulls: 0
+    meaning: People in the repeat cohort.
+  metrics.metric_repeat_rate_90d.value_pct:
+    type: DOUBLE
+    nulls: 0
+    meaning: numerator over denominator as a percentage, rounded to 2 decimals.
+  metrics.metric_repeat_rate_ever.metric_name:
+    type: VARCHAR
+    nulls: 0
+    meaning: Always repeat_rate_ever.
+  metrics.metric_repeat_rate_ever.rule:
+    type: VARCHAR
+    nulls: 0
+    meaning: all_time_including_same_day. A second order at any time counts.
+  metrics.metric_repeat_rate_ever.numerator:
+    type: BIGINT
+    nulls: 0
+    meaning: People with 2 or more qualifying orders.
+  metrics.metric_repeat_rate_ever.denominator:
+    type: BIGINT
+    nulls: 0
+    meaning: People with at least one qualifying order.
+  metrics.metric_repeat_rate_ever.value_pct:
+    type: DOUBLE
+    nulls: 0
+    meaning: numerator over denominator as a percentage, rounded to 2 decimals.
+  metrics.metric_review_score.metric_name:
+    type: VARCHAR
+    nulls: 0
+    meaning: review_score or late_review_gap_raw.
+  metrics.metric_review_score.rule:
+    type: VARCHAR
+    nulls: 0
+    meaning: The rule text for each metric. Names the chosen-review rule or the on-time minus late difference.
+  metrics.metric_review_score.numerator:
+    type: HUGEINT
+    nulls: 1
+    meaning: Sum of chosen review scores for review_score. Null for late_review_gap_raw.
+  metrics.metric_review_score.denominator:
+    type: BIGINT
+    nulls: 0
+    meaning: Orders in that metric's population.
+  metrics.metric_review_score.value_pct:
+    type: DOUBLE
+    nulls: 0
+    meaning: Average stars for review_score, or the on-time minus late gap in stars. Not a percentage despite the name.
+  metrics.metrics_headline.rule:
+    type: VARCHAR
+    nulls: 0
+    meaning: The rule text of the metric. Same as the rule column of the metric's own table.
+  metrics.metrics_headline.is_headline:
+    type: BOOLEAN
+    nulls: 0
+    meaning: True only for repeat_rate_90d.
 
 # Facts that span tables: a SQL query that returns one number and the number it must equal.
 facts:
@@ -530,6 +830,21 @@ facts:
   - claim: The sequence number follows purchased_at, so seq = 1 is the person's earliest qualifying order
     sql: "select count(*) from marts.fct_orders a join marts.fct_orders b on a.customer_unique_id = b.customer_unique_id and a.customer_qualifying_order_seq < b.customer_qualifying_order_seq where a.purchased_at > b.purchased_at"
     expected: 0
+  - claim: Orders with more than one survey response
+    sql: select count(*) from (select order_id from marts.fct_reviews group by 1 having count(*) > 1)
+    expected: 547
+  - claim: Survey responses (review_id) attached to more than one order
+    sql: select count(*) from (select review_id from marts.fct_reviews group by 1 having count(distinct order_id) > 1)
+    expected: 789
+  - claim: Survey responses sent on an earlier day than the delivery
+    sql: select count(*) from marts.fct_reviews where review_before_delivery
+    expected: 5127
+  - claim: Of those, responses sent on or after the promised date
+    sql: select count(*) from marts.fct_reviews r join marts.fct_orders o using (order_id) where r.review_before_delivery and r.review_created_on >= o.estimated_delivery_date
+    expected: 4713
+  - claim: Of those, responses on orders whose delivery_state is delivered_late
+    sql: select count(*) from marts.fct_reviews r join marts.fct_orders o using (order_id) where r.review_before_delivery and o.delivery_state = 'delivered_late'
+    expected: 4777
   - claim: Pairs of one person's qualifying orders placed in the same second
     sql: "select count(*) from (select 1 from marts.fct_orders where is_qualifying_order group by customer_unique_id, purchased_at having count(*) > 1)"
     expected: 281

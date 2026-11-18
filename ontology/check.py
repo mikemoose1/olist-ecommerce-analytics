@@ -11,6 +11,8 @@ Checks, each a PASS/FAIL line:
   stage_rule    each order-stage rule's count equals the documented count
   metric        each verified card equals the metric table AND MetricFlow (`mf query`)
   diagram       the Mermaid diagram in ONTOLOGY.md equals the one generated from the YAML
+  coverage      every marts and metrics table and column, and every number shown in ONTOLOGY.md, is described in
+                ontology.yml or exempted with a written reason in coverage_allowlist.yml (see coverage.py)
 
 Usage:  python ontology/check.py [--skip-semantic]   (after `make build`; OLIST_DB_PATH picks the warehouse)
         python ontology/check.py --mermaid           (print the entity diagram)
@@ -19,8 +21,15 @@ Output: evidence/ontology_report.md and .json; exit 1 on any FAIL.
 import csv, json, os, subprocess, sys, tempfile
 import duckdb, yaml
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import coverage
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ONTO = yaml.safe_load(open(os.path.join(ROOT, "ontology", "ontology.yml")))
+# ONTOLOGY_YML / ONTOLOGY_MD / COVERAGE_ALLOWLIST point the check at edited copies (mutation proofs only)
+YML = os.environ.get("ONTOLOGY_YML", os.path.join(ROOT, "ontology", "ontology.yml"))
+MD = os.environ.get("ONTOLOGY_MD", os.path.join(ROOT, "ontology", "ONTOLOGY.md"))
+ALLOW = os.environ.get("COVERAGE_ALLOWLIST", os.path.join(ROOT, "ontology", "coverage_allowlist.yml"))
+ONTO = yaml.safe_load(open(YML))
 DB = os.environ.get("OLIST_DB_PATH", os.path.join(ROOT, "olist.duckdb"))
 MF = os.path.join(os.path.dirname(sys.executable), "mf")
 E = ONTO["entities"]
@@ -181,7 +190,7 @@ def check_metrics(con, mf):
 
 
 def check_diagram():
-    doc = open(os.path.join(ROOT, "ontology", "ONTOLOGY.md")).read()
+    doc = open(MD).read()
     yield "diagram", "ONTOLOGY.md entity diagram", mermaid() in doc, "regenerate with: python ontology/check.py --mermaid"
 
 
@@ -196,6 +205,7 @@ def main():
     con = duckdb.connect(DB, read_only=True)
     results = []
     for gen in (check_entities(con), check_relationships(con), check_columns(con), check_term_counts(con), check_column_facts(con), check_facts(con), check_stage_rules(con),
+                coverage.check_coverage(con, ONTO, MD, ALLOW),
                 check_metrics(con, mf), check_diagram()):
         for kind, name, ok, detail in gen:
             results.append({"kind": kind, "name": name, "ok": bool(ok), "detail": detail})

@@ -516,6 +516,420 @@
   "detail": "type DOUBLE (card DOUBLE); nulls 0 (card 0)"
  },
  {
+  "kind": "column_fact",
+  "name": "marts.dim_customer.zip_code_prefix",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.dim_customer.city",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.dim_customer.state",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.dim_customer.lat",
+  "ok": true,
+  "detail": "type DOUBLE (card DOUBLE); nulls 269 (card 269)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.dim_customer.lng",
+  "ok": true,
+  "detail": "type DOUBLE (card DOUBLE); nulls 269 (card 269)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.dim_customer.first_order_at_any_status",
+  "ok": true,
+  "detail": "type TIMESTAMP (card TIMESTAMP); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.dim_date.month_start",
+  "ok": true,
+  "detail": "type DATE (card DATE); nulls 0 (card 0); holds [month_start = date_trunc('month', date_day)]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.dim_date.year_month",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0); holds [year_month = strftime(date_day, '%Y-%m')]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.dim_date.day_of_week",
+  "ok": true,
+  "detail": "type BIGINT (card BIGINT); nulls 0 (card 0); holds [day_of_week between 0 and 6]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.dim_date.in_analysis_window",
+  "ok": true,
+  "detail": "type BOOLEAN (card BOOLEAN); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.dim_product.product_category_name",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 610 (card 610)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.dim_product.category",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.dim_seller.city",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.dim_seller.state",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.dim_seller.lat",
+  "ok": true,
+  "detail": "type DOUBLE (card DOUBLE); nulls 7 (card 7)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.dim_seller.lng",
+  "ok": true,
+  "detail": "type DOUBLE (card DOUBLE); nulls 7 (card 7)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_order_items.shipping_limit_at",
+  "ok": true,
+  "detail": "type TIMESTAMP (card TIMESTAMP); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_order_items.price",
+  "ok": true,
+  "detail": "type DECIMAL(12,2) (card DECIMAL(12,2)); nulls 0 (card 0); holds [price > 0]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_order_items.freight_value",
+  "ok": true,
+  "detail": "type DECIMAL(12,2) (card DECIMAL(12,2)); nulls 0 (card 0); holds [freight_value >= 0]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.delivery_evidence",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.delivered_to_carrier_at",
+  "ok": true,
+  "detail": "type TIMESTAMP (card TIMESTAMP); nulls 1783 (card 1783)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.last_shipping_limit_at",
+  "ok": true,
+  "detail": "type TIMESTAMP (card TIMESTAMP); nulls 775 (card 775); null exactly when [n_items = 0]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.days_past_promise",
+  "ok": true,
+  "detail": "type BIGINT (card BIGINT); nulls 2965 (card 2965); null exactly when [delivered_to_customer_at is null]: 0 violations; holds [days_past_promise is null or days_past_promise = date_diff('day', estimated_delivery_date, cast(delivered_to_customer_at as date))]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.promised_days",
+  "ok": true,
+  "detail": "type BIGINT (card BIGINT); nulls 0 (card 0); holds [promised_days = date_diff('day', purchase_date, estimated_delivery_date)]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.amount_due",
+  "ok": true,
+  "detail": "type DECIMAL(38,2) (card DECIMAL(38,2)); nulls 775 (card 775); null exactly when [n_items = 0]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.amount_paid",
+  "ok": true,
+  "detail": "type DECIMAL(38,2) (card DECIMAL(38,2)); nulls 1 (card 1)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.paid_minus_due",
+  "ok": true,
+  "detail": "type DECIMAL(38,2) (card DECIMAL(38,2)); nulls 776 (card 776); holds [paid_minus_due is null or paid_minus_due = amount_paid - amount_due]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.max_installments",
+  "ok": true,
+  "detail": "type INTEGER (card INTEGER); nulls 1 (card 1)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.ship_to_city",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.ship_to_lat",
+  "ok": true,
+  "detail": "type DOUBLE (card DOUBLE); nulls 279 (card 279)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.ship_to_lng",
+  "ok": true,
+  "detail": "type DOUBLE (card DOUBLE); nulls 279 (card 279)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.review_id",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 768 (card 768); null exactly when [review_score is null]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_orders.review_before_delivery",
+  "ok": true,
+  "detail": "type BOOLEAN (card BOOLEAN); nulls 3611 (card 3611)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_payments.payment_type",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_payments.payment_installments",
+  "ok": true,
+  "detail": "type INTEGER (card INTEGER); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_payments.payment_value",
+  "ok": true,
+  "detail": "type DECIMAL(12,2) (card DECIMAL(12,2)); nulls 0 (card 0); holds [payment_value >= 0]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_reviews.review_score",
+  "ok": true,
+  "detail": "type INTEGER (card INTEGER); nulls 0 (card 0); holds [review_score between 1 and 5]: 0 violations"
+ },
+ {
+  "kind": "column_fact",
+  "name": "marts.fct_reviews.review_created_at",
+  "ok": true,
+  "detail": "type TIMESTAMP (card TIMESTAMP); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_late_rate.metric_name",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_late_rate.rule",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_late_rate.numerator",
+  "ok": true,
+  "detail": "type BIGINT (card BIGINT); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_late_rate.denominator",
+  "ok": true,
+  "detail": "type BIGINT (card BIGINT); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_late_rate.value_pct",
+  "ok": true,
+  "detail": "type DOUBLE (card DOUBLE); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_late_rate_monthly.numerator",
+  "ok": true,
+  "detail": "type BIGINT (card BIGINT); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_late_rate_monthly.denominator",
+  "ok": true,
+  "detail": "type BIGINT (card BIGINT); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_late_rate_monthly.value_pct",
+  "ok": true,
+  "detail": "type DOUBLE (card DOUBLE); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_late_rate_orders.order_id",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_late_rate_orders.purchase_date",
+  "ok": true,
+  "detail": "type DATE (card DATE); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_late_rate_orders.delivery_state",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_late_rate_orders.delivery_evidence",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_late_rate_orders.ship_to_state",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_late_rate_orders.review_before_delivery",
+  "ok": true,
+  "detail": "type BOOLEAN (card BOOLEAN); nulls 629 (card 629)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_repeat_rate_90d.metric_name",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_repeat_rate_90d.rule",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_repeat_rate_90d.numerator",
+  "ok": true,
+  "detail": "type BIGINT (card BIGINT); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_repeat_rate_90d.denominator",
+  "ok": true,
+  "detail": "type BIGINT (card BIGINT); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_repeat_rate_90d.value_pct",
+  "ok": true,
+  "detail": "type DOUBLE (card DOUBLE); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_repeat_rate_ever.metric_name",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_repeat_rate_ever.rule",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_repeat_rate_ever.numerator",
+  "ok": true,
+  "detail": "type BIGINT (card BIGINT); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_repeat_rate_ever.denominator",
+  "ok": true,
+  "detail": "type BIGINT (card BIGINT); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_repeat_rate_ever.value_pct",
+  "ok": true,
+  "detail": "type DOUBLE (card DOUBLE); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_review_score.metric_name",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_review_score.rule",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_review_score.numerator",
+  "ok": true,
+  "detail": "type HUGEINT (card HUGEINT); nulls 1 (card 1)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_review_score.denominator",
+  "ok": true,
+  "detail": "type BIGINT (card BIGINT); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metric_review_score.value_pct",
+  "ok": true,
+  "detail": "type DOUBLE (card DOUBLE); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metrics_headline.rule",
+  "ok": true,
+  "detail": "type VARCHAR (card VARCHAR); nulls 0 (card 0)"
+ },
+ {
+  "kind": "column_fact",
+  "name": "metrics.metrics_headline.is_headline",
+  "ok": true,
+  "detail": "type BOOLEAN (card BOOLEAN); nulls 0 (card 0)"
+ },
+ {
   "kind": "fact",
   "name": "People with a qualifying order",
   "ok": true,
@@ -556,6 +970,36 @@
   "name": "The sequence number follows purchased_at, so seq = 1 is the person's earliest qualifying order",
   "ok": true,
   "detail": "count=0 (card 0)"
+ },
+ {
+  "kind": "fact",
+  "name": "Orders with more than one survey response",
+  "ok": true,
+  "detail": "count=547 (card 547)"
+ },
+ {
+  "kind": "fact",
+  "name": "Survey responses (review_id) attached to more than one order",
+  "ok": true,
+  "detail": "count=789 (card 789)"
+ },
+ {
+  "kind": "fact",
+  "name": "Survey responses sent on an earlier day than the delivery",
+  "ok": true,
+  "detail": "count=5127 (card 5127)"
+ },
+ {
+  "kind": "fact",
+  "name": "Of those, responses sent on or after the promised date",
+  "ok": true,
+  "detail": "count=4713 (card 4713)"
+ },
+ {
+  "kind": "fact",
+  "name": "Of those, responses on orders whose delivery_state is delivered_late",
+  "ok": true,
+  "detail": "count=4777 (card 4777)"
  },
  {
   "kind": "fact",
@@ -610,6 +1054,36 @@
   "name": "Nobody answers the survey before the order is delivered",
   "ok": true,
   "detail": "count=4367 (card 4367)"
+ },
+ {
+  "kind": "coverage",
+  "name": "allowlist reasons",
+  "ok": true,
+  "detail": "6 exemptions, each with a reason"
+ },
+ {
+  "kind": "coverage",
+  "name": "tables",
+  "ok": true,
+  "detail": "16 tables; undescribed: none"
+ },
+ {
+  "kind": "coverage",
+  "name": "columns",
+  "ok": true,
+  "detail": "127 columns; undescribed: none"
+ },
+ {
+  "kind": "coverage",
+  "name": "numbers in ONTOLOGY.md",
+  "ok": true,
+  "detail": "41 numbers shown; not a checked value in ontology.yml: none"
+ },
+ {
+  "kind": "coverage",
+  "name": "allowlist is current",
+  "ok": true,
+  "detail": "entries matching nothing: none"
  },
  {
   "kind": "metric",

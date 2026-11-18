@@ -226,10 +226,80 @@ CASES = [
     ("Ontology fact: the order's review_score equals the chosen response's score",
      'ontology:fact review_score on the order equals the score of the chosen response, and an order with no chosen response has a null score',
      {"sql": ['update marts.fct_orders set review_score = 6 - review_score where order_id in (select order_id from marts.fct_orders where review_score is not null order by order_id limit 1)']}),
+    # Cards added so that coverage could pass: each card is a checked claim, not just a sentence.
+    ("Ontology card: promised_days is the days from purchase to the promised date",
+     "ontology:column_fact marts.fct_orders.promised_days",
+     {"sql": ["update marts.fct_orders set promised_days = promised_days + 1 where order_id in (select order_id from marts.fct_orders order by order_id limit 1)"]}),
+    ("Ontology card: paid_minus_due is amount_paid minus amount_due",
+     "ontology:column_fact marts.fct_orders.paid_minus_due",
+     {"sql": ["update marts.fct_orders set paid_minus_due = paid_minus_due + 1 where order_id in (select order_id from marts.fct_orders where paid_minus_due is not null order by order_id limit 1)"]}),
+    ("Ontology card: amount_due is null only on orders with no items",
+     "ontology:column_fact marts.fct_orders.amount_due",
+     {"sql": ["update marts.fct_orders set amount_due = null where order_id in (select order_id from marts.fct_orders where n_items > 0 order by order_id limit 1)"]}),
+    ("Ontology fact: 5,127 survey responses were sent before delivery",
+     "ontology:fact Survey responses sent on an earlier day than the delivery",
+     {"sql": ["update marts.fct_reviews set review_before_delivery = false where review_id in (select review_id from marts.fct_reviews where review_before_delivery limit 1)"]}),
+    # Coverage (ontology/coverage.py): anything the warehouse or the docs show must be described, or exempted with a reason.
+    ("Coverage: removing a column card leaves the column undescribed",
+     "ontology:coverage columns",
+     {"yml_drop_card": "marts.fct_orders.max_installments"}),
+    ("Coverage: a new warehouse column with no card fails",
+     "ontology:coverage columns",
+     {"sql": ["alter table marts.dim_seller add column seller_tier varchar"]}),
+    ("Coverage: a new warehouse table with no card fails",
+     "ontology:coverage tables",
+     {"sql": ["create table marts.fct_refunds as select 1 as refund_id"]}),
+    ("Coverage: a number shown in ONTOLOGY.md that ontology.yml does not hold fails",
+     "ontology:coverage numbers in ONTOLOGY.md",
+     {"md_append": "\nOrders shipped in 2017: 98,765.\n"}),
+    ("Coverage: a number shown in ONTOLOGY.md that ontology.yml only mentions in prose fails",
+     "ontology:coverage numbers in ONTOLOGY.md",
+     {"yml_replace": [("    expected: 547\n", "    expected: 546\n")]}),
+    ("Ontology fact: 547 orders have more than one survey response",
+     "ontology:fact Orders with more than one survey response",
+     {"sql": ["insert into marts.fct_reviews select * from marts.fct_reviews where order_id in (select order_id from marts.fct_reviews group by 1 having count(*) = 1 limit 1)"]}),
+    ("Ontology fact: 789 review_ids sit on more than one order",
+     "ontology:fact Survey responses (review_id) attached to more than one order",
+     {"sql": ["insert into marts.fct_reviews select * replace ('zzz_fake_order' as order_id) from marts.fct_reviews where review_id in (select review_id from marts.fct_reviews group by 1 having count(distinct order_id) = 1) limit 1"]}),
+    ("Coverage: an exemption with no written reason fails",
+     "ontology:coverage allowlist reasons",
+     {"allowlist_append": "  - match: marts.fct_orders.max_installments\n    reason: ''\n"}),
+    ("Coverage: an exemption that matches nothing fails",
+     "ontology:coverage allowlist is current",
+     {"allowlist_append": "  - match: marts.dim_seller.no_such_column\n    reason: stale on purpose\n"}),
 ]
 
-def run_ontology_claim(claim, db):
-    env = dict(os.environ, OLIST_DB_PATH=db, ONTOLOGY_NO_REPORT="1")
+def edited_docs(mut, work):
+    """Env vars pointing the ontology check at edited copies of ontology.yml, ONTOLOGY.md and the coverage allowlist."""
+    o = os.path.join(ROOT, "ontology")
+    yml, md, allow = (open(os.path.join(o, f)).read() for f in ("ontology.yml", "ONTOLOGY.md", "coverage_allowlist.yml"))
+    if "yml_drop_card" in mut:                       # remove one `columns:` card (its key line and indented body)
+        key = mut["yml_drop_card"]
+        lines, out, skip = yml.splitlines(keepends=True), [], False
+        for l in lines:
+            if l.startswith(f"  {key}:"):
+                skip = True
+                continue
+            if skip and l.startswith("    "):
+                continue
+            skip = False
+            out.append(l)
+        assert len(out) < len(lines), f"no card {key}"
+        yml = "".join(out)
+    for old, new in mut.get("yml_replace", []):      # edit a value in the copy of ontology.yml
+        assert old in yml, f"no {old!r} in ontology.yml"
+        yml = yml.replace(old, new, 1)
+    md += mut.get("md_append", "")
+    allow += mut.get("allowlist_append", "")
+    env = {}
+    for var, name, text in (("ONTOLOGY_YML", "ontology.yml", yml), ("ONTOLOGY_MD", "ONTOLOGY.md", md), ("COVERAGE_ALLOWLIST", "allow.yml", allow)):
+        path = os.path.join(work, name)
+        open(path, "w").write(text)
+        env[var] = path
+    return env
+
+def run_ontology_claim(claim, db, extra_env=None):
+    env = dict(os.environ, OLIST_DB_PATH=db, ONTOLOGY_NO_REPORT="1", **(extra_env or {}))
     p = subprocess.run([sys.executable, os.path.join(ROOT, "ontology", "check.py"), "--skip-semantic"],
                        cwd=ROOT, env=env, capture_output=True, text=True)
     kind, name = claim.split(" ", 1)
@@ -237,9 +307,9 @@ def run_ontology_claim(claim, db):
     res = [(claim, "pass" if l.startswith("PASS") else "fail", l.split(": ", 1)[1]) for l in hits]
     return (0 if res and all(r[1] == "pass" for r in res) else 1), res
 
-def run_tests(selector, db, raw):
+def run_tests(selector, db, raw, extra_env=None):
     if selector.startswith("ontology:"):
-        return run_ontology_claim(selector[len("ontology:"):], db)
+        return run_ontology_claim(selector[len("ontology:"):], db, extra_env)
     env = dict(os.environ, OLIST_DB_PATH=db, OLIST_RAW_DIR=raw, DBT_PROFILES_DIR=ROOT)
     tp = tempfile.mkdtemp(prefix="dbt-target-")
     p = subprocess.run([DBT, "test", "--select", selector, "--target-path", tp, "--quiet"],
@@ -281,12 +351,13 @@ def main():
         b_rc, b_res = run_tests(selector, base_db, raw_clean)
         mut_db = os.path.join(work, "mutant.duckdb"); shutil.copy(DB, mut_db)
         raw_mut = raw_copy(mut.get("raw_edit"))
+        doc_env = edited_docs(mut, work) if {"yml_drop_card", "yml_replace", "md_append", "allowlist_append"} & set(mut) else None
         if "sql" in mut:
             con = duckdb.connect(mut_db)
             for s in mut["sql"]:
                 con.execute(s)
             con.close()
-        m_rc, m_res = run_tests(selector, mut_db, raw_mut)
+        m_rc, m_res = run_tests(selector, mut_db, raw_mut, doc_env)
         for p in (base_db, mut_db): os.remove(p)
         shutil.rmtree(raw_clean, ignore_errors=True); shutil.rmtree(raw_mut, ignore_errors=True)
         base_ok = b_rc == 0 and b_res and all(s == "pass" for _, s, _ in b_res)
@@ -307,7 +378,8 @@ def main():
         f.write("Each rule's tests pass on the real warehouse (baseline) and fail after known-bad rows are injected into a copy (mutant).\n\n")
         f.write("| Rule | Tests | Known-bad rows injected | Baseline | Mutant (failing rows) | Verdict |\n|---|---|---|---|---|---|\n")
         for r in report:
-            mut = r["mutation"].get("sql") or [f"raw file edit: {r['mutation']['raw_edit']}"]
+            m = r["mutation"]
+            mut = m.get("sql") or [f"{k}: {m[k]}" for k in ("raw_edit", "yml_drop_card", "yml_replace", "md_append", "allowlist_append") if k in m]
             f.write(f"| {r['rule']} | `{r['selector']}` | {'<br>'.join('`'+m.replace('|','\\|')+'`' for m in mut)} | "
                     f"{', '.join(s for _, s, _ in r['baseline'])} | {', '.join(f'{s} ({n})' for _, s, n in r['mutant'])} | **{r['verdict']}** |\n")
     bad = [r for r in report if r["verdict"] != "PROVEN"]
