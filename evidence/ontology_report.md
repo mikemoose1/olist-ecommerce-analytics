@@ -207,7 +207,7 @@
 | model_link | The survey goes out on or after the purchase day | PASS | no invariant in the model; ONTOLOGY.md Model column shows 'not modeled', card says 'not modeled' |
 | model_link | Nobody answers the survey before the order is delivered | PASS | invariant NoReviewBeforeDelivery: defined=True in cfg=True report says breaks=True; ONTOLOGY.md Model column shows '**breaks**', card says '**breaks**' |
 | model_link | every invariant TLC checks backs a rule | PASS | invariants in the cfg that no rule claims: none |
-| coverage | allowlist reasons | PASS | 44 exemptions, each with a reason |
+| coverage | allowlist reasons | PASS | 45 exemptions, each with a reason |
 | coverage | tables | PASS | 16 tables; undescribed: none |
 | coverage | columns | PASS | 127 columns; undescribed: none |
 | coverage | numbers in ONTOLOGY.md | PASS | 71 numbers each bound to the ontology.yml value they state; problems: none |

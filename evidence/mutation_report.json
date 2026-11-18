@@ -23,7 +23,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.9
+  "seconds": 9.8
  },
  {
   "rule": "Raw row counts are as published",
@@ -36,12 +36,12 @@
   },
   "baseline": [
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
+    "dbt_expectations_source_expect_table_row_count_to_equal_olist_raw_olist_orders_dataset_99441",
     "pass",
     0
    ],
    [
-    "dbt_expectations_source_expect_table_row_count_to_equal_olist_raw_olist_orders_dataset_99441",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
     "pass",
     0
    ]
@@ -59,7 +59,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.4
+  "seconds": 9.3
  },
  {
   "rule": "Staging keeps every raw row",
@@ -93,7 +93,7 @@
   ],
   "mutant": [
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_delivery_ref_stg_orders_",
     "fail",
     1
    ],
@@ -103,7 +103,7 @@
     1
    ],
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_delivery_ref_stg_orders_",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
     "fail",
     1
    ],
@@ -114,7 +114,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 10.0
+  "seconds": 145.4
  },
  {
   "rule": "Modeling never creates or loses money (no fan-out)",
@@ -139,7 +139,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.9
+  "seconds": 21.8
  },
  {
   "rule": "Repeat metrics count people, not per-order ids",
@@ -164,7 +164,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.5
+  "seconds": 19.2
  },
  {
   "rule": "A multi-seller order is never treated as a single observed parcel",
@@ -189,7 +189,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.6
+  "seconds": 11.4
  },
  {
   "rule": "A review dated before delivery is flagged",
@@ -214,7 +214,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.2
+  "seconds": 11.3
  },
  {
   "rule": "Paid equals items + freight, or the order is labeled",
@@ -239,7 +239,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.4
+  "seconds": 10.3
  },
  {
   "rule": "Real payment gaps stay under 0.5% of orders",
@@ -266,7 +266,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.1
+  "seconds": 9.9
  },
  {
   "rule": "Only full months are in the analysis window",
@@ -291,7 +291,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 8.9
+  "seconds": 9.4
  },
  {
   "rule": "Delivery state agrees with status and dates",
@@ -316,7 +316,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.1
+  "seconds": 9.6
  },
  {
   "rule": "Orders without items are labeled no_items",
@@ -341,7 +341,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.4
+  "seconds": 9.9
  },
  {
   "rule": "Exactly one chosen review per reviewed order",
@@ -366,7 +366,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 14.6
+  "seconds": 9.5
  },
  {
   "rule": "Every order's purchase date exists in dim_date",
@@ -415,12 +415,12 @@
     4
    ],
    [
-    "relationships_fct_order_items_order_id__order_id__ref_fct_orders_",
+    "relationships_fct_orders_customer_unique_id__customer_unique_id__ref_dim_customer_",
     "pass",
     0
    ],
    [
-    "relationships_fct_orders_customer_unique_id__customer_unique_id__ref_dim_customer_",
+    "relationships_fct_order_items_order_id__order_id__ref_fct_orders_",
     "pass",
     0
    ],
@@ -441,7 +441,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.4
+  "seconds": 9.5
  },
  {
   "rule": "One location per zip",
@@ -466,7 +466,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.2
+  "seconds": 9.3
  },
  {
   "rule": "Zip locations are inside Brazil",
@@ -490,18 +490,18 @@
   ],
   "mutant": [
    [
-    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lng___34_7___74_0",
-    "pass",
-    0
-   ],
-   [
     "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lat__5_3___33_8",
     "fail",
     1
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lng___34_7___74_0",
+    "pass",
+    0
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.2
+  "seconds": 9.4
  },
  {
   "rule": "Payment types are known values",
@@ -526,7 +526,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.3
+  "seconds": 9.1
  },
  {
   "rule": "Trend metrics never include a partial month",
@@ -551,7 +551,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 9.2
+  "seconds": 9.3
  },
  {
   "rule": "Ontology: an order has exactly one row (no order with two customers)",
@@ -576,7 +576,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.5
+  "seconds": 2.4
  },
  {
   "rule": "Ontology: every customer has at least one order",
@@ -601,7 +601,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 99.5
+  "seconds": 2.4
  },
  {
   "rule": "Ontology: every item's product exists",
@@ -626,7 +626,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 8.9
+  "seconds": 2.5
  },
  {
   "rule": "Ontology: every survey response belongs to a real order",
@@ -651,7 +651,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 6.7
+  "seconds": 2.4
  },
  {
   "rule": "Ontology: an order never has two chosen reviews",
@@ -676,7 +676,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 5.2
+  "seconds": 2.5
  },
  {
   "rule": "Ontology: no new unknown ship-to locations beyond the documented 278",
@@ -701,7 +701,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.8
+  "seconds": 2.4
  },
  {
   "rule": "Ontology stage rule: late always means delivered after the promised day",
@@ -726,7 +726,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.3
+  "seconds": 2.4
  },
  {
   "rule": "Ontology: the repeat cohort has one row per person (no duplicate person)",
@@ -751,7 +751,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.8
+  "seconds": 2.3
  },
  {
   "rule": "Ontology: every cohort person is a real customer",
@@ -776,7 +776,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.7
+  "seconds": 2.4
  },
  {
   "rule": "Ontology: purchased_at is never null",
@@ -801,7 +801,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.7
+  "seconds": 2.3
  },
  {
   "rule": "Ontology: purchased_at keeps its TIMESTAMP type (a DATE would lose the 24-hour rule)",
@@ -826,7 +826,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.0
+  "seconds": 2.3
  },
  {
   "rule": "Ontology: n_parcels is 0, not null, for an order with no items",
@@ -851,7 +851,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.7
+  "seconds": 2.4
  },
  {
   "rule": "Ontology: in_analysis_window is never null",
@@ -876,7 +876,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.9
+  "seconds": 2.5
  },
  {
   "rule": "Ontology: review_score is null only when the order has no response",
@@ -901,7 +901,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.5
+  "seconds": 2.6
  },
  {
   "rule": "Ontology: review_score never holds a value outside 1 to 5",
@@ -926,7 +926,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.8
+  "seconds": 2.6
  },
  {
   "rule": "Ontology: the repeat flag is never null",
@@ -951,7 +951,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.7
+  "seconds": 2.4
  },
  {
   "rule": "Ontology: the canceled count and the 6 canceled orders with a delivery date",
@@ -976,7 +976,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.6
+  "seconds": 2.5
  },
  {
   "rule": "Ontology: placed an order versus qualifying order (1,113 people with no qualifying order)",
@@ -1001,7 +1001,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.7
+  "seconds": 2.4
  },
  {
   "rule": "Ontology: the order count with no parcels (n_parcels = 0)",
@@ -1026,7 +1026,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.5
+  "seconds": 2.3
  },
  {
   "rule": "Ontology: the analysis-window flag counts (349 outside)",
@@ -1051,7 +1051,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.9
+  "seconds": 2.4
  },
  {
   "rule": "Ontology: the repeat cohort is everyone old enough (77,560 and the 17,423 left out)",
@@ -1076,7 +1076,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.7
+  "seconds": 2.4
  },
  {
   "rule": "Ontology: first_order_at is the purchased_at of the seq = 1 order",
@@ -1101,7 +1101,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.6
+  "seconds": 2.5
  },
  {
   "rule": "Ontology: the headline metric table has its 5 rows",
@@ -1126,7 +1126,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.6
+  "seconds": 2.3
  },
  {
   "rule": "Ontology: is_qualifying_order follows its rule (status and items)",
@@ -1176,7 +1176,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.5
+  "seconds": 2.8
  },
  {
   "rule": "Ontology: the sequence number is null exactly for non-qualifying orders",
@@ -1201,7 +1201,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.5
+  "seconds": 2.4
  },
  {
   "rule": "Ontology: purchase_date is the calendar day of purchased_at",
@@ -1226,7 +1226,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.4
+  "seconds": 2.3
  },
  {
   "rule": "Ontology: n_items is never null",
@@ -1251,7 +1251,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.4
+  "seconds": 2.3
  },
  {
   "rule": "Ontology: delivered_to_customer_at has exactly 2,965 nulls",
@@ -1301,7 +1301,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.6
+  "seconds": 2.4
  },
  {
   "rule": "Ontology: qualifying orders never exceed orders",
@@ -1326,7 +1326,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.9
+  "seconds": 2.4
  },
  {
   "rule": "Ontology: first_qualifying_order_at is null exactly when a person has no qualifying order",
@@ -1351,7 +1351,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.5
+  "seconds": 2.4
  },
  {
   "rule": "Ontology: the cohort person id is never null",
@@ -1401,7 +1401,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.4
+  "seconds": 2.6
  },
  {
   "rule": "Ontology: first_order_date is the calendar day of first_order_at",
@@ -1426,7 +1426,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.5
+  "seconds": 2.6
  },
  {
   "rule": "Ontology: the headline numerator is null only for the review gap",
@@ -1451,7 +1451,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.4
+  "seconds": 2.5
  },
  {
   "rule": "Ontology: the headline denominator is never null",
@@ -1476,7 +1476,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.6
+  "seconds": 2.4
  },
  {
   "rule": "Ontology: the headline value is never null",
@@ -1501,7 +1501,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.4
+  "seconds": 2.5
  },
  {
   "rule": "Ontology: the headline metric name is never null",
@@ -1526,7 +1526,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.4
  },
  {
   "rule": "Ontology: the review score count (768 orders with none)",
@@ -1551,7 +1551,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.4
  },
  {
   "rule": "Ontology fact: people with a qualifying order (94,983)",
@@ -1601,7 +1601,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.6
+  "seconds": 2.5
  },
  {
   "rule": "Ontology fact: the newest qualifying purchase and the cohort cutoff",
@@ -1626,7 +1626,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.5
+  "seconds": 2.6
  },
  {
   "rule": "Ontology fact: one seq = 1 order per cohort person (the first-order state is unambiguous)",
@@ -1651,7 +1651,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.5
+  "seconds": 2.9
  },
  {
   "rule": "Ontology fact: seq = 1 is the earliest qualifying order",
@@ -1676,7 +1676,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.5
+  "seconds": 2.7
  },
  {
   "rule": "Ontology fact: same-second qualifying orders (281 pairs)",
@@ -1701,7 +1701,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.5
+  "seconds": 2.8
  },
  {
   "rule": "Ontology fact: the order's review_score equals the chosen response's score",
@@ -1726,7 +1726,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.4
+  "seconds": 2.5
  },
  {
   "rule": "Ontology card: promised_days is the days from purchase to the promised date",
@@ -1751,7 +1751,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.4
  },
  {
   "rule": "Ontology card: paid_minus_due is amount_paid minus amount_due",
@@ -1776,7 +1776,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.4
+  "seconds": 2.5
  },
  {
   "rule": "Ontology card: amount_due is null only on orders with no items",
@@ -1801,7 +1801,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.6
  },
  {
   "rule": "Ontology fact: 5,127 survey responses were sent before delivery",
@@ -1826,7 +1826,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.4
+  "seconds": 2.5
  },
  {
   "rule": "G7 coverage: a metric table cited only as a card's model has no entity",
@@ -1849,7 +1849,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.2
+  "seconds": 2.5
  },
  {
   "rule": "G7 coverage: a column cited only as a metric's source has no contract",
@@ -1872,7 +1872,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.2
+  "seconds": 2.5
  },
  {
   "rule": "G7 entity: the judged-order table has one row per judged order",
@@ -1897,7 +1897,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.4
+  "seconds": 2.7
  },
  {
   "rule": "G7 entity: the monthly table has one row per month",
@@ -1922,7 +1922,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.6
  },
  {
   "rule": "G7 entity: a result table has exactly the rows on its card",
@@ -1947,7 +1947,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.5
  },
  {
   "rule": "G7 link: every judged order is an order",
@@ -1997,7 +1997,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.6
+  "seconds": 2.5
  },
  {
   "rule": "G7 card: a judged order's review score is 1 to 5 or null",
@@ -2047,7 +2047,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.5
+  "seconds": 2.3
  },
  {
   "rule": "G7 fact: 6,518 judged orders are late",
@@ -2072,7 +2072,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.6
+  "seconds": 2.4
  },
  {
   "rule": "Card: recon_status uses only the six named values",
@@ -2122,7 +2122,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.5
+  "seconds": 2.4
  },
  {
   "rule": "Fact: one chosen response per order that has any",
@@ -2147,7 +2147,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.7
+  "seconds": 2.4
  },
  {
   "rule": "Coverage: removing a column card leaves the column undescribed",
@@ -2195,7 +2195,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.4
+  "seconds": 2.6
  },
  {
   "rule": "Coverage: a new warehouse table with no card fails",
@@ -2220,7 +2220,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.4
+  "seconds": 2.6
  },
  {
   "rule": "Coverage: a number shown in ONTOLOGY.md that ontology.yml does not hold fails",
@@ -2239,7 +2239,7 @@
    [
     "coverage numbers in ONTOLOGY.md",
     "fail",
-    "71 numbers each bound to the ontology.yml value they state; problems: ['98,765: no <!--n:path--> marker (line 274)']"
+    "71 numbers each bound to the ontology.yml value they state; problems: ['98,765: no <!--n:path--> marker (line 274)', '2017: no <!--n:path--> marker (line 274)']"
    ]
   ],
   "verdict": "PROVEN",
@@ -2271,7 +2271,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.2
+  "seconds": 2.4
  },
  {
   "rule": "Coverage (S5): swapping the late rate for the review average fails, though 4.156 exists elsewhere in the YAML",
@@ -2299,7 +2299,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.4
  },
  {
   "rule": "Coverage (S5): a number with its marker removed fails",
@@ -2327,7 +2327,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.4
+  "seconds": 2.1
  },
  {
   "rule": "Coverage (S5): a marker that points at nothing fails",
@@ -2355,7 +2355,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.1
  },
  {
   "rule": "Coverage (S5): a marker that follows no number fails",
@@ -2378,7 +2378,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.2
  },
  {
   "rule": "Model (S6): the Model column says 'holds' for a rule no invariant checks (the reviewer's exact case)",
@@ -2406,7 +2406,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.3
+  "seconds": 2.2
  },
  {
   "rule": "Model (S6): a card names an invariant the TLA+ model does not define",
@@ -2490,7 +2490,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.4
+  "seconds": 2.3
  },
  {
   "rule": "Ontology fact: 547 orders have more than one survey response",
@@ -2515,7 +2515,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.5
+  "seconds": 2.4
  },
  {
   "rule": "Ontology fact: 789 review_ids sit on more than one order",
@@ -2540,7 +2540,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.7
+  "seconds": 2.5
  },
  {
   "rule": "Coverage: an exemption with no written reason fails",
@@ -2552,7 +2552,7 @@
    [
     "coverage allowlist reasons",
     "pass",
-    "44 exemptions, each with a reason"
+    "45 exemptions, each with a reason"
    ]
   ],
   "mutant": [
@@ -2591,7 +2591,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.4
+  "seconds": 2.5
  },
  {
   "rule": "Coverage (M5): a one-digit count is edited (7 sellers -> 70)",
@@ -2619,7 +2619,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.5
+  "seconds": 2.4
  },
  {
   "rule": "Coverage (M5): the headline-metric row count is edited (5 -> 6)",
@@ -2647,7 +2647,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.4
+  "seconds": 2.2
  },
  {
   "rule": "Coverage (M5): an exempt number is edited inside its phrase (29 reachable states -> 92)",
@@ -2675,7 +2675,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.4
+  "seconds": 2.2
  },
  {
   "rule": "Coverage (M5): a timestamp is edited (the cohort cutoff)",
@@ -2703,7 +2703,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.5
+  "seconds": 2.3
  },
  {
   "rule": "Coverage (M5): a duration is edited (at most 90 days -> 60)",
@@ -2731,7 +2731,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.6
+  "seconds": 2.2
  },
  {
   "rule": "Coverage (M5): a duration is edited (24 hours -> 12)",
@@ -2815,7 +2815,231 @@
    ]
   ],
   "verdict": "PROVEN",
+  "seconds": 2.2
+ },
+ {
+  "rule": "Coverage: a new number hidden as a hyphen range (3-5) fails",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "md_replace": [
+    [
+     "They are kept, with no map point.",
+     "They are kept, with 3-5 map points."
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "71 numbers each bound to the ontology.yml value they state; problems: ['3: no <!--n:path--> marker (line 121)', '5: no <!--n:path--> marker (line 121)']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.1
+ },
+ {
+  "rule": "Coverage: a new number hidden as a number glued to a unit (30d) fails",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "md_replace": [
+    [
+     "They are kept, with no map point.",
+     "They are kept for 30d, with no map point."
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "71 numbers each bound to the ontology.yml value they state; problems: ['30: no <!--n:path--> marker (line 121)']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.2
+ },
+ {
+  "rule": "Coverage: a new number hidden as an ordinal (2nd) fails",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "md_replace": [
+    [
+     "They are kept, with no map point.",
+     "They are kept as the 2nd group, with no map point."
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "71 numbers each bound to the ontology.yml value they state; problems: ['2: no <!--n:path--> marker (line 121)']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.3
+ },
+ {
+  "rule": "Coverage: a new number hidden as a '..' range (3..5) fails",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "md_replace": [
+    [
+     "They are kept, with no map point.",
+     "They are kept (ids up to ..5), with no map point."
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "71 numbers each bound to the ontology.yml value they state; problems: ['5: no <!--n:path--> marker (line 121)']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.3
+ },
+ {
+  "rule": "Coverage: a new number hidden as a number after a colon (count:9) fails",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "md_replace": [
+    [
+     "They are kept, with no map point.",
+     "They are kept (count:9), with no map point."
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "71 numbers each bound to the ontology.yml value they state; problems: ['9: no <!--n:path--> marker (line 121)']"
+   ]
+  ],
+  "verdict": "PROVEN",
   "seconds": 2.4
+ },
+ {
+  "rule": "Coverage: a new number hidden as numbers after a comma (3,9) fails",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "md_replace": [
+    [
+     "They are kept, with no map point.",
+     "They are kept (ids 3,9), with no map point."
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "71 numbers each bound to the ontology.yml value they state; problems: ['3: no <!--n:path--> marker (line 121)', '9: no <!--n:path--> marker (line 121)']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.3
+ },
+ {
+  "rule": "Coverage: a new number hidden as a dotted triple (3.2.1) fails",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "md_replace": [
+    [
+     "They are kept, with no map point.",
+     "They are kept in 3.2.1 places, with no map point."
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "71 numbers each bound to the ontology.yml value they state; problems: ['3.2.1: no <!--n:path--> marker (line 121)']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.3
+ },
+ {
+  "rule": "Coverage: a new number hidden as a line-start 'N. ' outside a numbered list fails",
+  "selector": "ontology:coverage numbers in ONTOLOGY.md",
+  "mutation": {
+   "md_replace": [
+    [
+     "They are kept, with no map point.\n",
+     "They are kept, with no map point.\n\n9. more orders are dropped.\n"
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "pass",
+    "71 numbers each bound to the ontology.yml value they state; problems: none"
+   ]
+  ],
+  "mutant": [
+   [
+    "coverage numbers in ONTOLOGY.md",
+    "fail",
+    "71 numbers each bound to the ontology.yml value they state; problems: ['9: no <!--n:path--> marker (line 123)']"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 2.3
  },
  {
   "rule": "Coverage (M5): a fact marker moved to a sentence that does not name it",
@@ -2843,7 +3067,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.4
+  "seconds": 2.3
  },
  {
   "rule": "Coverage (M5): an exemption with a bare value and no context phrase fails",
@@ -2871,7 +3095,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.4
+  "seconds": 2.5
  },
  {
   "rule": "Coverage: an exemption that matches nothing fails",
