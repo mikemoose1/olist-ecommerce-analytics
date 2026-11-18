@@ -5,7 +5,7 @@ Numbers: every number carries a tag, and recommendation/memo_check.py checks it,
   <!--d:name-->  a design constant: memo_check.DESIGN, or a story threshold below
 Shape: each question section (## Q...) opens with one bold one-sentence takeaway and holds exactly one chart; each chart's
 key numbers are also in its section's text (CHART_KEYS, for text-only readers); each lever in "What to do" names its driver
-in its bold lead (LEVER_DRIVERS), and a lever resting on a borderline pass says so there (LEVER_HEDGES); the page holds both KPI tree markers.
+in its bold lead (LEVER_DRIVERS); a scoped count carries its population right after it (SCOPED_FACTS); and a lever resting on a borderline pass says so there (LEVER_HEDGES); the page holds both KPI tree markers.
 Number words: the title, subtitle, headings, bold lines and chart alt text cannot carry tags, so every number word there
 ("two in three", "about four times", "three ... months") must sit in a phrase of NUMBER_PHRASES that checks it against the
 facts, and alt text (either quote style) and every header string outside `format:` hold no numerals.
@@ -47,7 +47,8 @@ def body(text):
 CHART_KEYS = {
     "fig_cost.png": ["c_low_star_excess_exact", "c_low_star_all", "low_star_share_mid", "c_late_sales_last12_m", "c_late_sales_last12_share"],
     "fig_where_when.png": ["nne_rate", "c_rest_rate", "month_2018-03", "month_2018-02", "month_2017-11", "c_segment_thr"],
-    "fig_handoff.png": ["late_if_handoff_late", "late_if_handoff_ok", "c_handoff_late_n", "c_handoff_orders", "seller_side_pct"],
+    "fig_handoff.png": ["late_if_handoff_late", "late_if_handoff_ok", "c_handoff_late_n", "c_handoff_orders", "seller_side_pct",
+                        "late_orders"],
     "fig_comments.png": ["c_comment_pct", "survey_before_pct", "d:thr_comment_share"],
     "fig_repeat.png": ["rep_matched", "rep_matched_lo", "rep_matched_hi"],
 }
@@ -143,6 +144,22 @@ def check_number_words(text, f, d):
     return problems
 
 
+# A count that readers repeat without its population: wherever it is printed, its scope must follow within SCOPE_WINDOW
+# characters of plain text (wave-4 and wave-5 readers dropped "delivered single-seller" from the 11,635).
+SCOPED_FACTS = {"c_low_star_all": "delivered single-seller orders"}
+SCOPE_WINDOW = 60
+
+
+def check_scope(text):
+    problems = []
+    for name, scope in SCOPED_FACTS.items():
+        for m in re.finditer(rf"<!--f:{re.escape(name)}-->", text):
+            after = re.sub(r"<!--.*?-->", "", text[m.end():m.end() + 400])[:SCOPE_WINDOW]
+            if scope not in after:
+                problems.append(f"f:{name} is printed without its scope '{scope}' right after it: {after!r}")
+    return problems
+
+
 def tags_in(chunk):
     return {("d:" if k == "d" else "") + n.removeprefix("abs:") for k, n in re.findall(r"<!--(f|d):([^>]+?)-->", chunk)}
 
@@ -192,7 +209,7 @@ def check(text, fx=None, design_numbers=None):
     from memo_check import DESIGN
     fx, d = fx or facts(), design_numbers or design()
     n, problems = check_memo(body(text), fx, d)
-    return n, problems + check_shape(text) + check_number_words(text, fx, {**DESIGN, **d})
+    return n, problems + check_shape(text) + check_number_words(text, fx, {**DESIGN, **d}) + check_scope(text)
 
 
 def main():

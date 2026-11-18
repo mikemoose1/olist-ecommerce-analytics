@@ -12,7 +12,7 @@ This page is for an Olist operations manager deciding where to cut late deliveri
 
 ## Q1 What does late delivery cost Olist?
 
-**Late deliveries are linked to about 3,300<!--f:low_star_excess_mid--> of the 11,635<!--f:c_low_star_all--> reviews of 1<!--d:star_low_min--> or 2<!--d:star_low_max--> stars on delivered single-seller orders, 28.7<!--f:low_star_share_mid-->% of them.**
+**Late deliveries are linked to about 3,300<!--f:low_star_excess_mid--> of the 11,635<!--f:c_low_star_all--> bad reviews on delivered single-seller orders (1<!--d:star_low_min--> or 2<!--d:star_low_max--> stars), 28.7<!--f:low_star_share_mid-->% of them.**
 
 ![](fig_cost.png){fig-alt="Bar chart. Left, all one- and two-star reviews split into the part linked to late delivery and the rest. Right, sales in the most recent year of the window split into sales on late orders and the rest."}
 
@@ -46,7 +46,7 @@ North and northeast addresses run 12.2<!--f:nne_rate-->% late, range 11.6<!--f:c
 
 ![](fig_handoff.png){fig-alt="Bar chart of the late rate for orders handed to the carrier after the ship-by date and on time, with ranges."}
 
-Late handoffs end late 21.2<!--f:late_if_handoff_late-->% of the time, range 20.4<!--f:c_handoff_late_lo-->% to 22.1<!--f:c_handoff_late_hi-->%, against 5.4<!--f:late_if_handoff_ok-->% for on-time handoffs, 3.9<!--f:c_handoff_ratio--> times as often. They make up 27.8<!--f:seller_side_pct-->% of late orders: 1,809<!--f:c_handoff_late_n--> late orders out of 8,530<!--f:c_handoff_orders--> handed over after ship-by. A seller test is worth running when late handoffs are at least 20<!--d:thr_handoff_share-->% of late orders and run late at least 2<!--d:thr_handoff_ratio--> times as often. Both hold by a wide margin. These bars were also set after the numbers had been seen. At most 1,344<!--f:c_avoidable_exact--> late orders, 20.6<!--f:avoidable_share-->%, would have been on time if every late handoff had behaved like an on-time one. The carrier may have been late anyway, so the real number is lower.
+Late handoffs end late 21.2<!--f:late_if_handoff_late-->% of the time, range 20.4<!--f:c_handoff_late_lo-->% to 22.1<!--f:c_handoff_late_hi-->%, against 5.4<!--f:late_if_handoff_ok-->% for on-time handoffs, 3.9<!--f:c_handoff_ratio--> times as often. Late handoffs make up 27.8<!--f:seller_side_pct-->% of all 6,518<!--f:late_orders--> late orders. Counted the other way, sellers handed 8,530<!--f:c_handoff_orders--> orders over after ship-by, and 1,809<!--f:c_handoff_late_n--> of those ended late. A seller test is worth running when late handoffs are at least 20<!--d:thr_handoff_share-->% of late orders and run late at least 2<!--d:thr_handoff_ratio--> times as often. Both hold by a wide margin. These bars were also set after the numbers had been seen. At most 1,344<!--f:c_avoidable_exact--> late orders, 20.6<!--f:avoidable_share-->%, would have been on time if every late handoff had behaved like an on-time one. The carrier may have been late anyway, so the real number is lower.
 
 ## Q4 What do customers with late orders write?
 
