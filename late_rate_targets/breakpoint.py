@@ -96,21 +96,6 @@ def davies_logit(x, y, n, grid, B, seed):
     return {"lr_gain": float(obs), "p_value": float((1 + (gains >= obs).sum()) / (B + 1)), "boot_95th_gain": float(np.percentile(gains, 95))}
 
 
-def boot_knots(x, y, n, knots, beta, grid, B, seed):
-    """Percentile interval for two break positions: simulate from the fitted two-break curve, search again."""
-    x, y, n = map(lambda a: np.asarray(a, float), (x, y, n))
-    rng = np.random.default_rng(seed)
-    mu = logit_predict(x, knots, beta)
-    out = []
-    for _ in range(B):
-        yb = rng.binomial(n.astype(int), mu).astype(float)
-        kn, _, _ = logit_search(x, yb, n, grid, 2)
-        out.append(kn)
-    out = np.array(out)
-    return {"first_break_95": [float(np.percentile(out[:, 0], 2.5)), float(np.percentile(out[:, 0], 97.5))],
-            "second_break_95": [float(np.percentile(out[:, 1], 2.5)), float(np.percentile(out[:, 1], 97.5))]}
-
-
 # ---- probability-scale segmented regression (straight pieces on the share itself), weighted by group size
 def _wls(X, y, w):
     sw = np.sqrt(w)

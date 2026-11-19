@@ -145,4 +145,4 @@ columns:
   - match: metrics.metric_bad_review_by_days_late.*
     reason: Columns of the days-late table; the totals are tied to the story by the dbt test assert_late_rate_targets_reconcile_to_story.
   - match: metrics.metric_review_cost_causal.*
-    reason: Columns of the review-cost table; each is defined in the model's header comment, and the totals are tied to evidence/review_cost_causal_report.json by assert_review_cost_causal_reconciles.
+    reason: Columns of the review-cost table; each is defined in the model's header comment, and the totals are tied to evidence/review_cost_causal_report.json (read from the file) and to the story's counts by assert_review_cost_causal_reconciles.

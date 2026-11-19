@@ -82,7 +82,15 @@ if "--slow" in sys.argv:
     out["conditional_logit"] = E.conditional_logit(R)
 
 p = out["fe"]["V2_preferred"]
+# The honest range is the spread of the point estimates across the six specifications (V4 lowest, V0 highest); the 95%
+# interval on the preferred spec alone only reflects sampling noise within that one specification.
+spec_extras = [v["extra"] for v in out["fe"].values()]
+f_ = out["falsification_late_handoff_on_time_pp"]; n_late_rev = out["population"]["reviewed_late"]
 out["headline"] = {"extra_bad_reviews": p["extra"], "ci95": [p["lo"], p["hi"]], "share_of_bad_reviews_pct": 100 * p["extra"] / out["population"]["bad_reviews"],
+                   "range_across_specifications": [min(spec_extras), max(spec_extras)],
+                   "hidden_seller_bias_if_in_every_late_order": {
+                       "points": [f_["pp"], f_["hi"]], "reviews": [f_["pp"] / 100 * n_late_rev, f_["hi"] / 100 * n_late_rev],
+                       "share_of_extra_pct": [100 * f_["pp"] / 100 * n_late_rev / p["extra"], 100 * f_["hi"] / 100 * n_late_rev / p["extra"]]},
                    "story_value": 3335, "within_10pct_of_story": bool(abs(p["extra"] / 3335 - 1) <= 0.10)}
 json.dump(out, open(os.path.join(ROOT, "evidence", "review_cost_causal_report.json"), "w"), indent=1, default=float)
 edges = {"late_d1": (1, 1), "late_d2": (2, 2), "late_d3": (3, 3), "late_d4_6": (4, 6), "late_d7_13": (7, 13), "late_d14p": (14, 9999)}

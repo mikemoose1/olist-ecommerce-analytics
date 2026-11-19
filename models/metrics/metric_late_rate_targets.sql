@@ -2,7 +2,9 @@
 -- Grain: one row. Built only from metric_late_rate_control_chart (Laney p-prime limits).
 --   alarm_line_late_rate   : the upper control limit at a typical month's order count (median of the last 12 months).
 --                            A month above it is a real change, not luck. The chart itself uses each month's own limit.
---   safe_goal_late_rate    : 25th percentile of the stable months (inside the limits, not thin): rates Olist already hit.
+--   safe_goal_late_rate    : 25th percentile of the stable months (inside the limits, not thin): rates Olist already hit
+--                            (about 3%, hit in about one month in four; bootstrap uncertainty about 2.8-4.4%).
+--                            "Stable" means "not an extreme month", not "healthy": the stable months still average 4.5% late.
 --   stretch_goal_late_rate : the same percentile with late handoffs late no more often than on-time handoffs.
 -- The story reconciliation columns repeat the headline numbers so a test can tie this table to the story.
 with months as (

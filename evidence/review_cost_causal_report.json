@@ -410,6 +410,24 @@
    3194.962530143767
   ],
   "share_of_bad_reviews_pct": 26.72897513317935,
+  "range_across_specifications": [
+   2880.4599647367017,
+   3352.6633196859902
+  ],
+  "hidden_seller_bias_if_in_every_late_order": {
+   "points": [
+    1.376898976354455,
+    2.396781916240391
+   ],
+   "reviews": [
+    87.6533888347246,
+    152.5791367878633
+   ],
+   "share_of_extra_pct": [
+    2.8185128343763006,
+    4.90621367880626
+   ]
+  },
   "story_value": 3335,
   "within_10pct_of_story": true
  }

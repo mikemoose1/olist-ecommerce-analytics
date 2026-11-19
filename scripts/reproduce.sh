@@ -35,7 +35,7 @@ ontology()    {
   "$BIN/python" verification/known_answers/selftest_append_only.py        # ...and that guard can fail
 }
 story()       { story_checks; }   # needs a built warehouse and the analysis report (make build, make recommendation)
-targets()     { "$BIN/python" late_rate_targets/selftest.py; "$BIN/python" late_rate_targets/analyze.py; }   # alarm line, goal lines, review break point (needs make build)
+targets()     { "$BIN/python" late_rate_targets/selftest.py; "$BIN/python" late_rate_targets/analyze.py; "$BIN/python" review_cost_causal/label_agreement.py; }   # alarm line, goal lines, review break point (needs make build)
 prove_tests() { "$BIN/python" scripts/prove_tests_fail.py; }
 experiments() { "$BIN/python" experiments/run_experiments.py; }
 docs()        { "$BIN/dbt" docs generate --quiet; "$BIN/python" scripts/lineage_mermaid.py; }

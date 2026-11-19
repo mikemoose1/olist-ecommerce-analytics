@@ -50,7 +50,12 @@ models:
         data_tests:
           - dbt_expectations.expect_column_values_to_be_between: {arguments: {min_value: 1}}
   - name: metric_late_rate_targets
-    description: One row. The alarm line, the safe goal and the stretch goal for the monthly late rate.
+    description: >
+      One row. The alarm line (about 8.4%), the safe goal (about 3%: hit in about one month in four, uncertainty about
+      2.8-4.4%) and the stretch goal (about 2.3%, a what-if with late handoffs fixed) for the monthly late rate.
+      "Stable" months are the ones that are not extreme (inside the limits, not thin); it does not mean healthy.
+      Values are pinned by assert_late_rate_limits_and_goals_hold_their_values and tied to the Python refit by
+      assert_late_rate_targets_match_the_python_refit.
     columns:
       - name: alarm_line_late_rate
         data_tests: [not_null]
@@ -73,7 +78,10 @@ models:
   - name: metric_review_cost_causal
     description: >
       Extra 1-2 star reviews caused by late delivery, one row per days-late bin; the sum is the review-cost number
-      (about 3,110, 26.7% of the 11,635 bad reviews). Evidence: evidence/review_cost_causal_report.json.
+      (about 3,110, 26.7% of the 11,635 bad reviews; range about 2,880-3,350 across the six specifications that were
+      tried, review_cost_causal/README.md). The effects come from review_cost_causal/analyze.py and are written to
+      seeds/review_cost_effects.csv; the test assert_review_cost_causal_reconciles reads
+      evidence/review_cost_causal_report.json and checks the dbt total against it.
     columns:
       - name: days_late_bin
         data_tests: [unique, not_null]

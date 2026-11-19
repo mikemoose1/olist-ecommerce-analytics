@@ -48,7 +48,7 @@ def main():
     ap.add_argument("--out"); ap.add_argument("--quick", action="store_true")
     a = ap.parse_args()
     seeds = 300 if a.quick else proofs.SEEDS
-    B_days, B_months, B_knots = (30, 100, 20) if a.quick else (500, 2000, 200)
+    B_days, B_months = (30, 100) if a.quick else (500, 2000)
     con = duckdb.connect(DB, read_only=True)
     m = con.execute("select * from metrics.metric_late_rate_control_chart order by year_month").df()
     t = con.execute("select * from metrics.metric_late_rate_targets").df().iloc[0]
@@ -176,7 +176,6 @@ def main():
     ic = {"straight": bp.aic_bic(ll_lin, 2, len(x)), "one_break": bp.aic_bic(ll1, 4, len(x)), "two_breaks": bp.aic_bic(ll2, 6, len(x)),
           "three_breaks": bp.aic_bic(ll3, 8, len(x))}
     dav = bp.davies_logit(x, yb, nr, grid, B_days, 11)
-    ci2 = bp.boot_knots(x, yb, nr, k2, b2, grid, B_knots, 12)
     check("both logistic models agree with the plain tallies (grouped fit reproduces 11,635 bad reviews)",
           abs(float((nr * bp.logit_predict(x, k2, b2)).sum()) - yb.sum()) < 1.0 and int(yb.sum()) == STORY["bad_reviews"])
     sh = yb / nr
@@ -211,7 +210,8 @@ def main():
             "model_comparison_AIC_BIC": {kk: [float(v) for v in vv] for kk, vv in ic.items()},
             "three_breaks_logistic": {"break_days": [float(v) for v in k3]},
             "one_break_logistic": {"break_day": float(k1[0]), "p_value_vs_straight_line_bootstrap": dav["p_value"], "bootstrap_B": B_days},
-            "two_breaks_logistic": {"first_break_day": float(k2[0]), "second_break_day": float(k2[1]), **ci2,
+            "two_breaks_logistic": {"first_break_day": float(k2[0]), "second_break_day": float(k2[1]),
+                                     "break_days_note": "point estimates on a whole-day grid; a bootstrap interval for them collapsed to a single value, so none is reported",
                                      "logit_slope_between_breaks_per_day": float(b2[1] + b2[2]),
                                      "bad_share_up_to_first_break": before, "bad_share_from_second_break": after,
                                      "model_probability_by_day": {int(dd): float(pp) for dd, pp in zip(np.arange(-30, 31), p2)}},
@@ -236,7 +236,7 @@ def main():
             "points": [{"month": mm, "late_rate_pct": float(a_), "bad_review_share": float(b_), "reviewed": int(c_)} for mm, a_, b_, c_ in zip(months, xm, ym, rv)],
         },
     }
-    print(f"days: breaks at {k2} (95% {ci2}); one-break p={dav['p_value']:.4f}; monthly one-break p={dav_m['p_value']:.3f}, R2={ols.rsquared:.3f}")
+    print(f"days: breaks at {k2} (point estimates, no interval); one-break p={dav['p_value']:.4f}; monthly one-break p={dav_m['p_value']:.3f}, R2={ols.rsquared:.3f}")
 
     # ---- data note: orders bought late in the window that never got a delivery date drop out of the judged population
     note = con.execute("""select strftime(purchase_date, '%Y-%m') ym, count(*) orders, count(*) filter (where delivery_state in ('delivered_on_time','delivered_late')) delivered

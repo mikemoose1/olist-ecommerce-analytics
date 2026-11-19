@@ -176,10 +176,7 @@
    "two_breaks_logistic": {
     "bad_share_from_second_break": 0.7822161422708618,
     "bad_share_up_to_first_break": 0.08662489470465376,
-    "first_break_95": [
-     -1.0,
-     -1.0
-    ],
+    "break_days_note": "point estimates on a whole-day grid; a bootstrap interval for them collapsed to a single value, so none is reported",
     "first_break_day": -1.0,
     "logit_slope_between_breaks_per_day": 0.5084947843771636,
     "model_probability_by_day": {
@@ -245,10 +242,6 @@
      "29": 0.7749887152480962,
      "30": 0.7745952179589211
     },
-    "second_break_95": [
-     6.0,
-     6.0
-    ],
     "second_break_day": 6.0
    }
   },
