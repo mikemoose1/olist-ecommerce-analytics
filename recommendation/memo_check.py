@@ -114,7 +114,37 @@ def required_sentences(facts):
         "This is an estimate from past orders, not a randomized test.",
         f"A stretch line at {facts['c_stretch_line']}% ({facts['c_stretch_exact']}%) shows the middle month if late seller handoffs "
         "ran late no more often than on-time ones: a what-if, not a tested cause.",
+        "It is the same measure as the goal, the median of the same stable months, so the gap between them is a median-scale read of "
+        f"the what-if, about {facts['c_whatif_gap']} point (single months range about {facts['c_whatif_gap_lo']} to {facts['c_whatif_gap_hi']}).",
     ]
+
+
+def story_sentences(facts):
+    """Sentences the story must keep word for word (tags removed), built from the facts like required_sentences."""
+    return [
+        f"Late deliveries are the estimated cause of about {facts['c_cost_causal']} of the {facts['c_low_star_all']} bad reviews on delivered "
+        f"single-seller orders (1 or 2 stars), about {facts['c_cost_causal_share']}% of them.",
+        f"Late deliveries are the estimated cause of about {facts['c_cost_causal']} extra reviews of 1 or 2 stars,",
+        "This is an estimate from past orders, not a randomized test.",
+        "shows the middle month if late seller handoffs ran late no more often than on-time ones: a what-if, not a tested cause.",
+        "and then takes the median of the same stable months as the goal. So the two lines compare like with like, and the gap between them is a "
+        f"median-scale read of the what-if, about {facts['c_whatif_gap']} point (single months range about {facts['c_whatif_gap_lo']} to {facts['c_whatif_gap_hi']}).",
+    ]
+
+
+# Cause wording that overstates the estimate. A bare "cause(s) about 3,110" drops "estimated"; "proven to cause" and "proves ... causes"
+# claim a proof the data cannot give. A negated use ("does not prove that lateness causes ...") is allowed.
+BARE_CAUSE = re.compile(r"\bcaus(?:e|es|ed)\s+(?:about |around |roughly |nearly |almost |approximately |over |more than )?\d", re.I)
+PROVEN_CAUSE = re.compile(r"\bproven to caus(?:e|es)\b|\bprov(?:es?|ed|ing)\b[^.]{0,80}\bcaus(?:e|es|ed|ing)\b", re.I)
+NEGATED = re.compile(r"\b(?:not|never|cannot|can't|no|nothing|without|nor)\b|n't", re.I)
+
+
+def check_cause_phrasing(plain):
+    out = [f"cause wording: {m.group(0)!r} drops 'estimated' (say 'the estimated cause of about N')" for m in BARE_CAUSE.finditer(plain)]
+    for m in PROVEN_CAUSE.finditer(plain):
+        if not NEGATED.search(plain[max(0, m.start() - 40):m.end()]):
+            out.append(f"cause wording: {m.group(0)!r} claims a proof (the estimate is not a randomized test)")
+    return out
 
 
 def survey_channel_problems(mechanism, extra):
@@ -182,5 +212,5 @@ def check_memo(raw_text, facts, design=None, sentences=()):
             if want != m.group(0):
                 problems.append(f"{m.group(0)}: tag {tag.group(1)}:{tag.group(3)} is {want}")
     problems += [f"tag {t.group(0)} follows no number" for t in TAG.finditer(raw_text) if t.start() not in claimed]
-    problems += check_meaning(raw_text) + check_flagged_count(plain, facts) + missing
+    problems += check_meaning(raw_text) + check_flagged_count(plain, facts) + check_cause_phrasing(plain) + missing
     return n, problems

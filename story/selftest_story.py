@@ -83,7 +83,7 @@ CASES = [
     ("retired stretch back in the facts only (the story still prints 3.4)",
      lambda: (TEXT, {**FACTS, "c_stretch_line": "2.3", "c_stretch_exact": "2.25"}), "retired stretch value"),
     ("stretch line misprinted 3.4 -> 2.9", edit("at 3.4<!--f:c_stretch_line-->%", "at 2.9<!--f:c_stretch_line-->%"), "c_stretch_line"),
-    ("stretch gap misprinted about 1.0 -> 2.0 point", edit("about 1.0<!--f:c_whatif_gap--> point, is what", "about 2.0<!--f:c_whatif_gap--> point, is what"), "c_whatif_gap"),
+    ("stretch gap misprinted about 1.0 -> 2.0 point", edit("about 1.0<!--f:c_whatif_gap--> point (single", "about 2.0<!--f:c_whatif_gap--> point (single"), "c_whatif_gap"),
     ("stretch line called a tested cause", edit("a what-if, not a tested cause. It redoes", "a result. It redoes"), "word for word"),
     ("stretch line loses 'middle month'", edit("shows the middle month if late seller handoffs", "shows a good month if late seller handoffs"), "word for word"),
     ("'not a randomized test' dropped from the cost paragraph", edit("This is an estimate from past orders, not a randomized test.", "This is an estimate from past orders."), "word for word"),
@@ -93,6 +93,15 @@ CASES = [
      lambda: (TEXT, FACTS, None, None, QUESTIONS.replace("A faint stretch line at 3.4% (3.43%)", "A faint stretch line at 2.3% (3.43%)", 1)), "retired stretch value"),
     ("QUESTIONS.md Q2 loses the stretch value",
      lambda: (TEXT, FACTS, None, None, QUESTIONS.replace("A faint stretch line at 3.4% (3.43%)", "A faint stretch line", 1)), "c_stretch_line"),
+    # bare or proven cause wording, and the stretch gap clause, are required word for word
+    ("bold headline drops 'estimated': 'Late deliveries cause about 3,110'", edit("**Late deliveries are the estimated cause of about 3,110<!--f:c_cost_causal-->", "**Late deliveries cause about 3,110<!--f:c_cost_causal-->"), "drops 'estimated'"),
+    ("recommendation drops 'estimated': 'Late deliveries cause about 3,110'", edit("Late deliveries are the estimated cause of about 3,110<!--f:c_cost_causal--> extra reviews", "Late deliveries cause about 3,110<!--f:c_cost_causal--> extra reviews"), "drops 'estimated'"),
+    ("recommendation says 'are proven to cause'", edit("Late deliveries are the estimated cause of about 3,110<!--f:c_cost_causal--> extra reviews", "Late deliveries are proven to cause 3,110<!--f:c_cost_causal--> extra reviews"), "claims a proof"),
+    ("'each extra day late proves the delay itself causes the damage'", edit("though part of that climb is survey timing.", "and each extra day late proves the delay itself causes the damage."), "claims a proof"),
+    ("headline sentence reworded without 'estimated' (still no bare cause)", edit("Late deliveries are the estimated cause of about 3,110<!--f:c_cost_causal--> of the", "Late deliveries account for about 3,110<!--f:c_cost_causal--> of the"), "word for word"),
+    ("gap clause reworded: 'best quartile of the same stable months'", edit("takes the median of the same stable months as the goal", "takes the best quartile of the same stable months as the goal"), "word for word"),
+    ("gap read reworded: 'what that what-if alone is worth'", edit("is a median-scale read of the what-if, about 1.0", "is what that what-if alone is worth, about 1.0"), "word for word"),
+    ("gap range high end misprinted 2.9 -> 3.9", edit("to 2.9<!--f:c_whatif_gap_hi-->", "to 3.9<!--f:c_whatif_gap_hi-->"), "c_whatif_gap_hi"),
     ("number word missing from the old list: none", edit("hold far more than their share of late orders.**", "hold far more than their share of late orders, and none of the rest do.**")),
 ]
 

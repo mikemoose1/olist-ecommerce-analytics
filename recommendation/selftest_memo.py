@@ -70,6 +70,15 @@ CASES = [  # (name, old text, new text, text the problem list must contain)
     ("stretch line called a tested cause", "a what-if, not a tested cause. It is the same measure", "a result. It is the same measure", "word for word"),
     ("stretch line loses its meaning (middle month -> good month)", "shows the middle month if late seller handoffs", "shows a good month if late seller handoffs", "word for word"),
     ("stretch line's handoff clause reworded", "ran late no more often than on-time ones: a what-if", "ran late far less often than on-time ones: a what-if", "word for word"),
+    # the gap clause is required word for word, so 'best quartile' or a dropped median reading fails
+    ("gap clause reworded: 'best quartile of the same stable months'", "the median of the same stable months, so", "the best quartile of the same stable months, so", "word for word"),
+    ("gap read reworded: 'what that what-if alone is worth'", "is a median-scale read of the what-if, about", "is what that what-if alone is worth, about", "word for word"),
+    ("gap range high end misprinted (2.9 -> 3.9)", "2.9<!--f:c_whatif_gap_hi-->", "3.9<!--f:c_whatif_gap_hi-->", "c_whatif_gap_hi"),
+    ("gap range low end misprinted (0.2 -> 0.9)", "0.2<!--f:c_whatif_gap_lo-->", "0.9<!--f:c_whatif_gap_lo-->", "c_whatif_gap_lo"),
+    # bare or proven cause wording in the body
+    ("'estimated cause' dropped: 'Late delivery causes about 3,110'", "Late delivery is the estimated cause of about 3,110<!--f:c_cost_causal-->", "Late delivery causes about 3,110<!--f:c_cost_causal-->", "drops 'estimated'"),
+    ("'proven to cause' added", "This is an estimate from past orders, not a randomized test.", "This is an estimate from past orders, not a randomized test. Late deliveries are proven to cause the damage.", "claims a proof"),
+    ("'proves the delay itself causes the damage' added", "This is an estimate from past orders, not a randomized test.", "This is an estimate from past orders, not a randomized test. Each extra day late proves the delay itself causes the damage.", "claims a proof"),
     # review finding 10: the flagged-month count in words is tied to the fact
     ("flagged-month count says four", "Three months crossed it", "Four months crossed it", "flagged-month count"),
     ("flagged-month sentence reworded away", "Three months crossed it", "A few months crossed", "flagged-month count"),
@@ -96,6 +105,12 @@ def main():
         print(f"{'PASS' if good else 'FAIL'}  {name}: {'caught' if found else 'NOT caught'}")
         if not good:
             bad.append(name)
+    # a negated use of 'prove ... cause' is honest and must not be flagged
+    from memo_check import check_cause_phrasing
+    neg = check_cause_phrasing("The data does not prove that lateness causes the damage. Nothing here proves it causes more.")
+    print(f"{'PASS' if not neg else 'FAIL'}  negated 'prove ... causes' is not flagged: {neg or 'no problem'}")
+    if neg:
+        bad.append("negated prove flagged")
     # cases that change the facts, not the text
     for name, edited, expect in [
         ("facts rebuilt to the retired stretch (3.43 -> 2.25 and 3.4 -> 2.3), memo still reads 3.4", {**facts, "c_stretch_line": "2.3", "c_stretch_exact": "2.25"}, "retired stretch value"),

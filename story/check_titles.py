@@ -4,7 +4,7 @@ Design note: the title says late deliveries are "linked to" the bad reviews, whi
 "estimated cause" wording with the method and range beside it. A title is read alone, so it carries no caveat.
   - the story title and subtitle, and the memo title (its first "# " line), must not use cause wording: cause, causes, caused,
     causing, causal, drive, drives, driven, driving, drove, "result in", "results in", "resulted in", "lead to", "leads to",
-    "led to", "leading to"
+    "led to", "leading to", trigger, triggers, triggered, "responsible for"
   - the story title and the memo title must both say "linked to"
 STORY_QMD and MEMO_MD point the check at edited copies (scripts/prove_tests_fail.py uses them); defaults are the real files.
 Prints one PASS or FAIL line per title and exits 1 on any FAIL.
@@ -15,7 +15,7 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
-CAUSE = re.compile(r"\bcaus(?:e|es|ed|ing|al)\b|\bdriv(?:e|es|en|ing)\b|\bdrove\b|\bresult(?:s|ed|ing)? in\b|\b(?:lead|leads|led|leading) to\b", re.I)
+CAUSE = re.compile(r"\bcaus(?:e|es|ed|ing|al)\b|\bdriv(?:e|es|en|ing)\b|\bdrove\b|\bresult(?:s|ed|ing)? in\b|\b(?:lead|leads|led|leading) to\b|\btrigger(?:s|ed|ing)?\b|\bresponsible for\b", re.I)
 # "because" does not match: no word boundary before "caus"; "driver" and "results" alone do not match
 
 

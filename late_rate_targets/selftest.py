@@ -81,6 +81,8 @@ ok, r = proofs.check_stretch_is_like_for_like(float(np.percentile(what_if, 25)),
 expect("stretch check REJECTS the retired 25th-percentile stretch (2.25%)", not ok, f"{100 * np.percentile(what_if, 25):.2f}%")
 ok, r = proofs.check_stretch_is_like_for_like(stretch_m, float(np.percentile(real, 25)), real, what_if)
 expect("stretch check REJECTS a goal that is not the median stable month", not ok)
+ok, r = proofs.check_stretch_is_like_for_like(stretch_m, float(np.percentile(real, 75)), real, what_if)
+expect("stretch check REJECTS a goal above the stretch that is still not the median (the 75th percentile)", not ok, f"goal {100 * np.percentile(real, 75):.2f}% > stretch {100 * stretch_m:.2f}%")
 ok, r = proofs.check_stretch_is_like_for_like(float(np.median(real)), goal_m, real, what_if)
 expect("stretch check REJECTS a stretch with no what-if in it (the real median)", not ok)
 

@@ -20,7 +20,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "recommendation"))
 sys.path.insert(0, str(ROOT / "story"))
-from memo_check import DESIGN, RETIRED_TAGS, check_memo
+from memo_check import DESIGN, RETIRED_TAGS, check_memo, story_sentences
 from kpi_tree import NUMBER_WORD   # the number-word list kpi_tree.py also uses for threshold text
 
 def design():
@@ -242,16 +242,13 @@ def check_repeat(text, sf):
 # QUESTIONS.md answers repeat the story's new numbers in words a reader can check: each listed caption fact must be printed
 # in its question's section, and the replaced figures must be gone.
 QUESTION_FACTS = {"Q1": ["c_cost_causal", "c_cost_causal_share", "c_cost_range_lo", "c_cost_range_hi", "c_ramp_on_time", "c_ramp_slope", "c_ramp_plateau"],
-                  "Q2": ["c_alarm_line", "c_goal_line", "c_goal_exact", "c_stretch_line", "c_stretch_exact", "c_whatif_rate"],
+                  "Q2": ["c_alarm_line", "c_goal_line", "c_goal_exact", "c_stretch_line", "c_stretch_exact", "c_whatif_rate", "c_whatif_gap", "c_whatif_gap_lo", "c_whatif_gap_hi"],
                   "Q5": ["c_rep_late_1dp", "c_rep_on_time_1dp"]}
 RETIRED = ["3,335", "28.7%", "linked to about 3,300"]
 # a stretch value stated in QUESTIONS.md prose, which carries no tags: the retired 25th-percentile stretch, 2.3% or 2.25%
 RETIRED_STRETCH_PROSE = re.compile(r"stretch[^.]{0,80}?\b2\.(?:3|25)%|\b2\.(?:3|25)%[^.]{0,80}?stretch", re.I)
 # sentences the story must keep word for word (tags removed): the cause wording and the stretch line's meaning
-STORY_SENTENCES = [
-    "This is an estimate from past orders, not a randomized test.",
-    "shows the middle month if late seller handoffs ran late no more often than on-time ones: a what-if, not a tested cause.",
-]
+# (memo_check.story_sentences builds them from the facts)
 
 
 def check_questions(questions, fx):
@@ -270,7 +267,7 @@ def check_questions(questions, fx):
 def check(text, fx=None, design_numbers=None, sf=None, questions=None):
     fx, d, sf = fx or facts(), design_numbers or design(), sf or story_facts()
     questions = questions if questions is not None else (ROOT / "story" / "QUESTIONS.md").read_text()
-    n, problems = check_memo(body(text), fx, d, sentences=STORY_SENTENCES)
+    n, problems = check_memo(body(text), fx, d, sentences=story_sentences(fx))
     problems += [f"tag f:{t} is the replaced association figure; use the causal review cost (c_cost_causal ...)"
                  for t in sorted(RETIRED_TAGS) if f"<!--f:{t}-->" in text]
     return n, (problems + check_shape(text) + check_number_words(text, fx, {**DESIGN, **d}) + check_scope(text)

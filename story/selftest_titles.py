@@ -20,6 +20,8 @@ CASES = [   # (name, story text, memo text, title that must pass or fail, should
     ("'results in' in the story title", STORY.replace("are linked to about a quarter", "results in about a quarter", 1), MEMO, "story title", False),
     ("'leads to' in the memo title", STORY, MEMO.replace("are linked to about", "leads to about", 1), "memo title", False),
     ("the memo title without 'linked to'", STORY, MEMO.replace("are linked to about", "go with about", 1), "memo title", False),
+    ("'triggers' in the memo title", STORY, MEMO.replace("are linked to about", "triggers about", 1), "memo title", False),
+    ("'responsible for' in the story title", STORY.replace("are linked to about a quarter", "are linked to, and responsible for, about a quarter", 1), MEMO, "story title", False),
     ("'driver' alone in a title is not cause wording", STORY.replace("Where they come from,", "The driver of lateness, and", 1), MEMO, "story subtitle", True),
     ("'linked to' in capitals in the memo title", STORY, MEMO.replace("are linked to about", "are Linked To about", 1), "memo title", True),
 ]

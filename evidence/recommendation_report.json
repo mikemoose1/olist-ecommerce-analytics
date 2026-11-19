@@ -946,6 +946,8 @@
   "c_stretch_line": "3.4",
   "c_stretch_exact": "3.43",
   "c_whatif_gap": "1.0",
+  "c_whatif_gap_lo": "0.2",
+  "c_whatif_gap_hi": "2.9",
   "c_whatif_rate": "5.49",
   "c_rep_late_1dp": "1.0",
   "c_rep_on_time_1dp": "1.3"

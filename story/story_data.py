@@ -109,7 +109,7 @@ def review_cost(con, all_low_star):
 def ramp(con):
     """1-2 star share by whole days past the promise (metric_bad_review_by_days_late) and the ramp the story describes
     (descriptive, raw shares, not a causal estimate): the share up to the first break day of the segmented fit in
-    evidence/late_rate_targets_report.json (day -1, the day before the promise; day 0 gives the same 8.7%), the
+    evidence/late_rate_targets_report.json (day 0, the promised day), the
     least-squares slope of the daily shares from the first to the second break day (about 11 points a day), and the share
     from the second break day on (about 78%)."""
     seg = json.loads((ROOT / "evidence" / "late_rate_targets_report.json").read_text())["break_point"]["days"]["segmented_share_scale"]
@@ -134,9 +134,12 @@ def targets(con):
                                                     from metrics.metric_late_rate_control_chart order by 1""").fetchall()]
     t = con.execute("""select alarm_line_late_rate, goal_late_rate, stretch_goal_late_rate, safe_goal_late_rate,
                               late_rate_if_handoffs_ok, typical_orders, stable_months from metrics.metric_late_rate_targets""").fetchone()
+    # what the what-if is worth in single stable months (late rate minus what-if rate): the median gap is goal - stretch
+    gap_lo, gap_hi = con.execute("""select min(late_rate - late_rate_if_handoffs_ok), max(late_rate - late_rate_if_handoffs_ok)
+                                    from metrics.metric_late_rate_control_chart where not laney_signal and not thin_month""").fetchone()
     keys = ("alarm_line", "goal", "stretch", "safe_goal", "late_rate_if_handoffs_ok")
     out = {k: round(float(v), 6) for k, v in zip(keys, t)}
-    out.update(typical_orders=int(t[5]), stable_months=int(t[6]), flagged=[r["segment"] for r in rows if r["laney_signal"]])
+    out.update(typical_orders=int(t[5]), stable_months=int(t[6]), whatif_gap_lo=round(float(gap_lo), 6), whatif_gap_hi=round(float(gap_hi), 6), flagged=[r["segment"] for r in rows if r["laney_signal"]])
     return rows, out
 
 
@@ -165,6 +168,7 @@ def causal_captions(rc, rp, tg, rep_late, rep_on_time):
         "c_goal_line": pct(tg["goal"]), "c_goal_exact": f"{100 * tg['goal']:.2f}", "c_stable_months": str(tg["stable_months"]),
         "c_stretch_line": pct(tg["stretch"]), "c_stretch_exact": f"{100 * tg['stretch']:.2f}",
         "c_whatif_gap": pct(tg["goal"] - tg["stretch"]),
+        "c_whatif_gap_lo": pct(tg["whatif_gap_lo"]), "c_whatif_gap_hi": pct(tg["whatif_gap_hi"]),
         "c_whatif_rate": f"{100 * tg['late_rate_if_handoffs_ok']:.2f}",
         "c_rep_late_1dp": pct(rep_late), "c_rep_on_time_1dp": pct(rep_on_time),
     }
