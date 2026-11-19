@@ -5161,7 +5161,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 14.5
+  "seconds": 15.0
  },
  {
   "rule": "Dashboard exports (trend): a month's alarm line is off by a point",
@@ -5186,7 +5186,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 14.7
+  "seconds": 14.0
  },
  {
   "rule": "Dashboard exports (trend): March 2018 loses its alarm flag",
@@ -5211,7 +5211,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 15.4
+  "seconds": 13.8
  },
  {
   "rule": "Dashboard exports (trend): a normal month is marked thin",
@@ -5236,7 +5236,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 15.8
+  "seconds": 14.1
  },
  {
   "rule": "Dashboard exports (trend): a month is missing",
@@ -5257,11 +5257,11 @@
    [
     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
     "fail",
-    8
+    7
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 15.4
+  "seconds": 14.2
  },
  {
   "rule": "Dashboard exports (trend): the goal line in the summary reads 5.0% instead of 4.43%",
@@ -5286,10 +5286,10 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 15.3
+  "seconds": 14.5
  },
  {
-  "rule": "Dashboard exports (trend): the stretch line in the summary reads 3.0% instead of the targets model's value",
+  "rule": "Dashboard exports (trend): the stretch line in the summary reads 3.0% instead of the median what-if (about 3.4%)",
   "selector": "assert_dash_monthly_reconciles",
   "mutation": {
    "sql": [
@@ -5307,11 +5307,11 @@
    [
     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
     "fail",
-    3
+    4
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 14.6
+  "seconds": 14.2
  },
  {
   "rule": "Dashboard exports (trend): the monthly goal line uses the safe goal (3.04%) instead of the median (4.43%)",
@@ -5343,14 +5343,14 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 22.2
+  "seconds": 20.8
  },
  {
-  "rule": "Dashboard exports (trend): the what-if median line in the summary is off by a point",
+  "rule": "Dashboard exports (trend): the stretch line in the summary is off by a point",
   "selector": "assert_dash_monthly_reconciles",
   "mutation": {
    "sql": [
-    "update exports.export_dash_summary set handoff_whatif_median_late_rate = handoff_whatif_median_late_rate + 0.01"
+    "update exports.export_dash_summary set stretch_goal_late_rate = stretch_goal_late_rate + 0.01"
    ]
   },
   "baseline": [
@@ -5364,18 +5364,18 @@
    [
     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
     "fail",
-    3
+    4
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 14.9
+  "seconds": 14.2
  },
  {
-  "rule": "Dashboard exports (trend): the what-if median line on the monthly rows is off by a point",
+  "rule": "Dashboard exports (trend): the stretch line on the monthly rows is off by a point",
   "selector": "assert_dash_monthly_reconciles",
   "mutation": {
    "sql": [
-    "update exports.export_dash_monthly set handoff_whatif_median_late_rate = handoff_whatif_median_late_rate + 0.01"
+    "update exports.export_dash_monthly set stretch_goal_late_rate = stretch_goal_late_rate + 0.01"
    ]
   },
   "baseline": [
@@ -5393,7 +5393,32 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 14.5
+  "seconds": 13.7
+ },
+ {
+  "rule": "Dashboard exports (trend): the stretch line label in the summary is the old wording",
+  "selector": "assert_dash_monthly_reconciles",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_summary set stretch_goal_label = 'if seller handoffs are fixed'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 14.8
  },
  {
   "rule": "Dashboard exports (trend): a stable month is marked unstable",
@@ -5414,11 +5439,11 @@
    [
     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
     "fail",
-    4
+    3
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 15.4
+  "seconds": 14.5
  },
  {
   "rule": "Dashboard exports (trend): a stable month's what-if rate is off by a point",
@@ -5443,10 +5468,10 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 19.2
+  "seconds": 13.9
  },
  {
-  "rule": "Dashboard exports (trend): the what-if median line is the 40th percentile instead of the median",
+  "rule": "Dashboard exports (trend): the stretch line is the 40th percentile of the what-if instead of the median",
   "selector": "assert_dash_monthly_reconciles",
   "mutation": {
    "model_edit": {
@@ -5471,11 +5496,11 @@
    [
     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
     "fail",
-    2
+    3
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 24.4
+  "seconds": 21.7
  },
  {
   "rule": "Dashboard exports (handoff): the late-handoff bar gains 50 late orders",

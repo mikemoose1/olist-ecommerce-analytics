@@ -121,42 +121,34 @@
  },
  {
   "row": "2 trend",
-  "number": "stretch line vs facts.json, % to 1 place",
-  "expected": 2.252,
-  "got": 2.2519692719000823,
+  "number": "stretch line = median of the what-if over stable months in the monthly file, %",
+  "expected": 3.425141242937853,
+  "got": 3.425141242937853,
+  "rounded_to": 4,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "stretch line, % to 1 place (about 3.4; typed)",
+  "expected": 3.4,
+  "got": 3.425141242937853,
   "rounded_to": 1,
   "ok": true
  },
  {
   "row": "2 trend",
-  "number": "stretch line vs facts.json, % to 2 places",
-  "expected": 2.252,
-  "got": 2.2519692719000823,
-  "rounded_to": 2,
-  "ok": true
- },
- {
-  "row": "2 trend",
-  "number": "stretch line = 25th percentile of the what-if over stable months in the monthly file, %",
-  "expected": 2.2519692719000823,
-  "got": 2.2519692719000823,
-  "rounded_to": 4,
-  "ok": true
- },
- {
-  "row": "2 trend",
-  "number": "what-if median line = median of the what-if over stable months in the monthly file, %",
-  "expected": 3.425141242937853,
-  "got": 3.425141242937853,
-  "rounded_to": 4,
-  "ok": true
- },
- {
-  "row": "2 trend",
-  "number": "what-if median line in the summary = the monthly file's, %",
+  "number": "stretch line in the summary = the monthly file's, %",
   "expected": 3.425141242937853,
   "got": 3.425141242937853,
   "rounded_to": 6,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "stretch line label in the summary",
+  "expected": "middle month if late seller handoffs were fixed, a what-if",
+  "got": "middle month if late seller handoffs were fixed, a what-if",
+  "rounded_to": null,
   "ok": true
  },
  {

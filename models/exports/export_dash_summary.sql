@@ -43,8 +43,8 @@ select
     targets.typical_orders as typical_month_orders,
     targets.alarm_line_late_rate as alarm_line_late_rate,
     targets.goal_late_rate as goal_late_rate,
-    targets.stretch_goal_late_rate as stretch_goal_late_rate,
-    (select min(handoff_whatif_median_late_rate) from monthly) as handoff_whatif_median_late_rate,
+    (select min(stretch_goal_late_rate) from monthly) as stretch_goal_late_rate,
+    'middle month if late seller handoffs were fixed, a what-if' as stretch_goal_label,
     alarms.n as alarm_months,
     alarms.months as alarm_months_list,
     -- panel 3: handoff
