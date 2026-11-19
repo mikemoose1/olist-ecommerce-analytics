@@ -70,3 +70,60 @@ models:
         data_tests:
           - unique
           - not_null
+  - name: metric_review_cost_causal
+    description: >
+      Extra 1-2 star reviews caused by late delivery, one row per days-late bin; the sum is the review-cost number
+      (about 3,110, 26.7% of the 11,635 bad reviews). Evidence: evidence/review_cost_causal_report.json.
+    columns:
+      - name: days_late_bin
+        data_tests: [unique, not_null]
+      - name: extra_bad_reviews
+        data_tests: [not_null]
+    data_tests:
+      - dbt_utils.expression_is_true: {arguments: {expression: "reviewed_late_orders = reviewed_late_orders_at_estimation"}}
+
+unit_tests:
+  - name: review_cost_bins_and_multiplication
+    description: >
+      Bin edges are whole days late (1, 2, 3, 4-6, 7-13, 14+); on-time and unreviewed orders never count; each bin's
+      extra bad reviews = its reviewed late orders x its effect.
+    model: metric_review_cost_causal
+    given:
+      - input: ref('metric_late_rate_orders')
+        rows:
+          - {order_id: on_time, is_late: false, review_score: 1}
+          - {order_id: d1, is_late: true, review_score: 1}
+          - {order_id: d1_unreviewed, is_late: true, review_score: null}
+          - {order_id: d3, is_late: true, review_score: 5}
+          - {order_id: d4, is_late: true, review_score: 2}
+          - {order_id: d6, is_late: true, review_score: 4}
+          - {order_id: d7, is_late: true, review_score: 1}
+          - {order_id: d13, is_late: true, review_score: 1}
+          - {order_id: d14, is_late: true, review_score: 3}
+      - input: ref('fct_orders')
+        rows:
+          - {order_id: on_time, days_past_promise: 0}
+          - {order_id: d1, days_past_promise: 1}
+          - {order_id: d1_unreviewed, days_past_promise: 1}
+          - {order_id: d3, days_past_promise: 3}
+          - {order_id: d4, days_past_promise: 4}
+          - {order_id: d6, days_past_promise: 6}
+          - {order_id: d7, days_past_promise: 7}
+          - {order_id: d13, days_past_promise: 13}
+          - {order_id: d14, days_past_promise: 14}
+      - input: ref('review_cost_effects')
+        rows:
+          - {days_late_bin: late_d1, min_days_late: 1, max_days_late: 1, effect_on_bad_share: 0.1, effect_se: 0.01, reviewed_late_orders_at_estimation: 1}
+          - {days_late_bin: late_d2, min_days_late: 2, max_days_late: 2, effect_on_bad_share: 0.2, effect_se: 0.01, reviewed_late_orders_at_estimation: 0}
+          - {days_late_bin: late_d3, min_days_late: 3, max_days_late: 3, effect_on_bad_share: 0.3, effect_se: 0.01, reviewed_late_orders_at_estimation: 1}
+          - {days_late_bin: late_d4_6, min_days_late: 4, max_days_late: 6, effect_on_bad_share: 0.5, effect_se: 0.01, reviewed_late_orders_at_estimation: 2}
+          - {days_late_bin: late_d7_13, min_days_late: 7, max_days_late: 13, effect_on_bad_share: 0.6, effect_se: 0.01, reviewed_late_orders_at_estimation: 2}
+          - {days_late_bin: late_d14p, min_days_late: 14, max_days_late: 9999, effect_on_bad_share: 0.7, effect_se: 0.01, reviewed_late_orders_at_estimation: 1}
+    expect:
+      rows:
+        - {days_late_bin: late_d1, reviewed_late_orders: 1, extra_bad_reviews: 0.1}
+        - {days_late_bin: late_d2, reviewed_late_orders: 0, extra_bad_reviews: 0.0}
+        - {days_late_bin: late_d3, reviewed_late_orders: 1, extra_bad_reviews: 0.3}
+        - {days_late_bin: late_d4_6, reviewed_late_orders: 2, extra_bad_reviews: 1.0}
+        - {days_late_bin: late_d7_13, reviewed_late_orders: 2, extra_bad_reviews: 1.2}
+        - {days_late_bin: late_d14p, reviewed_late_orders: 1, extra_bad_reviews: 0.7}

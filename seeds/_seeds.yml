@@ -8,3 +8,11 @@ seeds:
     description: English names for the two Portuguese categories missing from the source translation table.
     config:
       column_types: {product_category_name: varchar, product_category_name_english: varchar}
+  - name: review_cost_effects
+    description: >
+      Written by review_cost_causal/analyze.py. For each days-late bin, how much being that late raises an order's
+      chance of a 1-2 star review, compared with the same seller's orders in the same category and month that arrived
+      just on time (fixed-effects model, seller-clustered errors). The count column is what the model saw, so the dbt
+      model can prove it multiplies the same orders.
+    config:
+      column_types: {days_late_bin: varchar, min_days_late: integer, max_days_late: integer, effect_on_bad_share: double, effect_se: double, reviewed_late_orders_at_estimation: integer}

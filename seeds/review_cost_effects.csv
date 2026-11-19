@@ -1,0 +1,7 @@
+days_late_bin,min_days_late,max_days_late,effect_on_bad_share,effect_se,reviewed_late_orders_at_estimation
+late_d1,1,1,0.070087,0.013639,817
+late_d2,2,2,0.217621,0.023788,535
+late_d3,3,3,0.368979,0.023033,493
+late_d4_6,4,6,0.522849,0.013861,1272
+late_d7_13,7,13,0.640864,0.010486,1747
+late_d14p,14,9999,0.645585,0.011294,1502
