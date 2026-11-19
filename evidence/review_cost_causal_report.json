@@ -428,7 +428,7 @@
     4.90621367880626
    ]
   },
-  "story_value": 3335,
-  "within_10pct_of_story": true
+  "earlier_story_value_association": 3335,
+  "within_10pct_of_earlier_story_value": true
  }
 }

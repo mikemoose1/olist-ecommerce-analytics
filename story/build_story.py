@@ -90,7 +90,8 @@ def fig_where_when(f):
     flag = [r["laney_signal"] == "True" for r in mon]
     b.step(x, [float(r["laney_ucl"]) * 100 for r in mon], where="mid", color=INK, lw=1.2)
     b.axhline(100 * tg["goal"], color=GOAL, lw=1.4)
-    b.axhline(100 * tg["stretch"], color=GOAL, lw=1, ls="--", alpha=.55)
+    stretch_line = b.axhline(100 * tg["stretch"], color=GOAL, lw=1, ls="--", alpha=.55,
+                             label=f"stretch {100 * tg['stretch']:.1f}%: the middle month if late seller handoffs\nran late no more often than on-time ones (a what-if)")
     b.plot(x, v, color=ACCENT, lw=1.2)
     b.scatter([i for i in x if not flag[i]], [v[i] for i in x if not flag[i]], color=ACCENT, s=12, zorder=3)
     b.scatter([i for i in x if flag[i]], [v[i] for i in x if flag[i]], facecolor="white", edgecolor=ACCENT, lw=1.5, s=40, zorder=3)
@@ -100,7 +101,7 @@ def fig_where_when(f):
     end = len(mon) - 0.4
     b.text(end, 100 * tg["alarm_line"] + 0.5, f"alarm line ({100 * tg['alarm_line']:.2f}% at a typical month)", fontsize=8, color=INK, ha="right")
     b.text(end, 100 * tg["goal"] + 0.4, f"goal {100 * tg['goal']:.1f}%", fontsize=8, color=GOAL, ha="right")
-    b.text(-0.3, 100 * tg["stretch"] - 1.3, f"{100 * tg['stretch']:.1f}% if seller handoffs are fixed", fontsize=8, color=GOAL, ha="left", alpha=.8)
+    b.legend(handles=[stretch_line], loc="upper left", frameon=False, fontsize=8, labelcolor=GOAL)   # the label sits in empty space, not on the data
     b.set_xticks(x[::3], [mon[i]["segment"] for i in x[::3]], fontsize=8); b.set_ylim(0, 22); b.set_xlim(-0.5, len(mon) - 0.3)
     b.set_title("By purchase month (open circle: above the alarm line)", loc="left", fontsize=10)
     save(fig, "fig_where_when.png")

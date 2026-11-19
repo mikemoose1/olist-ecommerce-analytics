@@ -78,3 +78,13 @@ def check_dispersion_test_discriminates(n, base, real_k, seeds=2000):
     rej = np.mean([spc.dispersion_test(k, n)["p_value"] < 0.01 for k in ks])
     real = spc.dispersion_test(real_k, n)
     return (rej <= 0.03 and real["p_value"] < 0.01), {"noise_rejected_at_1pct": float(rej), "real": real}
+
+
+def check_stretch_is_like_for_like(stretch, goal, rate_stable, whatif_stable):
+    """The goal line is the median of the stable months' real late rates. The stretch line must be the median of the same
+    months' what-if rates (late handoffs no later than on-time ones), so goal minus stretch is the what-if alone.
+    A stretch taken at another percentile (the retired 25th, 2.25%) mixes the what-if with a better month and fails."""
+    goal_ok = abs(goal - float(np.median(rate_stable))) < 1e-12
+    same_months = len(rate_stable) == len(whatif_stable)
+    stretch_ok = abs(stretch - float(np.median(whatif_stable))) < 1e-12
+    return bool(goal_ok and same_months and stretch_ok and stretch < goal), {"gap_pp": 100 * (goal - stretch)}

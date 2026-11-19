@@ -23,7 +23,10 @@ DB = os.environ.get("OLIST_DB_PATH", os.path.join(ROOT, "olist.duckdb"))
 RAW = os.environ.get("OLIST_RAW_DIR", os.path.join(ROOT, "data", "raw"))
 STORY = {"judged": 94931, "late": 6518, "late_rate_pct": 6.87, "mar2018_pct": 19.152, "aug2018_pct": 6.3,
          "bad_reviews": 11635, "avg_stars_late": 2.27, "avg_stars_on_time": 4.31,
-         "extra_bad": 3335, "extra_bad_share_pct": 28.7}
+         "extra_bad_causal": 3110, "extra_bad_causal_share_pct": 27,
+         # history: the matched association figure the story printed until PR #7 and the memo until PR #8; the
+         # recommendation report still carries it, so this pins that the old field did not move either
+         "history_extra_bad_association": 3335, "history_extra_bad_association_share_pct": 28.7}
 
 
 def independent_monthly():
@@ -74,9 +77,13 @@ def main():
             and (ind.late_orders.values == m.late_orders.values).all() and (ind.bad_reviews.values == m.bad_reviews.values).all())
     check("monthly orders, late orders and bad reviews = independent raw-CSV recount (20 months)", same)
     rr = json.load(open(os.path.join(ROOT, "evidence", "recommendation_report.json")))["money"]["low_star_reviews"]
-    check("extra 1-2 star reviews 3,335 and 28.7% = recommendation report",
-          round(rr["excess_from_lateness"]["mid"]) == STORY["extra_bad"] and round(rr["share_of_all_low_star_pct"]["mid"], 1) == STORY["extra_bad_share_pct"]
+    causal = float(con.execute("select sum(extra_bad_reviews) from metrics.metric_review_cost_causal").fetchone()[0])
+    check("extra 1-2 star reviews caused by lateness: about 3,110, about 27% of 11,635 (metric_review_cost_causal)",
+          round(causal, -1) == STORY["extra_bad_causal"] and round(100 * causal / rr["all_low_star"]) == STORY["extra_bad_causal_share_pct"]
           and rr["all_low_star"] == STORY["bad_reviews"])
+    check("history: the earlier association figure, 3,335 and 28.7%, is unchanged in the recommendation report",
+          round(rr["excess_from_lateness"]["mid"]) == STORY["history_extra_bad_association"]
+          and round(rr["share_of_all_low_star_pct"]["mid"], 1) == STORY["history_extra_bad_association_share_pct"])
 
     # ---- 2. p-chart: dispersion test, plain vs Laney, thin months
     disp = spc.dispersion_test(k, n)
@@ -96,8 +103,16 @@ def main():
     stable = (~lan["signal"]) & (~m.thin_month.values)
     pct = lambda v: float(np.percentile(v, 25))   # linear interpolation, as percentile_cont
     rate = k / n
-    safe = pct(rate[stable]); stretch = pct(m.late_rate_if_handoffs_ok.values[stable])
+    safe = pct(rate[stable])
+    # the stretch line is the median stable month under the handoff what-if: the same statistic as the goal line, so the two compare like for like
+    stretch = float(np.median(m.late_rate_if_handoffs_ok.values[stable]))
     check("safe and stretch goals = SQL", abs(safe - t.safe_goal_late_rate) < 1e-12 and abs(stretch - t.stretch_goal_late_rate) < 1e-12)
+    # like for like: the goal is the median of the real stable-month rates, the stretch is the median of the what-if rates of
+    # the same months, so their gap is the handoff what-if alone (the retired 25th-percentile stretch also changed the month)
+    goal = float(np.median(rate[stable]))
+    ok_lfl, lfl = proofs.check_stretch_is_like_for_like(stretch, goal, rate[stable], m.late_rate_if_handoffs_ok.values[stable])
+    check("stretch and goal are both medians of the same stable months (like for like)", ok_lfl and abs(goal - t.goal_late_rate) < 1e-12,
+          f"goal {100 * goal:.4f}% - stretch {100 * stretch:.4f}% = {lfl['gap_pp']:.4f} pp")
     # pooled-handoff sensitivity for the whole-period stretch rate
     ho_ok = m.on_time_handoff_late_orders.sum() / m.on_time_handoff_orders.sum()
     cf_pooled = (m.late_orders.sum() - m.late_handoff_late_orders.sum() + m.late_handoff_orders.sum() * ho_ok) / n.sum()
@@ -118,7 +133,7 @@ def main():
         "thin_months": [mm for mm, th in zip(months, m.thin_month) if th],
         "stable_months": [mm for mm, s in zip(months, stable) if s],
         "goals": {"safe_25th_pct_of_stable": safe, "best_stable_month": float(rate[stable].min()),
-                  "stretch_25th_pct_if_handoffs_ok": stretch,
+                  "stretch_median_if_handoffs_ok": stretch,
                   "whole_period_rate_if_handoffs_ok_month_specific": float(t.late_rate_if_handoffs_ok),
                   "whole_period_rate_if_handoffs_ok_pooled": float(cf_pooled),
                   "stable_month_rates_sorted": sorted(float(x) for x in rate[stable]),

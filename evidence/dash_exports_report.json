@@ -129,6 +129,14 @@
  },
  {
   "row": "2 trend",
+  "number": "stretch line vs facts.json, %",
+  "expected": 3.4250999999999996,
+  "got": 3.425141242937853,
+  "rounded_to": 4,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
   "number": "stretch line, % to 1 place (about 3.4; typed)",
   "expected": 3.4,
   "got": 3.425141242937853,

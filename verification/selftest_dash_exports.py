@@ -87,6 +87,7 @@ CASES = {
     "goal line, %, shown 4.4": all_months("goal_late_rate", 0.002),
     "goal line, %, exact 4.43": all_months("goal_late_rate", 0.0002),
     "stretch line = median of the what-if over stable months in the monthly file, %": all_months("stretch_goal_late_rate", 0.00002),
+    "stretch line vs facts.json, %": lambda t, a: a["facts"]["targets"].__setitem__("stretch", 0.022520),   # facts.json drifts, the exports do not: only this row can catch it
     "stretch line, % to 1 place (about 3.4; typed)": all_months("stretch_goal_late_rate", 0.002),
     "stretch line in the summary = the monthly file's, %": bump("summary", any_row, "stretch_goal_late_rate", 0.0000005),
     "stretch line label in the summary": setv("summary", any_row, "stretch_goal_label", "if seller handoffs are fixed"),

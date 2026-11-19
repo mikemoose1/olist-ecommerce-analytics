@@ -1,11 +1,10 @@
 -- Rule (dashboard panels 2 and 5): the monthly export has all 20 months, and each month matches the story's month table
 -- (story/data/late_by_month.csv: orders, late orders, late rate to 6 places, share of all late) and the control chart
--- (alarm line, alarm flag, thin flag). The alarm and goal lines match facts.json: alarm 8.38%, goal 4.43% (shown 4.4%). The stretch line is the middle month under the handoff what-if (about 3.4%).
+-- (alarm line, alarm flag, thin flag). The alarm, goal and stretch lines match facts.json: alarm 8.38%, goal 4.43% (shown 4.4%), stretch 3.43% (shown 3.4%).
 --
 -- flagged months 2017-11, 2018-02 and 2018-03, latest month 2018-08 at 6.3%.
 -- The stretch line is recomputed two ways, not typed: from the monthly export's own what-if column over its stable months, and from the
--- control chart model. It is the median, the like-for-like partner of the goal line. TEMPORARY: facts.json and metric_late_rate_targets still hold the
--- 25th percentile on main, so the comparison with facts.json is left out until the memo sync (PR #8) lands; then it is restored.
+-- control chart model, and read against facts.json. It is the median, the like-for-like partner of the goal line.
 -- One row per number that differs; passes when it returns nothing.
 with m as (select * from {{ ref('export_dash_monthly') }}),
 s as (select * from {{ ref('export_dash_summary') }}),
@@ -22,6 +21,7 @@ checks_ran as (
     union all select 'shares of all late add up to 1', t.share_sum, 1, 0.000000001 from totals t
     union all select 'alarm line (typical month) vs facts.json (6 places)', round(s.alarm_line_late_rate, 6), json_extract(f.targets, '$.alarm_line')::double, 0.0000006 from s, f
     union all select 'goal line vs facts.json (6 places)', round(s.goal_late_rate, 6), json_extract(f.targets, '$.goal')::double, 0.0000006 from s, f
+    union all select 'stretch line vs facts.json (6 places)', round(s.stretch_goal_late_rate, 6), json_extract(f.targets, '$.stretch')::double, 0.0000006 from s, f
     union all select 'typical month order count vs facts.json', s.typical_month_orders::double, json_extract(f.targets, '$.typical_orders')::double, 0 from s, f
     union all select 'line on every month row equals the summary: alarm', (select max(abs(typical_month_alarm_line_late_rate - s.alarm_line_late_rate)) from m), 0, 0.0000000001 from s
     union all select 'line on every month row equals the summary: goal', (select max(abs(goal_late_rate - s.goal_late_rate)) from m), 0, 0.0000000001 from s
@@ -45,7 +45,7 @@ checks_ran as (
 ),
 checks as (
     select * from checks_ran
-    union all select 'checks that ran (expected 26; a check with no input row would otherwise vanish)', (select count(*) from checks_ran)::double, 26::double, 0
+    union all select 'checks that ran (expected 27; a check with no input row would otherwise vanish)', (select count(*) from checks_ran)::double, 27::double, 0
 ),
 problems as (select what, got, expected from checks where got is null or expected is null or abs(got - expected) > tolerance),
 month_problems as (

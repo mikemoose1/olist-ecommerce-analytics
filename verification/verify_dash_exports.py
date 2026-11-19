@@ -93,6 +93,7 @@ def checks(t, a):
           ("2 trend", "goal line, %, shown 4.4", pct(F["targets"]["goal"]), pct(f(mo[0]["goal_late_rate"])), 1),
           ("2 trend", "goal line, %, exact 4.43", pct(F["targets"]["goal"]), pct(f(mo[0]["goal_late_rate"])), 2),
           ("2 trend", "stretch line = median of the what-if over stable months in the monthly file, %", pct(pctile(stable, 0.5)), pct(f(mo[0]["stretch_goal_late_rate"])), 4),
+          ("2 trend", "stretch line vs facts.json, %", pct(F["targets"]["stretch"]), pct(f(mo[0]["stretch_goal_late_rate"])), 4),
           ("2 trend", "stretch line, % to 1 place (about 3.4; typed)", 3.4, pct(f(mo[0]["stretch_goal_late_rate"])), 1),
           ("2 trend", "stretch line in the summary = the monthly file's, %", pct(f(mo[0]["stretch_goal_late_rate"])), pct(f(S["stretch_goal_late_rate"])), 6),
           ("2 trend", "stretch line label in the summary", "middle month if late seller handoffs were fixed, a what-if", S["stretch_goal_label"], None),

@@ -9,6 +9,11 @@ Usage:  python scripts/prove_tests_fail.py [RULE-SUBSTRING] [--merge]   (needs a
         a substring runs only matching rules and does NOT overwrite evidence/ unless all rules ran;
         with --merge the selected rules are added to (or replaced in) the committed report)
 Output: evidence/mutation_report.md and evidence/mutation_report.json
+
+Speed: cases run in parallel (PROVE_JOBS, default the CPU count up to 4). A case that edits neither project files nor raw files
+runs its dbt tests in a long-lived worker (scripts/dbt_test_worker.py) that parses the project once, instead of starting
+`dbt test` each time (about 6 s of the 7 s a case used to cost). PROVE_NO_WORKER=1 starts `dbt test` for every run, the slow way,
+and must give the same verdicts. A test that errors counts as a broken run, not as a test that caught the mistake.
 """
 import concurrent.futures, json, os, shutil, subprocess, sys, tempfile, threading, time
 import duckdb
@@ -518,9 +523,12 @@ CASES = [
     ("Dashboard exports (trend): a stable month's what-if rate is off by a point",
      "assert_dash_monthly_reconciles",
      {"sql": ["update exports.export_dash_monthly set late_rate_if_handoffs_ok = late_rate_if_handoffs_ok + 0.01 where year_month = '2017-09'"]}),
-    ("Dashboard exports (trend): the stretch line is the 40th percentile of the what-if instead of the median",
+    ("Dashboard exports (trend): the monthly model computes its own stretch line as the 40th percentile of the what-if instead of reading the targets model",
      "assert_dash_monthly_reconciles",
-     {"model_edit": {"file": "models/exports/export_dash_monthly.sql", "replace": [("select median(late_rate_if_handoffs_ok) as median_late_rate", "select percentile_cont(0.4) within group (order by late_rate_if_handoffs_ok) as median_late_rate")], "rebuild": "export_dash_monthly+"}}),
+     {"model_edit": {"file": "models/exports/export_dash_monthly.sql", "replace": [("    t.stretch_goal_late_rate\nfrom ranked r cross join t", "    (select percentile_cont(0.4) within group (order by late_rate_if_handoffs_ok) from c where not laney_signal and not thin_month) as stretch_goal_late_rate\nfrom ranked r cross join t")], "rebuild": "export_dash_monthly+"}}),
+    ("Dashboard exports (trend): the story's stretch value in facts.json drifts to the retired 2.25% (the export still matches the model, only the facts.json comparison can catch it)",
+     "assert_dash_monthly_reconciles",
+     {"model_edit": {"file": "story/data/facts.json", "replace": [('"stretch": 0.034251', '"stretch": 0.022520')], "rebuild": "export_dash_monthly"}}),
     ("Dashboard exports (handoff): the late-handoff bar gains 50 late orders",
      "assert_dash_handoff_reconciles",
      {"sql": ["update exports.export_dash_handoff set late_orders = late_orders + 50 where is_late_handoff"]}),
@@ -628,6 +636,73 @@ CASES = [
      {"sql": ["update exports.export_dash_sellers set seller_id = 'zzz_unknown_seller' where rank_by_late_after_late_handoff = 7"]}),
 ]
 
+# Titles: the story and memo titles say "linked to", not cause; story/check_titles.py
+CASES += [
+    ("Titles: the story title says 'cause' again",
+     "titles:story title",
+     {"title_replace": [("story", "Late deliveries are linked to about a quarter", "Late deliveries cause about a quarter")]}),
+    ("Titles: the story title says 'caused'",
+     "titles:story title",
+     {"title_replace": [("story", "Late deliveries are linked to about a quarter", "Late deliveries caused about a quarter")]}),
+    ("Titles: the story title keeps 'linked to' but adds 'cause'",
+     "titles:story title",
+     {"title_replace": [("story", "Late deliveries are linked to about a quarter", "Late deliveries are linked to, and cause, about a quarter")]}),
+    ("Titles: the story title drops 'linked to' for another verb",
+     "titles:story title",
+     {"title_replace": [("story", "Late deliveries are linked to about a quarter", "Late deliveries are behind about a quarter")]}),
+    ("Titles: the story subtitle says 'causing'",
+     "titles:story subtitle",
+     {"title_replace": [("story", 'subtitle: "Where they come from,', 'subtitle: "What is causing them,')]}),
+    ("Titles: the memo title says 'causes'",
+     "titles:memo title",
+     {"title_replace": [("memo", "# Late deliveries are linked to about a quarter", "# Late deliveries causes about a quarter")]}),
+    # review finding 6: the wider cause wording, and the memo title must say 'linked to' too
+    ("Titles: the memo title says 'causal'",
+     "titles:memo title",
+     {"title_replace": [("memo", "# Late deliveries are linked to about a quarter", "# Late deliveries are a causal link to about a quarter")]}),
+    ("Titles: the memo title says 'drives'",
+     "titles:memo title",
+     {"title_replace": [("memo", "# Late deliveries are linked to about a quarter", "# Late deliveries drives about a quarter")]}),
+    ("Titles: the story title says 'driven by'",
+     "titles:story title",
+     {"title_replace": [("story", "Late deliveries are linked to about a quarter", "Late deliveries are linked to, and driven by, about a quarter")]}),
+    ("Titles: the story title says 'results in'",
+     "titles:story title",
+     {"title_replace": [("story", "Late deliveries are linked to about a quarter", "Late deliveries results in about a quarter")]}),
+    ("Titles: the memo title says 'leads to'",
+     "titles:memo title",
+     {"title_replace": [("memo", "# Late deliveries are linked to about a quarter", "# Late deliveries leads to about a quarter")]}),
+    ("Titles: the memo title says 'triggers'",
+     "titles:memo title",
+     {"title_replace": [("memo", "# Late deliveries are linked to about a quarter", "# Late deliveries triggers about a quarter")]}),
+    ("Titles: the story title says 'responsible for'",
+     "titles:story title",
+     {"title_replace": [("story", "Late deliveries are linked to about a quarter", "Late deliveries are linked to, and responsible for, about a quarter")]}),
+    ("Titles: the memo title drops 'linked to' for a neutral verb",
+     "titles:memo title",
+     {"title_replace": [("memo", "# Late deliveries are linked to about a quarter", "# Late deliveries go with about a quarter")]}),
+]
+
+# Stretch line: the median stable month under the handoff what-if, like for like with the 4.4% goal.
+STRETCH = "(select percentile_cont(0.5) within group (order by late_rate_if_handoffs_ok) from stable) as stretch_goal_late_rate"
+CASES += [
+    ("Stretch: the stretch line goes back to the retired 25th percentile (2.25%)",
+     "metric_late_rate_control_chart+",
+     {"model_edit": {"file": "models/metrics/metric_late_rate_targets.sql", "replace": [(STRETCH, STRETCH.replace("0.5", "0.25"))], "rebuild": "metric_late_rate_targets"}}),
+    ("Stretch: the stretch line uses the real late rate, so the what-if is gone",
+     "metric_late_rate_control_chart+",
+     {"model_edit": {"file": "models/metrics/metric_late_rate_targets.sql", "replace": [(STRETCH, STRETCH.replace("late_rate_if_handoffs_ok", "late_rate"))], "rebuild": "metric_late_rate_targets"}}),
+    ("Stretch: the stretch line takes every month, not just the stable ones",
+     "metric_late_rate_control_chart+",
+     {"model_edit": {"file": "models/metrics/metric_late_rate_targets.sql", "replace": [(STRETCH, STRETCH.replace("from stable", "from months"))], "rebuild": "metric_late_rate_targets"}}),
+    ("Stretch: the Python refit report's stretch value drifts from the dbt model (3.4251% -> 2.2520%)",
+     "assert_late_rate_targets_match_the_python_refit",
+     {"model_edit": {"file": "evidence/late_rate_targets_report.json", "replace": [('"stretch_median_if_handoffs_ok": 0.03425141242937853', '"stretch_median_if_handoffs_ok": 0.02251969271900082')], "rebuild": "metric_late_rate_targets"}}),
+    ("Stretch: the stretch line uses the 60th percentile of the what-if months",
+     "metric_late_rate_control_chart+",
+     {"model_edit": {"file": "models/metrics/metric_late_rate_targets.sql", "replace": [(STRETCH, STRETCH.replace("0.5", "0.6"))], "rebuild": "metric_late_rate_targets"}}),
+]
+
 DOC_EDITS = ("yml_drop_card", "yml_replace", "md_replace", "md_append", "allowlist_append", "allowlist_replace")   # every key edited_docs reads
 
 
@@ -675,8 +750,70 @@ def run_ontology_claim(claim, db, extra_env=None):
     res = [(claim, "pass" if l.startswith("PASS") else "fail", l.split(": ", 1)[1]) for l in hits]
     return (0 if res and all(r[1] == "pass" for r in res) else 1), res
 
+TITLE_FILES = {"story": ("STORY_QMD", os.path.join("story", "story.qmd")), "memo": ("MEMO_MD", os.path.join("recommendation", "MEMO.md"))}
+
+def edited_titles(mut, work):
+    """Env vars pointing story/check_titles.py at edited copies of story.qmd and MEMO.md."""
+    env = {}
+    for which, old, new in mut["title_replace"]:
+        var, rel = TITLE_FILES[which]
+        path = env.get(var) or os.path.join(ROOT, rel)
+        text = open(path).read()
+        assert old in text, f"no {old!r} in {rel}"
+        out = os.path.join(work, os.path.basename(rel))
+        open(out, "w").write(text.replace(old, new, 1))
+        env[var] = out
+    return env
+
+def run_title_check(name, extra_env=None):
+    env = dict(os.environ, **(extra_env or {}))
+    p = subprocess.run([sys.executable, os.path.join(ROOT, "story", "check_titles.py")], cwd=ROOT, env=env, capture_output=True, text=True)
+    hits = [l for l in p.stdout.splitlines() if l[6:].startswith(f"title {name}:")]
+    res = [(f"title {name}", "pass" if l.startswith("PASS") else "fail", l.split(": ", 1)[1]) for l in hits]
+    return (0 if res and all(r[1] == "pass" for r in res) else 1), res
+
+WORKER_SCRIPT = os.path.join(ROOT, "scripts", "dbt_test_worker.py")
+USE_WORKER = os.environ.get("PROVE_NO_WORKER", "") == ""   # PROVE_NO_WORKER=1: one `dbt test` process per run, the slow way (to compare)
+
+def wants_worker(selector, mut):
+    """dbt-test cases that leave the project files and the raw files alone can share a parsed project (see dbt_test_worker.py)."""
+    return USE_WORKER and not selector.startswith(("ontology:", "titles:")) and "raw_edit" not in mut and "model_edit" not in mut
+
+class DbtWorker:
+    """One warm `dbt test` process with its own warehouse file, named olist.duckdb so every run compiles against the same database name."""
+    def __init__(self, slot):
+        os.makedirs(slot)
+        self.db = os.path.join(slot, "olist.duckdb")
+        self.fresh_db()
+        env = dict(os.environ, OLIST_DB_PATH=self.db, OLIST_RAW_DIR=os.path.abspath(RAW), DBT_PROFILES_DIR=ROOT)
+        self.proc = subprocess.Popen([sys.executable, WORKER_SCRIPT, os.path.join(slot, "target")], cwd=ROOT, env=env,
+                                     stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
+
+    def fresh_db(self):
+        """An untouched copy of the warehouse at this worker's fixed path."""
+        shutil.copy(DB, self.db)
+        return self.db
+
+    def run(self, selector):
+        self.proc.stdin.write(json.dumps({"selector": selector}) + "\n"); self.proc.stdin.flush()
+        for line in self.proc.stdout:
+            if line.startswith("@@RESULT@@"):
+                out = json.loads(line[len("@@RESULT@@"):])
+                assert "error" not in out, f"dbt worker failed on {selector!r}: {out['error']}"
+                # same shape as run_tests: the test's name, its status, its failing-row count
+                for uid, st, fl, msg in out["results"]:
+                    if st == "error":   # an error is not a failing check: show why, so a broken run is not mistaken for a proof
+                        print(f"  dbt error in {uid} ({selector}): {msg}", file=sys.stderr, flush=True)
+                return out["rc"], [(uid.split(".")[-2] if uid.count(".") > 2 else uid, st, fl) for uid, st, fl, _ in out["results"]]
+        raise RuntimeError(f"dbt worker exited while running {selector!r}")
+
+    def close(self):
+        self.proc.stdin.close(); self.proc.wait(timeout=60)
+
 def run_tests(selector, db, raw, extra_env=None, proj=None):
     proj = proj or ROOT
+    if selector.startswith("titles:"):
+        return run_title_check(selector[len("titles:"):], extra_env)
     if selector.startswith("ontology:"):
         return run_ontology_claim(selector[len("ontology:"):], db, extra_env)
     env = dict(os.environ, OLIST_DB_PATH=db, OLIST_RAW_DIR=raw, DBT_PROFILES_DIR=proj)
@@ -740,7 +877,7 @@ def write_evidence(report):
         f.write("| Rule | Tests | Known-bad rows injected | Baseline | Mutant (failing rows) | Verdict |\n|---|---|---|---|---|---|\n")
         for r in report:
             m = r["mutation"]
-            mut = m.get("sql") or [f"{k}: {m[k]}" for k in ("raw_edit", "model_edit") + DOC_EDITS if k in m]
+            mut = m.get("sql") or [f"{k}: {m[k]}" for k in ("raw_edit", "model_edit", "title_replace") + DOC_EDITS if k in m]
             f.write(f"| {r['rule']} | `{r['selector']}` | {'<br>'.join('`'+m.replace('|','\\|')+'`' for m in mut)} | "
                     f"{', '.join(s for _, s, _ in r['baseline'])} | {', '.join(f'{s} ({n})' for _, s, n in r['mutant'])} | **{r['verdict']}** |\n")
 
@@ -755,17 +892,28 @@ def main():
     selected = [c for c in CASES if only in c[0]]
     # The baseline (real warehouse, real raw files) does not depend on the mutation, so each selector is run once and shared.
     baselines, locks, guard = {}, {}, threading.Lock()
+    mine, workers = threading.local(), []   # each pool thread owns one warm dbt process and its warehouse file
+
+    def my_worker():
+        if getattr(mine, "w", None) is None:
+            with guard:
+                mine.w = DbtWorker(os.path.join(work, f"slot-{len(workers)}")); workers.append(mine.w)
+        return mine.w
 
     def baseline(selector):
         with guard:
             lock = locks.setdefault(selector, threading.Lock())
         with lock:
             if selector not in baselines:
-                d = tempfile.mkdtemp(prefix="base-", dir=work)
-                base_db = os.path.join(d, "baseline.duckdb"); shutil.copy(DB, base_db)
-                raw_clean = raw_copy(None)
-                baselines[selector] = run_tests(selector, base_db, raw_clean)
-                os.remove(base_db); shutil.rmtree(raw_clean, ignore_errors=True)
+                if wants_worker(selector, {}):
+                    w = my_worker(); w.fresh_db()
+                    baselines[selector] = w.run(selector)
+                else:
+                    d = tempfile.mkdtemp(prefix="base-", dir=work)
+                    base_db = os.path.join(d, "baseline.duckdb"); shutil.copy(DB, base_db)
+                    raw_clean = raw_copy(None)
+                    baselines[selector] = run_tests(selector, base_db, raw_clean)
+                    os.remove(base_db); shutil.rmtree(raw_clean, ignore_errors=True)
             return baselines[selector]
 
     def run_case(case):
@@ -773,9 +921,15 @@ def main():
         t0 = time.time()
         b_rc, b_res = baseline(selector)
         cdir = tempfile.mkdtemp(prefix="case-", dir=work)
-        mut_db = os.path.join(cdir, "mutant.duckdb"); shutil.copy(DB, mut_db)
-        raw_mut = raw_copy(mut.get("raw_edit"))
+        w = my_worker() if wants_worker(selector, mut) else None
+        if w:
+            mut_db, raw_mut = w.fresh_db(), None
+        else:
+            mut_db = os.path.join(cdir, "mutant.duckdb"); shutil.copy(DB, mut_db)
+            raw_mut = raw_copy(mut.get("raw_edit"))
         doc_env = edited_docs(mut, cdir) if set(DOC_EDITS) & set(mut) else None
+        if "title_replace" in mut:
+            doc_env = edited_titles(mut, cdir)
         if "sql" in mut:
             con = duckdb.connect(mut_db)
             for stmt in mut["sql"]:
@@ -785,10 +939,11 @@ def main():
         if "model_edit" in mut:
             proj = project_copy(mut["model_edit"], cdir)
             rebuild_models(proj, mut["model_edit"]["rebuild"], mut_db, raw_mut)
-        m_rc, m_res = run_tests(selector, mut_db, raw_mut, doc_env, proj)
-        shutil.rmtree(cdir, ignore_errors=True); shutil.rmtree(raw_mut, ignore_errors=True)
+        m_rc, m_res = w.run(selector) if w else run_tests(selector, mut_db, raw_mut, doc_env, proj)
+        shutil.rmtree(cdir, ignore_errors=True)
+        if raw_mut: shutil.rmtree(raw_mut, ignore_errors=True)
         base_ok = b_rc == 0 and b_res and all(st == "pass" for _, st, _ in b_res)
-        mut_fail = m_rc != 0 and any(st in ("fail", "error") for _, st, _ in m_res)
+        mut_fail = m_rc != 0 and any(st == "fail" for _, st, _ in m_res)   # an error is a broken run, not a test that caught the mistake
         verdict = "PROVEN" if (base_ok and mut_fail) else "NOT PROVEN"
         print(f"{verdict:11s} {rule}  baseline={len(b_res)} tests, all pass: {base_ok} | mutant failing: {[(n, st, f) for n, st, f in m_res if st != 'pass']}", flush=True)
         return {"rule": rule, "selector": selector, "mutation": mut, "baseline": b_res,
@@ -799,6 +954,7 @@ def main():
     jobs = max(1, int(os.environ.get("PROVE_JOBS", min(4, os.cpu_count() or 1))))
     with concurrent.futures.ThreadPoolExecutor(max_workers=jobs) as pool:
         report = list(pool.map(run_case, selected))
+    for w in workers: w.close()
     shutil.rmtree(work, ignore_errors=True)
     if only and MERGE:
         # Add or replace just these rules in the committed report, keeping the order of CASES (what a full run would write).

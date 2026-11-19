@@ -25,7 +25,7 @@ def pchart(rep, path):
     ax.hlines(L["stable_centre"] * 100, -0.6, XR, color=GREY, lw=1, ls=(0, (1, 2)))
     ax.hlines(L["alarm_line"] * 100, -0.6, XR, color=RED, lw=1.4, ls="--")
     ax.hlines(G["safe_25th_pct_of_stable"] * 100, -0.6, XR, color=GREEN, lw=1.4)
-    ax.hlines(G["stretch_25th_pct_if_handoffs_ok"] * 100, -0.6, XR, color=GREEN, lw=1.4, ls="--")
+    ax.hlines(G["stretch_median_if_handoffs_ok"] * 100, -0.6, XR, color=GREEN, lw=1.4, ls="--")
     ax.plot(x, rate, color=INK, lw=1.2, zorder=3)
     for i, m in enumerate(M):
         face = "white" if m["thin"] else (RED if m["laney_signal"] else INK)
@@ -33,8 +33,8 @@ def pchart(rep, path):
     xe = len(M) - 0.35
     ax.text(xe, L["alarm_line"] * 100, f"Alarm line {L['alarm_line'] * 100:.1f}%", color=RED, fontsize=9.5, ha="left", va="center")
     ax.text(xe, L["stable_centre"] * 100 + .5, f"Typical stable\nmonth {L['stable_centre'] * 100:.1f}%", color="#666", fontsize=8.5, ha="left", va="center")
-    ax.text(xe, G["safe_25th_pct_of_stable"] * 100 + .4, f"Safe goal {G['safe_25th_pct_of_stable'] * 100:.1f}%", color=GREEN, fontsize=9.5, ha="left", va="center")
-    ax.text(xe, G["stretch_25th_pct_if_handoffs_ok"] * 100 - .45, f"Stretch goal {G['stretch_25th_pct_if_handoffs_ok'] * 100:.1f}%", color=GREEN, fontsize=9.5, ha="left", va="center")
+    ax.text(xe, G["safe_25th_pct_of_stable"] * 100 - .45, f"Safe goal {G['safe_25th_pct_of_stable'] * 100:.1f}%", color=GREEN, fontsize=9.5, ha="left", va="center")
+    ax.text(xe, G["stretch_median_if_handoffs_ok"] * 100 + .4, f"Stretch goal (what-if) {G['stretch_median_if_handoffs_ok'] * 100:.1f}%", color=GREEN, fontsize=9.5, ha="left", va="center")
     for i, m in enumerate(M):
         if m["laney_signal"]:
             ax.annotate(f"{m['rate'] * 100:.1f}%", (i, rate[i]), textcoords="offset points", xytext=(0, 8), ha="center", color=RED, fontsize=9, fontweight="bold")
@@ -45,8 +45,8 @@ def pchart(rep, path):
     ax.set_ylim(0, 21); ax.set_xlim(-0.6, len(M) + 2.6)
     ax.set_title("Only three months were truly out of the ordinary: Nov 2017, Feb 2018 and Mar 2018", loc="left", fontsize=13, color=INK, fontweight="bold")
     fig.text(0.0, 0.005, "Monthly late rate by purchase month, 94,931 delivered single-seller orders. Red = above the normal range. Limits: 3 sigma, Laney p\u2032 (months swing "
-             f"{L['sigma_z']:.1f}x more than chance alone explains).\nSafe goal = 25th percentile of the {len(P['stable_months'])} stable months; stretch goal = same, "
-             "if late handoffs were late only as often as on-time handoffs.", fontsize=7.5, color="#555", va="bottom")
+             f"{L['sigma_z']:.1f}x more than chance alone explains).\nSafe goal = 25th percentile of the {len(P['stable_months'])} stable months; stretch goal = the median stable month, "
+             "if late handoffs were late only as often as on-time handoffs (a what-if).", fontsize=7.5, color="#555", va="bottom")
     _clean(ax)
     fig.tight_layout(rect=(0, 0.06, 1, 1))
     fig.savefig(path); plt.close(fig)

@@ -34,7 +34,7 @@ Lost repeat GMV per year = late first orders per year x drop in 90-day repeat ra
 - low / mid / high = the 95% interval's ends and the point estimate of the repeat drop from the matched method.
 - If the interval includes zero, the low value is R$0 and the memo says the repeat effect is not distinguishable from zero.
 - Per year = count over the 20-month window x 12 / 20.
-Also reported, as a fact and not a cost: GMV of late orders, and the number of 1-2 star reviews attributable to lateness (late orders x matched excess share of 1-2 star reviews).
+Also reported, as a fact and not a cost: GMV of late orders, and the number of 1-2 star reviews attributable to lateness (late orders x matched excess share of 1-2 star reviews). History: that matched figure, 3,335, was replaced in the memo and the story by the causal estimate in `review_cost_causal/`, about 3,110.
 
 ## Where late orders cluster
 

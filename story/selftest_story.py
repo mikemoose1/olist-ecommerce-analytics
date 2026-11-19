@@ -66,7 +66,7 @@ CASES = [
     ("alarm line misprinted 8.38 -> 8.83", edit("8.38<!--f:c_alarm_line-->", "8.83<!--f:c_alarm_line-->")),
     ("flagged month swapped 2018-02 -> 2018-01", edit("2018-02<!--f:c_flagged_2-->", "2018-01<!--f:c_flagged_2-->")),
     ("goal line misprinted 4.4 -> 3.0 (the safe goal, not drawn)", edit("the goal, 4.4<!--f:c_goal_line-->%", "the goal, 3.0<!--f:c_goal_line-->%")),
-    ("stretch line left only in the image", edit("faint dashed line at 2.3<!--f:c_stretch_line-->% (2.25<!--f:c_stretch_exact-->%)", "faint dashed line")),
+    ("stretch line left only in the image", edit("faint dashed line at 3.4<!--f:c_stretch_line-->% (3.43<!--f:c_stretch_exact-->%)", "faint dashed line")),
     ("what-if rate misprinted 5.49 -> 4.49", edit("5.49<!--f:c_whatif_rate-->", "4.49<!--f:c_whatif_rate-->")),
     ("repeat sentence reworded (somewhat -> much less likely)", edit("were somewhat less likely to order again", "were much less likely to order again")),
     ("repeat rate misprinted 1.0 -> 0.5", edit("about 1.0<!--f:c_rep_late_1dp-->%", "about 0.5<!--f:c_rep_late_1dp-->%")),
@@ -76,6 +76,32 @@ CASES = [
      lambda: (TEXT, FACTS, None, {**SF, "repeat": {**SF["repeat"], "revenue_high": 25000.0}})),
     ("QUESTIONS.md keeps the old 3,335", lambda: (TEXT, FACTS, None, None, QUESTIONS.replace("About 3,110 extra", "About 3,335 extra", 1))),
     ("QUESTIONS.md Q2 loses the goal line", lambda: (TEXT, FACTS, None, None, QUESTIONS.replace("The goal line is 4.4%, ", "The goal line is ", 1))),
+    # stretch line, 3.4%: the retired 2.3% / 2.25% cannot come back, and its label cannot be softened or dropped
+    ("retired stretch back: facts rebuilt to 2.3 / 2.25 and the story reprinted with them",
+     lambda: (TEXT.replace("3.4<!--f:c_stretch_line-->", "2.3<!--f:c_stretch_line-->").replace("3.43<!--f:c_stretch_exact-->", "2.25<!--f:c_stretch_exact-->"),
+              {**FACTS, "c_stretch_line": "2.3", "c_stretch_exact": "2.25"}), "retired stretch value"),
+    ("retired stretch back in the facts only (the story still prints 3.4)",
+     lambda: (TEXT, {**FACTS, "c_stretch_line": "2.3", "c_stretch_exact": "2.25"}), "retired stretch value"),
+    ("stretch line misprinted 3.4 -> 2.9", edit("at 3.4<!--f:c_stretch_line-->%", "at 2.9<!--f:c_stretch_line-->%"), "c_stretch_line"),
+    ("stretch gap misprinted about 1.0 -> 2.0 point", edit("about 1.0<!--f:c_whatif_gap--> point (single", "about 2.0<!--f:c_whatif_gap--> point (single"), "c_whatif_gap"),
+    ("stretch line called a tested cause", edit("a what-if, not a tested cause. It redoes", "a result. It redoes"), "word for word"),
+    ("stretch line loses 'middle month'", edit("shows the middle month if late seller handoffs", "shows a good month if late seller handoffs"), "word for word"),
+    ("'not a randomized test' dropped from the cost paragraph", edit("This is an estimate from past orders, not a randomized test.", "This is an estimate from past orders."), "word for word"),
+    ("flagged-month count says four months", edit("Three months crossed it:", "Four months crossed it:"), "flagged-month count"),
+    ("flagged-month sentence removed", edit("Three months crossed it:", "Some months crossed it:"), "flagged-month count"),
+    ("QUESTIONS.md keeps the retired stretch 2.3%",
+     lambda: (TEXT, FACTS, None, None, QUESTIONS.replace("A faint stretch line at 3.4% (3.43%)", "A faint stretch line at 2.3% (3.43%)", 1)), "retired stretch value"),
+    ("QUESTIONS.md Q2 loses the stretch value",
+     lambda: (TEXT, FACTS, None, None, QUESTIONS.replace("A faint stretch line at 3.4% (3.43%)", "A faint stretch line", 1)), "c_stretch_line"),
+    # bare or proven cause wording, and the stretch gap clause, are required word for word
+    ("bold headline drops 'estimated': 'Late deliveries cause about 3,110'", edit("**Late deliveries are the estimated cause of about 3,110<!--f:c_cost_causal-->", "**Late deliveries cause about 3,110<!--f:c_cost_causal-->"), "drops 'estimated'"),
+    ("recommendation drops 'estimated': 'Late deliveries cause about 3,110'", edit("Late deliveries are the estimated cause of about 3,110<!--f:c_cost_causal--> extra reviews", "Late deliveries cause about 3,110<!--f:c_cost_causal--> extra reviews"), "drops 'estimated'"),
+    ("recommendation says 'are proven to cause'", edit("Late deliveries are the estimated cause of about 3,110<!--f:c_cost_causal--> extra reviews", "Late deliveries are proven to cause 3,110<!--f:c_cost_causal--> extra reviews"), "claims a proof"),
+    ("'each extra day late proves the delay itself causes the damage'", edit("though part of that climb is survey timing.", "and each extra day late proves the delay itself causes the damage."), "claims a proof"),
+    ("headline sentence reworded without 'estimated' (still no bare cause)", edit("Late deliveries are the estimated cause of about 3,110<!--f:c_cost_causal--> of the", "Late deliveries account for about 3,110<!--f:c_cost_causal--> of the"), "word for word"),
+    ("gap clause reworded: 'best quartile of the same stable months'", edit("takes the median of the same stable months as the goal", "takes the best quartile of the same stable months as the goal"), "word for word"),
+    ("gap read reworded: 'what that what-if alone is worth'", edit("is a median-scale read of the what-if, about 1.0", "is what that what-if alone is worth, about 1.0"), "word for word"),
+    ("gap range high end misprinted 2.9 -> 3.9", edit("to 2.9<!--f:c_whatif_gap_hi-->", "to 3.9<!--f:c_whatif_gap_hi-->"), "c_whatif_gap_hi"),
     ("number word missing from the old list: none", edit("hold far more than their share of late orders.**", "hold far more than their share of late orders, and none of the rest do.**")),
 ]
 
@@ -98,11 +124,12 @@ def main():
     n, base = C.check(TEXT, FACTS)
     print(f"{'PASS' if not base else 'FAIL'}  untouched story passes ({n} numbers)" + (f": {base}" if base else ""))
     fails = bool(base)
-    for name, make in CASES:
+    for name, make, *expect in CASES:
         text, fx, *design = make()
         _, problems = C.check(text, fx, *design)
-        fails |= not problems
-        print(f"{'PASS' if problems else 'FAIL'}  {name}: " + (f"caught ({problems[0]})" if problems else "NOT caught"))
+        hit = [p for p in problems if not expect or expect[0] in p]   # a case with an expected phrase must be caught for that reason
+        fails |= not hit
+        print(f"{'PASS' if hit else 'FAIL'}  {name}: " + (f"caught ({hit[0]})" if hit else f"NOT caught{' for the right reason' if problems else ''}"))
     for name, make in MUST_PASS:
         text, fx, *design = make()
         _, problems = C.check(text, fx, *design)

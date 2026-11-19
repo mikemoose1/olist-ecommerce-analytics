@@ -71,5 +71,20 @@ y = np.random.default_rng(5).binomial(nn.astype(int), truth).astype(float)
 expect("break test accepts the planted break", bp.davies_logit(x, y, nn, grid, 60, 1)["p_value"] < 0.05)
 expect("control: planted-break claim is REJECTED on straight-line data", bp.davies_logit(x, np.random.default_rng(7).binomial(nn.astype(int), straight).astype(float), nn, grid, 60, 1)["p_value"] >= 0.05)
 
+# 6. the stretch line must be the median what-if month, like for like with the goal line
+st = (~spc.fit_laney(k, n)["signal"]) & (~m.thin_month.values)
+real, what_if = (k / n)[st], m.late_rate_if_handoffs_ok.values[st]
+goal_m, stretch_m = float(np.median(real)), float(np.median(what_if))
+ok, r = proofs.check_stretch_is_like_for_like(stretch_m, goal_m, real, what_if)
+expect("control: the median what-if month passes as the stretch line", ok, f"gap {r['gap_pp']:.3f} pp")
+ok, r = proofs.check_stretch_is_like_for_like(float(np.percentile(what_if, 25)), goal_m, real, what_if)
+expect("stretch check REJECTS the retired 25th-percentile stretch (2.25%)", not ok, f"{100 * np.percentile(what_if, 25):.2f}%")
+ok, r = proofs.check_stretch_is_like_for_like(stretch_m, float(np.percentile(real, 25)), real, what_if)
+expect("stretch check REJECTS a goal that is not the median stable month", not ok)
+ok, r = proofs.check_stretch_is_like_for_like(stretch_m, float(np.percentile(real, 75)), real, what_if)
+expect("stretch check REJECTS a goal above the stretch that is still not the median (the 75th percentile)", not ok, f"goal {100 * np.percentile(real, 75):.2f}% > stretch {100 * stretch_m:.2f}%")
+ok, r = proofs.check_stretch_is_like_for_like(float(np.median(real)), goal_m, real, what_if)
+expect("stretch check REJECTS a stretch with no what-if in it (the real median)", not ok)
+
 print(f"\n{sum(results)}/{len(results)} selftest checks passed")
 sys.exit(0 if all(results) else 1)
