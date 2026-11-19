@@ -1,5 +1,5 @@
 ---
-title: "Late deliveries cause about a quarter of the bad reviews on delivered single-seller Olist orders"
+title: "Late deliveries are linked to about a quarter of the bad reviews on delivered single-seller Olist orders"
 subtitle: "Where they come from, and two tests that would show how many Olist can win back"
 format:
   html:
