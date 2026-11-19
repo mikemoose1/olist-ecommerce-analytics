@@ -13,11 +13,14 @@ deps()        { venv; "$BIN/dbt" deps --quiet; }
 setup()       { venv; data; deps; }
 build()       { deps; "$BIN/dbt" build --fail-fast; }
 verify()      { "$BIN/python" verification/verify_headlines.py; "$BIN/python" verification/selftest_story_numbers.py; ontology; recommendation; }
-recommendation() { "$BIN/python" recommendation/analyze.py; "$BIN/python" recommendation/selftest_memo.py; story_checks; }   # numbers tied to facts, then proof that check can fail
+recommendation() { "$BIN/python" recommendation/analyze.py; "$BIN/python" recommendation/selftest_memo.py
+  "$BIN/python" recommendation/check_docs.py; "$BIN/python" recommendation/selftest_docs.py   # retired figures stay out of the untagged docs
+  story_checks; }   # numbers tied to facts, then proof that check can fail
 story_checks() {   # KPI tree adds up, chart data is fresh, captions are tied to facts; each check proven able to fail; then build the page
   "$BIN/python" story/kpi_tree.py --check; "$BIN/python" story/selftest_kpi_tree.py
   "$BIN/python" story/story_data.py --check
   "$BIN/python" story/check_story.py; "$BIN/python" story/selftest_story.py
+  "$BIN/python" story/check_titles.py; "$BIN/python" story/selftest_titles.py
   "$BIN/python" story/build_story.py; }
 # the revision the append-only guard compares with: unset = a local run, compare with the last commit;
 # a commit = CI's base; set but empty = the first push of a new branch, compare with origin/main; nothing to compare with = ""

@@ -7,8 +7,11 @@
 --                            "Stable" means "not an extreme month", not "healthy": the stable months still average 4.5% late.
 --   goal_late_rate         : the median stable month (about 4.4%), the goal line the story draws: half
 --                            the stable months already beat it. The safe goal stays in this table but is not drawn.
---   stretch_goal_late_rate : the 25th percentile with late handoffs late no more often than on-time handoffs in the same
---                            month (about 2.3%). A mix-shift what-if, not a tested cause.
+--   stretch_goal_late_rate : the median stable month if late seller handoffs ran late no more often than on-time ones in
+--                            the same month (about 3.4%). Same measure as the goal line, on the same stable months, so
+--                            goal minus stretch (about 1 point) is the what-if's effect alone. A what-if, not a tested cause.
+--                            Retired: the 25th percentile of this series (about 2.25%) mixed the what-if with a better
+--                            month, so it is no longer the stretch line.
 -- The story reconciliation columns repeat the headline numbers so a test can tie this table to the story.
 with months as (
     select * from {{ ref('metric_late_rate_control_chart') }}
@@ -39,7 +42,7 @@ select
     (select percentile_cont(0.25) within group (order by late_rate) from stable) as safe_goal_late_rate,
     (select median(late_rate) from stable) as goal_late_rate,
     (select min(late_rate) from stable) as best_stable_month_late_rate,
-    (select percentile_cont(0.25) within group (order by late_rate_if_handoffs_ok) from stable) as stretch_goal_late_rate,
+    (select percentile_cont(0.5) within group (order by late_rate_if_handoffs_ok) from stable) as stretch_goal_late_rate,
     (select sum(late_rate_if_handoffs_ok * orders) / sum(orders) from months) as late_rate_if_handoffs_ok,
     (select sum(late_handoff_orders) from months) as late_handoff_orders,
     (select sum(late_handoff_late_orders) from months) as late_handoff_late_orders,

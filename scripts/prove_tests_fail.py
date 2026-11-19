@@ -456,6 +456,73 @@ CASES = [
      {"allowlist_append": "  - match: marts.dim_seller.no_such_column\n    reason: stale on purpose\n"}),
 ]
 
+# Titles: the story and memo titles say "linked to", not cause; story/check_titles.py
+CASES += [
+    ("Titles: the story title says 'cause' again",
+     "titles:story title",
+     {"title_replace": [("story", "Late deliveries are linked to about a quarter", "Late deliveries cause about a quarter")]}),
+    ("Titles: the story title says 'caused'",
+     "titles:story title",
+     {"title_replace": [("story", "Late deliveries are linked to about a quarter", "Late deliveries caused about a quarter")]}),
+    ("Titles: the story title keeps 'linked to' but adds 'cause'",
+     "titles:story title",
+     {"title_replace": [("story", "Late deliveries are linked to about a quarter", "Late deliveries are linked to, and cause, about a quarter")]}),
+    ("Titles: the story title drops 'linked to' for another verb",
+     "titles:story title",
+     {"title_replace": [("story", "Late deliveries are linked to about a quarter", "Late deliveries are behind about a quarter")]}),
+    ("Titles: the story subtitle says 'causing'",
+     "titles:story subtitle",
+     {"title_replace": [("story", 'subtitle: "Where they come from,', 'subtitle: "What is causing them,')]}),
+    ("Titles: the memo title says 'causes'",
+     "titles:memo title",
+     {"title_replace": [("memo", "# Late deliveries are linked to about a quarter", "# Late deliveries causes about a quarter")]}),
+    # review finding 6: the wider cause wording, and the memo title must say 'linked to' too
+    ("Titles: the memo title says 'causal'",
+     "titles:memo title",
+     {"title_replace": [("memo", "# Late deliveries are linked to about a quarter", "# Late deliveries are a causal link to about a quarter")]}),
+    ("Titles: the memo title says 'drives'",
+     "titles:memo title",
+     {"title_replace": [("memo", "# Late deliveries are linked to about a quarter", "# Late deliveries drives about a quarter")]}),
+    ("Titles: the story title says 'driven by'",
+     "titles:story title",
+     {"title_replace": [("story", "Late deliveries are linked to about a quarter", "Late deliveries are linked to, and driven by, about a quarter")]}),
+    ("Titles: the story title says 'results in'",
+     "titles:story title",
+     {"title_replace": [("story", "Late deliveries are linked to about a quarter", "Late deliveries results in about a quarter")]}),
+    ("Titles: the memo title says 'leads to'",
+     "titles:memo title",
+     {"title_replace": [("memo", "# Late deliveries are linked to about a quarter", "# Late deliveries leads to about a quarter")]}),
+    ("Titles: the memo title says 'triggers'",
+     "titles:memo title",
+     {"title_replace": [("memo", "# Late deliveries are linked to about a quarter", "# Late deliveries triggers about a quarter")]}),
+    ("Titles: the story title says 'responsible for'",
+     "titles:story title",
+     {"title_replace": [("story", "Late deliveries are linked to about a quarter", "Late deliveries are linked to, and responsible for, about a quarter")]}),
+    ("Titles: the memo title drops 'linked to' for a neutral verb",
+     "titles:memo title",
+     {"title_replace": [("memo", "# Late deliveries are linked to about a quarter", "# Late deliveries go with about a quarter")]}),
+]
+
+# Stretch line: the median stable month under the handoff what-if, like for like with the 4.4% goal.
+STRETCH = "(select percentile_cont(0.5) within group (order by late_rate_if_handoffs_ok) from stable) as stretch_goal_late_rate"
+CASES += [
+    ("Stretch: the stretch line goes back to the retired 25th percentile (2.25%)",
+     "metric_late_rate_control_chart+",
+     {"model_edit": {"file": "models/metrics/metric_late_rate_targets.sql", "replace": [(STRETCH, STRETCH.replace("0.5", "0.25"))], "rebuild": "metric_late_rate_targets"}}),
+    ("Stretch: the stretch line uses the real late rate, so the what-if is gone",
+     "metric_late_rate_control_chart+",
+     {"model_edit": {"file": "models/metrics/metric_late_rate_targets.sql", "replace": [(STRETCH, STRETCH.replace("late_rate_if_handoffs_ok", "late_rate"))], "rebuild": "metric_late_rate_targets"}}),
+    ("Stretch: the stretch line takes every month, not just the stable ones",
+     "metric_late_rate_control_chart+",
+     {"model_edit": {"file": "models/metrics/metric_late_rate_targets.sql", "replace": [(STRETCH, STRETCH.replace("from stable", "from months"))], "rebuild": "metric_late_rate_targets"}}),
+    ("Stretch: the Python refit report's stretch value drifts from the dbt model (3.4251% -> 2.2520%)",
+     "assert_late_rate_targets_match_the_python_refit",
+     {"model_edit": {"file": "evidence/late_rate_targets_report.json", "replace": [('"stretch_median_if_handoffs_ok": 0.03425141242937853', '"stretch_median_if_handoffs_ok": 0.02251969271900082')], "rebuild": "metric_late_rate_targets"}}),
+    ("Stretch: the stretch line uses the 60th percentile of the what-if months",
+     "metric_late_rate_control_chart+",
+     {"model_edit": {"file": "models/metrics/metric_late_rate_targets.sql", "replace": [(STRETCH, STRETCH.replace("0.5", "0.6"))], "rebuild": "metric_late_rate_targets"}}),
+]
+
 DOC_EDITS = ("yml_drop_card", "yml_replace", "md_replace", "md_append", "allowlist_append", "allowlist_replace")   # every key edited_docs reads
 
 
@@ -503,8 +570,32 @@ def run_ontology_claim(claim, db, extra_env=None):
     res = [(claim, "pass" if l.startswith("PASS") else "fail", l.split(": ", 1)[1]) for l in hits]
     return (0 if res and all(r[1] == "pass" for r in res) else 1), res
 
+TITLE_FILES = {"story": ("STORY_QMD", os.path.join("story", "story.qmd")), "memo": ("MEMO_MD", os.path.join("recommendation", "MEMO.md"))}
+
+def edited_titles(mut, work):
+    """Env vars pointing story/check_titles.py at edited copies of story.qmd and MEMO.md."""
+    env = {}
+    for which, old, new in mut["title_replace"]:
+        var, rel = TITLE_FILES[which]
+        path = env.get(var) or os.path.join(ROOT, rel)
+        text = open(path).read()
+        assert old in text, f"no {old!r} in {rel}"
+        out = os.path.join(work, os.path.basename(rel))
+        open(out, "w").write(text.replace(old, new, 1))
+        env[var] = out
+    return env
+
+def run_title_check(name, extra_env=None):
+    env = dict(os.environ, **(extra_env or {}))
+    p = subprocess.run([sys.executable, os.path.join(ROOT, "story", "check_titles.py")], cwd=ROOT, env=env, capture_output=True, text=True)
+    hits = [l for l in p.stdout.splitlines() if l[6:].startswith(f"title {name}:")]
+    res = [(f"title {name}", "pass" if l.startswith("PASS") else "fail", l.split(": ", 1)[1]) for l in hits]
+    return (0 if res and all(r[1] == "pass" for r in res) else 1), res
+
 def run_tests(selector, db, raw, extra_env=None, proj=None):
     proj = proj or ROOT
+    if selector.startswith("titles:"):
+        return run_title_check(selector[len("titles:"):], extra_env)
     if selector.startswith("ontology:"):
         return run_ontology_claim(selector[len("ontology:"):], db, extra_env)
     env = dict(os.environ, OLIST_DB_PATH=db, OLIST_RAW_DIR=raw, DBT_PROFILES_DIR=proj)
@@ -575,6 +666,8 @@ def main():
         mut_db = os.path.join(work, "mutant.duckdb"); shutil.copy(DB, mut_db)
         raw_mut = raw_copy(mut.get("raw_edit"))
         doc_env = edited_docs(mut, work) if set(DOC_EDITS) & set(mut) else None
+        if "title_replace" in mut:
+            doc_env = edited_titles(mut, work)
         if "sql" in mut:
             con = duckdb.connect(mut_db)
             for s in mut["sql"]:
@@ -607,7 +700,7 @@ def main():
         f.write("| Rule | Tests | Known-bad rows injected | Baseline | Mutant (failing rows) | Verdict |\n|---|---|---|---|---|---|\n")
         for r in report:
             m = r["mutation"]
-            mut = m.get("sql") or [f"{k}: {m[k]}" for k in ("raw_edit", "model_edit") + DOC_EDITS if k in m]
+            mut = m.get("sql") or [f"{k}: {m[k]}" for k in ("raw_edit", "model_edit", "title_replace") + DOC_EDITS if k in m]
             f.write(f"| {r['rule']} | `{r['selector']}` | {'<br>'.join('`'+m.replace('|','\\|')+'`' for m in mut)} | "
                     f"{', '.join(s for _, s, _ in r['baseline'])} | {', '.join(f'{s} ({n})' for _, s, n in r['mutant'])} | **{r['verdict']}** |\n")
     bad = [r for r in report if r["verdict"] != "PROVEN"]
