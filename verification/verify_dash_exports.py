@@ -45,6 +45,12 @@ def rate(rows, num, den):
     return sum(f(r[num]) for r in rows) / sum(f(r[den]) for r in rows)
 
 
+def pctile(xs, q):
+    """Linear-interpolated percentile, the same rule as duckdb's percentile_cont."""
+    xs = sorted(xs); k = (len(xs) - 1) * q; lo = int(k); hi = min(lo + 1, len(xs) - 1)
+    return xs[lo] + (xs[hi] - xs[lo]) * (k - lo)
+
+
 def slope(xs, ys):
     n = len(xs); mx = sum(xs) / n; my = sum(ys) / n
     return sum((x - mx) * (y - my) for x, y in zip(xs, ys)) / sum((x - mx) ** 2 for x in xs)
@@ -59,6 +65,7 @@ def checks(t, a):
     late_h = next(r for r in ho if r["is_late_handoff"] == "true"); ok_h = next(r for r in ho if r["is_late_handoff"] == "false")
     nne = next(r for r in rg if r["region_group"] == "North and northeast"); rest = next(r for r in rg if r["region_group"] == "Rest of Brazil")
     total_late = sum(f(r["late_orders"]) for r in mo)
+    stable = [f(r["late_rate_if_handoffs_ok"]) for r in mo if r["is_stable_month"] == "true"]
     top10 = sorted(se, key=lambda r: int(r["rank_by_late_after_late_handoff"]))[:10]
     lhl = sum(f(r["late_after_late_handoff_orders"]) for r in se)
     worst3 = sorted(mo, key=lambda r: (-f(r["late_orders"]), r["year_month"]))[:3]
@@ -85,8 +92,12 @@ def checks(t, a):
           ("2 trend", "alarm line at a typical month, %", pct(F["targets"]["alarm_line"]), pct(f(mo[0]["typical_month_alarm_line_late_rate"])), 2),
           ("2 trend", "goal line, %, shown 4.4", pct(F["targets"]["goal"]), pct(f(mo[0]["goal_late_rate"])), 1),
           ("2 trend", "goal line, %, exact 4.43", pct(F["targets"]["goal"]), pct(f(mo[0]["goal_late_rate"])), 2),
-          ("2 trend", "stretch line, %, shown 2.3", pct(F["targets"]["stretch"]), pct(f(mo[0]["stretch_goal_late_rate"])), 1),
-          ("2 trend", "stretch line, %, exact 2.25", pct(F["targets"]["stretch"]), pct(f(mo[0]["stretch_goal_late_rate"])), 2),
+          ("2 trend", "stretch line vs facts.json, % to 1 place", pct(F["targets"]["stretch"]), pct(f(mo[0]["stretch_goal_late_rate"])), 1),
+          ("2 trend", "stretch line vs facts.json, % to 2 places", pct(F["targets"]["stretch"]), pct(f(mo[0]["stretch_goal_late_rate"])), 2),
+          ("2 trend", "stretch line = 25th percentile of the what-if over stable months in the monthly file, %", pct(pctile(stable, 0.25)), pct(f(mo[0]["stretch_goal_late_rate"])), 4),
+          ("2 trend", "what-if median line = median of the what-if over stable months in the monthly file, %", pct(pctile(stable, 0.5)), pct(f(mo[0]["handoff_whatif_median_late_rate"])), 4),
+          ("2 trend", "what-if median line in the summary = the monthly file's, %", pct(f(mo[0]["handoff_whatif_median_late_rate"])), pct(f(S["handoff_whatif_median_late_rate"])), 6),
+          ("2 trend", "stable months in the monthly file vs facts.json", F["targets"]["stable_months"], len(stable), None),
           ("2 trend", "typical month order count", F["targets"]["typical_orders"], f(S["typical_month_orders"]), 0),
           ("2 trend", "flagged months", ", ".join(F["targets"]["flagged"]), ", ".join(r["year_month"] for r in mo if r["is_alarm_month"] == "true"), None),
           ("2 trend", "latest month late rate, %", pct(f(a["month"]["2018-08"]["late_rate"])), pct(f(next(r for r in mo if r["year_month"] == "2018-08")["late_rate"])), 1)]

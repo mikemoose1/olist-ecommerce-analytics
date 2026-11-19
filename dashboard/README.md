@@ -8,7 +8,7 @@ Tables for the late-delivery dashboard (layout B: six number tiles over six pane
 |---|---|---|---|
 | `summary.csv` | 1 | the whole window | the six number tiles, the goal and alarm lines, the labels (including "Nov 2017, Feb 2018 and Mar 2018") |
 | `review_ramp.csv` | 61 | days past the promised day, -30 to +30 | panel 1, share of reviews that are 1-2 stars |
-| `monthly.csv` | 20 | purchase month | panel 2 (rate, each month's alarm line, goal, stretch) and the monthly bars in panel 5 |
+| `monthly.csv` | 20 | purchase month | panel 2 (rate, each month's alarm line, goal, stretch, what-if median) and the monthly bars in panel 5 |
 | `handoff.csv` | 2 | late or on-time handoff | panel 3 |
 | `sellers.csv` | 2,925 | seller | panel 4; the chart shows `is_top10` |
 | `region.csv` | 2 | north and northeast, rest of Brazil | panel 5 |
@@ -20,6 +20,7 @@ Tables for the late-delivery dashboard (layout B: six number tiles over six pane
 - **Late** means the order arrived on a later calendar day than promised. Population: 94,931 delivered single-seller orders bought January 2017 to August 2018.
 - **Late handoff** means the seller gave the parcel to the carrier after the last ship-by time. One order has no handoff time and is in neither handoff bar. That is why the two handoff shares add up to just under 100%.
 - **Late after a late handoff** is a late order whose handoff was late. Shares in `sellers.csv` divide by the 1,809 such orders.
+- **Two what-if lines, both columns in `monthly.csv` and `summary.csv`.** `stretch_goal_late_rate` is the 25th percentile of the stable months' late rate if late handoffs were late no more often than on-time ones. It is read from `metric_late_rate_targets`. `handoff_whatif_median_late_rate` is the median of the same months, which is the like-for-like partner of `goal_late_rate` (the median of the months as they were). The what-if is a mix-shift calculation, not a tested cause. Which line the dashboard draws, and what it calls it, is a Tableau decision. The tables hold no label text for either.
 - **Worst months** are the three with the most late orders (a tie goes to the later month).
 
 ## How each number is checked

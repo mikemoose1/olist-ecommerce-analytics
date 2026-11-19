@@ -121,7 +121,7 @@
  },
  {
   "row": "2 trend",
-  "number": "stretch line, %, shown 2.3",
+  "number": "stretch line vs facts.json, % to 1 place",
   "expected": 2.252,
   "got": 2.2519692719000823,
   "rounded_to": 1,
@@ -129,10 +129,42 @@
  },
  {
   "row": "2 trend",
-  "number": "stretch line, %, exact 2.25",
+  "number": "stretch line vs facts.json, % to 2 places",
   "expected": 2.252,
   "got": 2.2519692719000823,
   "rounded_to": 2,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "stretch line = 25th percentile of the what-if over stable months in the monthly file, %",
+  "expected": 2.2519692719000823,
+  "got": 2.2519692719000823,
+  "rounded_to": 4,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "what-if median line = median of the what-if over stable months in the monthly file, %",
+  "expected": 3.425141242937853,
+  "got": 3.425141242937853,
+  "rounded_to": 4,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "what-if median line in the summary = the monthly file's, %",
+  "expected": 3.425141242937853,
+  "got": 3.425141242937853,
+  "rounded_to": 6,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "stable months in the monthly file vs facts.json",
+  "expected": 15,
+  "got": 15,
+  "rounded_to": null,
   "ok": true
  },
  {

@@ -1,7 +1,9 @@
 -- Rule (dashboard panels 2 and 5): the monthly export has all 20 months, and each month matches the story's month table
 -- (story/data/late_by_month.csv: orders, late orders, late rate to 6 places, share of all late) and the control chart
--- (alarm line, alarm flag, thin flag). The lines match facts.json: alarm 8.38%, goal 4.43% (shown 4.4%), stretch 2.25% (shown 2.3%),
+-- (alarm line, alarm flag, thin flag). The lines match facts.json: alarm 8.38%, goal 4.43% (shown 4.4%), stretch line from facts.json,
 -- flagged months 2017-11, 2018-02 and 2018-03, latest month 2018-08 at 6.3%.
+-- The handoff what-if lines are recomputed from the monthly export's own what-if column over its stable months: the stretch line is
+-- the 25th percentile and handoff_whatif_median_late_rate the median (the like-for-like partner of the goal line). Neither is typed.
 -- One row per number that differs; passes when it returns nothing.
 with m as (select * from {{ ref('export_dash_monthly') }}),
 s as (select * from {{ ref('export_dash_summary') }}),
@@ -26,8 +28,13 @@ checks_ran as (
     union all select 'tile: alarm line, % to 2 places (8.38)', round(100 * s.alarm_line_late_rate, 2), 8.38, 0 from s
     union all select 'tile: goal line, % to 1 place (4.4)', round(100 * s.goal_late_rate, 1), 4.4, 0 from s
     union all select 'tile: goal line, % to 2 places (4.43)', round(100 * s.goal_late_rate, 2), 4.43, 0 from s
-    union all select 'tile: stretch line, % to 1 place (2.3)', round(100 * s.stretch_goal_late_rate, 1), 2.3, 0 from s
-    union all select 'tile: stretch line, % to 2 places (2.25)', round(100 * s.stretch_goal_late_rate, 2), 2.25, 0 from s
+    union all select 'stable months in the export vs facts.json (15)', (select count(*) from m where is_stable_month)::double, json_extract(f.targets, '$.stable_months')::double, 0 from f
+    union all select 'stable flag on every month equals not alarm and not thin (control chart)', (select count(*) from m join c using (year_month) where m.is_stable_month is distinct from (not c.laney_signal and not c.thin_month))::double, 0, 0
+    union all select 'stretch line vs the 25th percentile of the what-if over stable months in the export', s.stretch_goal_late_rate, (select percentile_cont(0.25) within group (order by late_rate_if_handoffs_ok) from m where is_stable_month), 0.0000000001 from s
+    union all select 'what-if median in the summary vs the median over stable months in the export', s.handoff_whatif_median_late_rate, (select median(late_rate_if_handoffs_ok) from m where is_stable_month), 0.0000000001 from s
+    union all select 'what-if median vs the control chart model, recomputed', s.handoff_whatif_median_late_rate, (select median(late_rate_if_handoffs_ok) from c where not laney_signal and not thin_month), 0.0000000001 from s
+    union all select 'what-if median on every month row equals the summary', (select max(abs(handoff_whatif_median_late_rate - s.handoff_whatif_median_late_rate)) from m), 0, 0.0000000001 from s
+    union all select 'what-if median is between the stretch line and the goal line', (s.handoff_whatif_median_late_rate between s.stretch_goal_late_rate and s.goal_late_rate)::int, 1, 0 from s
     union all select 'tile: late rate, % to 2 places (6.87)', round(100 * s.late_rate, 2), 6.87, 0 from s
     union all select 'tile: latest month is 2018-08', (s.latest_month = '2018-08')::int, 1, 0 from s
     union all select 'tile: latest month late rate, % to 1 place (6.3)', round(100 * s.latest_month_late_rate, 1), 6.3, 0 from s
@@ -37,7 +44,7 @@ checks_ran as (
 ),
 checks as (
     select * from checks_ran
-    union all select 'checks that ran (expected 22; a check with no input row would otherwise vanish)', (select count(*) from checks_ran)::double, 22::double, 0
+    union all select 'checks that ran (expected 27; a check with no input row would otherwise vanish)', (select count(*) from checks_ran)::double, 27::double, 0
 ),
 problems as (select what, got, expected from checks where got is null or expected is null or abs(got - expected) > tolerance),
 month_problems as (
@@ -49,10 +56,11 @@ month_problems as (
        or abs(m.share_of_all_late - sm.share_of_late) > 0.0000006
 ),
 chart_problems as (
-    select 'month ' || m.year_month || ': alarm line, alarm flag or thin flag differs from the control chart' as what, m.alarm_line_late_rate as got, c.laney_ucl as expected
+    select 'month ' || m.year_month || ': alarm line, alarm flag, thin flag or what-if rate differs from the control chart' as what, m.alarm_line_late_rate as got, c.laney_ucl as expected
     from m join c on c.year_month = m.year_month
     where m.alarm_line_late_rate is distinct from c.laney_ucl or m.is_alarm_month is distinct from c.laney_signal
        or m.is_thin_month is distinct from c.thin_month or abs(m.late_rate - c.late_rate) > 0.0000000001
+       or abs(m.late_rate_if_handoffs_ok - c.late_rate_if_handoffs_ok) > 0.0000000001
 ),
 flag_problems as (
     select 'flagged but not expected: ' || year_month as what, null::double as got, null::double as expected
