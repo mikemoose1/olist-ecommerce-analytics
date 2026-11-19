@@ -4,19 +4,15 @@
  },
  "low_star_excess": {
   "id": "low_star_excess",
-  "value": 3335.254686
+  "value": 3109.916967
  },
  "late_reviewed": {
   "id": "late_reviewed",
   "value": 6366.0
  },
- "excess_low_star_share": {
-  "id": "excess_low_star_share",
-  "value": 0.523917,
-  "ci": [
-   0.506869,
-   0.536855
-  ]
+ "caused_rise": {
+  "id": "caused_rise",
+  "value": 0.488519787
  },
  "star_penalty": {
   "id": "star_penalty",

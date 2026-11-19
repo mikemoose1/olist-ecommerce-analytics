@@ -46,6 +46,9 @@ CASES = [
     ("last-12-month late sales off by R$1", "late_sales_last12", edit_fact("late_sales_last12", lambda v: v + 1)),
     ("last-12-month total sales off by R$1", "late_sales_last12", edit_fact("total_sales_last12", lambda v: v + 1)),
     ("last-12-month late first orders off by one", "late_first_last12", edit_fact("late_first_last12", lambda v: v + 1)),
+    ("review ramp: one bad review moved onto day 3", "bad_review_by_days_late:3", edit_csv("bad_review_by_days_late", "3", "bad", lambda v: str(int(v) + 1))),
+    ("review ramp: a day's share that its counts do not give", "bad_review_by_days_late:6", edit_csv("bad_review_by_days_late", "6", "bad_share", lambda v: str(float(v) + 0.01))),
+    ("review ramp: the day-0 row dropped from the chart", "orders_by_days_late:0", drop_row("bad_review_by_days_late", "0")),
 ]
 
 

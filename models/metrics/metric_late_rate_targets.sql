@@ -5,7 +5,10 @@
 --   safe_goal_late_rate    : 25th percentile of the stable months (inside the limits, not thin): rates Olist already hit
 --                            (about 3%, hit in about one month in four; bootstrap uncertainty about 2.8-4.4%).
 --                            "Stable" means "not an extreme month", not "healthy": the stable months still average 4.5% late.
---   stretch_goal_late_rate : the same percentile with late handoffs late no more often than on-time handoffs.
+--   goal_late_rate         : the median stable month (about 4.4%), the goal line the story draws: half
+--                            the stable months already beat it. The safe goal stays in this table but is not drawn.
+--   stretch_goal_late_rate : the 25th percentile with late handoffs late no more often than on-time handoffs in the same
+--                            month (about 2.3%). A mix-shift what-if, not a tested cause.
 -- The story reconciliation columns repeat the headline numbers so a test can tie this table to the story.
 with months as (
     select * from {{ ref('metric_late_rate_control_chart') }}
@@ -34,6 +37,7 @@ select
     l.typical_orders,
     f.laney_centre_rate + 3 * f.laney_sigma_z * sqrt(f.laney_centre_rate * (1 - f.laney_centre_rate) / l.typical_orders) as alarm_line_late_rate,
     (select percentile_cont(0.25) within group (order by late_rate) from stable) as safe_goal_late_rate,
+    (select median(late_rate) from stable) as goal_late_rate,
     (select min(late_rate) from stable) as best_stable_month_late_rate,
     (select percentile_cont(0.25) within group (order by late_rate_if_handoffs_ok) from stable) as stretch_goal_late_rate,
     (select sum(late_rate_if_handoffs_ok * orders) / sum(orders) from months) as late_rate_if_handoffs_ok,

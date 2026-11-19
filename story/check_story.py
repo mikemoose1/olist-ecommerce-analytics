@@ -45,8 +45,10 @@ def body(text):
 
 # A text-only reader must get each chart's key numbers from the words: these facts must be tagged in the chart's own section.
 CHART_KEYS = {
-    "fig_cost.png": ["c_low_star_excess_exact", "c_low_star_all", "low_star_share_mid", "c_late_sales_last12_m", "c_late_sales_last12_share"],
-    "fig_where_when.png": ["nne_rate", "c_rest_rate", "month_2018-03", "month_2018-02", "month_2017-11", "c_segment_thr"],
+    "fig_cost.png": ["c_cost_causal", "c_low_star_all", "c_cost_causal_share", "c_cost_range_lo", "c_cost_range_hi",
+                     "c_ramp_on_time", "c_ramp_slope", "c_ramp_plateau", "c_ramp_end_day", "c_late_sales_last12_m", "c_late_sales_last12_share"],
+    "fig_where_when.png": ["nne_rate", "c_rest_rate", "month_2018-03", "month_2018-02", "month_2017-11", "c_segment_thr",
+                           "c_alarm_line", "c_flagged_1", "c_flagged_2", "c_flagged_3", "c_goal_line", "c_stretch_line"],
     "fig_handoff.png": ["late_if_handoff_late", "late_if_handoff_ok", "c_handoff_late_n", "c_handoff_orders", "seller_side_pct",
                         "late_orders"],
     "fig_comments.png": ["c_comment_pct", "survey_before_pct", "d:thr_comment_share"],
@@ -89,8 +91,12 @@ NUMBER_PHRASES = [
      lambda m, f, d: _share_ok(_w(m) / FRACTIONS[m.group(2).lower()], f["c_comment_pct"])),
     (rf"\b{NEAR} {N} times as often", "late-handoff ratio", lambda m, f, d: _w(m) == round(num(f["c_handoff_ratio"]))),
     (rf"\b(?:more than|over) {N} times as often", "late-handoff ratio", lambda m, f, d: num(f["c_handoff_ratio"]) > _w(m)),
-    (rf"\b(?:more than|over) an? {F}\b", "low-star share",
-     lambda m, f, d: num(f["low_star_share_lo"]) > 100 / FRACTIONS[m.group(1).lower()]),
+    # the causal review cost: "more than a quarter" must hold at the low end of the range across specifications,
+    # "about a quarter" within 3 points of the central estimate
+    (rf"\b(?:more than|over) an? {F}\b", "caused low-star share (low end of the range)",
+     lambda m, f, d: 100 * num(f["c_cost_range_lo"]) / num(f["c_low_star_all"]) > 100 / FRACTIONS[m.group(1).lower()]),
+    (rf"\b{NEAR} an? {F}\b", "caused low-star share",
+     lambda m, f, d: abs(num(f["c_cost_causal_share"]) - 100 / FRACTIONS[m.group(1).lower()]) <= 3),
     (rf"\b{N} (?:highest-lateness|peak) months", "number of top months",
      lambda m, f, d: _w(m) == sum(k.startswith("month_") for k in f)),
     (rf"\b{N} months with the highest late rate", "number of top months",
@@ -205,11 +211,64 @@ def check_shape(text):
     return problems
 
 
-def check(text, fx=None, design_numbers=None):
+def story_facts():
+    return json.loads((ROOT / "story" / "data" / "facts.json").read_text())
+
+
+def plain(text):
+    """What a reader sees: tags dropped, whitespace collapsed."""
+    return re.sub(r"\s+", " ", re.sub(r"<!--.*?-->", "", text))
+
+
+FEW_THOUSAND = (1_000, 10_000)   # "at most a few thousand reais": the top of every repeat-sales range sits in [1,000, 10,000)
+
+
+def check_repeat(text, sf):
+    """The repeat sentence is printed word for word, its counts tie to the recommendation report, and its money words hold."""
+    rp, problems = sf["repeat"], []
+    if rp["sentence"] not in plain(text):
+        problems.append("repeat sentence is not printed word for word (evidence/repeat_first_order_report.json story_sentence)")
+    ev = rp["evidence_rep90"]
+    for what, n_ev, k_ev, n_rep, rate_rep in (("late", ev["late_n"], ev["late_k"], rp["n_late"], rp["late"]),
+                                              ("on-time", ev["ontime_n"], ev["ontime_k"], rp["n_on_time"], rp["on_time"])):
+        if n_ev != n_rep or abs(k_ev / n_ev - rate_rep) >= 5e-7:
+            problems.append(f"repeat evidence ({what} first orders {k_ev}/{n_ev}) does not tie to the recommendation report ({rate_rep} of {n_rep})")
+    if not FEW_THOUSAND[0] <= rp["revenue_high"] < FEW_THOUSAND[1]:
+        problems.append(f"'at most a few thousand reais' does not hold: the top of the repeat-sales range is R${rp['revenue_high']:,.0f}")
+    return problems
+
+
+# QUESTIONS.md answers repeat the story's new numbers in words a reader can check: each listed caption fact must be printed
+# in its question's section, and the replaced figures must be gone.
+QUESTION_FACTS = {"Q1": ["c_cost_causal", "c_cost_causal_share", "c_cost_range_lo", "c_cost_range_hi", "c_ramp_on_time", "c_ramp_slope", "c_ramp_plateau"],
+                  "Q2": ["c_alarm_line", "c_goal_line", "c_goal_exact", "c_stretch_line", "c_stretch_exact", "c_whatif_rate"],
+                  "Q5": ["c_rep_late_1dp", "c_rep_on_time_1dp"]}
+RETIRED = ["3,335", "28.7%", "linked to about 3,300"]
+# memo facts of the matched association that the causal review cost replaced in the story (MEMO.md still uses them)
+RETIRED_TAGS = ["low_star_excess_mid", "low_star_share_lo", "low_star_share_mid", "low_star_share_hi"]
+
+
+def check_questions(questions, fx):
+    problems = []
+    secs = {m.group(1): m.group(0) for m in re.finditer(r"^### (Q\d+)\..*?(?=^### |^## |\Z)", questions, re.M | re.S)}
+    for q, names in QUESTION_FACTS.items():
+        for name in names:
+            if not re.search(rf"(?<![\d,.]){re.escape(fx[name])}(?!\d|[.,]\d)", secs.get(q, "")):
+                problems.append(f"QUESTIONS.md {q}: does not state {name} = {fx[name]}")
+    prose = re.sub(r"<!-- kpi-tree:start.*?<!-- kpi-tree:end -->", "", questions, flags=re.S)
+    problems += [f"QUESTIONS.md still states the replaced figure {old!r}" for old in RETIRED if old in prose]
+    return problems
+
+
+def check(text, fx=None, design_numbers=None, sf=None, questions=None):
     from memo_check import DESIGN
-    fx, d = fx or facts(), design_numbers or design()
+    fx, d, sf = fx or facts(), design_numbers or design(), sf or story_facts()
+    questions = questions if questions is not None else (ROOT / "story" / "QUESTIONS.md").read_text()
     n, problems = check_memo(body(text), fx, d)
-    return n, problems + check_shape(text) + check_number_words(text, fx, {**DESIGN, **d}) + check_scope(text)
+    problems += [f"tag f:{t} is the replaced association figure; use the causal review cost (c_cost_causal ...)"
+                 for t in RETIRED_TAGS if f"<!--f:{t}-->" in text]
+    return n, (problems + check_shape(text) + check_number_words(text, fx, {**DESIGN, **d}) + check_scope(text)
+               + check_repeat(text, sf) + check_questions(questions, fx))
 
 
 def main():

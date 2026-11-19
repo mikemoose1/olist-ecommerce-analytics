@@ -207,6 +207,616 @@
  },
  {
   "part": "C",
+  "metric": "story bad_review_by_days_late:-1",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 157/1441 raw 157/1441",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-10",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 368/4576 raw 368/4576",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-11",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 394/4542 raw 394/4542",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-12",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 367/4473 raw 367/4473",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-13",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 448/5854 raw 448/5854",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-14",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 596/6990 raw 596/6990",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-15",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 413/5229 raw 413/5229",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-16",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 287/3812 raw 287/3812",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-17",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 259/3342 raw 259/3342",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-18",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 255/3066 raw 255/3066",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-19",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 191/2636 raw 191/2636",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-2",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 180/1536 raw 180/1536",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-20",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 205/2884 raw 205/2884",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-21",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 217/2724 raw 217/2724",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-22",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 150/1781 raw 150/1781",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-23",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 123/1213 raw 123/1213",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-24",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 101/1037 raw 101/1037",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-25",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 81/880 raw 81/880",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-26",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 62/766 raw 62/766",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-27",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 80/777 raw 80/777",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-28",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 64/720 raw 64/720",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-29",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 47/465 raw 47/465",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-3",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 181/1705 raw 181/1705",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-30",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 230/2436 raw 230/2436",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-4",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 204/1891 raw 204/1891",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-5",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 230/2195 raw 230/2195",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-6",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 330/3584 raw 330/3584",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-7",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 431/4774 raw 431/4774",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-8",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 459/4770 raw 459/4770",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:-9",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 397/4562 raw 397/4562",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:0",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 156/1275 raw 156/1275",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:1",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 159/817 raw 159/817",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:10",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 172/207 raw 172/207",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:11",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 140/177 raw 140/177",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:12",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 124/155 raw 124/155",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:13",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 148/189 raw 148/189",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:14",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 139/169 raw 139/169",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:15",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 122/155 raw 122/155",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:16",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 76/94 raw 76/94",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:17",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 69/89 raw 69/89",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:18",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 56/72 raw 56/72",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:19",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 64/74 raw 64/74",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:2",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 184/535 raw 184/535",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:20",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 73/86 raw 73/86",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:21",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 64/76 raw 64/76",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:22",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 51/64 raw 51/64",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:23",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 31/34 raw 31/34",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:24",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 41/52 raw 41/52",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:25",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 32/39 raw 32/39",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:26",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 30/33 raw 30/33",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:27",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 34/40 raw 34/40",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:28",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 35/46 raw 35/46",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:29",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 32/37 raw 32/37",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:3",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 248/493 raw 248/493",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:30",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 234/342 raw 234/342",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:4",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 243/435 raw 243/435",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:5",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 279/431 raw 279/431",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:6",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 311/406 raw 311/406",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:7",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 345/470 raw 345/470",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:8",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 259/330 raw 259/330",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story bad_review_by_days_late:9",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 177/219 raw 177/219",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
   "metric": "story comment_delay_share",
   "mart": null,
   "independent": null,
@@ -763,6 +1373,616 @@
   "first_pass": null,
   "tolerance": 0,
   "note": "story 1148081.0/None raw 1148081.0/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-1",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 1453/None raw 1453/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-10",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 4603/None raw 4603/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-11",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 4569/None raw 4569/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-12",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 4502/None raw 4502/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-13",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 5890/None raw 5890/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-14",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 7024/None raw 7024/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-15",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 5255/None raw 5255/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-16",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 3827/None raw 3827/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-17",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 3355/None raw 3355/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-18",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 3078/None raw 3078/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-19",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 2654/None raw 2654/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-2",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 1546/None raw 1546/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-20",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 2895/None raw 2895/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-21",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 2729/None raw 2729/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-22",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 1789/None raw 1789/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-23",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 1223/None raw 1223/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-24",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 1042/None raw 1042/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-25",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 885/None raw 885/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-26",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 767/None raw 767/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-27",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 783/None raw 783/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-28",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 726/None raw 726/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-29",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 468/None raw 468/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-3",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 1720/None raw 1720/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-30",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 2452/None raw 2452/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-4",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 1904/None raw 1904/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-5",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 2206/None raw 2206/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-6",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 3606/None raw 3606/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-7",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 4796/None raw 4796/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-8",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 4798/None raw 4798/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:-9",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 4582/None raw 4582/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:0",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 1286/None raw 1286/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:1",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 822/None raw 822/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:10",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 207/None raw 207/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:11",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 181/None raw 181/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:12",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 160/None raw 160/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:13",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 196/None raw 196/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:14",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 171/None raw 171/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:15",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 159/None raw 159/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:16",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 98/None raw 98/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:17",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 89/None raw 89/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:18",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 76/None raw 76/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:19",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 77/None raw 77/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:2",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 544/None raw 544/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:20",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 89/None raw 89/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:21",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 80/None raw 80/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:22",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 67/None raw 67/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:23",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 37/None raw 37/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:24",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 53/None raw 53/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:25",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 39/None raw 39/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:26",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 33/None raw 33/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:27",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 40/None raw 40/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:28",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 47/None raw 47/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:29",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 39/None raw 39/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:3",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 497/None raw 497/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:30",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 359/None raw 359/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:4",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 452/None raw 452/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:5",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 444/None raw 444/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:6",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 418/None raw 418/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:7",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 482/None raw 482/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:8",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 336/None raw 336/None",
+  "verdict": "VERIFIED"
+ },
+ {
+  "part": "C",
+  "metric": "story orders_by_days_late:9",
+  "mart": null,
+  "independent": null,
+  "first_pass": null,
+  "tolerance": 0,
+  "note": "story 226/None raw 226/None",
   "verdict": "VERIFIED"
  }
 ]

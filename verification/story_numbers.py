@@ -22,6 +22,10 @@ def from_story(data_dir):
     out["late_sales_window"] = {"num": round(f["late_sales_window"], 2), "den": None}
     out["late_sales_last12"] = {"num": round(f["late_sales_last12"], 2), "den": round(f["total_sales_last12"], 2)}
     out["late_first_last12"] = {"num": f["late_first_last12"], "den": None}
+    for r in csv.DictReader(open(os.path.join(data_dir, "bad_review_by_days_late.csv"))):   # the review ramp chart
+        out[f"bad_review_by_days_late:{r['segment']}"] = {"num": int(r["bad"]), "den": int(r["reviewed"]),
+                                                          "rate": float(r["bad_share"]) if r["bad_share"] else 0.0}
+        out[f"orders_by_days_late:{r['segment']}"] = {"num": int(r["orders"]), "den": None}
     return out
 
 
@@ -43,7 +47,9 @@ def from_raw(raw_dir):
     create table pop as
      select o.order_id, c.customer_state state, strftime(o.order_purchase_timestamp, '%Y-%m') ym,
             (o.order_delivered_customer_date::date > o.order_estimated_delivery_date::date) late,
-            o.order_delivered_carrier_date carrier_at, ia.ship_by, r.review_comment_message msg, pay.paid, qseq.seq
+            o.order_delivered_carrier_date carrier_at, ia.ship_by, r.review_comment_message msg, pay.paid, qseq.seq,
+            r.review_score score,
+            greatest(-30, least(30, o.order_delivered_customer_date::date - o.order_estimated_delivery_date::date)) days_late
      from orders o join ia using(order_id) join customers c using(customer_id) left join rev1 r using(order_id) left join pay using(order_id)
        left join qseq using(order_id)
      where o.order_status = 'delivered' and o.order_delivered_customer_date is not null and ia.n_sellers = 1
@@ -66,6 +72,11 @@ def from_raw(raw_dir):
     out["late_sales_last12"] = {"num": round(float(l12), 2), "den": round(float(t12), 2)}
     # late first orders in the last 12 months: the volume behind the per-year lost repeat sales
     out["late_first_last12"] = {"num": int(raw.execute("select count(*) from pop where late and seq = 1 and ym >= '2017-09'").fetchone()[0]), "den": None}
+    # the review ramp: 1-2 star reviews and reviewed orders by whole days past the promise, capped at -30 and +30
+    for d, n, rv, b in raw.execute("""select days_late, count(*), count(score), count(*) filter (where score <= 2)
+                                      from pop group by 1""").fetchall():
+        out[f"bad_review_by_days_late:{d}"] = {"num": int(b), "den": int(rv)}
+        out[f"orders_by_days_late:{d}"] = {"num": int(n), "den": None}
     return out
 
 

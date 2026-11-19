@@ -67,11 +67,7 @@ def build():
     m = rep["repeat90"]["all"]["matched"]
     facts = {
         "judged_orders": n, "late_orders": int(late), "late_rate": round(late / n, 6), "late_rate_ci": [round(lo, 6), round(hi, 6)],
-        "low_star_excess": round(ls["excess_from_lateness"]["mid"], 1),
-        "low_star_excess_ci": [round(ls["excess_from_lateness"]["low"], 1), round(ls["excess_from_lateness"]["high"], 1)],
         "low_star_all": ls["all_low_star"],
-        "low_star_excess_share": round(ls["share_of_all_low_star_pct"]["mid"] / 100, 6),
-        "low_star_excess_share_ci": [round(ls["share_of_all_low_star_pct"]["low"] / 100, 6), round(ls["share_of_all_low_star_pct"]["high"] / 100, 6)],
         "star_penalty": rep["stars"]["all"]["matched"]["effect"], "star_penalty_ci": rep["stars"]["all"]["matched"]["ci"],
         "late_sales_window": round(float(one("select sum(amount_paid) from judged where is_late")[0]), 2),
         "late_sales_last12": round(float(one(f"select sum(amount_paid) from judged where is_late and purchase_date >= date '{LAST12_FROM}'")[0]), 2),
@@ -89,11 +85,67 @@ def build():
         "lost_repeat_last12": [round(rep["money"]["lost_repeat_gmv_last12"][k], 1) for k in ("low", "mid", "high")],
         "label_eval": K.label_eval(),
     }
+    facts["review_cost_causal"] = review_cost(con, ls["all_low_star"])
+    tables["bad_review_by_days_late"], facts["ramp"] = ramp(con)
+    tables["late_rate_control"], facts["targets"] = targets(con)
+    facts["repeat"] = repeat(rep)
     top3 = sorted(tables["late_by_month"], key=lambda r: -r["late"])[:3]
     facts["top3_months"] = [r["segment"] for r in top3]
     facts["top3_months_share_of_late"] = round(sum(r["late"] for r in top3) / late, 6)
     facts["captions"] = captions(facts, tables)
     return tables, facts
+
+
+def review_cost(con, all_low_star):
+    """Extra 1-2 star reviews caused by lateness: the dbt total (metric_review_cost_causal) and the spread across the six
+    specifications in evidence/review_cost_causal_report.json (assert_review_cost_causal_reconciles ties the two)."""
+    head = json.loads((ROOT / "evidence" / "review_cost_causal_report.json").read_text())["headline"]
+    extra, rev = con.execute("select sum(extra_bad_reviews), sum(reviewed_late_orders) from metrics.metric_review_cost_causal").fetchone()
+    return {"extra": round(float(extra), 1), "reviewed_late": int(rev), "share": round(float(extra) / all_low_star, 6),
+            "ci95": [round(x, 1) for x in head["ci95"]], "range": [round(x, 1) for x in head["range_across_specifications"]],
+            "seller_bias_reviews": [round(x, 1) for x in head["hidden_seller_bias_if_in_every_late_order"]["reviews"]]}
+
+
+def ramp(con):
+    """1-2 star share by whole days past the promise (metric_bad_review_by_days_late) and the ramp the story describes:
+    the share up to the promised day, the straight-line slope between the two break days of the segmented fit in
+    evidence/late_rate_targets_report.json, and the share from the second break day on."""
+    seg = json.loads((ROOT / "evidence" / "late_rate_targets_report.json").read_text())["break_point"]["days"]["segmented_share_scale"]
+    start, end = (int(x) for x in seg["two_breaks"]["days"])
+    rows = [{"segment": str(d), "orders": o, "reviewed": r, "bad": b, "bad_share": round(b / r, 9) if r else None}
+            for d, o, r, b in con.execute("""select days_past_promise_capped, orders, reviewed_orders, bad_reviews
+                                             from metrics.metric_bad_review_by_days_late order by 1""").fetchall()]
+    share = lambda sel: sum(r["bad"] for r in rows if sel(int(r["segment"]))) / sum(r["reviewed"] for r in rows if sel(int(r["segment"])))
+    pts = [(int(r["segment"]), r["bad"] / r["reviewed"]) for r in rows if start <= int(r["segment"]) <= end]
+    mx, my = sum(x for x, _ in pts) / len(pts), sum(y for _, y in pts) / len(pts)
+    slope = sum((x - mx) * (y - my) for x, y in pts) / sum((x - mx) ** 2 for x, _ in pts)
+    return rows, {"start_day": start, "end_day": end, "on_time_share": round(share(lambda d: d <= start), 6),
+                  "slope_per_day": round(slope, 6), "plateau_share": round(share(lambda d: d >= end), 6)}
+
+
+def targets(con):
+    """The trend chart's lines: each month's Laney p-prime upper limit, the alarm line at a typical month, the goal line
+    (median stable month) and the stretch line (late handoffs no later than on-time ones), from the dbt target models."""
+    rows = [{"segment": ym, "orders": n, "late": int(l), "late_rate": round(r, 6), "laney_ucl": round(u, 6),
+             "laney_signal": bool(s), "thin_month": bool(t)}
+            for ym, n, l, r, u, s, t in con.execute("""select year_month, orders, late_orders, late_rate, laney_ucl, laney_signal, thin_month
+                                                    from metrics.metric_late_rate_control_chart order by 1""").fetchall()]
+    t = con.execute("""select alarm_line_late_rate, goal_late_rate, stretch_goal_late_rate, safe_goal_late_rate,
+                              late_rate_if_handoffs_ok, typical_orders, stable_months from metrics.metric_late_rate_targets""").fetchone()
+    keys = ("alarm_line", "goal", "stretch", "safe_goal", "late_rate_if_handoffs_ok")
+    out = {k: round(float(v), 6) for k, v in zip(keys, t)}
+    out.update(typical_orders=int(t[5]), stable_months=int(t[6]), flagged=[r["segment"] for r in rows if r["laney_signal"]])
+    return rows, out
+
+
+def repeat(rep):
+    """The repeat-customer sentence: 90-day return rates after a late or on-time first order, from the recommendation
+    report, next to the separate repeat analysis in evidence/repeat_first_order_report.json (check_story.py ties them)."""
+    raw, ev = rep["repeat90"]["all"]["raw"], json.loads((ROOT / "evidence" / "repeat_first_order_report.json").read_text())
+    return {"late": raw["late"], "on_time": raw["on_time"], "n_late": raw["n_late"], "n_on_time": raw["n_on_time"],
+            "evidence_rep90": {k: ev["rep90"][k] for k in ("late_n", "late_k", "late_rate", "ontime_n", "ontime_k", "ontime_rate")},
+            "revenue_high": max(rep["money"]["lost_repeat_gmv_last12"]["high"], *(v for v in ev["revenue_brl"].values())),
+            "sentence": ev["story_sentence"]}
 
 
 def captions(f, t):
@@ -104,6 +156,7 @@ def captions(f, t):
     nne, rest = seg("late_by_region", "North and northeast"), seg("late_by_region", "Rest of Brazil")
     mar, nov = seg("late_by_month", "2018-03"), seg("late_by_month", "2017-11")
     lab = f["label_eval"]
+    rc, rp, tg = f["review_cost_causal"], f["ramp"], f["targets"]
     bars = yaml.safe_load(K.TREE.read_text())["thresholds"]
     return {
         "c_late_rate_lo": f"{100 * f['late_rate_ci'][0]:.2f}", "c_late_rate_hi": f"{100 * f['late_rate_ci'][1]:.2f}",
@@ -124,7 +177,17 @@ def captions(f, t):
         "c_money_high_exact": f"R${f['lost_repeat_last12'][2]:,.0f}",
         "c_rep_raw": f"{f['repeat_raw_pts']:.2f}", "c_rep_raw_lo": f"{f['repeat_raw_pts_ci'][0]:.2f}",
         "c_rule_negatives_n": str(sum(e["fp"] + e["tn"] for e in lab.values())),
-        "c_low_star_excess_exact": f"{f['low_star_excess']:,.0f}",
+        "c_cost_causal": f"{round(rc['extra'], -1):,.0f}", "c_cost_causal_share": f"{100 * rc['share']:.0f}",
+        "c_cost_range_lo": f"{round(rc['range'][0], -1):,.0f}", "c_cost_range_hi": f"{round(rc['range'][1], -1):,.0f}",
+        "c_cost_bias_hi": f"{round(rc['seller_bias_reviews'][1], -1):,.0f}",
+        "c_ramp_on_time": pct(rp["on_time_share"]), "c_ramp_slope": f"{100 * rp['slope_per_day']:.0f}",
+        "c_ramp_plateau": f"{100 * rp['plateau_share']:.0f}", "c_ramp_end_day": str(rp["end_day"]),
+        "c_alarm_line": f"{100 * tg['alarm_line']:.2f}", "c_typical_orders": f"{tg['typical_orders']:,}",
+        **{f"c_flagged_{i}": m for i, m in enumerate(tg["flagged"], 1)}, "c_flagged_n": str(len(tg["flagged"])),
+        "c_goal_line": pct(tg["goal"]), "c_goal_exact": f"{100 * tg['goal']:.2f}", "c_stable_months": str(tg["stable_months"]),
+        "c_stretch_line": pct(tg["stretch"]), "c_stretch_exact": f"{100 * tg['stretch']:.2f}",
+        "c_whatif_rate": f"{100 * tg['late_rate_if_handoffs_ok']:.2f}",
+        "c_rep_late_1dp": pct(f["repeat"]["late"]), "c_rep_on_time_1dp": pct(f["repeat"]["on_time"]),
         "c_handoff_ratio": f"{f['handoff_late_rate'] / f['handoff_ok_rate']:.1f}",
         "c_comment_pct": pct(f["comment_delay_share"]),
         "c_comment_lo": pct(f["comment_delay_share_ci"][0]), "c_comment_hi": pct(f["comment_delay_share_ci"][1]),
