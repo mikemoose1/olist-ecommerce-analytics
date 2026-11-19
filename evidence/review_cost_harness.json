@@ -1,0 +1,233 @@
+{
+ "truth_planted": {
+  "extra": 2258.1907776679336,
+  "jump": 0.13084477337021097
+ },
+ "rows": [
+  {
+   "check": "C1 RD recovers planted jump h=1",
+   "method": "local linear",
+   "passed": true,
+   "expected": "PASS",
+   "as_expected": true,
+   "detail": "jump=0.089 [0.034,0.144] truth=0.131"
+  },
+  {
+   "check": "C1 RD recovers planted jump h=2",
+   "method": "local linear",
+   "passed": true,
+   "expected": "PASS",
+   "as_expected": true,
+   "detail": "jump=0.091 [0.052,0.131] truth=0.131"
+  },
+  {
+   "check": "C1 RD recovers planted jump h=3",
+   "method": "local linear",
+   "passed": true,
+   "expected": "PASS",
+   "as_expected": true,
+   "detail": "jump=0.102 [0.069,0.135] truth=0.131"
+  },
+  {
+   "check": "C1 RD recovers planted jump h=2",
+   "method": "BROKEN always-zero",
+   "passed": false,
+   "expected": "FAIL",
+   "as_expected": true,
+   "detail": "returns 0"
+  },
+  {
+   "check": "C1 RD recovers planted jump h=8",
+   "method": "BROKEN no-slope mean diff",
+   "passed": false,
+   "expected": "FAIL",
+   "as_expected": true,
+   "detail": "jump=0.326"
+  },
+  {
+   "check": "C1b RD 95% CI covers planted jump >= 80% of 20 seeds",
+   "method": "local linear",
+   "passed": true,
+   "expected": "PASS",
+   "as_expected": true,
+   "detail": "covered 20/20"
+  },
+  {
+   "check": "C2 RD null: false alarms <= 10% of 40 seeds",
+   "method": "local linear",
+   "passed": true,
+   "expected": "PASS",
+   "as_expected": true,
+   "detail": "false alarms 1/40"
+  },
+  {
+   "check": "C2 RD null: false alarms <= 10% of 40 seeds",
+   "method": "BROKEN no-slope mean diff",
+   "passed": false,
+   "expected": "FAIL",
+   "as_expected": true,
+   "detail": "false alarms 34/40"
+  },
+  {
+   "check": "C3 placebo cutoff -5 shows no jump",
+   "method": "local linear",
+   "passed": true,
+   "expected": "PASS",
+   "as_expected": true,
+   "detail": "jump=0.019 [-0.003,0.040]"
+  },
+  {
+   "check": "C3 placebo cutoff +10 shows no jump",
+   "method": "local linear",
+   "passed": true,
+   "expected": "PASS",
+   "as_expected": true,
+   "detail": "jump=-0.201 [-0.412,0.009]"
+  },
+  {
+   "check": "C3 placebo cutoff -5 shows no jump",
+   "method": "BROKEN no-slope mean diff h=8",
+   "passed": false,
+   "expected": "FAIL",
+   "as_expected": true,
+   "detail": "jump=0.020 [0.013,0.026]"
+  },
+  {
+   "check": "C3 placebo cutoff +10 shows no jump",
+   "method": "BROKEN no-slope mean diff h=10",
+   "passed": false,
+   "expected": "FAIL",
+   "as_expected": true,
+   "detail": "jump=0.303 [0.237,0.369]"
+  },
+  {
+   "check": "C4 FE-LPM recovers planted extra count",
+   "method": "seller+cat+month FE, bins",
+   "passed": true,
+   "expected": "PASS",
+   "as_expected": true,
+   "detail": "2278 [2188,2369] truth=2258"
+  },
+  {
+   "check": "C4 FE-LPM recovers planted extra count",
+   "method": "BROKEN no seller FE",
+   "passed": false,
+   "expected": "FAIL",
+   "as_expected": true,
+   "detail": "2579 [2483,2675]"
+  },
+  {
+   "check": "C4b FE-LPM + on-time slope recovers planted",
+   "method": "V2 spec (used for the real number)",
+   "passed": true,
+   "expected": "PASS",
+   "as_expected": true,
+   "detail": "2274 [2185,2363] truth=2258"
+  },
+  {
+   "check": "C5b FE-LPM null: false alarms <= 10% of 20 seeds",
+   "method": "V2 spec (used for the real number)",
+   "passed": true,
+   "expected": "PASS",
+   "as_expected": true,
+   "detail": "false alarms 0/20"
+  },
+  {
+   "check": "C5b FE-LPM null: false alarms <= 10% of 20 seeds",
+   "method": "V1 spec",
+   "passed": true,
+   "expected": "PASS",
+   "as_expected": true,
+   "detail": "false alarms 0/20"
+  },
+  {
+   "check": "C5b FE-LPM null: false alarms <= 10% of 20 seeds",
+   "method": "BROKEN no seller FE",
+   "passed": false,
+   "expected": "FAIL",
+   "as_expected": true,
+   "detail": "false alarms 20/20"
+  },
+  {
+   "check": "C5 FE-LPM null: CI includes 0",
+   "method": "seller+cat+month FE, bins",
+   "passed": true,
+   "expected": "PASS",
+   "as_expected": true,
+   "detail": "-50 [-102,2] naive=247"
+  },
+  {
+   "check": "C5 FE-LPM null: CI includes 0",
+   "method": "BROKEN no seller FE",
+   "passed": false,
+   "expected": "FAIL",
+   "as_expected": true,
+   "detail": "229 [158,301]"
+  },
+  {
+   "check": "C6 Mundlak logit within 10% of planted",
+   "method": "Mundlak logit",
+   "passed": true,
+   "expected": "PASS",
+   "as_expected": true,
+   "detail": "2289 truth=2258"
+  },
+  {
+   "check": "C6 Mundlak logit null: mean of 8 seeds < 10% of naive",
+   "method": "Mundlak logit",
+   "passed": true,
+   "expected": "PASS",
+   "as_expected": true,
+   "detail": "mean 2 vs naive 271"
+  },
+  {
+   "check": "C6 Mundlak logit null: mean of 8 seeds < 10% of naive",
+   "method": "BROKEN naive gap (no controls)",
+   "passed": false,
+   "expected": "FAIL",
+   "as_expected": true,
+   "detail": "mean 271"
+  },
+  {
+   "check": "C6 Mundlak logit within 10% of planted",
+   "method": "BROKEN always-zero",
+   "passed": false,
+   "expected": "FAIL",
+   "as_expected": true,
+   "detail": "returns 0"
+  },
+  {
+   "check": "C7 cond. logit detects planted (OR>1)",
+   "method": "conditional logit by seller",
+   "passed": true,
+   "expected": "PASS",
+   "as_expected": true,
+   "detail": "OR=9.14 [8.57,9.74]"
+  },
+  {
+   "check": "C7 cond. logit detects planted (OR>1)",
+   "method": "BROKEN always OR=1",
+   "passed": false,
+   "expected": "FAIL",
+   "as_expected": true,
+   "detail": "returns 1"
+  },
+  {
+   "check": "C7 cond. logit null: OR CI includes 1",
+   "method": "conditional logit by seller",
+   "passed": true,
+   "expected": "PASS",
+   "as_expected": true,
+   "detail": "OR=0.92 [0.85,1.00]"
+  },
+  {
+   "check": "C7 cond. logit null: OR CI includes 1",
+   "method": "BROKEN plain logit, no seller conditioning",
+   "passed": false,
+   "expected": "FAIL",
+   "as_expected": true,
+   "detail": "OR=1.47"
+  }
+ ],
+ "all_as_expected": true
+}

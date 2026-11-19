@@ -1,6 +1,14 @@
 # Exemptions from ontology/coverage.py. Each entry needs a written reason. An entry that matches nothing fails the check,
 # so this file cannot fill up with dead lines. Prefer a card in ontology.yml over an exemption.
-tables: []
+tables:
+  - match: metrics.metric_late_rate_control_chart
+    reason: Target-setting layer for the monthly late rate (p-chart limits per month). Built on metric_late_rate_orders and checked by late_rate_targets/analyze.py (independent raw-CSV recount, Python refit) and by two dbt tests; no business claim in the ontology depends on it.
+  - match: metrics.metric_late_rate_targets
+    reason: One-row alarm line and goal lines derived from metric_late_rate_control_chart. Tied to the story numbers by the dbt test assert_late_rate_targets_reconcile_to_story and by late_rate_targets/analyze.py; not a business-thing card.
+  - match: metrics.metric_bad_review_by_days_late
+    reason: Counts of orders and 1-2 star reviews by days past the promised day, input to the review break-point fit. Tied to the story numbers by the same dbt test and by late_rate_targets/analyze.py.
+  - match: metrics.metric_review_cost_causal
+    reason: Extra 1-2 star reviews caused by lateness, per days-late bin (the review-cost number). Effects come from review_cost_causal/analyze.py (within-seller fixed-effects model); tied to that analysis and the story counts by the dbt test assert_review_cost_causal_reconciles and a unit test.
 numbers:   # each entry exempts its value only inside its exact `context` phrase in ONTOLOGY.md (coverage.py)
   - value: 0.16.0
     context: "dbt-metricflow 0.16.0"
@@ -130,3 +138,11 @@ columns:
     reason: Package length, height and width in centimeters. Physical attributes that no metric uses.
   - match: marts.dim_product.product_weight_g
     reason: Package weight in grams. A physical attribute that no metric uses.
+  - match: metrics.metric_late_rate_control_chart.*
+    reason: Columns of the target-setting table (monthly counts, plain and Laney p-chart limits, review and handoff counts). Each is defined in the model's header comment and compared with the Python refit in late_rate_targets/analyze.py.
+  - match: metrics.metric_late_rate_targets.*
+    reason: Columns of the one-row targets table. Each is defined in the model's header comment and compared with the Python refit in late_rate_targets/analyze.py.
+  - match: metrics.metric_bad_review_by_days_late.*
+    reason: Columns of the days-late table; the totals are tied to the story by the dbt test assert_late_rate_targets_reconcile_to_story.
+  - match: metrics.metric_review_cost_causal.*
+    reason: Columns of the review-cost table; each is defined in the model's header comment, and the totals are tied to evidence/review_cost_causal_report.json (read from the file) and to the story's counts by assert_review_cost_causal_reconciles.

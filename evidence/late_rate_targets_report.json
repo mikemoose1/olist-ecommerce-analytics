@@ -1,0 +1,1048 @@
+{
+ "break_point": {
+  "days": {
+   "bad_review_share_late": 0.6239396795475967,
+   "bad_review_share_on_time": 0.08714292212518195,
+   "logistic_late_vs_on_time": {
+    "ci95": [
+     16.435914012768496,
+     18.378821667284246
+    ],
+    "odds_ratio": 17.380239715823553
+   },
+   "logistic_linear_in_days": {
+    "ci95": [
+     1.092686968436249,
+     1.0975460190538462
+    ],
+    "odds_ratio_per_day": 1.095113798780392
+   },
+   "model_comparison_AIC_BIC": {
+    "one_break": [
+     60604.447463422715,
+     60612.89095887941
+    ],
+    "straight": [
+     63072.54359842021,
+     63076.76534614856
+    ],
+    "three_breaks": [
+     59141.394658793666,
+     59158.28164970705
+    ],
+    "two_breaks": [
+     59196.88609795916,
+     59209.5513411442
+    ]
+   },
+   "observed_share_by_day": {
+    "-30": 0.09441707717569786,
+    "-29": 0.1010752688172043,
+    "-28": 0.08888888888888889,
+    "-27": 0.10296010296010295,
+    "-26": 0.08093994778067885,
+    "-25": 0.09204545454545454,
+    "-24": 0.09739633558341369,
+    "-23": 0.10140148392415499,
+    "-22": 0.08422234699606962,
+    "-21": 0.07966226138032305,
+    "-20": 0.07108183079056865,
+    "-19": 0.07245827010622155,
+    "-18": 0.08317025440313111,
+    "-17": 0.0774985038898863,
+    "-16": 0.07528856243441763,
+    "-15": 0.07898259705488621,
+    "-14": 0.08526466380543633,
+    "-13": 0.07652886914929963,
+    "-12": 0.08204784261122289,
+    "-11": 0.08674592690444738,
+    "-10": 0.08041958041958042,
+    "-9": 0.08702323542306006,
+    "-8": 0.09622641509433963,
+    "-7": 0.0902806870548806,
+    "-6": 0.09207589285714286,
+    "-5": 0.10478359908883828,
+    "-4": 0.10787942887361185,
+    "-3": 0.106158357771261,
+    "-2": 0.1171875,
+    "-1": 0.10895211658570438,
+    "0": 0.1223529411764706,
+    "1": 0.19461444308445533,
+    "2": 0.34392523364485983,
+    "3": 0.5030425963488844,
+    "4": 0.5586206896551724,
+    "5": 0.6473317865429234,
+    "6": 0.7660098522167488,
+    "7": 0.7340425531914894,
+    "8": 0.7848484848484848,
+    "9": 0.8082191780821918,
+    "10": 0.8309178743961353,
+    "11": 0.7909604519774012,
+    "12": 0.8,
+    "13": 0.783068783068783,
+    "14": 0.8224852071005917,
+    "15": 0.7870967741935484,
+    "16": 0.8085106382978723,
+    "17": 0.7752808988764045,
+    "18": 0.7777777777777778,
+    "19": 0.8648648648648649,
+    "20": 0.8488372093023255,
+    "21": 0.8421052631578947,
+    "22": 0.796875,
+    "23": 0.9117647058823529,
+    "24": 0.7884615384615384,
+    "25": 0.8205128205128205,
+    "26": 0.9090909090909091,
+    "27": 0.85,
+    "28": 0.7608695652173914,
+    "29": 0.8648648648648649,
+    "30": 0.6842105263157895
+   },
+   "one_break_logistic": {
+    "bootstrap_B": 500,
+    "break_day": -7.0,
+    "p_value_vs_straight_line_bootstrap": 0.001996007984031936
+   },
+   "reviews_written_before_the_parcel_arrived": {
+    "by_day_1_to_8": {
+     "1": {
+      "reviews": 817,
+      "written_before_delivery": 6
+     },
+     "2": {
+      "reviews": 535,
+      "written_before_delivery": 32
+     },
+     "3": {
+      "reviews": 493,
+      "written_before_delivery": 345
+     },
+     "4": {
+      "reviews": 435,
+      "written_before_delivery": 361
+     },
+     "5": {
+      "reviews": 431,
+      "written_before_delivery": 374
+     },
+     "6": {
+      "reviews": 406,
+      "written_before_delivery": 382
+     },
+     "7": {
+      "reviews": 470,
+      "written_before_delivery": 462
+     },
+     "8": {
+      "reviews": 330,
+      "written_before_delivery": 329
+     }
+    },
+    "late_bad_reviews": 3972,
+    "late_bad_reviews_written_before_delivery": 3565,
+    "late_orders_reviews": 6366,
+    "late_orders_written_before_delivery": 4740,
+    "on_time_orders_reviews": 87936,
+    "on_time_orders_written_before_delivery": 215
+   },
+   "segmented_share_scale": {
+    "bootstrap_test_one_break_vs_straight": {
+     "p_value": 0.001996007984031936,
+     "rss_gain": 755.5669195719972,
+     "rss_one_break": 374.14945585076,
+     "rss_straight": 1129.7163754227572
+    },
+    "one_break": {
+     "day": -5.0,
+     "rss": 374.14945585076
+    },
+    "straight_rss": 1129.7163754227572,
+    "two_breaks": {
+     "days": [
+      0.0,
+      6.0
+     ],
+     "rss": 19.240063550902526,
+     "slope_between_breaks_pp_per_day": 11.538607395347137
+    }
+   },
+   "three_breaks_logistic": {
+    "break_days": [
+     -13.0,
+     0.0,
+     6.0
+    ]
+   },
+   "two_breaks_logistic": {
+    "bad_share_from_second_break": 0.7822161422708618,
+    "bad_share_up_to_first_break": 0.08662489470465376,
+    "break_days_note": "point estimates on a whole-day grid; a bootstrap interval for them collapsed to a single value, so none is reported",
+    "first_break_day": -1.0,
+    "logit_slope_between_breaks_per_day": 0.5084947843771636,
+    "model_probability_by_day": {
+     "-30": 0.07730711510258993,
+     "-29": 0.07782179914825403,
+     "-28": 0.07833961885388387,
+     "-27": 0.07886058944194163,
+     "-26": 0.07938472615666581,
+     "-25": 0.07991204426331358,
+     "-24": 0.08044255904739019,
+     "-23": 0.08097628581386644,
+     "-22": 0.0815132398863835,
+     "-21": 0.08205343660644478,
+     "-20": 0.0825968913325955,
+     "-19": 0.0831436194395893,
+     "-18": 0.08369363631754183,
+     "-17": 0.0842469573710715,
+     "-16": 0.08480359801842739,
+     "-15": 0.0853635736906035,
+     "-14": 0.08592689983044025,
+     "-13": 0.08649359189171266,
+     "-12": 0.08706366533820475,
+     "-11": 0.08763713564277113,
+     "-10": 0.08821401828638435,
+     "-9": 0.08879432875716947,
+     "-8": 0.08937808254942409,
+     "-7": 0.08996529516262533,
+     "-6": 0.09055598210042276,
+     "-5": 0.09115015886961723,
+     "-4": 0.09174784097912614,
+     "-3": 0.09234904393893446,
+     "-2": 0.09295378325903168,
+     "-1": 0.09356207444833467,
+     "0": 0.1464896798368042,
+     "1": 0.22202440125887668,
+     "2": 0.3218215872582936,
+     "3": 0.4410459265690153,
+     "4": 0.5674798887089321,
+     "5": 0.6856954739053086,
+     "6": 0.7839043799973753,
+     "7": 0.7835221191135692,
+     "8": 0.7831393690964624,
+     "9": 0.7827561299817588,
+     "10": 0.782372401807744,
+     "11": 0.781988184615292,
+     "12": 0.7816034784478713,
+     "13": 0.7812182833515502,
+     "14": 0.7808325993750048,
+     "15": 0.780446426569524,
+     "16": 0.7800597649890152,
+     "17": 0.7796726146900127,
+     "18": 0.7792849757316812,
+     "19": 0.778896848175823,
+     "20": 0.7785082320868851,
+     "21": 0.7781191275319644,
+     "22": 0.7777295345808132,
+     "23": 0.7773394533058465,
+     "24": 0.7769488837821469,
+     "25": 0.7765578260874718,
+     "26": 0.7761662803022586,
+     "27": 0.7757742465096311,
+     "28": 0.7753817247954058,
+     "29": 0.7749887152480962,
+     "30": 0.7745952179589211
+    },
+    "second_break_day": 6.0
+   }
+  },
+  "months": {
+   "bad_share_pp_per_1pp_late": 0.7026972959922977,
+   "bootstrap_test_one_break_vs_straight": {
+    "p_value": 0.3098450774612694,
+    "rss_gain": 1.8131755263433398,
+    "rss_one_break": 13.58299431874789,
+    "rss_straight": 15.39616984509123
+   },
+   "intercept_bad_share": 0.07514667212664128,
+   "one_break": {
+    "late_rate_pct": 6.299,
+    "leave_one_out_break_positions": [
+     3.43,
+     6.3,
+     6.66
+    ],
+    "rss": 13.58299431874789,
+    "slope_after_pp_per_pp": 0.7947346349392257,
+    "slope_before_pp_per_pp": 0.40722656226957027
+   },
+   "points": [
+    {
+     "bad_review_share": 0.11940298507462686,
+     "late_rate_pct": 2.949061662198391,
+     "month": "2017-01",
+     "reviewed": 737
+    },
+    {
+     "bad_review_share": 0.10913549969343961,
+     "late_rate_pct": 2.9859841560024374,
+     "month": "2017-02",
+     "reviewed": 1631
+    },
+    {
+     "bad_review_share": 0.11181601903251388,
+     "late_rate_pct": 4.565131837859111,
+     "month": "2017-03",
+     "reviewed": 2522
+    },
+    {
+     "bad_review_share": 0.12720070422535212,
+     "late_rate_pct": 6.564551422319474,
+     "month": "2017-04",
+     "reviewed": 2272
+    },
+    {
+     "bad_review_share": 0.09928263988522239,
+     "late_rate_pct": 3.017364076288073,
+     "month": "2017-05",
+     "reviewed": 3485
+    },
+    {
+     "bad_review_share": 0.10463232912212504,
+     "late_rate_pct": 3.054662379421222,
+     "month": "2017-06",
+     "reviewed": 3087
+    },
+    {
+     "bad_review_share": 0.09502382212811011,
+     "late_rate_pct": 2.8361344537815127,
+     "month": "2017-07",
+     "reviewed": 3778
+    },
+    {
+     "bad_review_share": 0.09055501460564752,
+     "late_rate_pct": 2.9262394195888755,
+     "month": "2017-08",
+     "reviewed": 4108
+    },
+    {
+     "bad_review_share": 0.0996319018404908,
+     "late_rate_pct": 4.432537749634681,
+     "month": "2017-09",
+     "reviewed": 4075
+    },
+    {
+     "bad_review_share": 0.10543130990415335,
+     "late_rate_pct": 4.236520163117354,
+     "month": "2017-10",
+     "reviewed": 4382
+    },
+    {
+     "bad_review_share": 0.1602519244226732,
+     "late_rate_pct": 12.536483669214732,
+     "month": "2017-11",
+     "reviewed": 7145
+    },
+    {
+     "bad_review_share": 0.14068863383931876,
+     "late_rate_pct": 7.48074807480748,
+     "month": "2017-12",
+     "reviewed": 5402
+    },
+    {
+     "bad_review_share": 0.13018949804715754,
+     "late_rate_pct": 5.7844122290799485,
+     "month": "2018-01",
+     "reviewed": 6913
+    },
+    {
+     "bad_review_share": 0.19046144317126046,
+     "late_rate_pct": 14.219830899308224,
+     "month": "2018-02",
+     "reviewed": 6458
+    },
+    {
+     "bad_review_share": 0.20717305729698207,
+     "late_rate_pct": 19.152321712715175,
+     "month": "2018-03",
+     "reviewed": 6859
+    },
+    {
+     "bad_review_share": 0.11017204950196197,
+     "late_rate_pct": 4.5877061469265366,
+     "month": "2018-04",
+     "reviewed": 6626
+    },
+    {
+     "bad_review_share": 0.10187424425634825,
+     "late_rate_pct": 6.655624152989008,
+     "month": "2018-05",
+     "reviewed": 6616
+    },
+    {
+     "bad_review_share": 0.09520616828695944,
+     "late_rate_pct": 1.1855067623977291,
+     "month": "2018-06",
+     "reviewed": 5966
+    },
+    {
+     "bad_review_share": 0.09249418797741614,
+     "late_rate_pct": 3.432909721076085,
+     "month": "2018-07",
+     "reviewed": 6022
+    },
+    {
+     "bad_review_share": 0.08764876165969765,
+     "late_rate_pct": 6.299086392050008,
+     "month": "2018-08",
+     "reviewed": 6218
+    }
+   ],
+   "r_squared": 0.8782935819792392,
+   "slope_ci95_pp": [
+    0.5731647646221265,
+    0.832229827362469
+   ],
+   "straight_rss": 15.39616984509123,
+   "without_thin_months": {
+    "bootstrap_test": {
+     "p_value": 0.38830584707646176,
+     "rss_gain": 1.5645792259723361,
+     "rss_one_break": 13.120625850040335,
+     "rss_straight": 14.685205076012672
+    },
+    "r_squared": 0.8835916233627081,
+    "slope": 0.007096565085101862
+   }
+  }
+ },
+ "checks": [
+  {
+   "check": "judged orders = story",
+   "detail": "94931",
+   "passed": true
+  },
+  {
+   "check": "late orders = story",
+   "detail": "6518",
+   "passed": true
+  },
+  {
+   "check": "late rate 6.87%",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "check": "Mar 2018 = 19.152%",
+   "detail": "19.1523",
+   "passed": true
+  },
+  {
+   "check": "Aug 2018 = 6.3%",
+   "detail": "6.2991",
+   "passed": true
+  },
+  {
+   "check": "bad reviews = 11,635",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "check": "avg stars 2.27 late / 4.31 on time",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "check": "monthly orders, late orders and bad reviews = independent raw-CSV recount (20 months)",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "check": "extra 1-2 star reviews 3,335 and 28.7% = recommendation report",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "check": "Python Laney fit = SQL fit (centre, sigma_z, every limit, every signal)",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "check": "Python plain fit = SQL plain limits",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "check": "alarm line = SQL alarm line",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "check": "safe and stretch goals = SQL",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "check": "dispersion test: quiet on chance-only data, loud on the real months",
+   "detail": "noise rejected 0.75% of the time at 1%",
+   "passed": true
+  },
+  {
+   "check": "pure noise, plain p-chart: false alarms across 5000 seeds",
+   "detail": "4.3% of 20-month series had a flag (limit 15%); 0.223% of months flagged",
+   "passed": true
+  },
+  {
+   "check": "planted bad month (+6 points), plain p-chart: flagged across 5000 seeds",
+   "detail": "planted month flagged 100.0%; other months flagged 4.22%",
+   "passed": true
+  },
+  {
+   "check": "pure noise, laney p-chart: false alarms across 5000 seeds",
+   "detail": "1.7% of 20-month series had a flag (limit 15%); 0.084% of months flagged",
+   "passed": true
+  },
+  {
+   "check": "planted bad month (+6 points), laney p-chart: flagged across 5000 seeds",
+   "detail": "planted month flagged 100.0%; other months flagged 0.06%",
+   "passed": true
+  },
+  {
+   "check": "overdispersed noise (no real change, months wobble like the real data): Laney quieter than plain by 5x or more",
+   "detail": "plain 100.0% of series flagged, Laney 7.4%",
+   "passed": true
+  },
+  {
+   "check": "limits fit on 2017 only flag Mar 2018 (Laney)",
+   "detail": "centre 3.75%, sigma_z 2.52; Mar 2018 19.15% vs limit 5.48%",
+   "passed": true
+  },
+  {
+   "check": "limits fit on 2017 only flag Mar 2018 (plain)",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "check": "both logistic models agree with the plain tallies (grouped fit reproduces 11,635 bad reviews)",
+   "detail": "",
+   "passed": true
+  }
+ ],
+ "data_note_last_months_delivered_share": {
+  "2018-05": 0.9848241645994456,
+  "2018-06": 0.9896103896103896,
+  "2018-07": 0.9813486370157819,
+  "2018-08": 0.9843459392436453
+ },
+ "pchart": {
+  "dispersion_test": {
+   "chi2": 3544.1568910784263,
+   "df": 19,
+   "p_value": 0.0,
+   "phi": 186.53457321465402
+  },
+  "goals": {
+   "best_stable_month": 0.011855067623977292,
+   "median_stable": 0.04432537749634681,
+   "safe_25th_pct_of_stable": 0.030360132278546476,
+   "stable_month_rates_sorted": [
+    0.011855067623977292,
+    0.028361344537815126,
+    0.029262394195888754,
+    0.03017364076288073,
+    0.03054662379421222,
+    0.03432909721076085,
+    0.04236520163117354,
+    0.04432537749634681,
+    0.045651318378591106,
+    0.045877061469265366,
+    0.057844122290799486,
+    0.06299086392050009,
+    0.06564551422319474,
+    0.06655624152989008,
+    0.0748074807480748
+   ],
+   "stretch_25th_pct_if_handoffs_ok": 0.02251969271900082,
+   "whole_period_rate_if_handoffs_ok_month_specific": 0.05491388035011275,
+   "whole_period_rate_if_handoffs_ok_pooled": 0.054500700703864056
+  },
+  "handoff": {
+   "late_handoff_late": 1809,
+   "late_handoff_late_rate": 0.21207502930832356,
+   "late_handoff_orders": 8530,
+   "on_time_handoff_late": 4708,
+   "on_time_handoff_late_rate": 0.05449074074074074,
+   "on_time_handoff_orders": 86400
+  },
+  "laney": {
+   "alarm_line": 0.08384882497953147,
+   "lower_limit_at_typical_orders": 0.006761794251341269,
+   "months_flagged": [
+    "2017-11",
+    "2018-02",
+    "2018-03"
+   ],
+   "passes": 3,
+   "sigma_z": 4.9312968416634595,
+   "stable_centre": 0.04530530961543637,
+   "typical_orders": 6372.0
+  },
+  "laney_single_pass_all_months": {
+   "centre": 0.06866039544511277,
+   "months_flagged": 1,
+   "sigma_z": 9.431980240608892,
+   "ucl_at_typical_orders": 0.15829865990812111
+  },
+  "months": [
+   {
+    "laney_lcl": 0.0,
+    "laney_signal": false,
+    "laney_ucl": 0.15795235155004647,
+    "late": 22,
+    "month": "2017-01",
+    "orders": 746,
+    "plain_lcl": 0.04088507827663529,
+    "plain_signal": true,
+    "plain_ucl": 0.09643571261359024,
+    "rate": 0.029490616621983913,
+    "rate_if_handoffs_ok": 0.027538726333907058,
+    "thin": true
+   },
+   {
+    "laney_lcl": 0.0,
+    "laney_signal": false,
+    "laney_ucl": 0.12125655772311722,
+    "late": 49,
+    "month": "2017-02",
+    "orders": 1641,
+    "plain_lcl": 0.049933139324555835,
+    "plain_signal": true,
+    "plain_ucl": 0.08738765156566969,
+    "rate": 0.029859841560024376,
+    "rate_if_handoffs_ok": 0.014760147601476016,
+    "thin": true
+   },
+   {
+    "laney_lcl": 0.0,
+    "laney_signal": false,
+    "laney_ucl": 0.10634142326720392,
+    "late": 116,
+    "month": "2017-03",
+    "orders": 2541,
+    "plain_lcl": 0.05361075555849083,
+    "plain_signal": true,
+    "plain_ucl": 0.0837100353317347,
+    "rate": 0.045651318378591106,
+    "rate_if_handoffs_ok": 0.036693378321383384,
+    "thin": false
+   },
+   {
+    "laney_lcl": 0.0,
+    "laney_signal": false,
+    "laney_ucl": 0.10966976566634609,
+    "late": 150,
+    "month": "2017-04",
+    "orders": 2285,
+    "plain_lcl": 0.05279008806297747,
+    "plain_signal": false,
+    "plain_ucl": 0.08453070282724806,
+    "rate": 0.06564551422319474,
+    "rate_if_handoffs_ok": 0.04950495049504951,
+    "thin": false
+   },
+   {
+    "laney_lcl": 0.0,
+    "laney_signal": false,
+    "laney_ucl": 0.0972152022532404,
+    "late": 106,
+    "month": "2017-05",
+    "orders": 3513,
+    "plain_lcl": 0.05586100269200726,
+    "plain_signal": true,
+    "plain_ucl": 0.08145978819821828,
+    "rate": 0.03017364076288073,
+    "rate_if_handoffs_ok": 0.022713321055862493,
+    "thin": false
+   },
+   {
+    "laney_lcl": 0.0,
+    "laney_signal": false,
+    "laney_ucl": 0.10047607526237784,
+    "late": 95,
+    "month": "2017-06",
+    "orders": 3110,
+    "plain_lcl": 0.05505697108567803,
+    "plain_signal": true,
+    "plain_ucl": 0.0822638198045475,
+    "rate": 0.03054662379421222,
+    "rate_if_handoffs_ok": 0.02092050209205021,
+    "thin": false
+   },
+   {
+    "laney_lcl": 0.0,
+    "laney_signal": false,
+    "laney_ucl": 0.09516398493667907,
+    "late": 108,
+    "month": "2017-07",
+    "orders": 3808,
+    "plain_lcl": 0.05636677018106424,
+    "plain_signal": true,
+    "plain_ucl": 0.0809540207091613,
+    "rate": 0.028361344537815126,
+    "rate_if_handoffs_ok": 0.024744027303754267,
+    "thin": false
+   },
+   {
+    "laney_lcl": 0.0,
+    "laney_signal": false,
+    "laney_ucl": 0.09315194999849818,
+    "late": 121,
+    "month": "2017-08",
+    "orders": 4135,
+    "plain_lcl": 0.056862876493331826,
+    "plain_signal": true,
+    "plain_ucl": 0.0804579143968937,
+    "rate": 0.029262394195888754,
+    "rate_if_handoffs_ok": 0.02232606438213915,
+    "thin": false
+   },
+   {
+    "laney_lcl": 0.0,
+    "laney_signal": false,
+    "laney_ucl": 0.09332061916209444,
+    "late": 182,
+    "month": "2017-09",
+    "orders": 4106,
+    "plain_lcl": 0.05682128783343478,
+    "plain_signal": true,
+    "plain_ucl": 0.08049950305679075,
+    "rate": 0.04432537749634681,
+    "rate_if_handoffs_ok": 0.03595851260227558,
+    "thin": false
+   },
+   {
+    "laney_lcl": 0.0,
+    "laney_signal": false,
+    "laney_ucl": 0.09161512409015193,
+    "late": 187,
+    "month": "2017-10",
+    "orders": 4414,
+    "plain_lcl": 0.05724181078493826,
+    "plain_signal": true,
+    "plain_ucl": 0.08007898010528727,
+    "rate": 0.04236520163117354,
+    "rate_if_handoffs_ok": 0.026581343834604972,
+    "thin": false
+   },
+   {
+    "laney_lcl": 0.009033117217111704,
+    "laney_signal": true,
+    "laney_ucl": 0.08157750201376104,
+    "late": 902,
+    "month": "2017-11",
+    "orders": 7195,
+    "plain_lcl": 0.05971678156092105,
+    "plain_signal": true,
+    "plain_ucl": 0.07760400932930447,
+    "rate": 0.12536483669214732,
+    "rate_if_handoffs_ok": 0.09342063238581923,
+    "thin": false
+   },
+   {
+    "laney_lcl": 0.003644122696919022,
+    "laney_signal": false,
+    "laney_ucl": 0.08696649653395372,
+    "late": 408,
+    "month": "2017-12",
+    "orders": 5454,
+    "plain_lcl": 0.05838802024196492,
+    "plain_signal": false,
+    "plain_ucl": 0.07893277064826061,
+    "rate": 0.0748074807480748,
+    "rate_if_handoffs_ok": 0.05808444902162719,
+    "thin": false
+   },
+   {
+    "laney_lcl": 0.008444378594686178,
+    "laney_signal": false,
+    "laney_ucl": 0.08216624063618656,
+    "late": 403,
+    "month": "2018-01",
+    "orders": 6967,
+    "plain_lcl": 0.0595716166130772,
+    "plain_signal": true,
+    "plain_ucl": 0.07774917427714834,
+    "rate": 0.057844122290799486,
+    "rate_if_handoffs_ok": 0.04398592450415867,
+    "thin": false
+   },
+   {
+    "laney_lcl": 0.007157855870182889,
+    "laney_signal": true,
+    "laney_ucl": 0.08345276336068985,
+    "late": 925,
+    "month": "2018-02",
+    "orders": 6505,
+    "plain_lcl": 0.05925439943538802,
+    "plain_signal": true,
+    "plain_ucl": 0.07806639145483751,
+    "rate": 0.14219830899308225,
+    "rate_if_handoffs_ok": 0.1300385559060638,
+    "thin": false
+   },
+   {
+    "laney_lcl": 0.00830069146396871,
+    "laney_signal": true,
+    "laney_ucl": 0.08230992776690403,
+    "late": 1324,
+    "month": "2018-03",
+    "orders": 6913,
+    "plain_lcl": 0.059536187758842195,
+    "plain_signal": true,
+    "plain_ucl": 0.07778460313138333,
+    "rate": 0.19152321712715176,
+    "rate_if_handoffs_ok": 0.17698274497388,
+    "thin": false
+   },
+   {
+    "laney_lcl": 0.007632649395171907,
+    "laney_signal": false,
+    "laney_ucl": 0.08297796983570083,
+    "late": 306,
+    "month": "2018-04",
+    "orders": 6670,
+    "plain_lcl": 0.05937146900525532,
+    "plain_signal": true,
+    "plain_ucl": 0.07794932188497021,
+    "rate": 0.045877061469265366,
+    "rate_if_handoffs_ok": 0.039431673052362705,
+    "thin": false
+   },
+   {
+    "laney_lcl": 0.007550484280727937,
+    "laney_signal": false,
+    "laney_ucl": 0.0830601349501448,
+    "late": 442,
+    "month": "2018-05",
+    "orders": 6641,
+    "plain_lcl": 0.05935120959964048,
+    "plain_signal": false,
+    "plain_ucl": 0.07796958129058505,
+    "rate": 0.06655624152989008,
+    "rate_if_handoffs_ok": 0.05064516129032258,
+    "thin": false
+   },
+   {
+    "laney_lcl": 0.005548452129115124,
+    "laney_signal": false,
+    "laney_ucl": 0.08506216710175762,
+    "late": 71,
+    "month": "2018-06",
+    "orders": 5989,
+    "plain_lcl": 0.058857569668777365,
+    "plain_signal": true,
+    "plain_ucl": 0.07846322122144817,
+    "rate": 0.011855067623977292,
+    "rate_if_handoffs_ok": 0.01003584229390681,
+    "thin": false
+   },
+   {
+    "laney_lcl": 0.005778776009177637,
+    "laney_signal": false,
+    "laney_ucl": 0.0848318432216951,
+    "late": 208,
+    "month": "2018-07",
+    "orders": 6059,
+    "plain_lcl": 0.058914360497105765,
+    "plain_signal": true,
+    "plain_ucl": 0.07840643039311976,
+    "rate": 0.03432909721076085,
+    "rate_if_handoffs_ok": 0.02106027596223675,
+    "thin": false
+   },
+   {
+    "laney_lcl": 0.0063531346116198276,
+    "laney_signal": false,
+    "laney_ucl": 0.08425748461925292,
+    "late": 393,
+    "month": "2018-08",
+    "orders": 6239,
+    "plain_lcl": 0.059055979771587344,
+    "plain_signal": false,
+    "plain_ucl": 0.07826481111863819,
+    "rate": 0.06299086392050009,
+    "rate_if_handoffs_ok": 0.03425141242937853,
+    "thin": false
+   }
+  ],
+  "plain_classic": {
+   "centre": 0.06866039544511277,
+   "months_flagged": 16
+  },
+  "plain_refitted_in_passes": {
+   "centre": 0.06755904748047917,
+   "months_flagged": 16,
+   "passes": 2
+  },
+  "stable_months": [
+   "2017-03",
+   "2017-04",
+   "2017-05",
+   "2017-06",
+   "2017-07",
+   "2017-08",
+   "2017-09",
+   "2017-10",
+   "2017-12",
+   "2018-01",
+   "2018-04",
+   "2018-05",
+   "2018-06",
+   "2018-07",
+   "2018-08"
+  ],
+  "thin_months": [
+   "2017-01",
+   "2017-02"
+  ]
+ },
+ "proofs": {
+  "dispersion_test": {
+   "noise_rejected_at_1pct": 0.0075,
+   "real": {
+    "chi2": 3544.1568910784263,
+    "df": 19,
+    "p_value": 0.0,
+    "phi": 186.53457321465402
+   }
+  },
+  "holdout_2017_only": {
+   "laney": {
+    "centre": 0.03749298656721344,
+    "flags_march_2018": true,
+    "months": {
+     "2018-01": {
+      "flagged": true,
+      "rate": 0.057844122290799486,
+      "ucl": 0.05471021813223346
+     },
+     "2018-02": {
+      "flagged": true,
+      "rate": 0.14219830899308225,
+      "ucl": 0.05531113512071008
+     },
+     "2018-03": {
+      "flagged": true,
+      "rate": 0.19152321712715176,
+      "ucl": 0.05477733240563809
+     },
+     "2018-04": {
+      "flagged": false,
+      "rate": 0.045877061469265366,
+      "ucl": 0.05508936562550372
+     },
+     "2018-05": {
+      "flagged": true,
+      "rate": 0.06655624152989008,
+      "ucl": 0.05512774381516887
+     },
+     "2018-06": {
+      "flagged": true,
+      "rate": 0.011855067623977292,
+      "ucl": 0.056062865370713116
+     },
+     "2018-07": {
+      "flagged": false,
+      "rate": 0.03432909721076085,
+      "ucl": 0.0559552842687665
+     },
+     "2018-08": {
+      "flagged": true,
+      "rate": 0.06299086392050009,
+      "ucl": 0.055687009301592136
+     }
+    },
+    "sigma_z": 2.5216685479644143
+   },
+   "plain": {
+    "centre": 0.056952593834404396,
+    "flags_march_2018": true,
+    "months": {
+     "2018-01": {
+      "flagged": false,
+      "rate": 0.057844122290799486,
+      "ucl": 0.06528215009730817
+     },
+     "2018-02": {
+      "flagged": true,
+      "rate": 0.14219830899308225,
+      "ucl": 0.06557286883719084
+     },
+     "2018-03": {
+      "flagged": true,
+      "rate": 0.19152321712715176,
+      "ucl": 0.06531461943561362
+     },
+     "2018-04": {
+      "flagged": true,
+      "rate": 0.045877061469265366,
+      "ucl": 0.06546557856344729
+     },
+     "2018-05": {
+      "flagged": true,
+      "rate": 0.06655624152989008,
+      "ucl": 0.06548414561871846
+     },
+     "2018-06": {
+      "flagged": true,
+      "rate": 0.011855067623977292,
+      "ucl": 0.06593654980345307
+     },
+     "2018-07": {
+      "flagged": true,
+      "rate": 0.03432909721076085,
+      "ucl": 0.06588450294341605
+     },
+     "2018-08": {
+      "flagged": false,
+      "rate": 0.06299086392050009,
+      "ucl": 0.06575471370148313
+     }
+    },
+    "sigma_z": 1.0
+   }
+  },
+  "noise_laney": {
+   "point_flag_rate": 0.00084,
+   "series_any_flag": 0.0166
+  },
+  "noise_plain": {
+   "point_flag_rate": 0.00223,
+   "series_any_flag": 0.0434
+  },
+  "overdispersed_noise": {
+   "extra_sd": 0.01284783845469837,
+   "laney": {
+    "point_flag_rate": 0.00472,
+    "series_any_flag": 0.0738
+   },
+   "plain": {
+    "point_flag_rate": 0.45618,
+    "series_any_flag": 1.0
+   }
+  },
+  "planted_laney": {
+   "other_months_flag_rate": 0.0006105263157894737,
+   "planted_flagged": 1.0,
+   "point_flag_rate": 0.05058,
+   "series_any_flag": 1.0
+  },
+  "planted_plain": {
+   "other_months_flag_rate": 0.04224210526315789,
+   "planted_flagged": 1.0,
+   "point_flag_rate": 0.09013,
+   "series_any_flag": 1.0
+  }
+ },
+ "story_numbers": {
+  "aug2018_pct": 6.3,
+  "avg_stars_late": 2.27,
+  "avg_stars_on_time": 4.31,
+  "bad_reviews": 11635,
+  "extra_bad": 3335,
+  "extra_bad_share_pct": 28.7,
+  "judged": 94931,
+  "late": 6518,
+  "late_rate_pct": 6.87,
+  "mar2018_pct": 19.152
+ }
+}

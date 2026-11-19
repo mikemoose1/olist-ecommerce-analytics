@@ -81,6 +81,39 @@ CASES = [
     ("Trend metrics never include a partial month",
      "metric_late_rate_monthly,test_name:expect_column_values_to_be_between",
      {"sql": ["insert into metrics.metric_late_rate_monthly values ('2018-09', 1, 16, 6.25)"]}),
+    ("Review-cost number ties to the causal analysis and the story (6,366 / 3,110 / 26.7%)",
+     "assert_review_cost_causal_reconciles",
+     {"sql": ["update metrics.metric_review_cost_causal set extra_bad_reviews = extra_bad_reviews + 5 where days_late_bin = 'late_d1'"]}),
+    ("Review-cost bins count the same late orders the analysis saw",
+     "metric_review_cost_causal,test_name:expression_is_true",
+     {"sql": ["update metrics.metric_review_cost_causal set reviewed_late_orders = reviewed_late_orders - 1 where days_late_bin = 'late_d7_13'"]}),
+    ("Late-rate targets tie to the story numbers (94,931 / 6,518 / 11,635 / 2.27 stars)",
+     "assert_late_rate_targets_reconcile_to_story",
+     {"sql": ["update metrics.metric_late_rate_targets set late_orders = late_orders + 1",
+              "update metrics.metric_bad_review_by_days_late set bad_reviews = bad_reviews + 1 where days_past_promise_capped = 3"]}),
+    ("Late-rate control limits are fully fitted (the last pass sets aside no further month)",
+     "assert_late_rate_limits_fit_has_converged",
+     {"sql": ["update metrics.metric_late_rate_control_chart set fit_changed_in_last_pass = true where year_month = '2018-03'"]}),
+    # Logic mutations (S1 of the cold review): real edits to the model SQL, rebuilt downstream in a copy of the project
+    # against a copy of the warehouse, then every test on the chart and its descendants must fail on at least one.
+    ("Limits (S1/M2): sigma_z divides by 1.0 instead of the 1.128 constant of the moving-range method",
+     "metric_late_rate_control_chart+",
+     {"model_edit": {"file": "models/metrics/metric_late_rate_control_chart.sql", "replace": [("over () / 1.128", "over () / 1.0")], "rebuild": "metric_late_rate_control_chart+"}}),
+    ("Goals (S1/M3): the goals use the median instead of the 25th percentile of the stable months",
+     "metric_late_rate_control_chart+",
+     {"model_edit": {"file": "models/metrics/metric_late_rate_targets.sql", "replace": [("percentile_cont(0.25)", "percentile_cont(0.50)")], "replace_all": True, "rebuild": "metric_late_rate_targets"}}),
+    ("Goals (S1/M4): the stable-month filter is dropped, so thin and flagged months count as stable",
+     "metric_late_rate_control_chart+",
+     {"model_edit": {"file": "models/metrics/metric_late_rate_targets.sql", "replace": [("where not laney_signal and not thin_month", "where true")], "rebuild": "metric_late_rate_targets"}}),
+    ("Goals (S1/M4b): only the thin-month part of the stable filter is dropped",
+     "metric_late_rate_control_chart+",
+     {"model_edit": {"file": "models/metrics/metric_late_rate_targets.sql", "replace": [("where not laney_signal and not thin_month", "where not laney_signal")], "rebuild": "metric_late_rate_targets"}}),
+    ("Goals (S1/M4c): only the Laney-signal part of the stable filter is dropped",
+     "metric_late_rate_control_chart+",
+     {"model_edit": {"file": "models/metrics/metric_late_rate_targets.sql", "replace": [("where not laney_signal and not thin_month", "where not thin_month")], "rebuild": "metric_late_rate_targets"}}),
+    ("Limits (S1/M5): the moving range counts months that were set aside (sigma_z 4.93 -> about 10)",
+     "metric_late_rate_control_chart+",
+     {"model_edit": {"file": "models/metrics/metric_late_rate_control_chart.sql", "replace": [("avg(case when prev_in_fit and before_in_fit then abs(z - z_before) end)", "avg(abs(z - z_before))")], "rebuild": "metric_late_rate_control_chart+"}}),
     # Ontology claims (ontology/check.py): a broken link between business things must fail the check.
     ("Ontology: an order has exactly one row (no order with two customers)",
      "ontology:entity order",
@@ -452,19 +485,46 @@ def run_ontology_claim(claim, db, extra_env=None):
     res = [(claim, "pass" if l.startswith("PASS") else "fail", l.split(": ", 1)[1]) for l in hits]
     return (0 if res and all(r[1] == "pass" for r in res) else 1), res
 
-def run_tests(selector, db, raw, extra_env=None):
+def run_tests(selector, db, raw, extra_env=None, proj=None):
+    proj = proj or ROOT
     if selector.startswith("ontology:"):
         return run_ontology_claim(selector[len("ontology:"):], db, extra_env)
-    env = dict(os.environ, OLIST_DB_PATH=db, OLIST_RAW_DIR=raw, DBT_PROFILES_DIR=ROOT)
+    env = dict(os.environ, OLIST_DB_PATH=db, OLIST_RAW_DIR=raw, DBT_PROFILES_DIR=proj)
     tp = tempfile.mkdtemp(prefix="dbt-target-")
     p = subprocess.run([DBT, "test", "--select", selector, "--target-path", tp, "--quiet"],
-                       cwd=ROOT, env=env, capture_output=True, text=True)
+                       cwd=proj, env=env, capture_output=True, text=True)
     try:
         res = json.load(open(os.path.join(tp, "run_results.json")))["results"]
     except Exception:
         res = []
     shutil.rmtree(tp, ignore_errors=True)
     return p.returncode, [(r["unique_id"].split(".")[-2] if r["unique_id"].count(".") > 2 else r["unique_id"], r["status"], r.get("failures")) for r in res]
+
+PROJECT_FILES = ("dbt_project.yml", "profiles.yml", "packages.yml", "package-lock.yml", "models", "macros", "tests", "seeds", "evidence", "dbt_packages")
+
+def project_copy(edit, work):
+    """A copy of the dbt project (only what dbt needs) with one model file edited; the real files are never touched."""
+    d = tempfile.mkdtemp(prefix="proj-mut-", dir=work)
+    for name in PROJECT_FILES:
+        src = os.path.join(ROOT, name)
+        if os.path.isdir(src):
+            shutil.copytree(src, os.path.join(d, name), symlinks=True)
+        elif os.path.exists(src):
+            shutil.copy(src, os.path.join(d, name))
+    path = os.path.join(d, edit["file"]); text = open(path).read()
+    for old, new in edit["replace"]:
+        assert old in text, f"no {old!r} in {edit['file']}"
+        text = text.replace(old, new) if edit.get("replace_all") else text.replace(old, new, 1)
+    assert text != open(os.path.join(ROOT, edit["file"])).read(), "the edit changed nothing"
+    open(path, "w").write(text)
+    return d
+
+def rebuild_models(proj, selector, db, raw):
+    """Rebuild the edited model (and what depends on it) inside the project copy, against the copied warehouse."""
+    env = dict(os.environ, OLIST_DB_PATH=db, OLIST_RAW_DIR=raw, DBT_PROFILES_DIR=proj)
+    p = subprocess.run([DBT, "run", "--select", selector, "--target-path", os.path.join(proj, "target"), "--quiet"],
+                       cwd=proj, env=env, capture_output=True, text=True)
+    assert p.returncode == 0, f"rebuild of {selector} failed:\n{p.stdout[-1500:]}"
 
 def raw_copy(edit):
     d = tempfile.mkdtemp(prefix="raw-mut-")
@@ -502,7 +562,12 @@ def main():
             for s in mut["sql"]:
                 con.execute(s)
             con.close()
-        m_rc, m_res = run_tests(selector, mut_db, raw_mut, doc_env)
+        proj = None
+        if "model_edit" in mut:
+            proj = project_copy(mut["model_edit"], work)
+            rebuild_models(proj, mut["model_edit"]["rebuild"], mut_db, raw_mut)
+        m_rc, m_res = run_tests(selector, mut_db, raw_mut, doc_env, proj)
+        if proj: shutil.rmtree(proj, ignore_errors=True)
         for p in (base_db, mut_db): os.remove(p)
         shutil.rmtree(raw_clean, ignore_errors=True); shutil.rmtree(raw_mut, ignore_errors=True)
         base_ok = b_rc == 0 and b_res and all(s == "pass" for _, s, _ in b_res)
@@ -510,7 +575,7 @@ def main():
         verdict = "PROVEN" if (base_ok and mut_fail) else "NOT PROVEN"
         report.append({"rule": rule, "selector": selector, "mutation": mut, "baseline": b_res,
                        "mutant": m_res, "verdict": verdict, "seconds": round(time.time() - t0, 1)})
-        print(f"{verdict:11s} {rule}  baseline={[s for _, s, _ in b_res]} mutant={[(s, f) for _, s, f in m_res]}", flush=True)
+        print(f"{verdict:11s} {rule}  baseline={len(b_res)} tests, all pass: {base_ok} | mutant failing: {[(n, s, f) for n, s, f in m_res if s != 'pass']}", flush=True)
     shutil.rmtree(work, ignore_errors=True)
     if only:
         bad = [r for r in report if r["verdict"] != "PROVEN"]
@@ -524,7 +589,7 @@ def main():
         f.write("| Rule | Tests | Known-bad rows injected | Baseline | Mutant (failing rows) | Verdict |\n|---|---|---|---|---|---|\n")
         for r in report:
             m = r["mutation"]
-            mut = m.get("sql") or [f"{k}: {m[k]}" for k in ("raw_edit",) + DOC_EDITS if k in m]
+            mut = m.get("sql") or [f"{k}: {m[k]}" for k in ("raw_edit", "model_edit") + DOC_EDITS if k in m]
             f.write(f"| {r['rule']} | `{r['selector']}` | {'<br>'.join('`'+m.replace('|','\\|')+'`' for m in mut)} | "
                     f"{', '.join(s for _, s, _ in r['baseline'])} | {', '.join(f'{s} ({n})' for _, s, n in r['mutant'])} | **{r['verdict']}** |\n")
     bad = [r for r in report if r["verdict"] != "PROVEN"]
