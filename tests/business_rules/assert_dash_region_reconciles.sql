@@ -27,12 +27,12 @@ checks_ran as (
     union all select 'export states column: rest of Brazil (11)', rest.states::double, 11, 0 from rest
     union all select 'north and northeast vs story csv: orders', nne.orders::double, sr.orders::double, 0 from nne, story_r sr where sr.segment = 'North and northeast'
     union all select 'north and northeast vs story csv: late', nne.late_orders::double, sr.late::double, 0 from nne, story_r sr where sr.segment = 'North and northeast'
-    union all select 'north and northeast vs story csv: rate (6 places)', round(nne.late_rate, 6), sr.late_rate, 0.0000006 from nne, story_r sr where sr.segment = 'North and northeast'
-    union all select 'north and northeast vs story csv: share of late (6 places)', round(nne.share_of_all_late, 6), sr.share_of_late, 0.0000006 from nne, story_r sr where sr.segment = 'North and northeast'
+    union all select 'north and northeast vs story csv: rate (6 places)', round(nne.late_rate, 6), sr.late_rate, 0.000000001 from nne, story_r sr where sr.segment = 'North and northeast'
+    union all select 'north and northeast vs story csv: share of late (6 places)', round(nne.share_of_all_late, 6), sr.share_of_late, 0.000000001 from nne, story_r sr where sr.segment = 'North and northeast'
     union all select 'rest of Brazil vs story csv: orders', rest.orders::double, sr.orders::double, 0 from rest, story_r sr where sr.segment = 'Rest of Brazil'
     union all select 'rest of Brazil vs story csv: late', rest.late_orders::double, sr.late::double, 0 from rest, story_r sr where sr.segment = 'Rest of Brazil'
-    union all select 'rest of Brazil vs story csv: rate (6 places)', round(rest.late_rate, 6), sr.late_rate, 0.0000006 from rest, story_r sr where sr.segment = 'Rest of Brazil'
-    union all select 'rest of Brazil vs story csv: share of late (6 places)', round(rest.share_of_all_late, 6), sr.share_of_late, 0.0000006 from rest, story_r sr where sr.segment = 'Rest of Brazil'
+    union all select 'rest of Brazil vs story csv: rate (6 places)', round(rest.late_rate, 6), sr.late_rate, 0.000000001 from rest, story_r sr where sr.segment = 'Rest of Brazil'
+    union all select 'rest of Brazil vs story csv: share of late (6 places)', round(rest.share_of_all_late, 6), sr.share_of_late, 0.000000001 from rest, story_r sr where sr.segment = 'Rest of Brazil'
     union all select 'summary tile equals the bar: north and northeast rate', s.nne_late_rate, nne.late_rate, 0.0000000001 from s, nne
     union all select 'summary tile equals the bar: rest of Brazil rate', s.rest_late_rate, rest.late_rate, 0.0000000001 from s, rest
     union all select 'summary tile equals the bar: north and northeast share of late', s.nne_share_of_late, nne.share_of_all_late, 0.0000000001 from s, nne

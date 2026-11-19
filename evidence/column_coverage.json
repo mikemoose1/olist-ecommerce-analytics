@@ -1,0 +1,1131 @@
+{
+ "cells_changed": 868,
+ "columns": 98,
+ "columns_with_an_unchecked_cell": 0,
+ "tables": {
+  "handoff": {
+   "handoff_group": {
+    "caught_by_dbt": 2,
+    "caught_by_either": 2,
+    "caught_by_verifier": 2,
+    "cells_tested": 2,
+    "checks_that_caught": [
+     "handoff rows whose name, orders, late orders, late rate or share of late differ from the rebuild",
+     "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+     "unique_export_dash_handoff_handoff_group"
+    ],
+    "unchecked_cells": []
+   },
+   "late_orders": {
+    "caught_by_dbt": 2,
+    "caught_by_either": 2,
+    "caught_by_verifier": 2,
+    "cells_tested": 2,
+    "checks_that_caught": [
+     "handoff rows whose name, orders, late orders, late rate or share of late differ from the rebuild",
+     "of those, late orders",
+     "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "late_rate": {
+    "caught_by_dbt": 2,
+    "caught_by_either": 2,
+    "caught_by_verifier": 2,
+    "cells_tested": 2,
+    "checks_that_caught": [
+     "handoff rows whose name, orders, late orders, late rate or share of late differ from the rebuild",
+     "late rate after a late handoff, %",
+     "late rate after an on-time handoff, %",
+     "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "orders": {
+    "caught_by_dbt": 2,
+    "caught_by_either": 2,
+    "caught_by_verifier": 2,
+    "cells_tested": 2,
+    "checks_that_caught": [
+     "handoff rows whose name, orders, late orders, late rate or share of late differ from the rebuild",
+     "orders handed over late",
+     "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "share_of_all_late": {
+    "caught_by_dbt": 2,
+    "caught_by_either": 2,
+    "caught_by_verifier": 2,
+    "cells_tested": 2,
+    "checks_that_caught": [
+     "handoff rows whose name, orders, late orders, late rate or share of late differ from the rebuild",
+     "on-time handoffs' share of all late orders, % (from the monthly file)",
+     "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles"
+    ],
+    "unchecked_cells": []
+   }
+  },
+  "monthly": {
+   "goal_late_rate": {
+    "caught_by_dbt": 20,
+    "caught_by_either": 20,
+    "caught_by_verifier": 1,
+    "cells_tested": 20,
+    "checks_that_caught": [
+     "goal line, %, exact 4.43",
+     "goal line, %, shown 4.4",
+     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "is_alarm_month": {
+    "caught_by_dbt": 20,
+    "caught_by_either": 20,
+    "caught_by_verifier": 20,
+    "cells_tested": 20,
+    "checks_that_caught": [
+     "flagged months",
+     "is_stable_month is not alarm and not thin (rows that differ)",
+     "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "is_stable_month": {
+    "caught_by_dbt": 20,
+    "caught_by_either": 20,
+    "caught_by_verifier": 20,
+    "cells_tested": 20,
+    "checks_that_caught": [
+     "is_stable_month is not alarm and not thin (rows that differ)",
+     "stable months in the monthly file vs facts.json",
+     "stretch line = median of the what-if over stable months in the monthly file, %",
+     "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "is_thin_month": {
+    "caught_by_dbt": 20,
+    "caught_by_either": 20,
+    "caught_by_verifier": 17,
+    "cells_tested": 20,
+    "checks_that_caught": [
+     "is_stable_month is not alarm and not thin (rows that differ)",
+     "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "is_worst3_late_month": {
+    "caught_by_dbt": 20,
+    "caught_by_either": 20,
+    "caught_by_verifier": 20,
+    "cells_tested": 20,
+    "checks_that_caught": [
+     "is_worst3_late_month is rank 3 or better (rows that differ)",
+     "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+     "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+     "three worst months, in the monthly bars' flags"
+    ],
+    "unchecked_cells": []
+   },
+   "late_handoff_late_orders": {
+    "caught_by_dbt": 20,
+    "caught_by_either": 20,
+    "caught_by_verifier": 0,
+    "cells_tested": 20,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "late_handoff_orders": {
+    "caught_by_dbt": 20,
+    "caught_by_either": 20,
+    "caught_by_verifier": 0,
+    "cells_tested": 20,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "late_orders": {
+    "caught_by_dbt": 20,
+    "caught_by_either": 20,
+    "caught_by_verifier": 20,
+    "cells_tested": 20,
+    "checks_that_caught": [
+     "late handoffs' share of all late orders, %",
+     "late orders",
+     "late_rate and share_of_all_late are late orders over orders and over all late orders (rows that differ)",
+     "month rows whose orders or late orders differ from the rebuild (all 20)",
+     "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+     "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+     "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+     "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+     "three worst months' share of late orders, %"
+    ],
+    "unchecked_cells": []
+   },
+   "late_orders_rank": {
+    "caught_by_dbt": 20,
+    "caught_by_either": 20,
+    "caught_by_verifier": 20,
+    "cells_tested": 20,
+    "checks_that_caught": [
+     "late_orders_rank orders the months by late orders, a tie to the later month (rows that differ)",
+     "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+     "unique_export_dash_monthly_late_orders_rank"
+    ],
+    "unchecked_cells": []
+   },
+   "late_rate": {
+    "caught_by_dbt": 20,
+    "caught_by_either": 20,
+    "caught_by_verifier": 20,
+    "cells_tested": 20,
+    "checks_that_caught": [
+     "late_rate and share_of_all_late are late orders over orders and over all late orders (rows that differ)",
+     "latest month late rate, %",
+     "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "late_rate_if_handoffs_ok": {
+    "caught_by_dbt": 20,
+    "caught_by_either": 20,
+    "caught_by_verifier": 1,
+    "cells_tested": 20,
+    "checks_that_caught": [
+     "stretch line = median of the what-if over stable months in the monthly file, %",
+     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "month_label": {
+    "caught_by_dbt": 20,
+    "caught_by_either": 20,
+    "caught_by_verifier": 20,
+    "cells_tested": 20,
+    "checks_that_caught": [
+     "month_label is the month name and year (rows that differ)",
+     "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+     "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+     "unique_export_dash_monthly_month_label"
+    ],
+    "unchecked_cells": []
+   },
+   "month_start": {
+    "caught_by_dbt": 20,
+    "caught_by_either": 20,
+    "caught_by_verifier": 20,
+    "cells_tested": 20,
+    "checks_that_caught": [
+     "month_start is the first day of year_month (rows that differ)",
+     "test.olist_ecommerce_analytics.assert_dash_columns_are_derived"
+    ],
+    "unchecked_cells": []
+   },
+   "on_time_handoff_late_orders": {
+    "caught_by_dbt": 20,
+    "caught_by_either": 20,
+    "caught_by_verifier": 0,
+    "cells_tested": 20,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "on_time_handoff_orders": {
+    "caught_by_dbt": 20,
+    "caught_by_either": 20,
+    "caught_by_verifier": 0,
+    "cells_tested": 20,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "orders": {
+    "caught_by_dbt": 20,
+    "caught_by_either": 20,
+    "caught_by_verifier": 20,
+    "cells_tested": 20,
+    "checks_that_caught": [
+     "judged orders",
+     "late_rate and share_of_all_late are late orders over orders and over all late orders (rows that differ)",
+     "month rows whose orders or late orders differ from the rebuild (all 20)",
+     "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+     "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+     "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+     "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile"
+    ],
+    "unchecked_cells": []
+   },
+   "own_month_alarm_line_late_rate": {
+    "caught_by_dbt": 20,
+    "caught_by_either": 20,
+    "caught_by_verifier": 1,
+    "cells_tested": 20,
+    "checks_that_caught": [
+     "summary: latest month's own alarm line equals its row in the monthly file, %",
+     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "share_of_all_late": {
+    "caught_by_dbt": 20,
+    "caught_by_either": 20,
+    "caught_by_verifier": 20,
+    "cells_tested": 20,
+    "checks_that_caught": [
+     "late_rate and share_of_all_late are late orders over orders and over all late orders (rows that differ)",
+     "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "stretch_whatif_late_rate": {
+    "caught_by_dbt": 20,
+    "caught_by_either": 20,
+    "caught_by_verifier": 1,
+    "cells_tested": 20,
+    "checks_that_caught": [
+     "stretch line = median of the what-if over stable months in the monthly file, %",
+     "stretch line in the summary = the monthly file's, %",
+     "stretch line vs facts.json, %",
+     "stretch line, % to 1 place (about 3.4; typed)",
+     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "typical_month_alarm_line_late_rate": {
+    "caught_by_dbt": 20,
+    "caught_by_either": 20,
+    "caught_by_verifier": 1,
+    "cells_tested": 20,
+    "checks_that_caught": [
+     "alarm line at a typical month, %",
+     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles"
+    ],
+    "unchecked_cells": []
+   }
+  },
+  "region": {
+   "late_orders": {
+    "caught_by_dbt": 2,
+    "caught_by_either": 2,
+    "caught_by_verifier": 2,
+    "cells_tested": 2,
+    "checks_that_caught": [
+     "region rows whose states, orders, late orders, late rate or share of late differ from the rebuild",
+     "test.olist_ecommerce_analytics.assert_dash_region_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "late_rate": {
+    "caught_by_dbt": 2,
+    "caught_by_either": 2,
+    "caught_by_verifier": 2,
+    "cells_tested": 2,
+    "checks_that_caught": [
+     "north and northeast late rate, %",
+     "region rows whose states, orders, late orders, late rate or share of late differ from the rebuild",
+     "rest of Brazil late rate, %",
+     "test.olist_ecommerce_analytics.assert_dash_region_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "orders": {
+    "caught_by_dbt": 2,
+    "caught_by_either": 2,
+    "caught_by_verifier": 2,
+    "cells_tested": 2,
+    "checks_that_caught": [
+     "region rows whose states, orders, late orders, late rate or share of late differ from the rebuild",
+     "test.olist_ecommerce_analytics.assert_dash_region_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "share_of_all_late": {
+    "caught_by_dbt": 2,
+    "caught_by_either": 2,
+    "caught_by_verifier": 2,
+    "cells_tested": 2,
+    "checks_that_caught": [
+     "region rows whose states, orders, late orders, late rate or share of late differ from the rebuild",
+     "test.olist_ecommerce_analytics.assert_dash_region_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "states": {
+    "caught_by_dbt": 2,
+    "caught_by_either": 2,
+    "caught_by_verifier": 2,
+    "cells_tested": 2,
+    "checks_that_caught": [
+     "region rows whose states, orders, late orders, late rate or share of late differ from the rebuild",
+     "test.olist_ecommerce_analytics.assert_dash_region_reconciles"
+    ],
+    "unchecked_cells": []
+   }
+  },
+  "review_ramp": {
+   "bad_review_share": {
+    "caught_by_dbt": 61,
+    "caught_by_either": 61,
+    "caught_by_verifier": 61,
+    "cells_tested": 61,
+    "checks_that_caught": [
+     "bad_review_share is bad reviews over reviewed orders (days that differ)",
+     "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+     "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "bad_reviews": {
+    "caught_by_dbt": 61,
+    "caught_by_either": 61,
+    "caught_by_verifier": 61,
+    "cells_tested": 61,
+    "checks_that_caught": [
+     "all 1-2 star reviews, added up from the ramp file",
+     "bad_review_share is bad reviews over reviewed orders (days that differ)",
+     "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+     "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "orders": {
+    "caught_by_dbt": 61,
+    "caught_by_either": 61,
+    "caught_by_verifier": 0,
+    "cells_tested": 61,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "phase": {
+    "caught_by_dbt": 61,
+    "caught_by_either": 61,
+    "caught_by_verifier": 61,
+    "cells_tested": 61,
+    "checks_that_caught": [
+     "phase is up to the promised day, climbing (1 to 5) or levelled (6 on) (days that differ)",
+     "test.olist_ecommerce_analytics.assert_dash_columns_are_derived"
+    ],
+    "unchecked_cells": []
+   },
+   "reviewed_orders": {
+    "caught_by_dbt": 61,
+    "caught_by_either": 61,
+    "caught_by_verifier": 61,
+    "cells_tested": 61,
+    "checks_that_caught": [
+     "bad_review_share is bad reviews over reviewed orders (days that differ)",
+     "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+     "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles"
+    ],
+    "unchecked_cells": []
+   }
+  },
+  "sellers": {
+   "is_top10": {
+    "caught_by_dbt": 8,
+    "caught_by_either": 8,
+    "caught_by_verifier": 8,
+    "cells_tested": 8,
+    "checks_that_caught": [
+     "seller rows that differ from the rebuild (all 2,925: counts, rates, rank, top-10 flag, share, code)",
+     "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile"
+    ],
+    "unchecked_cells": []
+   },
+   "late_after_late_handoff_orders": {
+    "caught_by_dbt": 8,
+    "caught_by_either": 8,
+    "caught_by_verifier": 8,
+    "cells_tested": 8,
+    "checks_that_caught": [
+     "late orders after a late handoff, over all sellers, vs handoff bar",
+     "seller rows that differ from the rebuild (all 2,925: counts, rates, rank, top-10 flag, share, code)",
+     "sellers with a late order after a late handoff (typed)",
+     "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+     "top 10 sellers' share of those, % (typed)",
+     "top seller's late orders after a late handoff (typed)"
+    ],
+    "unchecked_cells": []
+   },
+   "late_handoff_orders": {
+    "caught_by_dbt": 8,
+    "caught_by_either": 8,
+    "caught_by_verifier": 8,
+    "cells_tested": 8,
+    "checks_that_caught": [
+     "seller rows that differ from the rebuild (all 2,925: counts, rates, rank, top-10 flag, share, code)",
+     "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile"
+    ],
+    "unchecked_cells": []
+   },
+   "late_handoff_rate": {
+    "caught_by_dbt": 8,
+    "caught_by_either": 8,
+    "caught_by_verifier": 8,
+    "cells_tested": 8,
+    "checks_that_caught": [
+     "seller rows that differ from the rebuild (all 2,925: counts, rates, rank, top-10 flag, share, code)",
+     "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile"
+    ],
+    "unchecked_cells": []
+   },
+   "late_orders": {
+    "caught_by_dbt": 8,
+    "caught_by_either": 8,
+    "caught_by_verifier": 8,
+    "cells_tested": 8,
+    "checks_that_caught": [
+     "seller rows that differ from the rebuild (all 2,925: counts, rates, rank, top-10 flag, share, code)",
+     "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile"
+    ],
+    "unchecked_cells": []
+   },
+   "late_rate": {
+    "caught_by_dbt": 8,
+    "caught_by_either": 8,
+    "caught_by_verifier": 8,
+    "cells_tested": 8,
+    "checks_that_caught": [
+     "seller rows that differ from the rebuild (all 2,925: counts, rates, rank, top-10 flag, share, code)",
+     "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile"
+    ],
+    "unchecked_cells": []
+   },
+   "orders": {
+    "caught_by_dbt": 8,
+    "caught_by_either": 8,
+    "caught_by_verifier": 8,
+    "cells_tested": 8,
+    "checks_that_caught": [
+     "seller rows that differ from the rebuild (all 2,925: counts, rates, rank, top-10 flag, share, code)",
+     "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile"
+    ],
+    "unchecked_cells": []
+   },
+   "rank_by_late_after_late_handoff": {
+    "caught_by_dbt": 8,
+    "caught_by_either": 8,
+    "caught_by_verifier": 8,
+    "cells_tested": 8,
+    "checks_that_caught": [
+     "seller rows that differ from the rebuild (all 2,925: counts, rates, rank, top-10 flag, share, code)",
+     "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+     "unique_export_dash_sellers_rank_by_late_after_late_handoff"
+    ],
+    "unchecked_cells": []
+   },
+   "seller_code": {
+    "caught_by_dbt": 8,
+    "caught_by_either": 8,
+    "caught_by_verifier": 8,
+    "cells_tested": 8,
+    "checks_that_caught": [
+     "seller rows that differ from the rebuild (all 2,925: counts, rates, rank, top-10 flag, share, code)",
+     "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+     "top seller code (typed)",
+     "unique_export_dash_sellers_seller_code"
+    ],
+    "unchecked_cells": []
+   },
+   "share_of_late_after_late_handoff": {
+    "caught_by_dbt": 8,
+    "caught_by_either": 8,
+    "caught_by_verifier": 8,
+    "cells_tested": 8,
+    "checks_that_caught": [
+     "seller rows that differ from the rebuild (all 2,925: counts, rates, rank, top-10 flag, share, code)",
+     "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile"
+    ],
+    "unchecked_cells": []
+   }
+  },
+  "summary": {
+   "alarm_months": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 0,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "alarm_months_list": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 0,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "bad_reviews_all": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 0,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "extra_bad_reviews": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 1,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "extra 1-2 star reviews, summary tile",
+     "share of all 1-2 star reviews, % (tile vs facts.json share)",
+     "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "extra_bad_reviews_rounded": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 0,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "extra_range_high": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 1,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "range high (evidence report), nearest 10 (consistency: the same number read from the report, not an independent recompute)",
+     "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "extra_range_high_rounded": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 0,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "extra_range_low": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 1,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "range low (evidence report), nearest 10 (consistency: the same number read from the report, not an independent recompute)",
+     "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "extra_range_low_rounded": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 0,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "extra_share_of_bad_reviews": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 0,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "goal_late_rate": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 0,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "judged_orders": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 1,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "judged orders, summary vs the rebuild",
+     "summary: judged orders vs facts.json",
+     "test.olist_ecommerce_analytics.assert_dash_columns_are_derived"
+    ],
+    "unchecked_cells": []
+   },
+   "late_handoff_late_orders": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 1,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "late orders after a late handoff, summary vs the rebuild",
+     "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "late_handoff_late_rate": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 0,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "late_handoff_orders": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 1,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "late handoff orders, summary vs the rebuild",
+     "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "late_handoff_share_of_late": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 0,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "late_orders": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 1,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "late orders, summary vs the rebuild",
+     "summary: late orders vs facts.json",
+     "test.olist_ecommerce_analytics.assert_dash_columns_are_derived"
+    ],
+    "unchecked_cells": []
+   },
+   "late_rate": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 1,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "summary: late rate vs facts.json, %",
+     "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "latest_month": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 1,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "summary: latest month is the last month",
+     "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "latest_month_label": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 1,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "summary: latest month label is that month's name and year",
+     "test.olist_ecommerce_analytics.assert_dash_columns_are_derived"
+    ],
+    "unchecked_cells": []
+   },
+   "latest_month_late_rate": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 0,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "latest_month_own_alarm_line_late_rate": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 1,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "summary: latest month's own alarm line equals its row in the monthly file, %",
+     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "nne_late_rate": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 0,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_region_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "nne_share_of_late": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 0,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_region_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "on_time_handoff_late_rate": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 0,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "ramp_points_per_day": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 0,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "ramp_share_from_day_6": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 0,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "ramp_share_up_to_promised_day": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 0,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "rest_late_rate": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 0,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_region_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "reviewed_late_orders": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 0,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "sellers_with_late_after_late_handoff": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 1,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "sellers with a late order after a late handoff, summary vs the rebuild",
+     "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile"
+    ],
+    "unchecked_cells": []
+   },
+   "stretch_whatif_label": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 1,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "stretch line label in the summary",
+     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "stretch_whatif_late_rate": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 1,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "stretch line in the summary = the monthly file's, %",
+     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "top10_late_after_late_handoff_orders": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 1,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+     "top 10 sellers' late orders after a late handoff, summary vs the rebuild"
+    ],
+    "unchecked_cells": []
+   },
+   "top10_share_of_late_after_late_handoff": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 1,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+     "top 10 sellers' share of those, %, summary vs the rebuild"
+    ],
+    "unchecked_cells": []
+   },
+   "top_seller_code": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 1,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+     "top seller code, summary vs the rebuild"
+    ],
+    "unchecked_cells": []
+   },
+   "top_seller_late_after_late_handoff_orders": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 1,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+     "top seller's late orders after a late handoff, summary vs the rebuild"
+    ],
+    "unchecked_cells": []
+   },
+   "typical_month_alarm_line_late_rate": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 0,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles"
+    ],
+    "unchecked_cells": []
+   },
+   "typical_month_orders": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 1,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+     "typical month order count"
+    ],
+    "unchecked_cells": []
+   },
+   "worst3_months_label": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 1,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+     "three worst months, named in the summary label"
+    ],
+    "unchecked_cells": []
+   },
+   "worst3_share_of_late": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 0,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile"
+    ],
+    "unchecked_cells": []
+   },
+   "worst3_share_of_months": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 1,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+     "three worst months' share of all months, % (3 of 20)"
+    ],
+    "unchecked_cells": []
+   },
+   "worst3_share_of_orders": {
+    "caught_by_dbt": 1,
+    "caught_by_either": 1,
+    "caught_by_verifier": 1,
+    "cells_tested": 1,
+    "checks_that_caught": [
+     "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+     "three worst months' share of all orders, % (story month table)",
+     "three worst months' share of all orders, % to 1 place (about 21.7; typed)"
+    ],
+    "unchecked_cells": []
+   }
+  },
+  "tests_example": {
+   "banner": {
+    "caught_by_dbt": 2,
+    "caught_by_either": 2,
+    "caught_by_verifier": 2,
+    "cells_tested": 2,
+    "checks_that_caught": [
+     "example rows that differ from the seed: values, labels, displayed values, banner, footnote, status",
+     "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example"
+    ],
+    "unchecked_cells": []
+   },
+   "footnote": {
+    "caught_by_dbt": 2,
+    "caught_by_either": 2,
+    "caught_by_verifier": 2,
+    "cells_tested": 2,
+    "checks_that_caught": [
+     "example rows that differ from the seed: values, labels, displayed values, banner, footnote, status",
+     "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example"
+    ],
+    "unchecked_cells": []
+   },
+   "is_example": {
+    "caught_by_dbt": 2,
+    "caught_by_either": 2,
+    "caught_by_verifier": 2,
+    "cells_tested": 2,
+    "checks_that_caught": [
+     "example rows flagged is_example",
+     "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example"
+    ],
+    "unchecked_cells": []
+   },
+   "no_change_group_display": {
+    "caught_by_dbt": 2,
+    "caught_by_either": 2,
+    "caught_by_verifier": 2,
+    "cells_tested": 2,
+    "checks_that_caught": [
+     "example rows that differ from the seed: values, labels, displayed values, banner, footnote, status",
+     "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example"
+    ],
+    "unchecked_cells": []
+   },
+   "no_change_group_value": {
+    "caught_by_dbt": 2,
+    "caught_by_either": 2,
+    "caught_by_verifier": 2,
+    "cells_tested": 2,
+    "checks_that_caught": [
+     "example rows that differ from the seed: values, labels, displayed values, banner, footnote, status",
+     "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example"
+    ],
+    "unchecked_cells": []
+   },
+   "readout_label": {
+    "caught_by_dbt": 2,
+    "caught_by_either": 2,
+    "caught_by_verifier": 2,
+    "cells_tested": 2,
+    "checks_that_caught": [
+     "example rows that differ from the seed: values, labels, displayed values, banner, footnote, status",
+     "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example"
+    ],
+    "unchecked_cells": []
+   },
+   "status": {
+    "caught_by_dbt": 2,
+    "caught_by_either": 2,
+    "caught_by_verifier": 2,
+    "cells_tested": 2,
+    "checks_that_caught": [
+     "example rows that differ from the seed: values, labels, displayed values, banner, footnote, status",
+     "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example"
+    ],
+    "unchecked_cells": []
+   },
+   "test_group_display": {
+    "caught_by_dbt": 2,
+    "caught_by_either": 2,
+    "caught_by_verifier": 2,
+    "cells_tested": 2,
+    "checks_that_caught": [
+     "example rows that differ from the seed: values, labels, displayed values, banner, footnote, status",
+     "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example"
+    ],
+    "unchecked_cells": []
+   },
+   "test_group_value": {
+    "caught_by_dbt": 2,
+    "caught_by_either": 2,
+    "caught_by_verifier": 2,
+    "cells_tested": 2,
+    "checks_that_caught": [
+     "example rows that differ from the seed: values, labels, displayed values, banner, footnote, status",
+     "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example"
+    ],
+    "unchecked_cells": []
+   },
+   "test_label": {
+    "caught_by_dbt": 2,
+    "caught_by_either": 2,
+    "caught_by_verifier": 2,
+    "cells_tested": 2,
+    "checks_that_caught": [
+     "example rows that differ from the seed: values, labels, displayed values, banner, footnote, status",
+     "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example"
+    ],
+    "unchecked_cells": []
+   }
+  }
+ },
+ "what": "every column of every dashboard export, one wrong cell at a time; a cell is covered when a dbt test or the CSV verifier fails"
+}

@@ -4,8 +4,11 @@
 -- Part 2, independent recompute: the per-seller counts are rebuilt here straight from fct_order_items + metric_late_rate_orders + fct_orders
 -- (not through dash_order_base) and must match the export row for row.
 -- Part 3, the panel's words, computed here from the seller export and not copied from the summary: top 10 hold 19.1% (about 19%)
--- of the 1,809, 583 sellers had at least one, the top seller is 06a2c3af with 66. Those four are typed from the prototype run
--- (proto/build_data.py); the analysis scripts do not produce a seller table. 
+-- of the 1,809, 583 sellers had at least one, the top seller is 06a2c3af with 66. The analysis scripts do not produce a seller
+-- table, so those four are typed here AND rebuilt from the raw files by verification/verify_dash_exports.py (Python and DuckDB, not
+-- through dbt models), which also compares every seller row.
+-- Part 2 also recomputes, for every seller, the two rates, the rank (late-after-late-handoff, then late orders, then seller id),
+-- the top-10 flag, the share and the 8-character code, so a wrong value on any seller row fails.
 -- One row per number that differs; passes when it returns nothing.
 with e as (select * from {{ ref('export_dash_sellers') }}),
 s as (select * from {{ ref('export_dash_summary') }}),
@@ -21,6 +24,11 @@ mine as (
     join {{ ref('metric_late_rate_orders') }} o on o.order_id = i.order_id
     join {{ ref('fct_orders') }} f on f.order_id = i.order_id
     group by 1
+),
+ranked_mine as (
+    select *, row_number() over (order by late_after_late_handoff_orders desc, late_orders desc, seller_id) as rk,
+           sum(late_after_late_handoff_orders) over () as lhl_all
+    from mine
 ),
 top10 as (select * from e order by late_after_late_handoff_orders desc, late_orders desc, seller_id limit 10),
 totals as (select count(*) as sellers, count(distinct seller_id) as distinct_sellers, count(distinct seller_code) as distinct_codes,
@@ -45,18 +53,27 @@ checks_ran as (
     union all select 'text: top 10 hold, whole % (about 19)', round(100 * (select sum(late_after_late_handoff_orders) from top10) * 1.0 / tt.lhl), 19, 0 from totals tt
     union all select 'text: top seller is 06a2c3af', ((select seller_code from top10 order by late_after_late_handoff_orders desc, late_orders desc, seller_id limit 1) = '06a2c3af')::int, 1, 0
     union all select 'text: top seller count (66)', (select max(late_after_late_handoff_orders) from e)::double, 66, 0
+    union all select 'summary: top seller late-after-late-handoff orders vs the seller export', s.top_seller_late_after_late_handoff_orders::double, (select max(late_after_late_handoff_orders) from e)::double, 0 from s
+    union all select 'text: summary top seller count (66)', s.top_seller_late_after_late_handoff_orders::double, 66, 0 from s
+    union all select 'summary: top 10 late-after-late-handoff orders vs the seller export', s.top10_late_after_late_handoff_orders::double, (select sum(late_after_late_handoff_orders) from top10)::double, 0 from s
+    union all select 'text: summary top 10 count (346)', s.top10_late_after_late_handoff_orders::double, 346, 0 from s
 ),
 checks as (
     select * from checks_ran
-    union all select 'checks that ran (expected 17; a check with no input row would otherwise vanish)', (select count(*) from checks_ran)::double, 17::double, 0
+    union all select 'checks that ran (expected 21; a check with no input row would otherwise vanish)', (select count(*) from checks_ran)::double, 21::double, 0
 ),
 problems as (select what, got, expected from checks where got is null or expected is null or abs(got - expected) > tolerance),
 row_problems as (
     select 'seller ' || coalesce(e.seller_id, m.seller_id) || ': counts differ from the recompute or the seller is missing' as what,
            e.late_after_late_handoff_orders::double as got, m.late_after_late_handoff_orders::double as expected
-    from e full outer join mine m on m.seller_id = e.seller_id
+    from e full outer join ranked_mine m on m.seller_id = e.seller_id
     where e.seller_id is null or m.seller_id is null
        or e.orders <> m.orders or e.late_handoff_orders <> m.late_handoff_orders
        or e.late_after_late_handoff_orders <> m.late_after_late_handoff_orders or e.late_orders <> m.late_orders
+       or abs(e.late_handoff_rate - m.late_handoff_orders * 1.0 / m.orders) > 0.000000000001
+       or abs(e.late_rate - m.late_orders * 1.0 / m.orders) > 0.000000000001
+       or e.rank_by_late_after_late_handoff <> m.rk or e.is_top10 is distinct from (m.rk <= 10)
+       or abs(e.share_of_late_after_late_handoff - m.late_after_late_handoff_orders * 1.0 / m.lhl_all) > 0.000000000001
+       or e.seller_code is distinct from left(m.seller_id, 8)
 )
 select * from problems union all select * from row_problems

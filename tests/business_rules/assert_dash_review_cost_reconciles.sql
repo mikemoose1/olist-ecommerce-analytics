@@ -5,6 +5,10 @@
 -- Part 2: the numbers the dashboard prints, as typed constants at the rounding it prints them: about 3,110 extra reviews,
 -- 26.7% (about 27%) of 11,635, range 2,880 to 3,350, 8.7% up to the promised day, about 11 points a day, about 78% from day 6.
 -- Part 3: the ramp export has the same 61 days as the story's CSV, reviewed and bad counts day for day.
+-- The range across specifications (2,880 to 3,350) is NOT recomputed here: it is the spread of six estimators in the causal
+-- analysis (review_cost_causal/), and the four rows that compare it with facts.json and the evidence report are consistency checks
+-- (the same number read from two copies of one file), not evidence that the range is right. The extra-review total, the share and
+-- the ramp are recomputed from the model and the story CSV below.
 -- Part 4: the ramp numbers are recomputed from the ramp export itself, not read from the summary, and must agree with the summary.
 -- One row per number that differs; passes when it returns nothing.
 with f as (
@@ -29,15 +33,15 @@ checks_ran as (
     -- part 1: summary vs the analysis files
     select 'extra bad reviews vs facts.json (0.1)' as what, s.extra_bad_reviews as got, json_extract(f.review_cost_causal, '$.extra')::double as expected, 0.05 as tolerance from s, f
     union all select 'reviewed late orders vs facts.json', s.reviewed_late_orders::double, json_extract(f.review_cost_causal, '$.reviewed_late')::double, 0 from s, f
-    union all select 'share of all bad reviews vs facts.json (6 places)', round(s.extra_share_of_bad_reviews, 5), json_extract(f.review_cost_causal, '$.share')::double, 0.000006 from s, f
+    union all select 'share of all bad reviews vs facts.json (5 places, as facts.json writes it)', round(s.extra_share_of_bad_reviews, 5), json_extract(f.review_cost_causal, '$.share')::double, 0.000000001 from s, f
     union all select 'all 1-2 star reviews vs facts.json', s.bad_reviews_all::double, f.low_star_all::double, 0 from s, f
-    union all select 'range low vs facts.json (0.1)', s.extra_range_low, json_extract(f.review_cost_causal, '$.range[0]')::double, 0.05 from s, f
-    union all select 'range high vs facts.json (0.1)', s.extra_range_high, json_extract(f.review_cost_causal, '$.range[1]')::double, 0.05 from s, f
-    union all select 'range low vs evidence report', s.extra_range_low, e.lo, 0.000001 from s, e
-    union all select 'range high vs evidence report', s.extra_range_high, e.hi, 0.000001 from s, e
-    union all select 'ramp share up to the promised day vs facts.json (6 places)', round(s.ramp_share_up_to_promised_day, 6), json_extract(f.ramp, '$.on_time_share')::double, 0.0000006 from s, f
-    union all select 'ramp share from day 6 vs facts.json (6 places)', round(s.ramp_share_from_day_6, 6), json_extract(f.ramp, '$.plateau_share')::double, 0.0000006 from s, f
-    union all select 'ramp points a day vs facts.json (6 places)', round(s.ramp_points_per_day, 6), json_extract(f.ramp, '$.slope_per_day')::double, 0.0000006 from s, f
+    union all select 'range low vs facts.json (0.1; consistency: facts.json copies the evidence report, not an independent recompute)', s.extra_range_low, json_extract(f.review_cost_causal, '$.range[0]')::double, 0.05 from s, f
+    union all select 'range high vs facts.json (0.1; consistency: facts.json copies the evidence report, not an independent recompute)', s.extra_range_high, json_extract(f.review_cost_causal, '$.range[1]')::double, 0.05 from s, f
+    union all select 'range low vs evidence report (consistency: both read the same file, not an independent recompute)', s.extra_range_low, e.lo, 0.000001 from s, e
+    union all select 'range high vs evidence report (consistency: both read the same file, not an independent recompute)', s.extra_range_high, e.hi, 0.000001 from s, e
+    union all select 'ramp share up to the promised day vs facts.json (6 places)', round(s.ramp_share_up_to_promised_day, 6), json_extract(f.ramp, '$.on_time_share')::double, 0.000000001 from s, f
+    union all select 'ramp share from day 6 vs facts.json (6 places)', round(s.ramp_share_from_day_6, 6), json_extract(f.ramp, '$.plateau_share')::double, 0.000000001 from s, f
+    union all select 'ramp points a day vs facts.json (6 places)', round(s.ramp_points_per_day, 6), json_extract(f.ramp, '$.slope_per_day')::double, 0.000000001 from s, f
     -- part 2: what the dashboard prints
     union all select 'tile: extra reviews, whole number (about 3,110)', s.extra_bad_reviews_rounded, 3110, 0 from s
     union all select 'tile: share of all bad reviews, % to 1 place (26.7)', round(100 * s.extra_share_of_bad_reviews, 1), 26.7, 0 from s
@@ -66,7 +70,7 @@ ramp_problems as (
     from r full outer join story_ramp c on c.segment = r.days_past_promise_capped
     where r.days_past_promise_capped is null or c.segment is null
        or r.orders <> c.orders or r.reviewed_orders <> c.reviewed or r.bad_reviews <> c.bad
-       or abs(r.bad_review_share - c.bad_share) > 0.0000006
+       or abs(r.bad_review_share - c.bad_share) > 0.000000001
 )
 select * from problems
 union all select * from ramp_problems

@@ -41,7 +41,8 @@ story()       { story_checks; }   # needs a built warehouse and the analysis rep
 targets()     { "$BIN/python" late_rate_targets/selftest.py; "$BIN/python" late_rate_targets/analyze.py; "$BIN/python" review_cost_causal/label_agreement.py; }   # alarm line, goal lines, review break point (needs make build)
 dashboard_checks() {   # the CSVs Tableau reads match the warehouse, every dashboard number ties to the analysis, and each check is proven able to fail
   "$BIN/python" dashboard/export_csv.py --check
-  "$BIN/python" verification/verify_dash_exports.py; "$BIN/python" verification/selftest_dash_exports.py; }
+  "$BIN/python" verification/verify_dash_exports.py; "$BIN/python" verification/selftest_dash_exports.py
+  "$BIN/python" verification/column_sweep.py --check; }   # every column of every export: one wrong cell at a time, something must fail
 dashboard()   { "$BIN/python" dashboard/export_csv.py; "$BIN/python" verification/verify_dash_exports.py --json; dashboard_checks; }   # write dashboard/data/*.csv for Tableau (needs make build)
 prove_tests() { "$BIN/python" scripts/prove_tests_fail.py; }
 experiments() { "$BIN/python" experiments/run_experiments.py; }

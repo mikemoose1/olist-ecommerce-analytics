@@ -74,8 +74,8 @@ CASES = {
     "extra 1-2 star reviews, summary tile": bump("summary", any_row, "extra_bad_reviews", 40),
     "share of all 1-2 star reviews, % (tile vs facts.json share)": bump("summary", any_row, "extra_bad_reviews", 60),
     "all 1-2 star reviews, added up from the ramp file": bump("review_ramp", day(3), "bad_reviews", 1),
-    "range low (evidence report), nearest 10": bump("summary", any_row, "extra_range_low", 100),
-    "range high (evidence report), nearest 10": bump("summary", any_row, "extra_range_high", -100),
+    "range low (evidence report), nearest 10 (consistency: the same number read from the report, not an independent recompute)": bump("summary", any_row, "extra_range_low", 100),
+    "range high (evidence report), nearest 10 (consistency: the same number read from the report, not an independent recompute)": bump("summary", any_row, "extra_range_high", -100),
     "ramp: 1-2 star share up to the promised day, %": move("review_ramp", "bad_reviews", day(-5), day(10), 400),
     "ramp: 1-2 star share from day 6, %": move("review_ramp", "bad_reviews", day(10), day(-5), 60),
     "ramp: points a day over days 0 to 6": lambda t, a: [setv("review_ramp", day(5), "bad_review_share", str(float(next(r for r in t["review_ramp"] if day(5)(r))["bad_review_share"]) - 0.1))(t, a)],
@@ -86,11 +86,11 @@ CASES = {
     "alarm line at a typical month, %": all_months("typical_month_alarm_line_late_rate", 0.002),
     "goal line, %, shown 4.4": all_months("goal_late_rate", 0.002),
     "goal line, %, exact 4.43": all_months("goal_late_rate", 0.0002),
-    "stretch line = median of the what-if over stable months in the monthly file, %": all_months("stretch_goal_late_rate", 0.00002),
+    "stretch line = median of the what-if over stable months in the monthly file, %": all_months("stretch_whatif_late_rate", 0.00002),
     "stretch line vs facts.json, %": lambda t, a: a["facts"]["targets"].__setitem__("stretch", 0.022520),   # facts.json drifts, the exports do not: only this row can catch it
-    "stretch line, % to 1 place (about 3.4; typed)": all_months("stretch_goal_late_rate", 0.002),
-    "stretch line in the summary = the monthly file's, %": bump("summary", any_row, "stretch_goal_late_rate", 0.0000005),
-    "stretch line label in the summary": setv("summary", any_row, "stretch_goal_label", "if seller handoffs are fixed"),
+    "stretch line, % to 1 place (about 3.4; typed)": all_months("stretch_whatif_late_rate", 0.002),
+    "stretch line in the summary = the monthly file's, %": bump("summary", any_row, "stretch_whatif_late_rate", 0.0000005),
+    "stretch line label in the summary": setv("summary", any_row, "stretch_whatif_label", "if seller handoffs are fixed"),
     "stable months in the monthly file vs facts.json": setv("monthly", month("2017-09"), "is_stable_month", "false"),
     "typical month order count": bump("summary", any_row, "typical_month_orders", 1),
     "flagged months": setv("monthly", month("2018-03"), "is_alarm_month", "false"),
@@ -116,6 +116,47 @@ CASES = {
     "region map: 27 states, each once": region_seed(lambda rows: rows[:-1]),
     "example rows flagged is_example": setv("tests_example", lambda r: r["test_id"] == "1", "is_example", "false"),
     "example rows with an asterisk on both values": setv("tests_example", lambda r: r["test_id"] == "2", "no_change_group_display", "3.92"),
+    # raw-file rebuild: the typed figures against the rebuild, the summary and every table row against the rebuild
+    "judged orders: the rebuild gives 94,931 (typed)": lambda t, a: a["raw"].__setitem__("judged_orders", 94932),
+    "late orders: the rebuild gives 6,518 (typed)": lambda t, a: a["raw"].__setitem__("late_orders", 6519),
+    "late orders after a late handoff: the rebuild gives 1,809 (typed)": lambda t, a: a["raw"].__setitem__("late_after_late_handoff", 1810),
+    "sellers with a late order after a late handoff: the rebuild gives 583 (typed)": lambda t, a: a["raw"].__setitem__("sellers_with_late_after_late_handoff", 584),
+    "top 10 sellers' share of those, %: the rebuild gives 19.1 (typed)": lambda t, a: a["raw"].__setitem__("top10_late_after_late_handoff", 380),
+    "top seller: the rebuild gives 06a2c3af (typed)": lambda t, a: a["raw"]["sellers"][0].__setitem__("seller_code", "16a2c3af"),
+    "top seller's late orders after a late handoff: the rebuild gives 66 (typed)": lambda t, a: a["raw"]["sellers"][0].__setitem__("late_after_late_handoff_orders", 67),
+    "judged orders, summary vs the rebuild": bump("summary", any_row, "judged_orders", 1000),
+    "late orders, summary vs the rebuild": bump("summary", any_row, "late_orders", 1),
+    "late orders after a late handoff, summary vs the rebuild": bump("summary", any_row, "late_handoff_late_orders", 1),
+    "late handoff orders, summary vs the rebuild": bump("summary", any_row, "late_handoff_orders", 1),
+    "sellers with a late order after a late handoff, summary vs the rebuild": bump("summary", any_row, "sellers_with_late_after_late_handoff", 1),
+    "top 10 sellers' late orders after a late handoff, summary vs the rebuild": bump("summary", any_row, "top10_late_after_late_handoff_orders", 1),
+    "top 10 sellers' share of those, %, summary vs the rebuild": bump("summary", any_row, "top10_share_of_late_after_late_handoff", 0.001),
+    "top seller code, summary vs the rebuild": setv("summary", any_row, "top_seller_code", "16a2c3af"),
+    "top seller's late orders after a late handoff, summary vs the rebuild": bump("summary", any_row, "top_seller_late_after_late_handoff_orders", 1),
+    "seller rows that differ from the rebuild (all 2,925: counts, rates, rank, top-10 flag, share, code)": bump("sellers", lambda r: r["rank_by_late_after_late_handoff"] == "500", "late_rate", 0.01),
+    "month rows whose orders or late orders differ from the rebuild (all 20)": bump("monthly", month("2017-06"), "late_orders", 1),
+    "handoff rows whose name, orders, late orders, late rate or share of late differ from the rebuild": setv("handoff", ok_h, "handoff_group", "Handed to carrier after ship-by"),
+    "region rows whose states, orders, late orders, late rate or share of late differ from the rebuild": bump("region", rest, "share_of_all_late", 0.01),
+    # columns worked out from other columns
+    "month_start is the first day of year_month (rows that differ)": setv("monthly", month("2017-06"), "month_start", "2017-07-01"),
+    "month_label is the month name and year (rows that differ)": setv("monthly", month("2017-06"), "month_label", "Jun 2019"),
+    "late_orders_rank orders the months by late orders, a tie to the later month (rows that differ)": bump("monthly", month("2017-01"), "late_orders_rank", 1),
+    "is_worst3_late_month is rank 3 or better (rows that differ)": setv("monthly", month("2017-06"), "is_worst3_late_month", "true"),
+    "is_stable_month is not alarm and not thin (rows that differ)": setv("monthly", month("2018-03"), "is_stable_month", "true"),
+    "late_rate and share_of_all_late are late orders over orders and over all late orders (rows that differ)": setv("monthly", month("2017-06"), "late_rate", "0.5"),
+    "summary: judged orders vs facts.json": bump("summary", any_row, "judged_orders", 1),
+    "summary: late orders vs facts.json": bump("summary", any_row, "late_orders", 1),
+    "summary: late rate vs facts.json, %": bump("summary", any_row, "late_rate", 0.002),
+    "summary: latest month is the last month": setv("summary", any_row, "latest_month", "2018-07"),
+    "summary: latest month label is that month's name and year": setv("summary", any_row, "latest_month_label", "Aug 2019"),
+    "summary: latest month's own alarm line equals its row in the monthly file, %": bump("summary", any_row, "latest_month_own_alarm_line_late_rate", 0.01),
+    "phase is up to the promised day, climbing (1 to 5) or levelled (6 on) (days that differ)": setv("review_ramp", day(3), "phase", "levelled"),
+    "bad_review_share is bad reviews over reviewed orders (days that differ)": bump("review_ramp", day(3), "bad_review_share", 0.01),
+    "on-time handoffs' share of all late orders, % (from the monthly file)": bump("handoff", ok_h, "share_of_all_late", 0.01),
+    "three worst months' share of all orders, % (story month table)": bump("summary", any_row, "worst3_share_of_orders", 0.001),
+    "three worst months' share of all orders, % to 1 place (about 21.7; typed)": bump("summary", any_row, "worst3_share_of_orders", 0.01),
+    "three worst months' share of all months, % (3 of 20)": bump("summary", any_row, "worst3_share_of_months", 0.05),
+    "example rows that differ from the seed: values, labels, displayed values, banner, footnote, status": setv("tests_example", lambda r: r["test_id"] == "2", "footnote", "* invented"),
 }
 
 
@@ -138,7 +179,7 @@ def selftest_numbers():
 
 def selftest_csv_check():
     import duckdb
-    con = duckdb.connect(str(ROOT / "olist.duckdb"), read_only=True)
+    con = duckdb.connect(str(E.DB), read_only=True)   # honours OLIST_DB_PATH, like export_csv.py
     fresh = E.fresh(con)
     work = Path(tempfile.mkdtemp(prefix="dash-csv-"))
     try:
@@ -182,8 +223,22 @@ def selftest_csv_check():
         shutil.rmtree(work, ignore_errors=True)
 
 
+def selftest_db_path():
+    """export_csv.py reads the warehouse named by OLIST_DB_PATH: a path that does not exist must fail and say so; the real path must pass."""
+    import subprocess
+    run = lambda path: subprocess.run([sys.executable, str(ROOT / "dashboard" / "export_csv.py"), "--check"], capture_output=True, text=True,
+                                      env=dict(os.environ, OLIST_DB_PATH=path))
+    missing = "/nonexistent/olist.duckdb"
+    bad = run(missing)
+    named = bad.returncode != 0 and missing in (bad.stdout + bad.stderr)
+    good = run(str(E.DB))
+    print(f"{'ok  ' if named else 'MISS'} db path: export_csv.py --check with OLIST_DB_PATH={missing} fails and names the path")
+    print(f"{'ok  ' if good.returncode == 0 else 'MISS'} db path: export_csv.py --check with OLIST_DB_PATH={E.DB} passes")
+    return ([] if named else ["export_csv.py ignores a missing OLIST_DB_PATH"]) + ([] if good.returncode == 0 else ["export_csv.py fails on the real OLIST_DB_PATH"])
+
+
 if __name__ == "__main__":
-    missed = selftest_numbers() + selftest_csv_check()
-    n = len(CASES) + 8
+    missed = selftest_numbers() + selftest_csv_check() + selftest_db_path()
+    n = len(CASES) + 8 + 2
     print(f"{'PASS' if not missed else 'FAIL'}  {n - len(missed)}/{n} planted errors caught" + (f"; missed: {missed}" if missed else ""))
     sys.exit(1 if missed else 0)

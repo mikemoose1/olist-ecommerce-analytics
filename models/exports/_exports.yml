@@ -28,7 +28,7 @@ models:
           - not_null
           - accepted_values: {arguments: {values: ['up to the promised day', 'climbing', 'levelled']}}
   - name: export_dash_monthly
-    description: One row per purchase month. Late rate, that month's alarm line, the goal and stretch lines, and the late-order bars with the three worst months flagged.
+    description: One row per purchase month. Late rate, that month's own alarm line (own_month_alarm_line_late_rate), the goal line and the stretch what-if line (stretch_whatif_late_rate, a what-if, not a target), and the late-order bars with the three worst months flagged.
     data_tests:
       - dbt_expectations.expect_table_row_count_to_equal: {arguments: {value: 20}}
     columns:

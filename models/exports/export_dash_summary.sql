@@ -39,12 +39,12 @@ select
     latest.year_month as latest_month,
     latest.month_label as latest_month_label,
     latest.late_rate as latest_month_late_rate,
-    latest.alarm_line_late_rate as latest_month_alarm_line,
+    latest.own_month_alarm_line_late_rate as latest_month_own_alarm_line_late_rate,
     targets.typical_orders as typical_month_orders,
-    targets.alarm_line_late_rate as alarm_line_late_rate,
+    targets.alarm_line_late_rate as typical_month_alarm_line_late_rate,
     targets.goal_late_rate as goal_late_rate,
-    (select min(stretch_goal_late_rate) from monthly) as stretch_goal_late_rate,
-    'middle month if late seller handoffs were fixed, a what-if' as stretch_goal_label,
+    (select min(stretch_whatif_late_rate) from monthly) as stretch_whatif_late_rate,
+    'middle month if late seller handoffs were fixed, a what-if' as stretch_whatif_label,
     alarms.n as alarm_months,
     alarms.months as alarm_months_list,
     -- panel 3: handoff
@@ -64,5 +64,8 @@ select
     (select late_rate from region where region_group = 'Rest of Brazil') as rest_late_rate,
     (select share_of_all_late from region where region_group = 'North and northeast') as nne_share_of_late,
     worst3.late_orders * 1.0 / (select sum(late_orders) from monthly) as worst3_share_of_late,
+    -- the comparators for that share: those three months are about 21.7% of all orders and 15% of all months
+    (select sum(orders) filter (where is_worst3_late_month) * 1.0 / sum(orders) from monthly) as worst3_share_of_orders,
+    (select count(*) filter (where is_worst3_late_month) * 1.0 / count(*) from monthly) as worst3_share_of_months,
     worst3.months[1] || ', ' || worst3.months[2] || ' and ' || worst3.months[3] as worst3_months_label
 from cost, evidence, targets, worst3, alarms, latest

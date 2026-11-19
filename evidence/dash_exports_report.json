@@ -25,7 +25,7 @@
  },
  {
   "row": "1 review cost",
-  "number": "range low (evidence report), nearest 10",
+  "number": "range low (evidence report), nearest 10 (consistency: the same number read from the report, not an independent recompute)",
   "expected": 2880.4599647367017,
   "got": 2880.4599647367017,
   "rounded_to": -1,
@@ -33,7 +33,7 @@
  },
  {
   "row": "1 review cost",
-  "number": "range high (evidence report), nearest 10",
+  "number": "range high (evidence report), nearest 10 (consistency: the same number read from the report, not an independent recompute)",
   "expected": 3352.6633196859902,
   "got": 3352.6633196859902,
   "rounded_to": -1,
@@ -357,6 +357,318 @@
   "expected": 2,
   "got": 2,
   "rounded_to": null,
+  "ok": true
+ },
+ {
+  "row": "0 raw files",
+  "number": "judged orders: the rebuild gives 94,931 (typed)",
+  "expected": 94931,
+  "got": 94931,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "0 raw files",
+  "number": "late orders: the rebuild gives 6,518 (typed)",
+  "expected": 6518,
+  "got": 6518,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "0 raw files",
+  "number": "late orders after a late handoff: the rebuild gives 1,809 (typed)",
+  "expected": 1809,
+  "got": 1809,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "0 raw files",
+  "number": "sellers with a late order after a late handoff: the rebuild gives 583 (typed)",
+  "expected": 583,
+  "got": 583,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "0 raw files",
+  "number": "top 10 sellers' share of those, %: the rebuild gives 19.1 (typed)",
+  "expected": 19.1,
+  "got": 19.126589275843006,
+  "rounded_to": 1,
+  "ok": true
+ },
+ {
+  "row": "0 raw files",
+  "number": "top seller: the rebuild gives 06a2c3af (typed)",
+  "expected": "06a2c3af",
+  "got": "06a2c3af",
+  "rounded_to": null,
+  "ok": true
+ },
+ {
+  "row": "0 raw files",
+  "number": "top seller's late orders after a late handoff: the rebuild gives 66 (typed)",
+  "expected": 66,
+  "got": 66,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "0 raw files",
+  "number": "judged orders, summary vs the rebuild",
+  "expected": 94931,
+  "got": 94931.0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "0 raw files",
+  "number": "late orders, summary vs the rebuild",
+  "expected": 6518,
+  "got": 6518.0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "0 raw files",
+  "number": "late orders after a late handoff, summary vs the rebuild",
+  "expected": 1809,
+  "got": 1809.0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "0 raw files",
+  "number": "late handoff orders, summary vs the rebuild",
+  "expected": 8530,
+  "got": 8530.0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "0 raw files",
+  "number": "sellers with a late order after a late handoff, summary vs the rebuild",
+  "expected": 583,
+  "got": 583.0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "0 raw files",
+  "number": "top 10 sellers' late orders after a late handoff, summary vs the rebuild",
+  "expected": 346,
+  "got": 346.0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "0 raw files",
+  "number": "top 10 sellers' share of those, %, summary vs the rebuild",
+  "expected": 19.126589275843006,
+  "got": 19.126589275843006,
+  "rounded_to": 4,
+  "ok": true
+ },
+ {
+  "row": "0 raw files",
+  "number": "top seller code, summary vs the rebuild",
+  "expected": "06a2c3af",
+  "got": "06a2c3af",
+  "rounded_to": null,
+  "ok": true
+ },
+ {
+  "row": "0 raw files",
+  "number": "top seller's late orders after a late handoff, summary vs the rebuild",
+  "expected": 66,
+  "got": 66.0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "0 raw files",
+  "number": "seller rows that differ from the rebuild (all 2,925: counts, rates, rank, top-10 flag, share, code)",
+  "expected": 0,
+  "got": 0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "0 raw files",
+  "number": "month rows whose orders or late orders differ from the rebuild (all 20)",
+  "expected": 0,
+  "got": 0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "0 raw files",
+  "number": "handoff rows whose name, orders, late orders, late rate or share of late differ from the rebuild",
+  "expected": 0,
+  "got": 0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "0 raw files",
+  "number": "region rows whose states, orders, late orders, late rate or share of late differ from the rebuild",
+  "expected": 0,
+  "got": 0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "month_start is the first day of year_month (rows that differ)",
+  "expected": 0,
+  "got": 0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "month_label is the month name and year (rows that differ)",
+  "expected": 0,
+  "got": 0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "late_orders_rank orders the months by late orders, a tie to the later month (rows that differ)",
+  "expected": 0,
+  "got": 0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "is_worst3_late_month is rank 3 or better (rows that differ)",
+  "expected": 0,
+  "got": 0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "is_stable_month is not alarm and not thin (rows that differ)",
+  "expected": 0,
+  "got": 0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "late_rate and share_of_all_late are late orders over orders and over all late orders (rows that differ)",
+  "expected": 0,
+  "got": 0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "summary: judged orders vs facts.json",
+  "expected": 94931,
+  "got": 94931.0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "summary: late orders vs facts.json",
+  "expected": 6518,
+  "got": 6518.0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "summary: late rate vs facts.json, %",
+  "expected": 6.866,
+  "got": 6.866039544511277,
+  "rounded_to": 3,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "summary: latest month is the last month",
+  "expected": "2018-08",
+  "got": "2018-08",
+  "rounded_to": null,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "summary: latest month label is that month's name and year",
+  "expected": "Aug 2018",
+  "got": "Aug 2018",
+  "rounded_to": null,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "summary: latest month's own alarm line equals its row in the monthly file, %",
+  "expected": 8.425748461925291,
+  "got": 8.425748461925291,
+  "rounded_to": 6,
+  "ok": true
+ },
+ {
+  "row": "1 review cost",
+  "number": "phase is up to the promised day, climbing (1 to 5) or levelled (6 on) (days that differ)",
+  "expected": 0,
+  "got": 0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "1 review cost",
+  "number": "bad_review_share is bad reviews over reviewed orders (days that differ)",
+  "expected": 0,
+  "got": 0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "3 handoff",
+  "number": "on-time handoffs' share of all late orders, % (from the monthly file)",
+  "expected": 72.23074562749309,
+  "got": 72.23074562749309,
+  "rounded_to": 1,
+  "ok": true
+ },
+ {
+  "row": "5 where/when",
+  "number": "three worst months' share of all orders, % (story month table)",
+  "expected": 21.713665715098333,
+  "got": 21.713665715098333,
+  "rounded_to": 4,
+  "ok": true
+ },
+ {
+  "row": "5 where/when",
+  "number": "three worst months' share of all orders, % to 1 place (about 21.7; typed)",
+  "expected": 21.7,
+  "got": 21.713665715098333,
+  "rounded_to": 1,
+  "ok": true
+ },
+ {
+  "row": "5 where/when",
+  "number": "three worst months' share of all months, % (3 of 20)",
+  "expected": 15.0,
+  "got": 15.0,
+  "rounded_to": 4,
+  "ok": true
+ },
+ {
+  "row": "6 fixes",
+  "number": "example rows that differ from the seed: values, labels, displayed values, banner, footnote, status",
+  "expected": 0,
+  "got": 0,
+  "rounded_to": 0,
   "ok": true
  }
 ]

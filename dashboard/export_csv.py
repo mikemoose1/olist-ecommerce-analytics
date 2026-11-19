@@ -5,16 +5,16 @@
 
 One file per export model, same name without the export_dash_ prefix. Rows are sorted so a rerun gives the same file.
 Booleans are written true/false, dates as YYYY-MM-DD, missing values as empty cells.
-Needs a built warehouse: `make build` first.
+Needs a built warehouse: `make build` first. OLIST_DB_PATH names another warehouse file; a path that does not exist is an error.
 """
-import csv, math, sys
+import csv, math, os, sys
 from pathlib import Path
 
 import duckdb
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "dashboard" / "data"
-DB = ROOT / "olist.duckdb"
+DB = Path(os.environ.get("OLIST_DB_PATH", ROOT / "olist.duckdb"))   # same variable dbt and the other scripts read
 # export model -> order of rows in the file
 TABLES = {
     "summary": "1",

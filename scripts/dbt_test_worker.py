@@ -3,7 +3,7 @@
 
 Starting `dbt test` costs about 6 seconds, nearly all of it parsing the project, and the mutation proof starts it
 about 150 times. This process parses once, then runs one `dbt test --select ...` per request line on stdin, reusing
-the parsed project. Each request is {"selector": "..."}; the reply is one stdout line,
+the parsed project. Each request is {"selector": "..."} (several selectors may be separated by spaces); the reply is one stdout line,
 "@@RESULT@@" + {"rc": 0|1, "results": [[unique_id, status, failures, message], ...]} (or {"error": "..."}). dbt's own log
 lines are ignored by the reader. The warehouse is the file OLIST_DB_PATH named at start (the caller replaces its contents between
 requests; its file name must stay the same, because dbt bakes the database name into the compiled SQL).
@@ -38,7 +38,7 @@ def main(target):
         try:
             # a fresh copy each time: dbt stores compiled SQL on the nodes, and a node compiled once keeps its
             # ephemeral-model CTEs out of the next run's SQL ("__dbt__cte__dash_order_base does not exist")
-            res = dbtRunner(manifest=copy.deepcopy(manifest)).invoke(["test", "--select", selector, "--target-path", target, "--quiet"])
+            res = dbtRunner(manifest=copy.deepcopy(manifest)).invoke(["test", "--select", *selector.split(), "--target-path", target, "--quiet"])
             results = [[r.node.unique_id, str(getattr(r.status, "value", r.status)), r.failures, (r.message or "")[:600]]
                        for r in (res.result.results if hasattr(res.result, "results") else [])]
             out = {"rc": 0 if res.success else 1, "results": results}
