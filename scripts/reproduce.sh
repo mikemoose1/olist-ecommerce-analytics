@@ -18,6 +18,7 @@ story_checks() {   # KPI tree adds up, chart data is fresh, captions are tied to
   "$BIN/python" story/kpi_tree.py --check; "$BIN/python" story/selftest_kpi_tree.py
   "$BIN/python" story/story_data.py --check
   "$BIN/python" story/check_story.py; "$BIN/python" story/selftest_story.py
+  "$BIN/python" story/check_titles.py; "$BIN/python" story/selftest_titles.py
   "$BIN/python" story/build_story.py; }
 # the revision the append-only guard compares with: unset = a local run, compare with the last commit;
 # a commit = CI's base; set but empty = the first push of a new branch, compare with origin/main; nothing to compare with = ""

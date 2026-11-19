@@ -31,8 +31,10 @@ def design():
 def facts():
     rep = json.loads((ROOT / "evidence" / "recommendation_report.json").read_text())["memo_facts"]
     cap = json.loads((ROOT / "story" / "data" / "facts.json").read_text())["captions"]
-    clash = set(rep) & set(cap)
-    assert not clash, f"caption facts reuse memo fact names: {clash}"
+    # the memo prints some caption facts too (recommendation/analyze.py adds story_data.causal_captions); a shared name
+    # must hold the same value in both files, so neither can silently override the other
+    clash = {k: (rep[k], cap[k]) for k in set(rep) & set(cap) if rep[k] != cap[k]}
+    assert not clash, f"memo facts and caption facts disagree: {clash}"
     return {**rep, **cap}
 
 

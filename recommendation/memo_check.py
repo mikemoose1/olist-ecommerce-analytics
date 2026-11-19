@@ -90,9 +90,19 @@ def check_meaning(raw_text):
     return problems
 
 
-def check_memo(raw_text, facts, design=None):
-    """Returns (numbers checked, problems). design adds design constants to DESIGN (story/check_story.py uses it)."""
+# The matched association figure the memo and story printed before the causal estimate (3,335 extra reviews, "about 3,300",
+# 28.7% of them, range 27.7% to 29.4%). Printing one of these values again, or tagging a number with one of the old
+# names, fails even when a fact with that value still exists somewhere.
+RETIRED_NUMBERS = {"3,335", "3335", "3,300", "28.7", "27.7", "29.4"}
+RETIRED_TAGS = {"low_star_excess_mid", "low_star_share_lo", "low_star_share_mid", "low_star_share_hi"}
+
+
+def check_memo(raw_text, facts, design=None, sentences=()):
+    """Returns (numbers checked, problems). design adds design constants to DESIGN (story/check_story.py uses it).
+    sentences must each appear word for word in the text once the tags are removed."""
     DESIGN = {**globals()["DESIGN"], **(design or {})}
+    plain = re.sub(r"<!--.*?-->", "", raw_text, flags=re.S)
+    missing = [f"sentence not word for word: {s[:60]!r}..." for s in sentences if s not in plain]
     blank = lambda m: " " * len(m.group(0))
     masked = re.sub(r"<!--.*?-->|\b\d{4}-\d{2}\b|^\s*\d+\.(?=\s)", blank, raw_text, flags=re.S | re.M)   # tags, dates (YYYY-MM), list numbering
     problems, claimed, n = [], set(), 0
@@ -104,6 +114,9 @@ def check_memo(raw_text, facts, design=None):
             continue
         claimed.add(tag.start())
         kind, absolute, name = tag.group(1), bool(tag.group(2)), tag.group(3)
+        if tok in RETIRED_NUMBERS or name in RETIRED_TAGS:
+            problems.append(f"{tok}: tag {kind}:{name} is the retired association figure (use the causal estimate)")
+            continue
         want = facts.get(name) if kind == "f" else DESIGN.get(name)
         if want is None:
             problems.append(f"{tok}: tag {kind}:{name} names nothing")
@@ -118,5 +131,5 @@ def check_memo(raw_text, facts, design=None):
             if want != m.group(0):
                 problems.append(f"{m.group(0)}: tag {tag.group(1)}:{tag.group(3)} is {want}")
     problems += [f"tag {t.group(0)} follows no number" for t in TAG.finditer(raw_text) if t.start() not in claimed]
-    problems += check_meaning(raw_text)
+    problems += check_meaning(raw_text) + missing
     return n, problems

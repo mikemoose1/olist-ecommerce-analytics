@@ -1,8 +1,14 @@
 # Does late delivery cause Olist's bad reviews?
 
-Short answer: yes. About 3,110 extra 1-2 star reviews (26.7% of the 11,635 bad ones) are caused by late delivery.
-The story's earlier 3,335 (28.7%) compared late orders with all on-time orders, including ones that arrived days early,
-and was a little high. Numbers below come from `evidence/review_cost_causal_report.json`; the dbt model
+Short answer: yes, as an estimate from past orders. Late delivery is the estimated cause of about 3,110 extra 1-2 star
+reviews, 26.7% of the 11,635 bad ones (the story and memo round it to about 27%). This is the figure the story and the memo
+print. Their titles say late deliveries are "linked to" the bad reviews, because a title is read without the method beside it.
+
+History: before PR #7 the story and the memo printed 3,335 (28.7%), a matched association. That comparison used all on-time
+orders, including ones that arrived days early, as the baseline, and came out a little high. The recommendation report still
+carries it under `money.low_star_reviews`, and `recommendation/memo_check.py` fails if either document prints it again.
+
+Numbers below come from `evidence/review_cost_causal_report.json`; the dbt model
 `metric_review_cost_causal` multiplies the per-bin effects in `seeds/review_cost_effects.csv` by its own counts, and the test
 `assert_review_cost_causal_reconciles` reads that JSON and fails if the two disagree.
 

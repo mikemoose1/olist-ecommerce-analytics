@@ -447,7 +447,12 @@
    "passed": true
   },
   {
-   "check": "extra 1-2 star reviews 3,335 and 28.7% = recommendation report",
+   "check": "extra 1-2 star reviews caused by lateness: about 3,110, about 27% of 11,635 (metric_review_cost_causal)",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "check": "history: the earlier association figure, 3,335 and 28.7%, is unchanged in the recommendation report",
    "detail": "",
    "passed": true
   },
@@ -1038,8 +1043,10 @@
   "avg_stars_late": 2.27,
   "avg_stars_on_time": 4.31,
   "bad_reviews": 11635,
-  "extra_bad": 3335,
-  "extra_bad_share_pct": 28.7,
+  "extra_bad_causal": 3110,
+  "extra_bad_causal_share_pct": 27,
+  "history_extra_bad_association": 3335,
+  "history_extra_bad_association_share_pct": 28.7,
   "judged": 94931,
   "late": 6518,
   "late_rate_pct": 6.87,

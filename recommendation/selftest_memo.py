@@ -14,7 +14,7 @@ facts = json.load(open(os.path.join(ROOT, "evidence", "recommendation_report.jso
 
 CASES = [  # (name, old text, new text, text the problem list must contain)
     ("a nearby fact's value swapped in (1.96 -> 1.97)", "1.96<!--f:abs:stars_matched-->", "1.97<!--f:abs:stars_matched-->", "stars_matched"),
-    ("another metric's value swapped in (28.7% -> 62.4%)", "28.7<!--f:low_star_share_mid-->", "62.4<!--f:low_star_share_mid-->", "low_star_share_mid"),
+    ("another metric's value swapped in (27% -> 62%)", "27<!--f:c_cost_causal_share-->", "62<!--f:c_cost_causal_share-->", "c_cost_causal_share"),
     ("another metric's value swapped in (87.2% -> 74.5%)", "87.2<!--f:matched_pct-->", "74.5<!--f:matched_pct-->", "matched_pct"),
     ("a number no fact produced (6.87 -> 6.79)", "6.87<!--f:late_rate-->", "6.79<!--f:late_rate-->", "late_rate"),
     ("a money figure edited (R$163 -> R$27)", "R$163<!--f:repeat_spend-->", "R$27<!--f:repeat_spend-->", "repeat_spend"),
@@ -44,11 +44,32 @@ CASES = [  # (name, old text, new text, text the problem list must contain)
     ("an unknown comparative on a decrease (stars lower -> stars sharper)", "1.96<!--f:abs:stars_matched--> stars lower", "1.96<!--f:abs:stars_matched--> stars sharper", "sharper"),
     ("the thin-cell count edited (3 -> 1 of 8 days)", "3<!--f:survey_thin_days--> of those", "1<!--f:survey_thin_days--> of those", "survey_thin_days"),
     ("the unreviewed late-order count edited (152 -> 52)", "152<!--f:late_unreviewed_n-->", "52<!--f:late_unreviewed_n-->", "late_unreviewed_n"),
+    # the causal sync: the old association figure cannot come back, and every new number is tied
+    ("the old 3,335 back under the causal tag", "3,110<!--f:c_cost_causal-->", "3,335<!--f:c_cost_causal-->", "retired association figure"),
+    ("the old 28.7% back under the causal share tag", "27<!--f:c_cost_causal_share-->", "28.7<!--f:c_cost_causal_share-->", "retired association figure"),
+    ("the old 'about 3,300' back under its own tag", "3,110<!--f:c_cost_causal-->", "3,300<!--f:low_star_excess_mid-->", "retired association figure"),
+    ("the old share back under its own tag with the new value", "27<!--f:c_cost_causal_share-->", "27<!--f:low_star_share_mid-->", "retired association figure"),
+    ("the old 3,335 back with no tag", "3,110<!--f:c_cost_causal-->", "3,335", "3,335: no tag"),
+    ("causal estimate misprinted (3,110 -> 3,210)", "3,110<!--f:c_cost_causal-->", "3,210<!--f:c_cost_causal-->", "c_cost_causal"),
+    ("range high end misprinted (3,350 -> 3,530)", "3,350<!--f:c_cost_range_hi-->", "3,530<!--f:c_cost_range_hi-->", "c_cost_range_hi"),
+    ("seller-bias bound misprinted (150 -> 15)", "150<!--f:c_cost_bias_hi-->", "15<!--f:c_cost_bias_hi-->", "c_cost_bias_hi"),
+    ("ramp slope misprinted (11 -> 15 points a day)", "11<!--f:c_ramp_slope-->", "15<!--f:c_ramp_slope-->", "c_ramp_slope"),
+    ("ramp plateau tagged as the on-time share", "78<!--f:c_ramp_plateau-->", "78<!--f:c_ramp_on_time-->", "c_ramp_on_time"),
+    ("ramp end day misprinted (6 -> 4)", "6<!--f:c_ramp_end_day-->", "4<!--f:c_ramp_end_day-->", "c_ramp_end_day"),
+    ("alarm line misprinted (8.38 -> 8.83)", "8.38<!--f:c_alarm_line-->", "8.83<!--f:c_alarm_line-->", "c_alarm_line"),
+    ("flagged month swapped (2018-02 -> 2018-01)", "2018-02<!--f:c_flagged_2-->", "2018-01<!--f:c_flagged_2-->", "c_flagged_2"),
+    ("goal misprinted as the safe goal (4.4 -> 3.0)", "4.4<!--f:c_goal_line-->", "3.0<!--f:c_goal_line-->", "c_goal_line"),
+    ("stretch line misprinted (2.3 -> 3.2)", "2.3<!--f:c_stretch_line-->", "3.2<!--f:c_stretch_line-->", "c_stretch_line"),
+    ("what-if rate misprinted (5.49 -> 4.49)", "5.49<!--f:c_whatif_rate-->", "4.49<!--f:c_whatif_rate-->", "c_whatif_rate"),
+    ("repeat rate misprinted (1.0 -> 0.5)", "1.0<!--f:c_rep_late_1dp-->", "0.5<!--f:c_rep_late_1dp-->", "c_rep_late_1dp"),
+    ("repeat sentence reworded (somewhat -> much less likely)", "were somewhat less likely", "were much less likely", "word for word"),
+    ("repeat sentence's revenue clause dropped", ", and fixing lateness would be worth at most a few thousand reais in repeat sales", "", "word for word"),
 ]
+REPEAT_SENTENCE = json.load(open(os.path.join(ROOT, "evidence", "repeat_first_order_report.json")))["story_sentence"]
 
 
 def main():
-    n, problems = check_memo(memo, facts)
+    n, problems = check_memo(memo, facts, sentences=[REPEAT_SENTENCE])
     bad = []
     ok = not problems and n > 0
     print(f"{'PASS' if ok else 'FAIL'}  the real memo: {n} numbers, problems: {problems or 'none'}")
@@ -56,7 +77,7 @@ def main():
         bad.append("real memo")
     for name, old, new, expect in CASES:
         assert old in memo, f"selftest out of date: {old!r} is not in MEMO.md"
-        _, found = check_memo(memo.replace(old, new, 1), facts)
+        _, found = check_memo(memo.replace(old, new, 1), facts, sentences=[REPEAT_SENTENCE])
         good = any(expect in p for p in found)
         print(f"{'PASS' if good else 'FAIL'}  {name}: {'caught' if found else 'NOT caught'}")
         if not good:

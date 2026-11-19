@@ -23,7 +23,10 @@ DB = os.environ.get("OLIST_DB_PATH", os.path.join(ROOT, "olist.duckdb"))
 RAW = os.environ.get("OLIST_RAW_DIR", os.path.join(ROOT, "data", "raw"))
 STORY = {"judged": 94931, "late": 6518, "late_rate_pct": 6.87, "mar2018_pct": 19.152, "aug2018_pct": 6.3,
          "bad_reviews": 11635, "avg_stars_late": 2.27, "avg_stars_on_time": 4.31,
-         "extra_bad": 3335, "extra_bad_share_pct": 28.7}
+         "extra_bad_causal": 3110, "extra_bad_causal_share_pct": 27,
+         # history: the matched association figure the story printed before the causal estimate (PR #7); the
+         # recommendation report still carries it, so this pins that the old field did not move either
+         "history_extra_bad_association": 3335, "history_extra_bad_association_share_pct": 28.7}
 
 
 def independent_monthly():
@@ -74,9 +77,13 @@ def main():
             and (ind.late_orders.values == m.late_orders.values).all() and (ind.bad_reviews.values == m.bad_reviews.values).all())
     check("monthly orders, late orders and bad reviews = independent raw-CSV recount (20 months)", same)
     rr = json.load(open(os.path.join(ROOT, "evidence", "recommendation_report.json")))["money"]["low_star_reviews"]
-    check("extra 1-2 star reviews 3,335 and 28.7% = recommendation report",
-          round(rr["excess_from_lateness"]["mid"]) == STORY["extra_bad"] and round(rr["share_of_all_low_star_pct"]["mid"], 1) == STORY["extra_bad_share_pct"]
+    causal = float(con.execute("select sum(extra_bad_reviews) from metrics.metric_review_cost_causal").fetchone()[0])
+    check("extra 1-2 star reviews caused by lateness: about 3,110, about 27% of 11,635 (metric_review_cost_causal)",
+          round(causal, -1) == STORY["extra_bad_causal"] and round(100 * causal / rr["all_low_star"]) == STORY["extra_bad_causal_share_pct"]
           and rr["all_low_star"] == STORY["bad_reviews"])
+    check("history: the earlier association figure, 3,335 and 28.7%, is unchanged in the recommendation report",
+          round(rr["excess_from_lateness"]["mid"]) == STORY["history_extra_bad_association"]
+          and round(rr["share_of_all_low_star_pct"]["mid"], 1) == STORY["history_extra_bad_association_share_pct"])
 
     # ---- 2. p-chart: dispersion test, plain vs Laney, thin months
     disp = spc.dispersion_test(k, n)

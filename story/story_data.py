@@ -148,6 +148,25 @@ def repeat(rep):
             "sentence": ev["story_sentence"]}
 
 
+def causal_captions(rc, rp, tg, rep_late, rep_on_time):
+    """The review cost, ramp, trend-line and repeat numbers as the story and the memo print them
+    (recommendation/analyze.py adds these to the memo facts, so both documents state one value per name)."""
+    pct = lambda x: f"{100 * x:.1f}"
+    return {
+        "c_cost_causal": f"{round(rc['extra'], -1):,.0f}", "c_cost_causal_share": f"{100 * rc['share']:.0f}",
+        "c_cost_range_lo": f"{round(rc['range'][0], -1):,.0f}", "c_cost_range_hi": f"{round(rc['range'][1], -1):,.0f}",
+        "c_cost_bias_hi": f"{round(rc['seller_bias_reviews'][1], -1):,.0f}",
+        "c_ramp_on_time": pct(rp["on_time_share"]), "c_ramp_slope": f"{100 * rp['slope_per_day']:.0f}",
+        "c_ramp_plateau": f"{100 * rp['plateau_share']:.0f}", "c_ramp_end_day": str(rp["end_day"]),
+        "c_alarm_line": f"{100 * tg['alarm_line']:.2f}", "c_typical_orders": f"{tg['typical_orders']:,}",
+        **{f"c_flagged_{i}": m for i, m in enumerate(tg["flagged"], 1)}, "c_flagged_n": str(len(tg["flagged"])),
+        "c_goal_line": pct(tg["goal"]), "c_goal_exact": f"{100 * tg['goal']:.2f}", "c_stable_months": str(tg["stable_months"]),
+        "c_stretch_line": pct(tg["stretch"]), "c_stretch_exact": f"{100 * tg['stretch']:.2f}",
+        "c_whatif_rate": f"{100 * tg['late_rate_if_handoffs_ok']:.2f}",
+        "c_rep_late_1dp": pct(rep_late), "c_rep_on_time_1dp": pct(rep_on_time),
+    }
+
+
 def captions(f, t):
     """Numbers as the story prints them. story/check_story.py ties each printed number to one of these names
     (or to a recommendation/analyze.py memo fact)."""
@@ -177,17 +196,7 @@ def captions(f, t):
         "c_money_high_exact": f"R${f['lost_repeat_last12'][2]:,.0f}",
         "c_rep_raw": f"{f['repeat_raw_pts']:.2f}", "c_rep_raw_lo": f"{f['repeat_raw_pts_ci'][0]:.2f}",
         "c_rule_negatives_n": str(sum(e["fp"] + e["tn"] for e in lab.values())),
-        "c_cost_causal": f"{round(rc['extra'], -1):,.0f}", "c_cost_causal_share": f"{100 * rc['share']:.0f}",
-        "c_cost_range_lo": f"{round(rc['range'][0], -1):,.0f}", "c_cost_range_hi": f"{round(rc['range'][1], -1):,.0f}",
-        "c_cost_bias_hi": f"{round(rc['seller_bias_reviews'][1], -1):,.0f}",
-        "c_ramp_on_time": pct(rp["on_time_share"]), "c_ramp_slope": f"{100 * rp['slope_per_day']:.0f}",
-        "c_ramp_plateau": f"{100 * rp['plateau_share']:.0f}", "c_ramp_end_day": str(rp["end_day"]),
-        "c_alarm_line": f"{100 * tg['alarm_line']:.2f}", "c_typical_orders": f"{tg['typical_orders']:,}",
-        **{f"c_flagged_{i}": m for i, m in enumerate(tg["flagged"], 1)}, "c_flagged_n": str(len(tg["flagged"])),
-        "c_goal_line": pct(tg["goal"]), "c_goal_exact": f"{100 * tg['goal']:.2f}", "c_stable_months": str(tg["stable_months"]),
-        "c_stretch_line": pct(tg["stretch"]), "c_stretch_exact": f"{100 * tg['stretch']:.2f}",
-        "c_whatif_rate": f"{100 * tg['late_rate_if_handoffs_ok']:.2f}",
-        "c_rep_late_1dp": pct(f["repeat"]["late"]), "c_rep_on_time_1dp": pct(f["repeat"]["on_time"]),
+        **causal_captions(rc, rp, tg, f["repeat"]["late"], f["repeat"]["on_time"]),
         "c_handoff_ratio": f"{f['handoff_late_rate'] / f['handoff_ok_rate']:.1f}",
         "c_comment_pct": pct(f["comment_delay_share"]),
         "c_comment_lo": pct(f["comment_delay_share_ci"][0]), "c_comment_hi": pct(f["comment_delay_share_ci"][1]),
