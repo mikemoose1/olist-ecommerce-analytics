@@ -10,7 +10,7 @@ Usage:  python scripts/prove_tests_fail.py [RULE-SUBSTRING] [--merge]   (needs a
         with --merge the selected rules are added to (or replaced in) the committed report)
 Output: evidence/mutation_report.md and evidence/mutation_report.json
 """
-import json, os, shutil, subprocess, sys, tempfile, time
+import concurrent.futures, json, os, shutil, subprocess, sys, tempfile, threading, time
 import duckdb
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -751,37 +751,54 @@ def main():
     if not os.path.exists(DB):
         sys.exit(f"no warehouse at {DB}; run `make build` first")
     work = tempfile.mkdtemp(prefix="mutation-")
-    report = []
     only = next((a for a in sys.argv[1:] if not a.startswith("--")), "")   # optional substring filter on the rule name (quick reruns)
-    for rule, selector, mut in CASES:
-        if only not in rule:
-            continue
+    selected = [c for c in CASES if only in c[0]]
+    # The baseline (real warehouse, real raw files) does not depend on the mutation, so each selector is run once and shared.
+    baselines, locks, guard = {}, {}, threading.Lock()
+
+    def baseline(selector):
+        with guard:
+            lock = locks.setdefault(selector, threading.Lock())
+        with lock:
+            if selector not in baselines:
+                d = tempfile.mkdtemp(prefix="base-", dir=work)
+                base_db = os.path.join(d, "baseline.duckdb"); shutil.copy(DB, base_db)
+                raw_clean = raw_copy(None)
+                baselines[selector] = run_tests(selector, base_db, raw_clean)
+                os.remove(base_db); shutil.rmtree(raw_clean, ignore_errors=True)
+            return baselines[selector]
+
+    def run_case(case):
+        rule, selector, mut = case
         t0 = time.time()
-        base_db = os.path.join(work, "baseline.duckdb"); shutil.copy(DB, base_db)
-        raw_clean = raw_copy(None)
-        b_rc, b_res = run_tests(selector, base_db, raw_clean)
-        mut_db = os.path.join(work, "mutant.duckdb"); shutil.copy(DB, mut_db)
+        b_rc, b_res = baseline(selector)
+        cdir = tempfile.mkdtemp(prefix="case-", dir=work)
+        mut_db = os.path.join(cdir, "mutant.duckdb"); shutil.copy(DB, mut_db)
         raw_mut = raw_copy(mut.get("raw_edit"))
-        doc_env = edited_docs(mut, work) if set(DOC_EDITS) & set(mut) else None
+        doc_env = edited_docs(mut, cdir) if set(DOC_EDITS) & set(mut) else None
         if "sql" in mut:
             con = duckdb.connect(mut_db)
-            for s in mut["sql"]:
-                con.execute(s)
+            for stmt in mut["sql"]:
+                con.execute(stmt)
             con.close()
         proj = None
         if "model_edit" in mut:
-            proj = project_copy(mut["model_edit"], work)
+            proj = project_copy(mut["model_edit"], cdir)
             rebuild_models(proj, mut["model_edit"]["rebuild"], mut_db, raw_mut)
         m_rc, m_res = run_tests(selector, mut_db, raw_mut, doc_env, proj)
-        if proj: shutil.rmtree(proj, ignore_errors=True)
-        for p in (base_db, mut_db): os.remove(p)
-        shutil.rmtree(raw_clean, ignore_errors=True); shutil.rmtree(raw_mut, ignore_errors=True)
-        base_ok = b_rc == 0 and b_res and all(s == "pass" for _, s, _ in b_res)
-        mut_fail = m_rc != 0 and any(s in ("fail", "error") for _, s, _ in m_res)
+        shutil.rmtree(cdir, ignore_errors=True); shutil.rmtree(raw_mut, ignore_errors=True)
+        base_ok = b_rc == 0 and b_res and all(st == "pass" for _, st, _ in b_res)
+        mut_fail = m_rc != 0 and any(st in ("fail", "error") for _, st, _ in m_res)
         verdict = "PROVEN" if (base_ok and mut_fail) else "NOT PROVEN"
-        report.append({"rule": rule, "selector": selector, "mutation": mut, "baseline": b_res,
-                       "mutant": m_res, "verdict": verdict, "seconds": round(time.time() - t0, 1)})
-        print(f"{verdict:11s} {rule}  baseline={len(b_res)} tests, all pass: {base_ok} | mutant failing: {[(n, s, f) for n, s, f in m_res if s != 'pass']}", flush=True)
+        print(f"{verdict:11s} {rule}  baseline={len(b_res)} tests, all pass: {base_ok} | mutant failing: {[(n, st, f) for n, st, f in m_res if st != 'pass']}", flush=True)
+        return {"rule": rule, "selector": selector, "mutation": mut, "baseline": b_res,
+                "mutant": m_res, "verdict": verdict, "seconds": round(time.time() - t0, 1)}
+
+    # Cases are independent (own warehouse copy, own project copy, own dbt target path), so run a few at once.
+    # PROVE_JOBS=1 runs them one by one. The report keeps the order of CASES.
+    jobs = max(1, int(os.environ.get("PROVE_JOBS", min(4, os.cpu_count() or 1))))
+    with concurrent.futures.ThreadPoolExecutor(max_workers=jobs) as pool:
+        report = list(pool.map(run_case, selected))
     shutil.rmtree(work, ignore_errors=True)
     if only and MERGE:
         # Add or replace just these rules in the committed report, keeping the order of CASES (what a full run would write).
