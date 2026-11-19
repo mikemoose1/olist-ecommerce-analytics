@@ -5,11 +5,18 @@ For each rule: copy the built warehouse, inject known-bad rows (a "mutation") in
 run ONLY that rule's tests against the copy, and require them to FAIL. Each rule's tests must
 also PASS on an untouched copy (baseline). A test that cannot fail proves nothing.
 
-Usage:  python scripts/prove_tests_fail.py [RULE-SUBSTRING]   (needs a built olist.duckdb; run `make build` first;
-        a substring runs only matching rules and does NOT overwrite evidence/ unless all rules ran)
+Usage:  python scripts/prove_tests_fail.py [RULE-SUBSTRING] [--merge]   (needs a built olist.duckdb; run `make build` first;
+        a substring runs only matching rules and does NOT overwrite evidence/ unless all rules ran;
+        with --merge the selected rules are added to (or replaced in) the committed report)
 Output: evidence/mutation_report.md and evidence/mutation_report.json
+
+Speed: cases run in parallel (PROVE_JOBS, default the CPU count up to 4). A case that edits neither project files nor raw files
+runs its dbt tests in a long-lived worker (scripts/dbt_test_worker.py) that parses the project once, instead of starting
+`dbt test` each time. Measured on the whole suite (every case, baselines shared): 248 cases take about 6.5 min here on 4 CPUs,
+and the CI step (2 vCPU) fell from about 20-22 min to about 10 min. PROVE_NO_WORKER=1 starts `dbt test` for every run, the slow way,
+and must give the same verdicts. A test that errors counts as a broken run, not as a test that caught the mistake.
 """
-import json, os, shutil, subprocess, sys, tempfile, time
+import concurrent.futures, json, os, shutil, subprocess, sys, tempfile, threading, time
 import duckdb
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -454,6 +461,282 @@ CASES = [
     ("Coverage: an exemption that matches nothing fails",
      "ontology:coverage allowlist is current",
      {"allowlist_append": "  - match: marts.dim_seller.no_such_column\n    reason: stale on purpose\n"}),
+
+    # Dashboard exports (step 4): every number the dashboard prints is recomputed from the exports and tied to the analysis.
+    ("Dashboard exports (review cost): the tile's extra reviews are off by 40",
+     "assert_dash_review_cost_reconciles",
+     {"sql": ["update exports.export_dash_summary set extra_bad_reviews = extra_bad_reviews + 40"]}),
+    ("Dashboard exports (review cost): the tile's whole number reads 3,111 instead of 3,110",
+     "assert_dash_review_cost_reconciles",
+     {"sql": ["update exports.export_dash_summary set extra_bad_reviews_rounded = 3111"]}),
+    ("Dashboard exports (review cost): the high end of the range drops by 100",
+     "assert_dash_review_cost_reconciles",
+     {"sql": ["update exports.export_dash_summary set extra_range_high = extra_range_high - 100"]}),
+    ("Dashboard exports (review cost): 30 bad reviews move from day -5 to day 10 in the ramp (totals unchanged)",
+     "assert_dash_review_cost_reconciles",
+     {"sql": ["update exports.export_dash_review_ramp set bad_reviews = bad_reviews - 30 where days_past_promise_capped = -5",
+              "update exports.export_dash_review_ramp set bad_reviews = bad_reviews + 30 where days_past_promise_capped = 10"]}),
+    ("Dashboard exports (review cost): a day is missing from the ramp",
+     "assert_dash_review_cost_reconciles",
+     {"sql": ["delete from exports.export_dash_review_ramp where days_past_promise_capped = 3"]}),
+    ("Dashboard exports (review cost): the points-a-day slope moves by 0.01",
+     "assert_dash_review_cost_reconciles",
+     {"sql": ["update exports.export_dash_summary set ramp_points_per_day = ramp_points_per_day + 0.01"]}),
+    ("Dashboard exports (review cost): the summary's up-to-the-promised-day share counts day 0 as late",
+     "assert_dash_review_cost_reconciles",
+     {"model_edit": {"file": "models/exports/export_dash_summary.sql", "replace": [("from ramp where days_past_promise_capped <= 0) as ramp_share_up_to_promised_day", "from ramp where days_past_promise_capped < 0) as ramp_share_up_to_promised_day")], "rebuild": "export_dash_summary"}}),
+    ("Dashboard exports (trend): a month's late orders are off by 10",
+     "assert_dash_monthly_reconciles",
+     {"sql": ["update exports.export_dash_monthly set late_orders = late_orders + 10 where year_month = '2018-01'"]}),
+    ("Dashboard exports (trend): a month's alarm line is off by a point",
+     "assert_dash_monthly_reconciles",
+     {"sql": ["update exports.export_dash_monthly set own_month_alarm_line_late_rate = own_month_alarm_line_late_rate + 0.01 where year_month = '2018-03'"]}),
+    ("Dashboard exports (trend): March 2018 loses its alarm flag",
+     "assert_dash_monthly_reconciles",
+     {"sql": ["update exports.export_dash_monthly set is_alarm_month = false where year_month = '2018-03'"]}),
+    ("Dashboard exports (trend): a normal month is marked thin",
+     "assert_dash_monthly_reconciles",
+     {"sql": ["update exports.export_dash_monthly set is_thin_month = true where year_month = '2017-03'"]}),
+    ("Dashboard exports (trend): a month is missing",
+     "assert_dash_monthly_reconciles",
+     {"sql": ["delete from exports.export_dash_monthly where year_month = '2017-06'"]}),
+    ("Dashboard exports (trend): the goal line in the summary reads 5.0% instead of 4.43%",
+     "assert_dash_monthly_reconciles",
+     {"sql": ["update exports.export_dash_summary set goal_late_rate = 0.05"]}),
+    ("Dashboard exports (trend): the stretch line in the summary reads 3.0% instead of the median what-if (about 3.4%)",
+     "assert_dash_monthly_reconciles",
+     {"sql": ["update exports.export_dash_summary set stretch_whatif_late_rate = 0.03"]}),
+    ("Dashboard exports (trend): the monthly goal line uses the safe goal (3.04%) instead of the median (4.43%)",
+     "assert_dash_monthly_reconciles",
+     {"model_edit": {"file": "models/exports/export_dash_monthly.sql", "replace": [("t.goal_late_rate,", "0.03036 as goal_late_rate,")], "rebuild": "export_dash_monthly"}}),
+    ("Dashboard exports (trend): the stretch line in the summary is off by a point",
+     "assert_dash_monthly_reconciles",
+     {"sql": ["update exports.export_dash_summary set stretch_whatif_late_rate = stretch_whatif_late_rate + 0.01"]}),
+    ("Dashboard exports (trend): the stretch line on the monthly rows is off by a point",
+     "assert_dash_monthly_reconciles",
+     {"sql": ["update exports.export_dash_monthly set stretch_whatif_late_rate = stretch_whatif_late_rate + 0.01"]}),
+    ("Dashboard exports (trend): the stretch line label in the summary is the old wording",
+     "assert_dash_monthly_reconciles",
+     {"sql": ["update exports.export_dash_summary set stretch_whatif_label = 'if seller handoffs are fixed'"]}),
+    ("Dashboard exports (trend): a stable month is marked unstable",
+     "assert_dash_monthly_reconciles",
+     {"sql": ["update exports.export_dash_monthly set is_stable_month = false where year_month = '2017-09'"]}),
+    ("Dashboard exports (trend): a stable month's what-if rate is off by a point",
+     "assert_dash_monthly_reconciles",
+     {"sql": ["update exports.export_dash_monthly set late_rate_if_handoffs_ok = late_rate_if_handoffs_ok + 0.01 where year_month = '2017-09'"]}),
+    ("Dashboard exports (trend): the monthly model computes its own stretch line as the 40th percentile of the what-if instead of reading the targets model",
+     "assert_dash_monthly_reconciles",
+     {"model_edit": {"file": "models/exports/export_dash_monthly.sql", "replace": [("    t.stretch_goal_late_rate as stretch_whatif_late_rate\nfrom ranked r cross join t", "    (select percentile_cont(0.4) within group (order by late_rate_if_handoffs_ok) from c where not laney_signal and not thin_month) as stretch_whatif_late_rate\nfrom ranked r cross join t")], "rebuild": "export_dash_monthly+"}}),
+    ("Dashboard exports (trend): the story's stretch value in facts.json drifts to the retired 2.25% (the export still matches the model, only the facts.json comparison can catch it)",
+     "assert_dash_monthly_reconciles",
+     {"model_edit": {"file": "story/data/facts.json", "replace": [('"stretch": 0.034251', '"stretch": 0.022520')], "rebuild": "export_dash_monthly"}}),
+    ("Dashboard exports (handoff): the late-handoff bar gains 50 late orders",
+     "assert_dash_handoff_reconciles",
+     {"sql": ["update exports.export_dash_handoff set late_orders = late_orders + 50 where is_late_handoff"]}),
+    ("Dashboard exports (handoff): the on-time-handoff bar loses 100 orders",
+     "assert_dash_handoff_reconciles",
+     {"sql": ["update exports.export_dash_handoff set orders = orders - 100 where not is_late_handoff"]}),
+    ("Dashboard exports (handoff): the tile's share of late orders is off by a point",
+     "assert_dash_handoff_reconciles",
+     {"sql": ["update exports.export_dash_summary set late_handoff_share_of_late = late_handoff_share_of_late + 0.01"]}),
+    ("Dashboard exports (handoff): the order with no handoff time is counted as an on-time handoff",
+     "assert_dash_handoff_reconciles",
+     {"model_edit": {"file": "models/exports/export_dash_handoff.sql", "replace": [("    where handed_over_late is not null\n", "")], "rebuild": "export_dash_handoff"}}),
+    ("Dashboard exports (handoff): the handoff rule allows a day of grace in the shared order base",
+     "assert_dash_handoff_reconciles",
+     {"model_edit": {"file": "models/exports/dash_order_base.sql", "replace": [("f.delivered_to_carrier_at > f.last_shipping_limit_at as", "f.delivered_to_carrier_at > f.last_shipping_limit_at + interval 1 day as")], "rebuild": "dash_order_base+"}}),
+    ("Dashboard exports (sellers): the top seller loses one late order",
+     "assert_dash_sellers_reconcile",
+     {"sql": ["update exports.export_dash_sellers set late_after_late_handoff_orders = late_after_late_handoff_orders - 1 where rank_by_late_after_late_handoff = 1"]}),
+    ("Dashboard exports (sellers): a seller is missing",
+     "assert_dash_sellers_reconcile",
+     {"sql": ["delete from exports.export_dash_sellers where rank_by_late_after_late_handoff = 100"]}),
+    ("Dashboard exports (sellers): a seller appears twice",
+     "assert_dash_sellers_reconcile",
+     {"sql": ["insert into exports.export_dash_sellers select * from exports.export_dash_sellers where rank_by_late_after_late_handoff = 5"]}),
+    ("Dashboard exports (sellers): two sellers share an 8-character code",
+     "assert_dash_sellers_reconcile",
+     {"sql": ["update exports.export_dash_sellers set seller_code = (select seller_code from exports.export_dash_sellers where rank_by_late_after_late_handoff = 1) where rank_by_late_after_late_handoff = 11"]}),
+    ("Dashboard exports (sellers): the tile's top-10 share is off by 5 points",
+     "assert_dash_sellers_reconcile",
+     {"sql": ["update exports.export_dash_summary set top10_share_of_late_after_late_handoff = top10_share_of_late_after_late_handoff + 0.05"]}),
+    ("Dashboard exports (sellers): the seller bars count all late orders, not only those after a late handoff",
+     "assert_dash_sellers_reconcile",
+     {"model_edit": {"file": "models/exports/export_dash_sellers.sql", "replace": [("count(*) filter (where handed_over_late and is_late) as late_after_late_handoff_orders", "count(*) filter (where is_late) as late_after_late_handoff_orders")], "rebuild": "export_dash_sellers+"}}),
+    ("Dashboard exports (sellers): the top-10 flag covers 11 sellers",
+     "assert_dash_sellers_reconcile",
+     {"model_edit": {"file": "models/exports/export_dash_sellers.sql", "replace": [("rank_by_late_after_late_handoff <= 10 as is_top10", "rank_by_late_after_late_handoff <= 11 as is_top10")], "rebuild": "export_dash_sellers"}}),
+    ("Dashboard exports (sellers): an order gains a second seller",
+     "assert_dash_sellers_reconcile",
+     {"sql": ["insert into marts.fct_order_items select * replace ('zzz_second_seller' as seller_id) from marts.fct_order_items where order_id in (select order_id from metrics.metric_late_rate_orders order by order_id limit 1) limit 1"]}),
+    ("Dashboard exports (region): the north and northeast lose 100 late orders",
+     "assert_dash_region_reconciles",
+     {"sql": ["update exports.export_dash_region set late_orders = late_orders - 100 where region_group = 'North and northeast'"]}),
+    ("Dashboard exports (region): a state is missing from the region map",
+     "assert_dash_region_reconciles",
+     {"sql": ["delete from seeds.dash_region_map where state = 'AC'"]}),
+    ("Dashboard exports (region): a state is listed twice in the region map",
+     "assert_dash_region_reconciles",
+     {"sql": ["insert into seeds.dash_region_map select * from seeds.dash_region_map where state = 'SP'"]}),
+    ("Dashboard exports (region): Bahia moves to the rest of Brazil in the region map",
+     "assert_dash_region_reconciles",
+     {"sql": ["update seeds.dash_region_map set region_group = 'Rest of Brazil' where state = 'BA'"]}),
+    ("Dashboard exports (region): the tile's north and northeast rate is off by a point",
+     "assert_dash_region_reconciles",
+     {"sql": ["update exports.export_dash_summary set nne_late_rate = nne_late_rate + 0.01"]}),
+    ("Dashboard exports (worst months): the flags name a different month (Feb 2018 out, Apr 2018 in)",
+     "assert_dash_worst_months_reconcile",
+     {"sql": ["update exports.export_dash_monthly set is_worst3_late_month = not is_worst3_late_month where year_month in ('2018-02', '2018-04')"]}),
+    ("Dashboard exports (worst months): the label names Jan 2018 instead of Feb 2018",
+     "assert_dash_worst_months_reconcile",
+     {"sql": ["update exports.export_dash_summary set worst3_months_label = 'Nov 2017, Jan 2018 and Mar 2018'"]}),
+    ("Dashboard exports (worst months): the 48.3% reads 50%",
+     "assert_dash_worst_months_reconcile",
+     {"sql": ["update exports.export_dash_summary set worst3_share_of_late = 0.5"]}),
+    ("Dashboard exports (worst months): a month label is wrong (Nov 2017 reads Dec 2017)",
+     "assert_dash_worst_months_reconcile",
+     {"sql": ["update exports.export_dash_monthly set month_label = 'Dec 2017' where year_month = '2017-11'"]}),
+    ("Dashboard exports (worst months): the worst-months flag covers four months",
+     "assert_dash_worst_months_reconcile",
+     {"model_edit": {"file": "models/exports/export_dash_monthly.sql", "replace": [("r.late_orders_rank <= 3 as", "r.late_orders_rank <= 4 as")], "rebuild": "export_dash_monthly+"}}),
+    ("Dashboard exports (fixes panel): a row loses its example flag",
+     "assert_dash_tests_are_labelled_example",
+     {"sql": ["update exports.export_dash_tests_example set is_example = false where test_id = 1"]}),
+    ("Dashboard exports (fixes panel): a row's example flag is null",
+     "assert_dash_tests_are_labelled_example",
+     {"sql": ["update exports.export_dash_tests_example set is_example = null where test_id = 2"]}),
+    ("Dashboard exports (fixes panel): a value loses its asterisk",
+     "assert_dash_tests_are_labelled_example",
+     {"sql": ["update exports.export_dash_tests_example set test_group_display = '6.1%' where test_id = 1"]}),
+    ("Dashboard exports (fixes panel): the banner stops saying the tests have not run",
+     "assert_dash_tests_are_labelled_example",
+     {"sql": ["update exports.export_dash_tests_example set banner = 'Fix tests'"]}),
+    ("Dashboard exports (fixes panel): a seed row loses its example flag",
+     "assert_dash_tests_are_labelled_example",
+     {"sql": ["update seeds.dash_tests_example set is_example = false where test_id = 2"]}),
+    ("Dashboard exports (fixes panel): a row's status reads passed",
+     "assert_dash_tests_are_labelled_example",
+     {"sql": ["update exports.export_dash_tests_example set status = 'passed' where test_id = 1"]}),
+    ("Dashboard exports (fixes panel): a test label loses the word EXAMPLE",
+     "assert_dash_tests_are_labelled_example",
+     {"sql": ["update exports.export_dash_tests_example set test_label = 'Seller ship-by reminder test' where test_id = 1"]}),
+    ("Dashboard exports (fixes panel): a row is missing from the export",
+     "assert_dash_tests_are_labelled_example",
+     {"sql": ["delete from exports.export_dash_tests_example where test_id = 2"]}),
+    ("Dashboard exports (column sweep, monthly): month_start shifts a month",
+     "assert_dash_columns_are_derived",
+     {"sql": ["update exports.export_dash_monthly set month_start = date '2017-07-01' where year_month = '2017-06'"]}),
+    ("Dashboard exports (column sweep, monthly): a month label reads Jun 2019 on a month that is not the worst",
+     "assert_dash_columns_are_derived",
+     {"sql": ["update exports.export_dash_monthly set month_label = 'Jun 2019' where year_month = '2017-06'"]}),
+    ("Dashboard exports (column sweep, monthly): a month's late-orders rank is off by one",
+     "assert_dash_columns_are_derived",
+     {"sql": ["update exports.export_dash_monthly set late_orders_rank = late_orders_rank + 1 where year_month = '2017-01'"]}),
+    ("Dashboard exports (column sweep, monthly): a month that is not one of the worst three is flagged worst",
+     "assert_dash_columns_are_derived",
+     {"sql": ["update exports.export_dash_monthly set is_worst3_late_month = true where year_month = '2017-06'"]}),
+    ("Dashboard exports (column sweep, monthly): an alarm month is flagged stable",
+     "assert_dash_columns_are_derived",
+     {"sql": ["update exports.export_dash_monthly set is_stable_month = true where year_month = '2018-03'"]}),
+    ("Dashboard exports (column sweep, monthly): a month's late rate is 50%",
+     "assert_dash_columns_are_derived",
+     {"sql": ["update exports.export_dash_monthly set late_rate = 0.5 where year_month = '2017-06'"]}),
+    ("Dashboard exports (column sweep, monthly): a month's share of all late orders is off by a point",
+     "assert_dash_columns_are_derived",
+     {"sql": ["update exports.export_dash_monthly set share_of_all_late = share_of_all_late + 0.01 where year_month = '2017-06'"]}),
+    ("Dashboard exports (column sweep, review_ramp): day 3 is called levelled instead of climbing",
+     "assert_dash_columns_are_derived",
+     {"sql": ["update exports.export_dash_review_ramp set phase = 'levelled' where days_past_promise_capped = 3"]}),
+    ("Dashboard exports (column sweep, review_ramp): a day's bad-review share is off by a point",
+     "assert_dash_columns_are_derived",
+     {"sql": ['update exports.export_dash_review_ramp set bad_review_share = bad_review_share + 0.01 where days_past_promise_capped = 3']}),
+    ("Dashboard exports (column sweep, review_ramp): a day has more bad reviews than reviewed orders",
+     "assert_dash_columns_are_derived",
+     {"sql": ['update exports.export_dash_review_ramp set bad_reviews = reviewed_orders + 1 where days_past_promise_capped = 3']}),
+    ("Dashboard exports (column sweep, summary): the summary's judged orders gain 1,000",
+     "assert_dash_columns_are_derived",
+     {"sql": ['update exports.export_dash_summary set judged_orders = judged_orders + 1000']}),
+    ("Dashboard exports (column sweep, summary): the summary's late orders gain 1",
+     "assert_dash_columns_are_derived",
+     {"sql": ['update exports.export_dash_summary set late_orders = late_orders + 1']}),
+    ("Dashboard exports (column sweep, summary): the summary's late rate is off by 0.2 points",
+     "assert_dash_columns_are_derived",
+     {"sql": ['update exports.export_dash_summary set late_rate = late_rate + 0.002']}),
+    ("Dashboard exports (column sweep, summary): the latest month is not the last month",
+     "assert_dash_columns_are_derived",
+     {"sql": ["update exports.export_dash_summary set latest_month = '2018-07'"]}),
+    ("Dashboard exports (column sweep, summary): the latest month's label reads Aug 2019",
+     "assert_dash_columns_are_derived",
+     {"sql": ["update exports.export_dash_summary set latest_month_label = 'Aug 2019'"]}),
+    ("Dashboard exports (column sweep, sellers): a mid-table seller's late rate is 0",
+     "assert_dash_sellers_reconcile",
+     {"sql": ['update exports.export_dash_sellers set late_rate = 0 where rank_by_late_after_late_handoff = 500']}),
+    ("Dashboard exports (column sweep, sellers): a seller's late-handoff rate is off by a point",
+     "assert_dash_sellers_reconcile",
+     {"sql": ['update exports.export_dash_sellers set late_handoff_rate = late_handoff_rate + 0.01 where rank_by_late_after_late_handoff = 500']}),
+    ("Dashboard exports (column sweep, sellers): a seller's rank is off by one",
+     "assert_dash_sellers_reconcile",
+     {"sql": ['update exports.export_dash_sellers set rank_by_late_after_late_handoff = rank_by_late_after_late_handoff + 1000 where rank_by_late_after_late_handoff = 500']}),
+    ("Dashboard exports (column sweep, sellers): a seller outside the top 10 is flagged top 10",
+     "assert_dash_sellers_reconcile",
+     {"sql": ['update exports.export_dash_sellers set is_top10 = true where rank_by_late_after_late_handoff = 500']}),
+    ("Dashboard exports (column sweep, sellers): a seller's share of late-after-late-handoff orders is off by a point",
+     "assert_dash_sellers_reconcile",
+     {"sql": ['update exports.export_dash_sellers set share_of_late_after_late_handoff = share_of_late_after_late_handoff + 0.01 where rank_by_late_after_late_handoff = 500']}),
+    ("Dashboard exports (column sweep, sellers): a seller's 8-character code is another seller's",
+     "assert_dash_sellers_reconcile",
+     {"sql": ["update exports.export_dash_sellers set seller_code = '16a2c3af' where rank_by_late_after_late_handoff = 500"]}),
+    ("Dashboard exports (column sweep, summary): the summary's top seller count reads 67 instead of 66",
+     "assert_dash_sellers_reconcile",
+     {"sql": ['update exports.export_dash_summary set top_seller_late_after_late_handoff_orders = 67']}),
+    ("Dashboard exports (column sweep, summary): the summary's top 10 count is off by one",
+     "assert_dash_sellers_reconcile",
+     {"sql": ['update exports.export_dash_summary set top10_late_after_late_handoff_orders = top10_late_after_late_handoff_orders + 1']}),
+    ("Dashboard exports (column sweep, handoff): the two handoff groups swap names",
+     "assert_dash_handoff_reconciles",
+     {"sql": ["update exports.export_dash_handoff set handoff_group = case when is_late_handoff then 'Handed over on time' else 'Handed to carrier after ship-by' end"]}),
+    ("Dashboard exports (column sweep, handoff): the on-time handoff bar's share of late orders is off by a point",
+     "assert_dash_handoff_reconciles",
+     {"sql": ['update exports.export_dash_handoff set share_of_all_late = share_of_all_late + 0.01 where not is_late_handoff']}),
+    ("Dashboard exports (column sweep, summary): the three months' share of all orders reads 25%",
+     "assert_dash_worst_months_reconcile",
+     {"sql": ['update exports.export_dash_summary set worst3_share_of_orders = 0.25']}),
+    ("Dashboard exports (column sweep, summary): the three months' share of all orders is off by 0.001",
+     "assert_dash_worst_months_reconcile",
+     {"sql": ['update exports.export_dash_summary set worst3_share_of_orders = worst3_share_of_orders + 0.001']}),
+    ("Dashboard exports (column sweep, summary): the three months' share of all months reads 20%",
+     "assert_dash_worst_months_reconcile",
+     {"sql": ['update exports.export_dash_summary set worst3_share_of_months = 0.20']}),
+    ("Dashboard exports (column sweep, monthly): a worst month holds more orders than the story month table says (orders +1,000)",
+     "assert_dash_worst_months_reconcile",
+     {"sql": ["update exports.export_dash_monthly set orders = orders + 1000 where year_month = '2018-03'"]}),
+    ("Dashboard exports (column sweep, tests_example): a test-group value drifts from the seed",
+     "assert_dash_tests_are_labelled_example",
+     {"sql": ['update exports.export_dash_tests_example set test_group_value = test_group_value + 0.5 where test_id = 1']}),
+    ("Dashboard exports (column sweep, tests_example): a no-change value drifts from the seed",
+     "assert_dash_tests_are_labelled_example",
+     {"sql": ['update exports.export_dash_tests_example set no_change_group_value = no_change_group_value + 0.5 where test_id = 2']}),
+    ("Dashboard exports (column sweep, tests_example): a readout label is not the seed's",
+     "assert_dash_tests_are_labelled_example",
+     {"sql": ["update exports.export_dash_tests_example set readout_label = 'EXAMPLE: something else' where test_id = 1"]}),
+    ("Dashboard exports (column sweep, tests_example): a no-change display reads 3.92 for a percent row",
+     "assert_dash_tests_are_labelled_example",
+     {"sql": ["update exports.export_dash_tests_example set no_change_group_display = '3.92' where test_id = 1"]}),
+    ("Dashboard exports (column sweep, tests_example): the footnote stops saying the numbers are invented",
+     "assert_dash_tests_are_labelled_example",
+     {"sql": ["update exports.export_dash_tests_example set footnote = '* measured'"]}),
+    ("Dashboard exports (shape): the monthly export loses a month (row count 20)",
+     "export_dash_monthly,test_name:expect_table_row_count_to_equal",
+     {"sql": ["delete from exports.export_dash_monthly where year_month = '2017-06'"]}),
+    ("Dashboard exports (shape): a seller appears twice (unique seller_id)",
+     "export_dash_sellers,test_name:unique",
+     {"sql": ["insert into exports.export_dash_sellers select * from exports.export_dash_sellers where rank_by_late_after_late_handoff = 5"]}),
+    ("Dashboard exports (shape): a ramp phase has a name the chart does not know",
+     "export_dash_review_ramp,test_name:accepted_values",
+     {"sql": ["update exports.export_dash_review_ramp set phase = 'plateau' where days_past_promise_capped = 12"]}),
+    ("Dashboard exports (shape): a seller in the export is not in dim_seller",
+     "export_dash_sellers,test_name:relationships",
+     {"sql": ["update exports.export_dash_sellers set seller_id = 'zzz_unknown_seller' where rank_by_late_after_late_handoff = 7"]}),
 ]
 
 # Titles: the story and memo titles say "linked to", not cause; story/check_titles.py
@@ -592,6 +875,44 @@ def run_title_check(name, extra_env=None):
     res = [(f"title {name}", "pass" if l.startswith("PASS") else "fail", l.split(": ", 1)[1]) for l in hits]
     return (0 if res and all(r[1] == "pass" for r in res) else 1), res
 
+WORKER_SCRIPT = os.path.join(ROOT, "scripts", "dbt_test_worker.py")
+USE_WORKER = os.environ.get("PROVE_NO_WORKER", "") == ""   # PROVE_NO_WORKER=1: one `dbt test` process per run, the slow way (to compare)
+
+def wants_worker(selector, mut):
+    """dbt-test cases that leave the project files and the raw files alone can share a parsed project (see dbt_test_worker.py)."""
+    return USE_WORKER and not selector.startswith(("ontology:", "titles:")) and "raw_edit" not in mut and "model_edit" not in mut
+
+class DbtWorker:
+    """One warm `dbt test` process with its own warehouse file, named olist.duckdb so every run compiles against the same database name."""
+    def __init__(self, slot):
+        os.makedirs(slot)
+        self.db = os.path.join(slot, "olist.duckdb")
+        self.fresh_db()
+        env = dict(os.environ, OLIST_DB_PATH=self.db, OLIST_RAW_DIR=os.path.abspath(RAW), DBT_PROFILES_DIR=ROOT)
+        self.proc = subprocess.Popen([sys.executable, WORKER_SCRIPT, os.path.join(slot, "target")], cwd=ROOT, env=env,
+                                     stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
+
+    def fresh_db(self):
+        """An untouched copy of the warehouse at this worker's fixed path."""
+        shutil.copy(DB, self.db)
+        return self.db
+
+    def run(self, selector):
+        self.proc.stdin.write(json.dumps({"selector": selector}) + "\n"); self.proc.stdin.flush()
+        for line in self.proc.stdout:
+            if line.startswith("@@RESULT@@"):
+                out = json.loads(line[len("@@RESULT@@"):])
+                assert "error" not in out, f"dbt worker failed on {selector!r}: {out['error']}"
+                # same shape as run_tests: the test's name, its status, its failing-row count
+                for uid, st, fl, msg in out["results"]:
+                    if st == "error":   # an error is not a failing check: show why, so a broken run is not mistaken for a proof
+                        print(f"  dbt error in {uid} ({selector}): {msg}", file=sys.stderr, flush=True)
+                return out["rc"], [(uid.split(".")[-2] if uid.count(".") > 2 else uid, st, fl) for uid, st, fl, _ in out["results"]]
+        raise RuntimeError(f"dbt worker exited while running {selector!r}")
+
+    def close(self):
+        self.proc.stdin.close(); self.proc.wait(timeout=60)
+
 def run_tests(selector, db, raw, extra_env=None, proj=None):
     proj = proj or ROOT
     if selector.startswith("titles:"):
@@ -609,7 +930,7 @@ def run_tests(selector, db, raw, extra_env=None, proj=None):
     shutil.rmtree(tp, ignore_errors=True)
     return p.returncode, [(r["unique_id"].split(".")[-2] if r["unique_id"].count(".") > 2 else r["unique_id"], r["status"], r.get("failures")) for r in res]
 
-PROJECT_FILES = ("dbt_project.yml", "profiles.yml", "packages.yml", "package-lock.yml", "models", "macros", "tests", "seeds", "evidence", "dbt_packages")
+PROJECT_FILES = ("dbt_project.yml", "profiles.yml", "packages.yml", "package-lock.yml", "models", "macros", "tests", "seeds", "evidence", "story/data", "dbt_packages")
 
 def project_copy(edit, work):
     """A copy of the dbt project (only what dbt needs) with one model file edited; the real files are never touched."""
@@ -650,48 +971,7 @@ def raw_copy(edit):
         open(os.path.join(d, name), "w", encoding="utf-8").writelines(lines)
     return d
 
-def main():
-    if not os.path.exists(DB):
-        sys.exit(f"no warehouse at {DB}; run `make build` first")
-    work = tempfile.mkdtemp(prefix="mutation-")
-    report = []
-    only = sys.argv[1] if len(sys.argv) > 1 else ""   # optional substring filter on the rule name (quick reruns)
-    for rule, selector, mut in CASES:
-        if only not in rule:
-            continue
-        t0 = time.time()
-        base_db = os.path.join(work, "baseline.duckdb"); shutil.copy(DB, base_db)
-        raw_clean = raw_copy(None)
-        b_rc, b_res = run_tests(selector, base_db, raw_clean)
-        mut_db = os.path.join(work, "mutant.duckdb"); shutil.copy(DB, mut_db)
-        raw_mut = raw_copy(mut.get("raw_edit"))
-        doc_env = edited_docs(mut, work) if set(DOC_EDITS) & set(mut) else None
-        if "title_replace" in mut:
-            doc_env = edited_titles(mut, work)
-        if "sql" in mut:
-            con = duckdb.connect(mut_db)
-            for s in mut["sql"]:
-                con.execute(s)
-            con.close()
-        proj = None
-        if "model_edit" in mut:
-            proj = project_copy(mut["model_edit"], work)
-            rebuild_models(proj, mut["model_edit"]["rebuild"], mut_db, raw_mut)
-        m_rc, m_res = run_tests(selector, mut_db, raw_mut, doc_env, proj)
-        if proj: shutil.rmtree(proj, ignore_errors=True)
-        for p in (base_db, mut_db): os.remove(p)
-        shutil.rmtree(raw_clean, ignore_errors=True); shutil.rmtree(raw_mut, ignore_errors=True)
-        base_ok = b_rc == 0 and b_res and all(s == "pass" for _, s, _ in b_res)
-        mut_fail = m_rc != 0 and any(s in ("fail", "error") for _, s, _ in m_res)
-        verdict = "PROVEN" if (base_ok and mut_fail) else "NOT PROVEN"
-        report.append({"rule": rule, "selector": selector, "mutation": mut, "baseline": b_res,
-                       "mutant": m_res, "verdict": verdict, "seconds": round(time.time() - t0, 1)})
-        print(f"{verdict:11s} {rule}  baseline={len(b_res)} tests, all pass: {base_ok} | mutant failing: {[(n, s, f) for n, s, f in m_res if s != 'pass']}", flush=True)
-    shutil.rmtree(work, ignore_errors=True)
-    if only:
-        bad = [r for r in report if r["verdict"] != "PROVEN"]
-        print(f"\n{len(report) - len(bad)}/{len(report)} selected rules proven (evidence/ not rewritten)")
-        sys.exit(1 if bad else 0)
+def write_evidence(report):
     os.makedirs(os.path.join(ROOT, "evidence"), exist_ok=True)
     json.dump(report, open(os.path.join(ROOT, "evidence", "mutation_report.json"), "w"), indent=1)
     with open(os.path.join(ROOT, "evidence", "mutation_report.md"), "w") as f:
@@ -703,6 +983,99 @@ def main():
             mut = m.get("sql") or [f"{k}: {m[k]}" for k in ("raw_edit", "model_edit", "title_replace") + DOC_EDITS if k in m]
             f.write(f"| {r['rule']} | `{r['selector']}` | {'<br>'.join('`'+m.replace('|','\\|')+'`' for m in mut)} | "
                     f"{', '.join(s for _, s, _ in r['baseline'])} | {', '.join(f'{s} ({n})' for _, s, n in r['mutant'])} | **{r['verdict']}** |\n")
+
+MERGE = "--merge" in sys.argv   # with a filter: write the selected rules into evidence/ instead of leaving it alone
+
+
+def main():
+    if not os.path.exists(DB):
+        sys.exit(f"no warehouse at {DB}; run `make build` first")
+    work = tempfile.mkdtemp(prefix="mutation-")
+    only = next((a for a in sys.argv[1:] if not a.startswith("--")), "")   # optional substring filter on the rule name (quick reruns)
+    selected = [c for c in CASES if only in c[0]]
+    # The baseline (real warehouse, real raw files) does not depend on the mutation, so each selector is run once and shared.
+    baselines, locks, guard = {}, {}, threading.Lock()
+    mine, workers = threading.local(), []   # each pool thread owns one warm dbt process and its warehouse file
+
+    def my_worker():
+        if getattr(mine, "w", None) is None:
+            with guard:
+                mine.w = DbtWorker(os.path.join(work, f"slot-{len(workers)}")); workers.append(mine.w)
+        return mine.w
+
+    def baseline(selector):
+        with guard:
+            lock = locks.setdefault(selector, threading.Lock())
+        with lock:
+            if selector not in baselines:
+                if wants_worker(selector, {}):
+                    w = my_worker(); w.fresh_db()
+                    baselines[selector] = w.run(selector)
+                else:
+                    d = tempfile.mkdtemp(prefix="base-", dir=work)
+                    base_db = os.path.join(d, "baseline.duckdb"); shutil.copy(DB, base_db)
+                    raw_clean = raw_copy(None)
+                    baselines[selector] = run_tests(selector, base_db, raw_clean)
+                    os.remove(base_db); shutil.rmtree(raw_clean, ignore_errors=True)
+            return baselines[selector]
+
+    def run_case(case):
+        rule, selector, mut = case
+        t0 = time.time()
+        b_rc, b_res = baseline(selector)
+        cdir = tempfile.mkdtemp(prefix="case-", dir=work)
+        w = my_worker() if wants_worker(selector, mut) else None
+        if w:
+            mut_db, raw_mut = w.fresh_db(), None
+        else:
+            mut_db = os.path.join(cdir, "mutant.duckdb"); shutil.copy(DB, mut_db)
+            raw_mut = raw_copy(mut.get("raw_edit"))
+        doc_env = edited_docs(mut, cdir) if set(DOC_EDITS) & set(mut) else None
+        if "title_replace" in mut:
+            doc_env = edited_titles(mut, cdir)
+        if "sql" in mut:
+            con = duckdb.connect(mut_db)
+            for stmt in mut["sql"]:
+                con.execute(stmt)
+            con.close()
+        proj = None
+        if "model_edit" in mut:
+            proj = project_copy(mut["model_edit"], cdir)
+            rebuild_models(proj, mut["model_edit"]["rebuild"], mut_db, raw_mut)
+        m_rc, m_res = w.run(selector) if w else run_tests(selector, mut_db, raw_mut, doc_env, proj)
+        shutil.rmtree(cdir, ignore_errors=True)
+        if raw_mut: shutil.rmtree(raw_mut, ignore_errors=True)
+        base_ok = b_rc == 0 and b_res and all(st == "pass" for _, st, _ in b_res)
+        mut_fail = m_rc != 0 and any(st == "fail" for _, st, _ in m_res)   # an error is a broken run, not a test that caught the mistake
+        verdict = "PROVEN" if (base_ok and mut_fail) else "NOT PROVEN"
+        print(f"{verdict:11s} {time.time() - t0:5.1f}s {rule}  baseline={len(b_res)} tests, all pass: {base_ok} | mutant failing: {[(n, st, f) for n, st, f in m_res if st != 'pass']}", flush=True)
+        return {"rule": rule, "selector": selector, "mutation": mut, "baseline": sorted(b_res),
+                "mutant": sorted(m_res), "verdict": verdict}   # sorted, and no timings, so a rerun writes the same file
+
+    # Cases are independent (own warehouse copy, own project copy, own dbt target path), so run a few at once.
+    # PROVE_JOBS=1 runs them one by one. The report keeps the order of CASES.
+    jobs = max(1, int(os.environ.get("PROVE_JOBS", min(4, os.cpu_count() or 1))))
+    with concurrent.futures.ThreadPoolExecutor(max_workers=jobs) as pool:
+        report = list(pool.map(run_case, selected))
+    for w in workers: w.close()
+    shutil.rmtree(work, ignore_errors=True)
+    if only and MERGE:
+        # Add or replace just these rules in the committed report, keeping the order of CASES (what a full run would write).
+        path = os.path.join(ROOT, "evidence", "mutation_report.json")
+        old_report = {r["rule"]: r for r in json.load(open(path))}
+        new_report = {r["rule"]: r for r in report}
+        merged = [new_report.get(rule) or old_report[rule] for rule, _, _ in CASES if rule in new_report or rule in old_report]
+        for r, (_, _, mut) in zip(merged, [c for c in CASES if c[0] in new_report or c[0] in old_report]):
+            r["mutation"] = mut   # JSON turns tuples into lists; keep the text of the rows already in the report unchanged
+        write_evidence(merged)
+        bad = [r for r in report if r["verdict"] != "PROVEN"]
+        print(f"\n{len(report) - len(bad)}/{len(report)} selected rules proven; merged into evidence/ ({len(merged)} rules in the report)")
+        sys.exit(1 if bad else 0)
+    if only:
+        bad = [r for r in report if r["verdict"] != "PROVEN"]
+        print(f"\n{len(report) - len(bad)}/{len(report)} selected rules proven (evidence/ not rewritten)")
+        sys.exit(1 if bad else 0)
+    write_evidence(report)
     bad = [r for r in report if r["verdict"] != "PROVEN"]
     print(f"\n{len(report) - len(bad)}/{len(report)} rules proven able to fail")
     sys.exit(1 if bad else 0)

@@ -22,8 +22,7 @@
     1
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 15.1
+  "verdict": "PROVEN"
  },
  {
   "rule": "Raw row counts are as published",
@@ -36,12 +35,12 @@
   },
   "baseline": [
    [
-    "dbt_expectations_source_expect_table_row_count_to_equal_olist_raw_olist_orders_dataset_99441",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
     "pass",
     0
    ],
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
+    "dbt_expectations_source_expect_table_row_count_to_equal_olist_raw_olist_orders_dataset_99441",
     "pass",
     0
    ]
@@ -58,8 +57,7 @@
     1
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 13.2
+  "verdict": "PROVEN"
  },
  {
   "rule": "Staging keeps every raw row",
@@ -71,17 +69,17 @@
   },
   "baseline": [
    [
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_fct_orders_ref_stg_orders_",
+    "pass",
+    0
+   ],
+   [
     "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_delivery_ref_stg_orders_",
     "pass",
     0
    ],
    [
     "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
-    "pass",
-    0
-   ],
-   [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_fct_orders_ref_stg_orders_",
     "pass",
     0
    ],
@@ -113,8 +111,7 @@
     1
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 13.2
+  "verdict": "PROVEN"
  },
  {
   "rule": "Modeling never creates or loses money (no fan-out)",
@@ -138,8 +135,7 @@
     1
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 13.2
+  "verdict": "PROVEN"
  },
  {
   "rule": "Repeat metrics count people, not per-order ids",
@@ -163,8 +159,7 @@
     5
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 15.2
+  "verdict": "PROVEN"
  },
  {
   "rule": "A multi-seller order is never treated as a single observed parcel",
@@ -188,8 +183,7 @@
     1
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 13.9
+  "verdict": "PROVEN"
  },
  {
   "rule": "A review dated before delivery is flagged",
@@ -213,8 +207,7 @@
     1
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 13.3
+  "verdict": "PROVEN"
  },
  {
   "rule": "Paid equals items + freight, or the order is labeled",
@@ -238,8 +231,7 @@
     1
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 13.7
+  "verdict": "PROVEN"
  },
  {
   "rule": "Real payment gaps stay under 0.5% of orders",
@@ -265,8 +257,7 @@
     1
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 12.6
+  "verdict": "PROVEN"
  },
  {
   "rule": "Only full months are in the analysis window",
@@ -290,8 +281,7 @@
     20
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 13.0
+  "verdict": "PROVEN"
  },
  {
   "rule": "Delivery state agrees with status and dates",
@@ -315,8 +305,7 @@
     14
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 12.5
+  "verdict": "PROVEN"
  },
  {
   "rule": "Orders without items are labeled no_items",
@@ -340,8 +329,7 @@
     775
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 12.7
+  "verdict": "PROVEN"
  },
  {
   "rule": "Exactly one chosen review per reviewed order",
@@ -365,8 +353,7 @@
     1
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 13.3
+  "verdict": "PROVEN"
  },
  {
   "rule": "Every order's purchase date exists in dim_date",
@@ -378,7 +365,7 @@
   },
   "baseline": [
    [
-    "relationships_fct_orders_purchase_date__date_day__ref_dim_date_",
+    "relationships_fct_order_items_order_id__order_id__ref_fct_orders_",
     "pass",
     0
    ],
@@ -388,7 +375,7 @@
     0
    ],
    [
-    "relationships_fct_order_items_order_id__order_id__ref_fct_orders_",
+    "relationships_fct_orders_purchase_date__date_day__ref_dim_date_",
     "pass",
     0
    ],
@@ -410,11 +397,6 @@
   ],
   "mutant": [
    [
-    "relationships_fct_orders_purchase_date__date_day__ref_dim_date_",
-    "fail",
-    4
-   ],
-   [
     "relationships_fct_order_items_order_id__order_id__ref_fct_orders_",
     "pass",
     0
@@ -423,6 +405,11 @@
     "relationships_fct_orders_customer_unique_id__customer_unique_id__ref_dim_customer_",
     "pass",
     0
+   ],
+   [
+    "relationships_fct_orders_purchase_date__date_day__ref_dim_date_",
+    "fail",
+    4
    ],
    [
     "relationships_fct_payments_order_id__order_id__ref_fct_orders_",
@@ -440,8 +427,7 @@
     0
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 13.1
+  "verdict": "PROVEN"
  },
  {
   "rule": "One location per zip",
@@ -465,8 +451,7 @@
     1
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 13.0
+  "verdict": "PROVEN"
  },
  {
   "rule": "Zip locations are inside Brazil",
@@ -500,8 +485,7 @@
     0
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 13.2
+  "verdict": "PROVEN"
  },
  {
   "rule": "Payment types are known values",
@@ -525,8 +509,7 @@
     1
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 12.7
+  "verdict": "PROVEN"
  },
  {
   "rule": "Trend metrics never include a partial month",
@@ -550,8 +533,7 @@
     1
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 12.4
+  "verdict": "PROVEN"
  },
  {
   "rule": "Review-cost number ties to the causal analysis and the story (6,366 / 3,110 / 26.7%)",
@@ -575,8 +557,7 @@
     3
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 13.5
+  "verdict": "PROVEN"
  },
  {
   "rule": "Review-cost bins count the same late orders the analysis saw",
@@ -600,8 +581,7 @@
     1
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 13.1
+  "verdict": "PROVEN"
  },
  {
   "rule": "Late-rate targets tie to the story numbers (94,931 / 6,518 / 11,635 / 2.27 stars)",
@@ -626,8 +606,7 @@
     2
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 12.8
+  "verdict": "PROVEN"
  },
  {
   "rule": "Late-rate control limits are fully fitted (the last pass sets aside no further month)",
@@ -651,8 +630,7 @@
     1
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 13.0
+  "verdict": "PROVEN"
  },
  {
   "rule": "Limits (S1/M2): sigma_z divides by 1.0 instead of the 1.128 constant of the moving-range method",
@@ -671,37 +649,22 @@
   },
   "baseline": [
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
-    "pass",
-    0
-   ],
-   [
     "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
     "pass",
     0
    ],
    [
-    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
     "pass",
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_monthly_20",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_summary_1",
     "pass",
     0
    ],
@@ -721,7 +684,27 @@
     0
    ],
    [
-    "not_null_metric_late_rate_control_chart_orders",
+    "not_null_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_extra_bad_reviews",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_worst3_months_label",
     "pass",
     0
    ],
@@ -731,17 +714,22 @@
     0
    ],
    [
+    "not_null_metric_late_rate_control_chart_orders",
+    "pass",
+    0
+   ],
+   [
     "not_null_metric_late_rate_control_chart_year_month",
     "pass",
     0
    ],
    [
-    "not_null_metric_late_rate_targets_goal_late_rate",
+    "not_null_metric_late_rate_targets_alarm_line_late_rate",
     "pass",
     0
    ],
    [
-    "not_null_metric_late_rate_targets_alarm_line_late_rate",
+    "not_null_metric_late_rate_targets_goal_late_rate",
     "pass",
     0
    ],
@@ -752,6 +740,81 @@
    ],
    [
     "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_year_month",
     "pass",
     0
    ],
@@ -763,6 +826,141 @@
   ],
   "mutant": [
    [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_monthly_20",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_summary_1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_extra_bad_reviews",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_worst3_months_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_laney_signal",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_orders",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_safe_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "fail",
+    3
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "fail",
+    2
+   ],
+   [
     "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
     "pass",
     0
@@ -778,72 +976,22 @@
     0
    ],
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
-    "fail",
-    2
-   ],
-   [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
-    "pass",
-    0
-   ],
-   [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
     "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
     "pass",
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "unique_export_dash_monthly_late_orders_rank",
     "pass",
     0
    ],
    [
-    "not_null_metric_late_rate_control_chart_laney_signal",
+    "unique_export_dash_monthly_month_label",
     "pass",
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_control_chart_orders",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_control_chart_year_month",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_safe_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "unique_export_dash_monthly_year_month",
     "pass",
     0
    ],
@@ -853,8 +1001,7 @@
     0
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 19.8
+  "verdict": "PROVEN"
  },
  {
   "rule": "Goals (S1/M3): the goals use the median instead of the 25th percentile of the stable months",
@@ -874,37 +1021,22 @@
   },
   "baseline": [
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
-    "pass",
-    0
-   ],
-   [
     "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
     "pass",
     0
    ],
    [
     "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_monthly_20",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_summary_1",
     "pass",
     0
    ],
@@ -920,6 +1052,31 @@
    ],
    [
     "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_extra_bad_reviews",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_worst3_months_label",
     "pass",
     0
    ],
@@ -955,6 +1112,81 @@
    ],
    [
     "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_year_month",
     "pass",
     0
    ],
@@ -966,37 +1198,7 @@
   ],
   "mutant": [
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
-    "fail",
-    1
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
-    "fail",
-    1
-   ],
-   [
     "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
     "pass",
     0
    ],
@@ -1006,7 +1208,52 @@
     0
    ],
    [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_monthly_20",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_summary_1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
     "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_extra_bad_reviews",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_worst3_months_label",
     "pass",
     0
    ],
@@ -1021,17 +1268,12 @@
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "not_null_metric_late_rate_control_chart_year_month",
     "pass",
     0
    ],
    [
     "not_null_metric_late_rate_targets_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_control_chart_year_month",
     "pass",
     0
    ],
@@ -1051,13 +1293,87 @@
     0
    ],
    [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "fail",
+    1
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "fail",
+    1
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
     "unique_metric_late_rate_control_chart_year_month",
     "pass",
     0
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 20.0
+  "verdict": "PROVEN"
  },
  {
   "rule": "Goals (S1/M4): the stable-month filter is dropped, so thin and flagged months count as stable",
@@ -1076,22 +1392,7 @@
   },
   "baseline": [
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
     "pass",
     0
    ],
@@ -1101,12 +1402,12 @@
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_monthly_20",
     "pass",
     0
    ],
    [
-    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_summary_1",
     "pass",
     0
    ],
@@ -1126,6 +1427,31 @@
     0
    ],
    [
+    "not_null_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_extra_bad_reviews",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_worst3_months_label",
+    "pass",
+    0
+   ],
+   [
     "not_null_metric_late_rate_control_chart_laney_signal",
     "pass",
     0
@@ -1141,11 +1467,6 @@
     0
    ],
    [
-    "not_null_metric_late_rate_targets_safe_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
     "not_null_metric_late_rate_targets_alarm_line_late_rate",
     "pass",
     0
@@ -1156,7 +1477,87 @@
     0
    ],
    [
+    "not_null_metric_late_rate_targets_safe_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
     "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_year_month",
     "pass",
     0
    ],
@@ -1168,37 +1569,22 @@
   ],
   "mutant": [
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
-    "fail",
-    5
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
-    "fail",
-    4
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
-    "pass",
-    0
-   ],
-   [
     "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
     "pass",
     0
    ],
    [
     "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_monthly_20",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_summary_1",
     "pass",
     0
    ],
@@ -1214,6 +1600,31 @@
    ],
    [
     "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_extra_bad_reviews",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_worst3_months_label",
     "pass",
     0
    ],
@@ -1253,13 +1664,87 @@
     0
    ],
    [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "fail",
+    5
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "fail",
+    4
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
     "unique_metric_late_rate_control_chart_year_month",
     "pass",
     0
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 19.6
+  "verdict": "PROVEN"
  },
  {
   "rule": "Goals (S1/M4b): only the thin-month part of the stable filter is dropped",
@@ -1278,32 +1763,7 @@
   },
   "baseline": [
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
     "pass",
     0
    ],
@@ -1313,7 +1773,17 @@
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_monthly_20",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_summary_1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
     "pass",
     0
    ],
@@ -1324,6 +1794,31 @@
    ],
    [
     "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_extra_bad_reviews",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_worst3_months_label",
     "pass",
     0
    ],
@@ -1348,17 +1843,92 @@
     0
    ],
    [
-    "not_null_metric_late_rate_targets_safe_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
     "not_null_metric_late_rate_targets_goal_late_rate",
     "pass",
     0
    ],
    [
+    "not_null_metric_late_rate_targets_safe_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
     "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_year_month",
     "pass",
     0
    ],
@@ -1369,6 +1939,141 @@
    ]
   ],
   "mutant": [
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_monthly_20",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_summary_1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_extra_bad_reviews",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_worst3_months_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_laney_signal",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_orders",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_safe_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "fail",
+    5
+   ],
    [
     "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
     "pass",
@@ -1385,72 +2090,22 @@
     0
    ],
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
-    "fail",
-    5
-   ],
-   [
     "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
     "pass",
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "unique_export_dash_monthly_late_orders_rank",
     "pass",
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "unique_export_dash_monthly_month_label",
     "pass",
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_control_chart_laney_signal",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_control_chart_orders",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_control_chart_year_month",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_safe_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "unique_export_dash_monthly_year_month",
     "pass",
     0
    ],
@@ -1460,8 +2115,7 @@
     0
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 20.3
+  "verdict": "PROVEN"
  },
  {
   "rule": "Goals (S1/M4c): only the Laney-signal part of the stable filter is dropped",
@@ -1480,42 +2134,27 @@
   },
   "baseline": [
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
     "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
     "pass",
     0
    ],
    [
     "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_monthly_20",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_summary_1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
     "pass",
     0
    ],
@@ -1530,12 +2169,37 @@
     0
    ],
    [
-    "not_null_metric_late_rate_control_chart_orders",
+    "not_null_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_extra_bad_reviews",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_worst3_months_label",
     "pass",
     0
    ],
    [
     "not_null_metric_late_rate_control_chart_laney_signal",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_orders",
     "pass",
     0
    ],
@@ -1550,17 +2214,92 @@
     0
    ],
    [
-    "not_null_metric_late_rate_targets_safe_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
     "not_null_metric_late_rate_targets_goal_late_rate",
     "pass",
     0
    ],
    [
+    "not_null_metric_late_rate_targets_safe_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
     "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_year_month",
     "pass",
     0
    ],
@@ -1572,7 +2311,132 @@
   ],
   "mutant": [
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_monthly_20",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_summary_1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_extra_bad_reviews",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_worst3_months_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_laney_signal",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_orders",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_safe_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
     "pass",
     0
    ],
@@ -1580,6 +2444,11 @@
     "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
     "fail",
     5
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
    ],
    [
     "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
@@ -1597,62 +2466,17 @@
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "unique_export_dash_monthly_late_orders_rank",
     "pass",
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "unique_export_dash_monthly_month_label",
     "pass",
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_control_chart_orders",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_control_chart_laney_signal",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_control_chart_year_month",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_safe_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "unique_export_dash_monthly_year_month",
     "pass",
     0
    ],
@@ -1662,8 +2486,7 @@
     0
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 20.6
+  "verdict": "PROVEN"
  },
  {
   "rule": "Limits (S1/M5): the moving range counts months that were set aside (sigma_z 4.93 -> about 10)",
@@ -1682,12 +2505,142 @@
   },
   "baseline": [
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_monthly_20",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_summary_1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_extra_bad_reviews",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_worst3_months_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_laney_signal",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_orders",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_safe_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
     "pass",
     0
    ],
    [
     "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
     "pass",
     0
    ],
@@ -1707,62 +2660,17 @@
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "unique_export_dash_monthly_late_orders_rank",
     "pass",
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "unique_export_dash_monthly_month_label",
     "pass",
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_control_chart_orders",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_control_chart_laney_signal",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_control_chart_year_month",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_safe_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "unique_export_dash_monthly_year_month",
     "pass",
     0
    ],
@@ -1774,27 +2682,7 @@
   ],
   "mutant": [
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
-    "fail",
-    11
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
-    "fail",
-    10
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
     "pass",
     0
    ],
@@ -1804,7 +2692,12 @@
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_monthly_20",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_summary_1",
     "pass",
     0
    ],
@@ -1814,12 +2707,37 @@
     0
    ],
    [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "pass",
+    0
+   ],
+   [
     "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
     "pass",
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "not_null_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_extra_bad_reviews",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_worst3_months_label",
     "pass",
     0
    ],
@@ -1859,13 +2777,87 @@
     0
    ],
    [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "fail",
+    13
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "fail",
+    11
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "fail",
+    10
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
     "unique_metric_late_rate_control_chart_year_month",
     "pass",
     0
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 21.9
+  "verdict": "PROVEN"
  },
  {
   "rule": "Goal line (M6): the goal uses the 60th percentile of the stable months instead of the median (4.43%)",
@@ -1884,27 +2876,7 @@
   },
   "baseline": [
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
     "pass",
     0
    ],
@@ -1914,12 +2886,12 @@
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_monthly_20",
     "pass",
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_summary_1",
     "pass",
     0
    ],
@@ -1929,7 +2901,37 @@
     0
    ],
    [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "pass",
+    0
+   ],
+   [
     "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_extra_bad_reviews",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_worst3_months_label",
     "pass",
     0
    ],
@@ -1939,22 +2941,22 @@
     0
    ],
    [
-    "not_null_metric_late_rate_control_chart_year_month",
-    "pass",
-    0
-   ],
-   [
     "not_null_metric_late_rate_control_chart_orders",
     "pass",
     0
    ],
    [
-    "not_null_metric_late_rate_targets_goal_late_rate",
+    "not_null_metric_late_rate_control_chart_year_month",
     "pass",
     0
    ],
    [
     "not_null_metric_late_rate_targets_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_goal_late_rate",
     "pass",
     0
    ],
@@ -1969,12 +2971,222 @@
     0
    ],
    [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
     "unique_metric_late_rate_control_chart_year_month",
     "pass",
     0
    ]
   ],
   "mutant": [
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_monthly_20",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_summary_1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_extra_bad_reviews",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_worst3_months_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_laney_signal",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_orders",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_safe_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "fail",
+    2
+   ],
    [
     "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
     "pass",
@@ -1991,67 +3203,22 @@
     0
    ],
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
-    "fail",
-    2
-   ],
-   [
     "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
     "pass",
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "unique_export_dash_monthly_late_orders_rank",
     "pass",
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "unique_export_dash_monthly_month_label",
     "pass",
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
-    "pass",
-    0
-   ],
-   [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_control_chart_laney_signal",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_control_chart_year_month",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_control_chart_orders",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "unique_export_dash_monthly_year_month",
     "pass",
     0
    ],
@@ -2059,15 +3226,9 @@
     "unique_metric_late_rate_control_chart_year_month",
     "pass",
     0
-   ],
-   [
-    "not_null_metric_late_rate_targets_safe_goal_late_rate",
-    "pass",
-    0
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 20.5
+  "verdict": "PROVEN"
  },
  {
   "rule": "Review ramp ties to the story: bad reviews moved from day 10 to day -5 (totals unchanged; 8.7% and 78% move)",
@@ -2092,8 +3253,7 @@
     2
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 13.0
+  "verdict": "PROVEN"
  },
  {
   "rule": "Review ramp ties to the story: bad reviews moved from day 1 to day 5 (only the 11-a-day slope moves)",
@@ -2118,8 +3278,7 @@
     1
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 13.2
+  "verdict": "PROVEN"
  },
  {
   "rule": "Review cost: the range the story quotes (2,880 to 3,350) drifts in the causal report",
@@ -2150,8 +3309,7 @@
     1
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 19.3
+  "verdict": "PROVEN"
  },
  {
   "rule": "Review cost: the dbt total leaves the range across specifications (and the whole-% share moves off 27)",
@@ -2175,8 +3333,7 @@
     5
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 14.4
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: an order has exactly one row (no order with two customers)",
@@ -2200,8 +3357,7 @@
     "rows=99442 (card 99441), distinct keys=99441, null keys=0"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.2
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: every customer has at least one order",
@@ -2225,8 +3381,7 @@
     "nulls=0 (card 0), orphans=0 (card 0), children per parent 0..17 (card 1..many)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.1
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: every item's product exists",
@@ -2250,8 +3405,7 @@
     "nulls=0 (card 0), orphans=1 (card 0), children per parent 1..527 (card 1..many)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.1
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: every survey response belongs to a real order",
@@ -2275,8 +3429,7 @@
     "nulls=0 (card 0), orphans=1 (card 0), children per parent 0..3 (card 0..many)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.5
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: an order never has two chosen reviews",
@@ -2300,8 +3453,7 @@
     "nulls=0 (card 0), orphans=0 (card 0), children per parent 0..2 (card 0..1)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.1
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: no new unknown ship-to locations beyond the documented 278",
@@ -2325,8 +3477,7 @@
     "nulls=0 (card 0), orphans=279 (card 278), children per parent 0..142 (card 0..many)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.2
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology stage rule: late always means delivered after the promised day",
@@ -2350,8 +3501,7 @@
     "count=1 (card 0)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.5
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: the repeat cohort has one row per person (no duplicate person)",
@@ -2375,8 +3525,7 @@
     "rows=77561 (card 77560), distinct keys=77560, null keys=0"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.4
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: every cohort person is a real customer",
@@ -2400,8 +3549,7 @@
     "nulls=0 (card 0), orphans=1 (card 0), children per parent 0..1 (card 0..1)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.2
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: purchased_at is never null",
@@ -2425,8 +3573,7 @@
     "type TIMESTAMP (card TIMESTAMP); nulls 1 (card 0); holds [purchase_date = cast(purchased_at as date)]: 1 violations"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.1
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: purchased_at keeps its TIMESTAMP type (a DATE would lose the 24-hour rule)",
@@ -2450,8 +3597,7 @@
     "type DATE (card TIMESTAMP); nulls 0 (card 0); holds [purchase_date = cast(purchased_at as date)]: 0 violations"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.2
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: n_parcels is 0, not null, for an order with no items",
@@ -2475,8 +3621,7 @@
     "type BIGINT (card BIGINT); nulls 1 (card 0); holds [(n_parcels = 0) = (n_items = 0)]: 1 violations"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.9
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: in_analysis_window is never null",
@@ -2500,8 +3645,7 @@
     "type BOOLEAN (card BOOLEAN); nulls 1 (card 0); holds [in_analysis_window = (purchase_date between date '2017-01-01' and date '2018-08-31')]: 1 violations"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.0
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: review_score is null only when the order has no response",
@@ -2525,8 +3669,7 @@
     "type INTEGER (card INTEGER); nulls 769 (card 768); null exactly when [review_id is null]: 1 violations; holds [review_score is null or review_score between 1 and 5]: 0 violations"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.5
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: review_score never holds a value outside 1 to 5",
@@ -2550,8 +3693,7 @@
     "type INTEGER (card INTEGER); nulls 768 (card 768); null exactly when [review_id is null]: 0 violations; holds [review_score is null or review_score between 1 and 5]: 1 violations"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.2
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: the repeat flag is never null",
@@ -2575,8 +3717,7 @@
     "type BOOLEAN (card BOOLEAN); nulls 1 (card 0)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.1
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: the canceled count and the 6 canceled orders with a delivery date",
@@ -2600,8 +3741,7 @@
     "order_status = 'canceled': 625 (card 625); order_status = 'canceled' and delivered_to_customer_at is not null: 5 (card 6); order_status = 'canceled' and delivery_state = 'status_date_conflict': 6 (card 6); order_status = 'canceled' and delivery_state = 'not_delivered': 619 (card 619); order_status = 'canceled' and n_items = 0: 164 (card 164)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.1
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: placed an order versus qualifying order (1,113 people with no qualifying order)",
@@ -2625,8 +3765,7 @@
     "n_orders >= 1: 96096 (card 96096); n_qualifying_orders >= 1: 94982 (card 94983); n_qualifying_orders = 0: 1114 (card 1113)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.1
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: the order count with no parcels (n_parcels = 0)",
@@ -2650,8 +3789,7 @@
     "n_parcels = 0: 774 (card 775); n_parcels = 1: 97389 (card 97388); n_parcels > 1: 1278 (card 1278)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.2
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: the analysis-window flag counts (349 outside)",
@@ -2675,8 +3813,7 @@
     "in_analysis_window: 99091 (card 99092); not in_analysis_window: 350 (card 349)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.5
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: the repeat cohort is everyone old enough (77,560 and the 17,423 left out)",
@@ -2700,8 +3837,7 @@
     "count=1 (card 0)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.5
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: first_order_at is the purchased_at of the seq = 1 order",
@@ -2725,8 +3861,7 @@
     "count=1 (card 0)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.9
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: the headline metric table has its 5 rows",
@@ -2750,8 +3885,7 @@
     "rows=4 (card 5), distinct keys=4, null keys=0"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.9
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: is_qualifying_order follows its rule (status and items)",
@@ -2775,8 +3909,7 @@
     "type BOOLEAN (card BOOLEAN); nulls 0 (card 0); holds [is_qualifying_order = (order_status not in ('canceled', 'unavailable') and n_items > 0)]: 1 violations"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.0
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: qualifying order counts (98,199 qualifying, 1,242 not)",
@@ -2800,8 +3933,7 @@
     "is_qualifying_order: 98200 (card 98199); not is_qualifying_order: 1241 (card 1242)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.1
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: the sequence number is null exactly for non-qualifying orders",
@@ -2825,8 +3957,7 @@
     "type BIGINT (card BIGINT); nulls 1241 (card 1242); null exactly when [not is_qualifying_order]: 1 violations; holds [customer_qualifying_order_seq is null or customer_qualifying_order_seq >= 1]: 0 violations"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.1
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: purchase_date is the calendar day of purchased_at",
@@ -2850,8 +3981,7 @@
     "type DATE (card DATE); nulls 0 (card 0); holds [purchase_date = cast(purchased_at as date)]: 1 violations"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.9
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: n_items is never null",
@@ -2875,8 +4005,7 @@
     "type BIGINT (card BIGINT); nulls 1 (card 0)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.3
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: delivered_to_customer_at has exactly 2,965 nulls",
@@ -2900,8 +4029,7 @@
     "type TIMESTAMP (card TIMESTAMP); nulls 2966 (card 2965)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.2
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: every person has at least one order (n_orders >= 1)",
@@ -2925,8 +4053,7 @@
     "type BIGINT (card BIGINT); nulls 0 (card 0); holds [n_orders >= 1]: 1 violations"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.9
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: qualifying orders never exceed orders",
@@ -2950,8 +4077,7 @@
     "type BIGINT (card BIGINT); nulls 0 (card 0); holds [n_qualifying_orders <= n_orders]: 1 violations"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.2
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: first_qualifying_order_at is null exactly when a person has no qualifying order",
@@ -2975,8 +4101,7 @@
     "type TIMESTAMP (card TIMESTAMP); nulls 1114 (card 1113); null exactly when [n_qualifying_orders = 0]: 1 violations"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.2
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: the cohort person id is never null",
@@ -3000,8 +4125,7 @@
     "type VARCHAR (card VARCHAR); nulls 1 (card 0)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.1
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: first_order_at is never null",
@@ -3025,8 +4149,7 @@
     "type TIMESTAMP (card TIMESTAMP); nulls 1 (card 0)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.8
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: first_order_date is the calendar day of first_order_at",
@@ -3050,8 +4173,7 @@
     "type DATE (card DATE); nulls 0 (card 0); holds [first_order_date = cast(first_order_at as date)]: 1 violations"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.9
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: the headline numerator is null only for the review gap",
@@ -3075,8 +4197,7 @@
     "type HUGEINT (card HUGEINT); nulls 2 (card 1); null exactly when [metric_name = 'late_review_gap_raw']: 1 violations"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.1
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: the headline denominator is never null",
@@ -3100,8 +4221,7 @@
     "type BIGINT (card BIGINT); nulls 1 (card 0)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.2
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: the headline value is never null",
@@ -3125,8 +4245,7 @@
     "type DOUBLE (card DOUBLE); nulls 1 (card 0)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.8
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: the headline metric name is never null",
@@ -3150,8 +4269,7 @@
     "type VARCHAR (card VARCHAR); nulls 1 (card 0)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.9
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology: the review score count (768 orders with none)",
@@ -3175,8 +4293,7 @@
     "review_score is null: 767 (card 768)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.0
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology fact: people with a qualifying order (94,983)",
@@ -3200,8 +4317,7 @@
     "count=94982 (card 94983)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.2
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology fact: people left out of the cohort as too recent (17,423)",
@@ -3225,8 +4341,7 @@
     "count=17424 (card 17423)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.9
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology fact: the newest qualifying purchase and the cohort cutoff",
@@ -3250,8 +4365,7 @@
     "count=0 (card 1)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.0
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology fact: one seq = 1 order per cohort person (the first-order state is unambiguous)",
@@ -3275,8 +4389,7 @@
     "count=77559 (card 77560)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.1
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology fact: seq = 1 is the earliest qualifying order",
@@ -3300,8 +4413,7 @@
     "count=1 (card 0)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.4
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology fact: same-second qualifying orders (281 pairs)",
@@ -3325,8 +4437,7 @@
     "count=280 (card 281)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.8
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology fact: the order's review_score equals the chosen response's score",
@@ -3350,8 +4461,7 @@
     "count=1 (card 0)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.9
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology card: promised_days is the days from purchase to the promised date",
@@ -3375,8 +4485,7 @@
     "type BIGINT (card BIGINT); nulls 0 (card 0); holds [promised_days = date_diff('day', purchase_date, estimated_delivery_date)]: 1 violations"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.9
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology card: paid_minus_due is amount_paid minus amount_due",
@@ -3400,8 +4509,7 @@
     "type DECIMAL(38,2) (card DECIMAL(38,2)); nulls 776 (card 776); holds [paid_minus_due is null or paid_minus_due = amount_paid - amount_due]: 1 violations"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.0
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology card: amount_due is null only on orders with no items",
@@ -3425,8 +4533,7 @@
     "type DECIMAL(38,2) (card DECIMAL(38,2)); nulls 776 (card 775); null exactly when [n_items = 0]: 1 violations"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.0
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology fact: 5,127 survey responses were sent before delivery",
@@ -3450,8 +4557,7 @@
     "count=5126 (card 5127)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.4
+  "verdict": "PROVEN"
  },
  {
   "rule": "G7 coverage: a metric table cited only as a card's model has no entity",
@@ -3473,8 +4579,7 @@
     "20 tables; undescribed: ['metrics.metric_late_rate_monthly']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.4
+  "verdict": "PROVEN"
  },
  {
   "rule": "G7 coverage: a column cited only as a metric's source has no contract",
@@ -3496,8 +4601,7 @@
     "192 columns; undescribed: ['metrics.metric_late_rate_orders.is_late']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.9
+  "verdict": "PROVEN"
  },
  {
   "rule": "G7 entity: the judged-order table has one row per judged order",
@@ -3521,8 +4625,7 @@
     "rows=94930 (card 94931), distinct keys=94930, null keys=0"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.0
+  "verdict": "PROVEN"
  },
  {
   "rule": "G7 entity: the monthly table has one row per month",
@@ -3546,8 +4649,7 @@
     "rows=21 (card 20), distinct keys=20, null keys=0"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.4
+  "verdict": "PROVEN"
  },
  {
   "rule": "G7 entity: a result table has exactly the rows on its card",
@@ -3571,8 +4673,7 @@
     "rows=3 (card 2), distinct keys=3, null keys=0"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.0
+  "verdict": "PROVEN"
  },
  {
   "rule": "G7 link: every judged order is an order",
@@ -3596,8 +4697,7 @@
     "nulls=0 (card 0), orphans=1 (card 0), children per parent 0..1 (card 0..1)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.3
+  "verdict": "PROVEN"
  },
  {
   "rule": "G7 card: is_late is exactly delivery_state = delivered_late",
@@ -3621,8 +4721,7 @@
     "type BOOLEAN (card BOOLEAN); nulls 0 (card 0); holds [is_late = (delivery_state = 'delivered_late')]: 1 violations"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.3
+  "verdict": "PROVEN"
  },
  {
   "rule": "G7 card: a judged order's review score is 1 to 5 or null",
@@ -3646,8 +4745,7 @@
     "type INTEGER (card INTEGER); nulls 629 (card 629); holds [review_score is null or review_score between 1 and 5]: 1 violations"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.2
+  "verdict": "PROVEN"
  },
  {
   "rule": "G7 card: the monthly table holds only months inside the window",
@@ -3671,8 +4769,7 @@
     "type VARCHAR (card VARCHAR); nulls 0 (card 0); holds [year_month between '2017-01' and '2018-08']: 1 violations"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.9
+  "verdict": "PROVEN"
  },
  {
   "rule": "G7 fact: 6,518 judged orders are late",
@@ -3696,8 +4793,7 @@
     "count=6519 (card 6518)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.8
+  "verdict": "PROVEN"
  },
  {
   "rule": "Card: recon_status uses only the six named values",
@@ -3721,8 +4817,7 @@
     "type VARCHAR (card VARCHAR); nulls 0 (card 0); holds [recon_status in ('match', 'minor', 'overpaid', 'underpaid', 'no_items', 'no_payment')]: 1 violations; holds [(recon_status = 'no_items') = (n_items = 0)]: 0 violations"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.4
+  "verdict": "PROVEN"
  },
  {
   "rule": "Card: review_created_on is the day of review_created_at",
@@ -3746,8 +4841,7 @@
     "type DATE (card DATE); nulls 0 (card 0); holds [review_created_on = cast(review_created_at as date)]: 1 violations"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.4
+  "verdict": "PROVEN"
  },
  {
   "rule": "Fact: one chosen response per order that has any",
@@ -3771,8 +4865,7 @@
     "count=98672 (card 98673)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.9
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage: removing a column card leaves the column undescribed",
@@ -3794,8 +4887,7 @@
     "192 columns; undescribed: ['marts.fct_orders.max_installments']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.0
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage: a new warehouse column with no card fails",
@@ -3819,8 +4911,7 @@
     "193 columns; undescribed: ['marts.dim_seller.seller_tier']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.3
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage: a new warehouse table with no card fails",
@@ -3844,8 +4935,7 @@
     "21 tables; undescribed: ['marts.fct_refunds']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.6
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage: a number shown in ONTOLOGY.md that ontology.yml does not hold fails",
@@ -3867,8 +4957,7 @@
     "71 numbers each bound to the ontology.yml value they state; problems: ['98,765: no <!--n:path--> marker (line 274)', '2017: no <!--n:path--> marker (line 274)']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.9
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage (S5): swapping the customer count for the late-rate denominator fails, though 94,931 exists elsewhere in the YAML",
@@ -3895,8 +4984,7 @@
     "70 numbers each bound to the ontology.yml value they state; problems: ['94931: marker entities.customer.rows holds 96096']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.7
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage (S5): swapping the late rate for the review average fails, though 4.156 exists elsewhere in the YAML",
@@ -3923,8 +5011,7 @@
     "70 numbers each bound to the ontology.yml value they state; problems: ['4.156: marker metrics.late_rate.verified.value_pct holds 6.87']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.9
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage (S5): a number with its marker removed fails",
@@ -3951,8 +5038,7 @@
     "70 numbers each bound to the ontology.yml value they state; problems: ['99,441: no <!--n:path--> marker (line 102)']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.8
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage (S5): a marker that points at nothing fails",
@@ -3979,8 +5065,7 @@
     "70 numbers each bound to the ontology.yml value they state; problems: ['99441: marker entities.order.no_such_value is not a value in ontology.yml']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.7
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage (S5): a marker that follows no number fails",
@@ -4002,8 +5087,7 @@
     "71 numbers each bound to the ontology.yml value they state; problems: ['marker entities.order.rows follows no number']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.1
+  "verdict": "PROVEN"
  },
  {
   "rule": "Model (S6): the Model column says 'holds' for a rule no invariant checks (the reviewer's exact case)",
@@ -4030,8 +5114,7 @@
     "no invariant in the model; ONTOLOGY.md Model column shows 'holds', card says 'not modeled'"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.0
+  "verdict": "PROVEN"
  },
  {
   "rule": "Model (S6): a card names an invariant the TLA+ model does not define",
@@ -4058,8 +5141,7 @@
     "invariant NoSuchInvariant: defined=False in cfg=False report says holds=False; ONTOLOGY.md Model column shows 'not modeled', card says 'holds'"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.2
+  "verdict": "PROVEN"
  },
  {
   "rule": "Model (S6): a card claims a result that TLC's report does not record",
@@ -4086,8 +5168,7 @@
     "invariant LateMeansArrivedAfterPromise: defined=True in cfg=True report says breaks=False; ONTOLOGY.md Model column shows 'holds', card says '**breaks**'"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.7
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage: a number shown in ONTOLOGY.md that ontology.yml only mentions in prose fails",
@@ -4114,8 +5195,7 @@
     "70 numbers each bound to the ontology.yml value they state; problems: ['547: marker facts.7.expected holds 546']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.7
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology fact: 547 orders have more than one survey response",
@@ -4139,8 +5219,7 @@
     "count=548 (card 547)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.3
+  "verdict": "PROVEN"
  },
  {
   "rule": "Ontology fact: 789 review_ids sit on more than one order",
@@ -4164,8 +5243,7 @@
     "count=790 (card 789)"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.1
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage: an exemption with no written reason fails",
@@ -4187,8 +5265,7 @@
     "missing reason or match: ['columns:marts.fct_orders.max_installments']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.9
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage (M5): a small count is edited (14 exceptions -> 41)",
@@ -4215,8 +5292,7 @@
     "70 numbers each bound to the ontology.yml value they state; problems: ['41: marker stage_rules.1.expected holds 14']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.8
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage (M5): a one-digit count is edited (7 sellers -> 70)",
@@ -4243,8 +5319,7 @@
     "70 numbers each bound to the ontology.yml value they state; problems: ['70: marker relationships.11.orphans holds 7']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.7
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage (M5): the headline-metric row count is edited (5 -> 6)",
@@ -4271,8 +5346,7 @@
     "70 numbers each bound to the ontology.yml value they state; problems: ['6: marker entities.headline_metric.rows holds 5']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.8
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage (M5): an exempt number is edited inside its phrase (29 reachable states -> 92)",
@@ -4299,8 +5373,7 @@
     "71 numbers each bound to the ontology.yml value they state; problems: ['92: no <!--n:path--> marker (line 127)']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.0
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage (M5): a timestamp is edited (the cohort cutoff)",
@@ -4327,8 +5400,7 @@
     "71 numbers each bound to the ontology.yml value they state; problems: ['2018-06-06 09:06:57: no <!--n:path--> marker (line 221)']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.7
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage (M5): a duration is edited (at most 90 days -> 60)",
@@ -4355,8 +5427,7 @@
     "71 numbers each bound to the ontology.yml value they state; problems: ['24: no <!--n:path--> marker (line 220)', '60: no <!--n:path--> marker (line 220)']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.7
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage (M5): a duration is edited (24 hours -> 12)",
@@ -4383,8 +5454,7 @@
     "71 numbers each bound to the ontology.yml value they state; problems: ['12: no <!--n:path--> marker (line 242)', '90: no <!--n:path--> marker (line 242)']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.8
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage (M5): a month is edited (window end 2018-08 -> 2018-09)",
@@ -4411,8 +5481,7 @@
     "71 numbers each bound to the ontology.yml value they state; problems: ['2017-01: no <!--n:path--> marker (line 231)', '2018-09: no <!--n:path--> marker (line 231)']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.9
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage (M5): number AND marker swapped together (96,096 customer -> 99,441 order) fails on the row's owner",
@@ -4439,8 +5508,7 @@
     "70 numbers each bound to the ontology.yml value they state; problems: [\"99441: marker entities.order.rows belongs to ['order'], which its row or sentence does not name\"]"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.2
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage: a new number hidden as a hyphen range (3-5) fails",
@@ -4467,8 +5535,7 @@
     "71 numbers each bound to the ontology.yml value they state; problems: ['3: no <!--n:path--> marker (line 121)', '5: no <!--n:path--> marker (line 121)']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.9
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage: a new number hidden as digits glued after letters (top5) fails",
@@ -4495,8 +5562,7 @@
     "71 numbers each bound to the ontology.yml value they state; problems: ['5: no <!--n:path--> marker (line 121)']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.8
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage: a new number hidden as a percentile label (p95) fails",
@@ -4523,8 +5589,7 @@
     "71 numbers each bound to the ontology.yml value they state; problems: ['95: no <!--n:path--> marker (line 121)']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.7
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage: a new number hidden as a digit after an underscore (x_7) fails",
@@ -4551,8 +5616,7 @@
     "71 numbers each bound to the ontology.yml value they state; problems: ['7: no <!--n:path--> marker (line 121)']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.8
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage: a new number hidden as a fraction character (\u00bd) fails",
@@ -4579,8 +5643,7 @@
     "71 numbers each bound to the ontology.yml value they state; problems: ['\u00bd: no <!--n:path--> marker (line 121)']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.0
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage: a new number hidden as a non-ASCII digit (\u0663) fails",
@@ -4607,8 +5670,7 @@
     "71 numbers each bound to the ontology.yml value they state; problems: ['\u0663: no <!--n:path--> marker (line 121)']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.1
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage: a new number hidden as a number glued to a unit (30d) fails",
@@ -4635,8 +5697,7 @@
     "71 numbers each bound to the ontology.yml value they state; problems: ['30: no <!--n:path--> marker (line 121)']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.0
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage: a new number hidden as an ordinal (2nd) fails",
@@ -4663,8 +5724,7 @@
     "71 numbers each bound to the ontology.yml value they state; problems: ['2: no <!--n:path--> marker (line 121)']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.8
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage: a new number hidden as a '..' range (3..5) fails",
@@ -4691,8 +5751,7 @@
     "71 numbers each bound to the ontology.yml value they state; problems: ['5: no <!--n:path--> marker (line 121)']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.8
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage: a new number hidden as a number after a colon (count:9) fails",
@@ -4719,8 +5778,7 @@
     "71 numbers each bound to the ontology.yml value they state; problems: ['9: no <!--n:path--> marker (line 121)']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.9
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage: a new number hidden as numbers after a comma (3,9) fails",
@@ -4747,8 +5805,7 @@
     "71 numbers each bound to the ontology.yml value they state; problems: ['3: no <!--n:path--> marker (line 121)', '9: no <!--n:path--> marker (line 121)']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 3.1
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage: a new number hidden as a dotted triple (3.2.1) fails",
@@ -4775,8 +5832,7 @@
     "71 numbers each bound to the ontology.yml value they state; problems: ['3.2.1: no <!--n:path--> marker (line 121)']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.9
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage: a new number hidden as a line-start 'N. ' outside a numbered list fails",
@@ -4803,8 +5859,7 @@
     "71 numbers each bound to the ontology.yml value they state; problems: ['9: no <!--n:path--> marker (line 123)']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.9
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage (M5): a fact marker moved to a sentence that does not name it",
@@ -4831,8 +5886,7 @@
     "70 numbers each bound to the ontology.yml value they state; problems: [\"17423: marker facts.1.expected belongs to ['left out'], which its row or sentence does not name\"]"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.8
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage (M5): an exemption with a bare value and no context phrase fails",
@@ -4859,8 +5913,7 @@
     "71 numbers each bound to the ontology.yml value they state; problems: ['29: no <!--n:path--> marker (line 127)', 'numbers:29 needs a context phrase that contains it']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.8
+  "verdict": "PROVEN"
  },
  {
   "rule": "Coverage: an exemption that matches nothing fails",
@@ -4882,8 +5935,2275 @@
     "entries matching nothing: ['columns:marts.dim_seller.no_such_column']"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 2.7
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (review cost): the tile's extra reviews are off by 40",
+  "selector": "assert_dash_review_cost_reconciles",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_summary set extra_bad_reviews = extra_bad_reviews + 40"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (review cost): the tile's whole number reads 3,111 instead of 3,110",
+  "selector": "assert_dash_review_cost_reconciles",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_summary set extra_bad_reviews_rounded = 3111"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (review cost): the high end of the range drops by 100",
+  "selector": "assert_dash_review_cost_reconciles",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_summary set extra_range_high = extra_range_high - 100"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (review cost): 30 bad reviews move from day -5 to day 10 in the ramp (totals unchanged)",
+  "selector": "assert_dash_review_cost_reconciles",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_review_ramp set bad_reviews = bad_reviews - 30 where days_past_promise_capped = -5",
+    "update exports.export_dash_review_ramp set bad_reviews = bad_reviews + 30 where days_past_promise_capped = 10"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "fail",
+    4
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (review cost): a day is missing from the ramp",
+  "selector": "assert_dash_review_cost_reconciles",
+  "mutation": {
+   "sql": [
+    "delete from exports.export_dash_review_ramp where days_past_promise_capped = 3"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (review cost): the points-a-day slope moves by 0.01",
+  "selector": "assert_dash_review_cost_reconciles",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_summary set ramp_points_per_day = ramp_points_per_day + 0.01"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "fail",
+    3
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (review cost): the summary's up-to-the-promised-day share counts day 0 as late",
+  "selector": "assert_dash_review_cost_reconciles",
+  "mutation": {
+   "model_edit": {
+    "file": "models/exports/export_dash_summary.sql",
+    "replace": [
+     [
+      "from ramp where days_past_promise_capped <= 0) as ramp_share_up_to_promised_day",
+      "from ramp where days_past_promise_capped < 0) as ramp_share_up_to_promised_day"
+     ]
+    ],
+    "rebuild": "export_dash_summary"
+   }
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (trend): a month's late orders are off by 10",
+  "selector": "assert_dash_monthly_reconciles",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_monthly set late_orders = late_orders + 10 where year_month = '2018-01'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (trend): a month's alarm line is off by a point",
+  "selector": "assert_dash_monthly_reconciles",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_monthly set own_month_alarm_line_late_rate = own_month_alarm_line_late_rate + 0.01 where year_month = '2018-03'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (trend): March 2018 loses its alarm flag",
+  "selector": "assert_dash_monthly_reconciles",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_monthly set is_alarm_month = false where year_month = '2018-03'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (trend): a normal month is marked thin",
+  "selector": "assert_dash_monthly_reconciles",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_monthly set is_thin_month = true where year_month = '2017-03'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (trend): a month is missing",
+  "selector": "assert_dash_monthly_reconciles",
+  "mutation": {
+   "sql": [
+    "delete from exports.export_dash_monthly where year_month = '2017-06'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "fail",
+    7
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (trend): the goal line in the summary reads 5.0% instead of 4.43%",
+  "selector": "assert_dash_monthly_reconciles",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_summary set goal_late_rate = 0.05"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "fail",
+    4
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (trend): the stretch line in the summary reads 3.0% instead of the median what-if (about 3.4%)",
+  "selector": "assert_dash_monthly_reconciles",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_summary set stretch_whatif_late_rate = 0.03"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "fail",
+    5
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (trend): the monthly goal line uses the safe goal (3.04%) instead of the median (4.43%)",
+  "selector": "assert_dash_monthly_reconciles",
+  "mutation": {
+   "model_edit": {
+    "file": "models/exports/export_dash_monthly.sql",
+    "replace": [
+     [
+      "t.goal_late_rate,",
+      "0.03036 as goal_late_rate,"
+     ]
+    ],
+    "rebuild": "export_dash_monthly"
+   }
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (trend): the stretch line in the summary is off by a point",
+  "selector": "assert_dash_monthly_reconciles",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_summary set stretch_whatif_late_rate = stretch_whatif_late_rate + 0.01"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "fail",
+    5
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (trend): the stretch line on the monthly rows is off by a point",
+  "selector": "assert_dash_monthly_reconciles",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_monthly set stretch_whatif_late_rate = stretch_whatif_late_rate + 0.01"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (trend): the stretch line label in the summary is the old wording",
+  "selector": "assert_dash_monthly_reconciles",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_summary set stretch_whatif_label = 'if seller handoffs are fixed'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (trend): a stable month is marked unstable",
+  "selector": "assert_dash_monthly_reconciles",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_monthly set is_stable_month = false where year_month = '2017-09'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "fail",
+    3
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (trend): a stable month's what-if rate is off by a point",
+  "selector": "assert_dash_monthly_reconciles",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_monthly set late_rate_if_handoffs_ok = late_rate_if_handoffs_ok + 0.01 where year_month = '2017-09'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (trend): the monthly model computes its own stretch line as the 40th percentile of the what-if instead of reading the targets model",
+  "selector": "assert_dash_monthly_reconciles",
+  "mutation": {
+   "model_edit": {
+    "file": "models/exports/export_dash_monthly.sql",
+    "replace": [
+     [
+      "    t.stretch_goal_late_rate as stretch_whatif_late_rate\nfrom ranked r cross join t",
+      "    (select percentile_cont(0.4) within group (order by late_rate_if_handoffs_ok) from c where not laney_signal and not thin_month) as stretch_whatif_late_rate\nfrom ranked r cross join t"
+     ]
+    ],
+    "rebuild": "export_dash_monthly+"
+   }
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "fail",
+    4
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (trend): the story's stretch value in facts.json drifts to the retired 2.25% (the export still matches the model, only the facts.json comparison can catch it)",
+  "selector": "assert_dash_monthly_reconciles",
+  "mutation": {
+   "model_edit": {
+    "file": "story/data/facts.json",
+    "replace": [
+     [
+      "\"stretch\": 0.034251",
+      "\"stretch\": 0.022520"
+     ]
+    ],
+    "rebuild": "export_dash_monthly"
+   }
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (handoff): the late-handoff bar gains 50 late orders",
+  "selector": "assert_dash_handoff_reconciles",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_handoff set late_orders = late_orders + 50 where is_late_handoff"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "fail",
+    3
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (handoff): the on-time-handoff bar loses 100 orders",
+  "selector": "assert_dash_handoff_reconciles",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_handoff set orders = orders - 100 where not is_late_handoff"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "fail",
+    4
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (handoff): the tile's share of late orders is off by a point",
+  "selector": "assert_dash_handoff_reconciles",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_summary set late_handoff_share_of_late = late_handoff_share_of_late + 0.01"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (handoff): the order with no handoff time is counted as an on-time handoff",
+  "selector": "assert_dash_handoff_reconciles",
+  "mutation": {
+   "model_edit": {
+    "file": "models/exports/export_dash_handoff.sql",
+    "replace": [
+     [
+      "    where handed_over_late is not null\n",
+      ""
+     ]
+    ],
+    "rebuild": "export_dash_handoff"
+   }
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "fail",
+    3
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (handoff): the handoff rule allows a day of grace in the shared order base",
+  "selector": "assert_dash_handoff_reconciles",
+  "mutation": {
+   "model_edit": {
+    "file": "models/exports/dash_order_base.sql",
+    "replace": [
+     [
+      "f.delivered_to_carrier_at > f.last_shipping_limit_at as",
+      "f.delivered_to_carrier_at > f.last_shipping_limit_at + interval 1 day as"
+     ]
+    ],
+    "rebuild": "dash_order_base+"
+   }
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "fail",
+    21
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (sellers): the top seller loses one late order",
+  "selector": "assert_dash_sellers_reconcile",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_sellers set late_after_late_handoff_orders = late_after_late_handoff_orders - 1 where rank_by_late_after_late_handoff = 1"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "fail",
+    6
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (sellers): a seller is missing",
+  "selector": "assert_dash_sellers_reconcile",
+  "mutation": {
+   "sql": [
+    "delete from exports.export_dash_sellers where rank_by_late_after_late_handoff = 100"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "fail",
+    10
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (sellers): a seller appears twice",
+  "selector": "assert_dash_sellers_reconcile",
+  "mutation": {
+   "sql": [
+    "insert into exports.export_dash_sellers select * from exports.export_dash_sellers where rank_by_late_after_late_handoff = 5"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "fail",
+    13
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (sellers): two sellers share an 8-character code",
+  "selector": "assert_dash_sellers_reconcile",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_sellers set seller_code = (select seller_code from exports.export_dash_sellers where rank_by_late_after_late_handoff = 1) where rank_by_late_after_late_handoff = 11"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (sellers): the tile's top-10 share is off by 5 points",
+  "selector": "assert_dash_sellers_reconcile",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_summary set top10_share_of_late_after_late_handoff = top10_share_of_late_after_late_handoff + 0.05"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (sellers): the seller bars count all late orders, not only those after a late handoff",
+  "selector": "assert_dash_sellers_reconcile",
+  "mutation": {
+   "model_edit": {
+    "file": "models/exports/export_dash_sellers.sql",
+    "replace": [
+     [
+      "count(*) filter (where handed_over_late and is_late) as late_after_late_handoff_orders",
+      "count(*) filter (where is_late) as late_after_late_handoff_orders"
+     ]
+    ],
+    "rebuild": "export_dash_sellers+"
+   }
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "fail",
+    1280
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (sellers): the top-10 flag covers 11 sellers",
+  "selector": "assert_dash_sellers_reconcile",
+  "mutation": {
+   "model_edit": {
+    "file": "models/exports/export_dash_sellers.sql",
+    "replace": [
+     [
+      "rank_by_late_after_late_handoff <= 10 as is_top10",
+      "rank_by_late_after_late_handoff <= 11 as is_top10"
+     ]
+    ],
+    "rebuild": "export_dash_sellers"
+   }
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (sellers): an order gains a second seller",
+  "selector": "assert_dash_sellers_reconcile",
+  "mutation": {
+   "sql": [
+    "insert into marts.fct_order_items select * replace ('zzz_second_seller' as seller_id) from marts.fct_order_items where order_id in (select order_id from metrics.metric_late_rate_orders order by order_id limit 1) limit 1"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "fail",
+    3
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (region): the north and northeast lose 100 late orders",
+  "selector": "assert_dash_region_reconciles",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_region set late_orders = late_orders - 100 where region_group = 'North and northeast'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (region): a state is missing from the region map",
+  "selector": "assert_dash_region_reconciles",
+  "mutation": {
+   "sql": [
+    "delete from seeds.dash_region_map where state = 'AC'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "fail",
+    4
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (region): a state is listed twice in the region map",
+  "selector": "assert_dash_region_reconciles",
+  "mutation": {
+   "sql": [
+    "insert into seeds.dash_region_map select * from seeds.dash_region_map where state = 'SP'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (region): Bahia moves to the rest of Brazil in the region map",
+  "selector": "assert_dash_region_reconciles",
+  "mutation": {
+   "sql": [
+    "update seeds.dash_region_map set region_group = 'Rest of Brazil' where state = 'BA'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (region): the tile's north and northeast rate is off by a point",
+  "selector": "assert_dash_region_reconciles",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_summary set nne_late_rate = nne_late_rate + 0.01"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (worst months): the flags name a different month (Feb 2018 out, Apr 2018 in)",
+  "selector": "assert_dash_worst_months_reconcile",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_monthly set is_worst3_late_month = not is_worst3_late_month where year_month in ('2018-02', '2018-04')"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "fail",
+    4
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (worst months): the label names Jan 2018 instead of Feb 2018",
+  "selector": "assert_dash_worst_months_reconcile",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_summary set worst3_months_label = 'Nov 2017, Jan 2018 and Mar 2018'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (worst months): the 48.3% reads 50%",
+  "selector": "assert_dash_worst_months_reconcile",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_summary set worst3_share_of_late = 0.5"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (worst months): a month label is wrong (Nov 2017 reads Dec 2017)",
+  "selector": "assert_dash_worst_months_reconcile",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_monthly set month_label = 'Dec 2017' where year_month = '2017-11'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (worst months): the worst-months flag covers four months",
+  "selector": "assert_dash_worst_months_reconcile",
+  "mutation": {
+   "model_edit": {
+    "file": "models/exports/export_dash_monthly.sql",
+    "replace": [
+     [
+      "r.late_orders_rank <= 3 as",
+      "r.late_orders_rank <= 4 as"
+     ]
+    ],
+    "rebuild": "export_dash_monthly+"
+   }
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "fail",
+    9
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (fixes panel): a row loses its example flag",
+  "selector": "assert_dash_tests_are_labelled_example",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_tests_example set is_example = false where test_id = 1"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (fixes panel): a row's example flag is null",
+  "selector": "assert_dash_tests_are_labelled_example",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_tests_example set is_example = null where test_id = 2"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (fixes panel): a value loses its asterisk",
+  "selector": "assert_dash_tests_are_labelled_example",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_tests_example set test_group_display = '6.1%' where test_id = 1"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (fixes panel): the banner stops saying the tests have not run",
+  "selector": "assert_dash_tests_are_labelled_example",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_tests_example set banner = 'Fix tests'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "fail",
+    4
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (fixes panel): a seed row loses its example flag",
+  "selector": "assert_dash_tests_are_labelled_example",
+  "mutation": {
+   "sql": [
+    "update seeds.dash_tests_example set is_example = false where test_id = 2"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (fixes panel): a row's status reads passed",
+  "selector": "assert_dash_tests_are_labelled_example",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_tests_example set status = 'passed' where test_id = 1"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (fixes panel): a test label loses the word EXAMPLE",
+  "selector": "assert_dash_tests_are_labelled_example",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_tests_example set test_label = 'Seller ship-by reminder test' where test_id = 1"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (fixes panel): a row is missing from the export",
+  "selector": "assert_dash_tests_are_labelled_example",
+  "mutation": {
+   "sql": [
+    "delete from exports.export_dash_tests_example where test_id = 2"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, monthly): month_start shifts a month",
+  "selector": "assert_dash_columns_are_derived",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_monthly set month_start = date '2017-07-01' where year_month = '2017-06'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, monthly): a month label reads Jun 2019 on a month that is not the worst",
+  "selector": "assert_dash_columns_are_derived",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_monthly set month_label = 'Jun 2019' where year_month = '2017-06'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, monthly): a month's late-orders rank is off by one",
+  "selector": "assert_dash_columns_are_derived",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_monthly set late_orders_rank = late_orders_rank + 1 where year_month = '2017-01'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, monthly): a month that is not one of the worst three is flagged worst",
+  "selector": "assert_dash_columns_are_derived",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_monthly set is_worst3_late_month = true where year_month = '2017-06'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, monthly): an alarm month is flagged stable",
+  "selector": "assert_dash_columns_are_derived",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_monthly set is_stable_month = true where year_month = '2018-03'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, monthly): a month's late rate is 50%",
+  "selector": "assert_dash_columns_are_derived",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_monthly set late_rate = 0.5 where year_month = '2017-06'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, monthly): a month's share of all late orders is off by a point",
+  "selector": "assert_dash_columns_are_derived",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_monthly set share_of_all_late = share_of_all_late + 0.01 where year_month = '2017-06'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, review_ramp): day 3 is called levelled instead of climbing",
+  "selector": "assert_dash_columns_are_derived",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_review_ramp set phase = 'levelled' where days_past_promise_capped = 3"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, review_ramp): a day's bad-review share is off by a point",
+  "selector": "assert_dash_columns_are_derived",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_review_ramp set bad_review_share = bad_review_share + 0.01 where days_past_promise_capped = 3"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, review_ramp): a day has more bad reviews than reviewed orders",
+  "selector": "assert_dash_columns_are_derived",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_review_ramp set bad_reviews = reviewed_orders + 1 where days_past_promise_capped = 3"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, summary): the summary's judged orders gain 1,000",
+  "selector": "assert_dash_columns_are_derived",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_summary set judged_orders = judged_orders + 1000"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "fail",
+    3
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, summary): the summary's late orders gain 1",
+  "selector": "assert_dash_columns_are_derived",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_summary set late_orders = late_orders + 1"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "fail",
+    3
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, summary): the summary's late rate is off by 0.2 points",
+  "selector": "assert_dash_columns_are_derived",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_summary set late_rate = late_rate + 0.002"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, summary): the latest month is not the last month",
+  "selector": "assert_dash_columns_are_derived",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_summary set latest_month = '2018-07'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, summary): the latest month's label reads Aug 2019",
+  "selector": "assert_dash_columns_are_derived",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_summary set latest_month_label = 'Aug 2019'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, sellers): a mid-table seller's late rate is 0",
+  "selector": "assert_dash_sellers_reconcile",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_sellers set late_rate = 0 where rank_by_late_after_late_handoff = 500"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, sellers): a seller's late-handoff rate is off by a point",
+  "selector": "assert_dash_sellers_reconcile",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_sellers set late_handoff_rate = late_handoff_rate + 0.01 where rank_by_late_after_late_handoff = 500"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, sellers): a seller's rank is off by one",
+  "selector": "assert_dash_sellers_reconcile",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_sellers set rank_by_late_after_late_handoff = rank_by_late_after_late_handoff + 1000 where rank_by_late_after_late_handoff = 500"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, sellers): a seller outside the top 10 is flagged top 10",
+  "selector": "assert_dash_sellers_reconcile",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_sellers set is_top10 = true where rank_by_late_after_late_handoff = 500"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, sellers): a seller's share of late-after-late-handoff orders is off by a point",
+  "selector": "assert_dash_sellers_reconcile",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_sellers set share_of_late_after_late_handoff = share_of_late_after_late_handoff + 0.01 where rank_by_late_after_late_handoff = 500"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, sellers): a seller's 8-character code is another seller's",
+  "selector": "assert_dash_sellers_reconcile",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_sellers set seller_code = '16a2c3af' where rank_by_late_after_late_handoff = 500"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, summary): the summary's top seller count reads 67 instead of 66",
+  "selector": "assert_dash_sellers_reconcile",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_summary set top_seller_late_after_late_handoff_orders = 67"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, summary): the summary's top 10 count is off by one",
+  "selector": "assert_dash_sellers_reconcile",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_summary set top10_late_after_late_handoff_orders = top10_late_after_late_handoff_orders + 1"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, handoff): the two handoff groups swap names",
+  "selector": "assert_dash_handoff_reconciles",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_handoff set handoff_group = case when is_late_handoff then 'Handed over on time' else 'Handed to carrier after ship-by' end"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, handoff): the on-time handoff bar's share of late orders is off by a point",
+  "selector": "assert_dash_handoff_reconciles",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_handoff set share_of_all_late = share_of_all_late + 0.01 where not is_late_handoff"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, summary): the three months' share of all orders reads 25%",
+  "selector": "assert_dash_worst_months_reconcile",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_summary set worst3_share_of_orders = 0.25"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, summary): the three months' share of all orders is off by 0.001",
+  "selector": "assert_dash_worst_months_reconcile",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_summary set worst3_share_of_orders = worst3_share_of_orders + 0.001"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, summary): the three months' share of all months reads 20%",
+  "selector": "assert_dash_worst_months_reconcile",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_summary set worst3_share_of_months = 0.20"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, monthly): a worst month holds more orders than the story month table says (orders +1,000)",
+  "selector": "assert_dash_worst_months_reconcile",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_monthly set orders = orders + 1000 where year_month = '2018-03'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, tests_example): a test-group value drifts from the seed",
+  "selector": "assert_dash_tests_are_labelled_example",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_tests_example set test_group_value = test_group_value + 0.5 where test_id = 1"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, tests_example): a no-change value drifts from the seed",
+  "selector": "assert_dash_tests_are_labelled_example",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_tests_example set no_change_group_value = no_change_group_value + 0.5 where test_id = 2"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, tests_example): a readout label is not the seed's",
+  "selector": "assert_dash_tests_are_labelled_example",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_tests_example set readout_label = 'EXAMPLE: something else' where test_id = 1"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, tests_example): a no-change display reads 3.92 for a percent row",
+  "selector": "assert_dash_tests_are_labelled_example",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_tests_example set no_change_group_display = '3.92' where test_id = 1"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "fail",
+    2
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (column sweep, tests_example): the footnote stops saying the numbers are invented",
+  "selector": "assert_dash_tests_are_labelled_example",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_tests_example set footnote = '* measured'"
+   ]
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_dash_tests_are_labelled_example",
+    "fail",
+    4
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (shape): the monthly export loses a month (row count 20)",
+  "selector": "export_dash_monthly,test_name:expect_table_row_count_to_equal",
+  "mutation": {
+   "sql": [
+    "delete from exports.export_dash_monthly where year_month = '2017-06'"
+   ]
+  },
+  "baseline": [
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_monthly_20",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_monthly_20",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (shape): a seller appears twice (unique seller_id)",
+  "selector": "export_dash_sellers,test_name:unique",
+  "mutation": {
+   "sql": [
+    "insert into exports.export_dash_sellers select * from exports.export_dash_sellers where rank_by_late_after_late_handoff = 5"
+   ]
+  },
+  "baseline": [
+   [
+    "unique_export_dash_sellers_rank_by_late_after_late_handoff",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_sellers_seller_code",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_sellers_seller_id",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "unique_export_dash_sellers_rank_by_late_after_late_handoff",
+    "fail",
+    1
+   ],
+   [
+    "unique_export_dash_sellers_seller_code",
+    "fail",
+    1
+   ],
+   [
+    "unique_export_dash_sellers_seller_id",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (shape): a ramp phase has a name the chart does not know",
+  "selector": "export_dash_review_ramp,test_name:accepted_values",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_review_ramp set phase = 'plateau' where days_past_promise_capped = 12"
+   ]
+  },
+  "baseline": [
+   [
+    "accepted_values_export_dash_review_ramp_phase__up_to_the_promised_day__climbing__levelled",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "accepted_values_export_dash_review_ramp_phase__up_to_the_promised_day__climbing__levelled",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
+ },
+ {
+  "rule": "Dashboard exports (shape): a seller in the export is not in dim_seller",
+  "selector": "export_dash_sellers,test_name:relationships",
+  "mutation": {
+   "sql": [
+    "update exports.export_dash_sellers set seller_id = 'zzz_unknown_seller' where rank_by_late_after_late_handoff = 7"
+   ]
+  },
+  "baseline": [
+   [
+    "relationships_export_dash_sellers_seller_id__seller_id__ref_dim_seller_",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "relationships_export_dash_sellers_seller_id__seller_id__ref_dim_seller_",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN"
  },
  {
   "rule": "Titles: the story title says 'cause' again",
@@ -4911,8 +8231,7 @@
     "says 'cause'; a title says 'linked to', not cause or drive or lead to; does not say 'linked to'"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 0.4
+  "verdict": "PROVEN"
  },
  {
   "rule": "Titles: the story title says 'caused'",
@@ -4940,8 +8259,7 @@
     "says 'caused'; a title says 'linked to', not cause or drive or lead to; does not say 'linked to'"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 0.3
+  "verdict": "PROVEN"
  },
  {
   "rule": "Titles: the story title keeps 'linked to' but adds 'cause'",
@@ -4969,8 +8287,7 @@
     "says 'cause'; a title says 'linked to', not cause or drive or lead to"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 0.3
+  "verdict": "PROVEN"
  },
  {
   "rule": "Titles: the story title drops 'linked to' for another verb",
@@ -4998,8 +8315,7 @@
     "does not say 'linked to'"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 0.3
+  "verdict": "PROVEN"
  },
  {
   "rule": "Titles: the story subtitle says 'causing'",
@@ -5027,8 +8343,7 @@
     "says 'causing'; a title says 'linked to', not cause or drive or lead to"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 0.3
+  "verdict": "PROVEN"
  },
  {
   "rule": "Titles: the memo title says 'causes'",
@@ -5056,8 +8371,7 @@
     "says 'causes'; a title says 'linked to', not cause or drive or lead to; does not say 'linked to'"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 0.3
+  "verdict": "PROVEN"
  },
  {
   "rule": "Titles: the memo title says 'causal'",
@@ -5085,8 +8399,7 @@
     "says 'causal'; a title says 'linked to', not cause or drive or lead to; does not say 'linked to'"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 0.3
+  "verdict": "PROVEN"
  },
  {
   "rule": "Titles: the memo title says 'drives'",
@@ -5114,8 +8427,7 @@
     "says 'drives'; a title says 'linked to', not cause or drive or lead to; does not say 'linked to'"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 0.4
+  "verdict": "PROVEN"
  },
  {
   "rule": "Titles: the story title says 'driven by'",
@@ -5143,8 +8455,7 @@
     "says 'driven'; a title says 'linked to', not cause or drive or lead to"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 0.4
+  "verdict": "PROVEN"
  },
  {
   "rule": "Titles: the story title says 'results in'",
@@ -5172,8 +8483,7 @@
     "says 'results in'; a title says 'linked to', not cause or drive or lead to; does not say 'linked to'"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 0.3
+  "verdict": "PROVEN"
  },
  {
   "rule": "Titles: the memo title says 'leads to'",
@@ -5201,8 +8511,7 @@
     "says 'leads to'; a title says 'linked to', not cause or drive or lead to; does not say 'linked to'"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 0.3
+  "verdict": "PROVEN"
  },
  {
   "rule": "Titles: the memo title says 'triggers'",
@@ -5230,8 +8539,7 @@
     "says 'triggers'; a title says 'linked to', not cause or drive or lead to; does not say 'linked to'"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 0.3
+  "verdict": "PROVEN"
  },
  {
   "rule": "Titles: the story title says 'responsible for'",
@@ -5259,8 +8567,7 @@
     "says 'responsible for'; a title says 'linked to', not cause or drive or lead to"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 0.3
+  "verdict": "PROVEN"
  },
  {
   "rule": "Titles: the memo title drops 'linked to' for a neutral verb",
@@ -5288,8 +8595,7 @@
     "does not say 'linked to'"
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 0.3
+  "verdict": "PROVEN"
  },
  {
   "rule": "Stretch: the stretch line goes back to the retired 25th percentile (2.25%)",
@@ -5308,32 +8614,7 @@
   },
   "baseline": [
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
     "pass",
     0
    ],
@@ -5343,7 +8624,17 @@
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_monthly_20",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_summary_1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
     "pass",
     0
    ],
@@ -5354,6 +8645,31 @@
    ],
    [
     "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_extra_bad_reviews",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_worst3_months_label",
     "pass",
     0
    ],
@@ -5389,6 +8705,81 @@
    ],
    [
     "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_year_month",
     "pass",
     0
    ],
@@ -5400,42 +8791,27 @@
   ],
   "mutant": [
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
-    "fail",
-    2
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
-    "fail",
-    1
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
-    "pass",
-    0
-   ],
-   [
     "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
     "pass",
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
     "pass",
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_monthly_20",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_summary_1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
     "pass",
     0
    ],
@@ -5446,6 +8822,31 @@
    ],
    [
     "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_extra_bad_reviews",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_worst3_months_label",
     "pass",
     0
    ],
@@ -5485,13 +8886,87 @@
     0
    ],
    [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "fail",
+    2
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "fail",
+    1
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
     "unique_metric_late_rate_control_chart_year_month",
     "pass",
     0
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 21.0
+  "verdict": "PROVEN"
  },
  {
   "rule": "Stretch: the stretch line uses the real late rate, so the what-if is gone",
@@ -5510,27 +8985,7 @@
   },
   "baseline": [
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
     "pass",
     0
    ],
@@ -5540,12 +8995,12 @@
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_monthly_20",
     "pass",
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_summary_1",
     "pass",
     0
    ],
@@ -5555,7 +9010,37 @@
     0
    ],
    [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "pass",
+    0
+   ],
+   [
     "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_extra_bad_reviews",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_worst3_months_label",
     "pass",
     0
    ],
@@ -5591,6 +9076,81 @@
    ],
    [
     "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_year_month",
     "pass",
     0
    ],
@@ -5602,37 +9162,22 @@
   ],
   "mutant": [
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
-    "fail",
-    2
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
-    "fail",
-    1
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
-    "pass",
-    0
-   ],
-   [
     "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
     "pass",
     0
    ],
    [
     "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_monthly_20",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_summary_1",
     "pass",
     0
    ],
@@ -5650,6 +9195,31 @@
     "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
     "fail",
     1
+   ],
+   [
+    "not_null_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_extra_bad_reviews",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_worst3_months_label",
+    "pass",
+    0
    ],
    [
     "not_null_metric_late_rate_control_chart_laney_signal",
@@ -5672,11 +9242,6 @@
     0
    ],
    [
-    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
     "not_null_metric_late_rate_targets_goal_late_rate",
     "pass",
     0
@@ -5687,13 +9252,92 @@
     0
    ],
    [
+    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "fail",
+    2
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "fail",
+    1
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
     "unique_metric_late_rate_control_chart_year_month",
     "pass",
     0
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 21.0
+  "verdict": "PROVEN"
  },
  {
   "rule": "Stretch: the stretch line takes every month, not just the stable ones",
@@ -5712,27 +9356,7 @@
   },
   "baseline": [
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
     "pass",
     0
    ],
@@ -5742,7 +9366,12 @@
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_monthly_20",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_summary_1",
     "pass",
     0
    ],
@@ -5757,17 +9386,42 @@
     0
    ],
    [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_extra_bad_reviews",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_worst3_months_label",
+    "pass",
+    0
+   ],
+   [
     "not_null_metric_late_rate_control_chart_laney_signal",
     "pass",
     0
    ],
    [
     "not_null_metric_late_rate_control_chart_orders",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
     "pass",
     0
    ],
@@ -5782,17 +9436,92 @@
     0
    ],
    [
-    "not_null_metric_late_rate_targets_safe_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
     "not_null_metric_late_rate_targets_goal_late_rate",
     "pass",
     0
    ],
    [
+    "not_null_metric_late_rate_targets_safe_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
     "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_year_month",
     "pass",
     0
    ],
@@ -5804,7 +9533,132 @@
   ],
   "mutant": [
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_monthly_20",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_summary_1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_extra_bad_reviews",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_worst3_months_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_laney_signal",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_orders",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_safe_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
     "pass",
     0
    ],
@@ -5812,6 +9666,11 @@
     "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
     "fail",
     2
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
    ],
    [
     "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
@@ -5829,62 +9688,17 @@
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "unique_export_dash_monthly_late_orders_rank",
     "pass",
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "unique_export_dash_monthly_month_label",
     "pass",
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_control_chart_laney_signal",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_control_chart_orders",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_control_chart_year_month",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_safe_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "unique_export_dash_monthly_year_month",
     "pass",
     0
    ],
@@ -5894,8 +9708,7 @@
     0
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 21.3
+  "verdict": "PROVEN"
  },
  {
   "rule": "Stretch: the Python refit report's stretch value drifts from the dbt model (3.4251% -> 2.2520%)",
@@ -5926,8 +9739,7 @@
     1
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 19.8
+  "verdict": "PROVEN"
  },
  {
   "rule": "Stretch: the stretch line uses the 60th percentile of the what-if months",
@@ -5946,37 +9758,7 @@
   },
   "baseline": [
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
-    "pass",
-    0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
-    "pass",
-    0
-   ],
-   [
     "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
     "pass",
     0
    ],
@@ -5986,17 +9768,57 @@
     0
    ],
    [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_monthly_20",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_summary_1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
     "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
     "pass",
     0
    ],
    [
-    "not_null_metric_late_rate_control_chart_laney_signal",
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
     "pass",
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "not_null_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_extra_bad_reviews",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_worst3_months_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_laney_signal",
     "pass",
     0
    ],
@@ -6031,12 +9853,222 @@
     0
    ],
    [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "unique_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
     "unique_metric_late_rate_control_chart_year_month",
     "pass",
     0
    ]
   ],
   "mutant": [
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_monthly_20",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_table_row_count_to_equal_export_dash_summary_1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_late_orders_rank",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_month_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_monthly_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_extra_bad_reviews",
+    "pass",
+    0
+   ],
+   [
+    "not_null_export_dash_summary_worst3_months_label",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_laney_signal",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_orders",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_safe_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_columns_are_derived",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_handoff_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_monthly_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_region_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_review_cost_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_sellers_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_dash_worst_months_reconcile",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "fail",
+    2
+   ],
    [
     "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
     "pass",
@@ -6053,72 +10085,22 @@
     0
    ],
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
-    "fail",
-    2
-   ],
-   [
     "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
     "pass",
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "unique_export_dash_monthly_late_orders_rank",
     "pass",
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "unique_export_dash_monthly_month_label",
     "pass",
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_control_chart_laney_signal",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_control_chart_orders",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_control_chart_year_month",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_safe_goal_late_rate",
+    "unique_export_dash_monthly_year_month",
     "pass",
     0
    ],
@@ -6128,7 +10110,6 @@
     0
    ]
   ],
-  "verdict": "PROVEN",
-  "seconds": 20.6
+  "verdict": "PROVEN"
  }
 ]

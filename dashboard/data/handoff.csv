@@ -1,0 +1,3 @@
+handoff_group,is_late_handoff,orders,late_orders,late_rate,share_of_all_late
+Handed to carrier after ship-by,true,8530,1809,0.21207502930832356,0.2775391224301933
+Handed over on time,false,86400,4708,0.05449074074074074,0.722307456274931

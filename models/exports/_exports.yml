@@ -1,0 +1,89 @@
+version: 2
+# Tables for the Tableau late-delivery dashboard (layout B). Every table is written to CSV by dashboard/export_csv.py.
+# The reconciliation tests (tests/business_rules/assert_dash_*) tie every number the dashboard prints to the analysis.
+models:
+  - name: export_dash_summary
+    description: One row, every number the dashboard prints in a tile or a label, plus the goal and alarm lines.
+    data_tests:
+      - dbt_expectations.expect_table_row_count_to_equal: {arguments: {value: 1}}
+    columns:
+      - name: extra_bad_reviews
+        description: Extra 1-2 star reviews linked to late delivery (about 3,110). Compares each late order with the same seller's on-time orders in the same category and month; an estimate, not a controlled test.
+        data_tests: [not_null]
+      - name: worst3_months_label
+        description: The three months with the most late orders, in date order, written for the chart ("Nov 2017, Feb 2018 and Mar 2018").
+        data_tests: [not_null]
+  - name: export_dash_review_ramp
+    description: Share of 1-2 star reviews by days past the promised day, capped at -30 and +30.
+    data_tests:
+      - dbt_expectations.expect_table_row_count_to_equal: {arguments: {value: 61}}
+    columns:
+      - name: days_past_promise_capped
+        data_tests:
+          - unique
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between: {arguments: {min_value: -30, max_value: 30}}
+      - name: phase
+        data_tests:
+          - not_null
+          - accepted_values: {arguments: {values: ['up to the promised day', 'climbing', 'levelled']}}
+  - name: export_dash_monthly
+    description: One row per purchase month. Late rate, that month's own alarm line (own_month_alarm_line_late_rate), the goal line and the stretch what-if line (stretch_whatif_late_rate, a what-if, not a target), and the late-order bars with the three worst months flagged.
+    data_tests:
+      - dbt_expectations.expect_table_row_count_to_equal: {arguments: {value: 20}}
+    columns:
+      - name: year_month
+        data_tests: [unique, not_null]
+      - name: month_label
+        data_tests: [unique, not_null]
+      - name: late_orders_rank
+        data_tests: [unique, not_null]
+  - name: export_dash_handoff
+    description: Late rate after a late handoff and after an on-time handoff (two rows).
+    data_tests:
+      - dbt_expectations.expect_table_row_count_to_equal: {arguments: {value: 2}}
+    columns:
+      - name: handoff_group
+        data_tests: [unique, not_null]
+  - name: export_dash_sellers
+    description: One row per seller, with late orders that followed a late handoff, ranked. The dashboard shows the top 10.
+    columns:
+      - name: seller_id
+        data_tests:
+          - unique
+          - not_null
+          - relationships: {arguments: {to: ref('dim_seller'), field: seller_id}}
+      - name: seller_code
+        data_tests: [unique, not_null]
+      - name: rank_by_late_after_late_handoff
+        data_tests: [unique, not_null]
+  - name: export_dash_region
+    description: Late rate in the north and northeast against the rest of Brazil (two rows).
+    data_tests:
+      - dbt_expectations.expect_table_row_count_to_equal: {arguments: {value: 2}}
+    columns:
+      - name: region_group
+        data_tests: [unique, not_null]
+  - name: export_dash_tests_example
+    description: The "are the fixes working" panel. INVENTED EXAMPLE numbers, because the two tests have not run. Never results.
+    columns:
+      - name: test_id
+        data_tests: [unique, not_null]
+      - name: is_example
+        data_tests: [not_null]
+seeds:
+  - name: dash_region_map
+    description: The 27 Brazilian states, each in one region group. North and northeast = the 16 states in story/story_data.py NNE (checked by verification/verify_dash_exports.py).
+    config:
+      column_types: {state: varchar, region_name: varchar, region_group: varchar}
+    columns:
+      - name: state
+        data_tests: [unique, not_null]
+      - name: region_group
+        data_tests:
+          - not_null
+          - accepted_values: {arguments: {values: ['North and northeast', 'Rest of Brazil']}}
+  - name: dash_tests_example
+    description: INVENTED EXAMPLE results for the two fix tests in the memo, only to show the layout of panel 6. is_example must be true on every row.
+    config:
+      column_types: {test_id: integer, test_name: varchar, readout_metric: varchar, unit: varchar, test_group_value: double, no_change_group_value: double, is_example: boolean}
