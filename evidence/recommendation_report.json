@@ -336,7 +336,7 @@
   "low_star_reviews": {
    "late_reviewed": 6366,
    "all_low_star": 11635,
-   "status": "history: the matched association the memo printed before PR #7; the memo now prints the causal estimate (metric_review_cost_causal)",
+   "status": "history: the matched association the story printed before PR #7 and the memo printed until PR #8; the memo now prints the causal estimate (metric_review_cost_causal)",
    "excess_from_lateness": {
     "low": 3226.730532,
     "mid": 3335.254686,
@@ -943,8 +943,9 @@
   "c_goal_line": "4.4",
   "c_goal_exact": "4.43",
   "c_stable_months": "15",
-  "c_stretch_line": "2.3",
-  "c_stretch_exact": "2.25",
+  "c_stretch_line": "3.4",
+  "c_stretch_exact": "3.43",
+  "c_whatif_gap": "1.0",
   "c_whatif_rate": "5.49",
   "c_rep_late_1dp": "1.0",
   "c_rep_on_time_1dp": "1.3"

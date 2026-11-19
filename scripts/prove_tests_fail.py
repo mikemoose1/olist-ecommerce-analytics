@@ -475,7 +475,46 @@ CASES += [
      {"title_replace": [("story", 'subtitle: "Where they come from,', 'subtitle: "What is causing them,')]}),
     ("Titles: the memo title says 'causes'",
      "titles:memo title",
-     {"title_replace": [("memo", "# Late deliveries: what they cost Olist", "# Late deliveries: what it causes Olist")]}),
+     {"title_replace": [("memo", "# Late deliveries are linked to about a quarter", "# Late deliveries causes about a quarter")]}),
+    # review finding 6: the wider cause wording, and the memo title must say 'linked to' too
+    ("Titles: the memo title says 'causal'",
+     "titles:memo title",
+     {"title_replace": [("memo", "# Late deliveries are linked to about a quarter", "# Late deliveries are a causal link to about a quarter")]}),
+    ("Titles: the memo title says 'drives'",
+     "titles:memo title",
+     {"title_replace": [("memo", "# Late deliveries are linked to about a quarter", "# Late deliveries drives about a quarter")]}),
+    ("Titles: the story title says 'driven by'",
+     "titles:story title",
+     {"title_replace": [("story", "Late deliveries are linked to about a quarter", "Late deliveries are linked to, and driven by, about a quarter")]}),
+    ("Titles: the story title says 'results in'",
+     "titles:story title",
+     {"title_replace": [("story", "Late deliveries are linked to about a quarter", "Late deliveries results in about a quarter")]}),
+    ("Titles: the memo title says 'leads to'",
+     "titles:memo title",
+     {"title_replace": [("memo", "# Late deliveries are linked to about a quarter", "# Late deliveries leads to about a quarter")]}),
+    ("Titles: the memo title drops 'linked to' for a neutral verb",
+     "titles:memo title",
+     {"title_replace": [("memo", "# Late deliveries are linked to about a quarter", "# Late deliveries go with about a quarter")]}),
+]
+
+# Stretch line: the median stable month under the handoff what-if, like for like with the 4.4% goal.
+STRETCH = "(select percentile_cont(0.5) within group (order by late_rate_if_handoffs_ok) from stable) as stretch_goal_late_rate"
+CASES += [
+    ("Stretch: the stretch line goes back to the retired 25th percentile (2.25%)",
+     "metric_late_rate_control_chart+",
+     {"model_edit": {"file": "models/metrics/metric_late_rate_targets.sql", "replace": [(STRETCH, STRETCH.replace("0.5", "0.25"))], "rebuild": "metric_late_rate_targets"}}),
+    ("Stretch: the stretch line uses the real late rate, so the what-if is gone",
+     "metric_late_rate_control_chart+",
+     {"model_edit": {"file": "models/metrics/metric_late_rate_targets.sql", "replace": [(STRETCH, STRETCH.replace("late_rate_if_handoffs_ok", "late_rate"))], "rebuild": "metric_late_rate_targets"}}),
+    ("Stretch: the stretch line takes every month, not just the stable ones",
+     "metric_late_rate_control_chart+",
+     {"model_edit": {"file": "models/metrics/metric_late_rate_targets.sql", "replace": [(STRETCH, STRETCH.replace("from stable", "from months"))], "rebuild": "metric_late_rate_targets"}}),
+    ("Stretch: the Python refit report's stretch value drifts from the dbt model (3.4251% -> 2.2520%)",
+     "assert_late_rate_targets_match_the_python_refit",
+     {"model_edit": {"file": "evidence/late_rate_targets_report.json", "replace": [('"stretch_median_if_handoffs_ok": 0.03425141242937853', '"stretch_median_if_handoffs_ok": 0.02251969271900082')], "rebuild": "metric_late_rate_targets"}}),
+    ("Stretch: the stretch line uses the 60th percentile of the what-if months",
+     "metric_late_rate_control_chart+",
+     {"model_edit": {"file": "models/metrics/metric_late_rate_targets.sql", "replace": [(STRETCH, STRETCH.replace("0.5", "0.6"))], "rebuild": "metric_late_rate_targets"}}),
 ]
 
 DOC_EDITS = ("yml_drop_card", "yml_replace", "md_replace", "md_append", "allowlist_append", "allowlist_replace")   # every key edited_docs reads

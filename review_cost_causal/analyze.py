@@ -91,7 +91,7 @@ out["headline"] = {"extra_bad_reviews": p["extra"], "ci95": [p["lo"], p["hi"]], 
                    "hidden_seller_bias_if_in_every_late_order": {
                        "points": [f_["pp"], f_["hi"]], "reviews": [f_["pp"] / 100 * n_late_rev, f_["hi"] / 100 * n_late_rev],
                        "share_of_extra_pct": [100 * f_["pp"] / 100 * n_late_rev / p["extra"], 100 * f_["hi"] / 100 * n_late_rev / p["extra"]]},
-                   # history: the association figure the story printed before this estimate replaced it (PR #7)
+                   # history: the association figure the story printed until PR #7 and the memo until PR #8, before this estimate replaced it
                    "earlier_story_value_association": 3335, "within_10pct_of_earlier_story_value": bool(abs(p["extra"] / 3335 - 1) <= 0.10)}
 json.dump(out, open(os.path.join(ROOT, "evidence", "review_cost_causal_report.json"), "w"), indent=1, default=float)
 edges = {"late_d1": (1, 1), "late_d2": (2, 2), "late_d3": (3, 3), "late_d4_6": (4, 6), "late_d7_13": (7, 13), "late_d14p": (14, 9999)}

@@ -477,6 +477,11 @@
    "passed": true
   },
   {
+   "check": "stretch and goal are both medians of the same stable months (like for like)",
+   "detail": "goal 4.4325% - stretch 3.4251% = 1.0074 pp",
+   "passed": true
+  },
+  {
    "check": "dispersion test: quiet on chance-only data, loud on the real months",
    "detail": "noise rejected 0.75% of the time at 1%",
    "passed": true
@@ -556,7 +561,7 @@
     0.06655624152989008,
     0.0748074807480748
    ],
-   "stretch_25th_pct_if_handoffs_ok": 0.02251969271900082,
+   "stretch_median_if_handoffs_ok": 0.03425141242937853,
    "whole_period_rate_if_handoffs_ok_month_specific": 0.05491388035011275,
    "whole_period_rate_if_handoffs_ok_pooled": 0.054500700703864056
   },

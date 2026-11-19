@@ -12,7 +12,16 @@ CASES = [   # (name, story text, memo text, title that must pass or fail, should
     ("the real titles", STORY, MEMO, None, True),
     ("'because' in a title is not cause wording", STORY.replace(TITLE, TITLE + ", because parcels arrive late", 1), MEMO, "story title", True),
     ("'linked to' in capitals", STORY.replace("linked to", "Linked To", 1), MEMO, "story title", True),
-    ("'Caused' at the start of the memo title", STORY, MEMO.replace("# Late deliveries:", "# Caused by late deliveries:", 1), "memo title", False),
+    ("'Caused' at the start of the memo title", STORY, MEMO.replace("# Late deliveries are", "# Caused by late deliveries are", 1), "memo title", False),
+    # the wider cause wording and the memo title's own 'linked to' (review finding 6)
+    ("'causal' in the memo title", STORY, MEMO.replace("are linked to about", "are a causal link to about", 1), "memo title", False),
+    ("'drives' in the memo title", STORY, MEMO.replace("are linked to about", "drives about", 1), "memo title", False),
+    ("'driven by' in the story title", STORY.replace("are linked to about a quarter", "are linked to, and driven by, about a quarter", 1), MEMO, "story title", False),
+    ("'results in' in the story title", STORY.replace("are linked to about a quarter", "results in about a quarter", 1), MEMO, "story title", False),
+    ("'leads to' in the memo title", STORY, MEMO.replace("are linked to about", "leads to about", 1), "memo title", False),
+    ("the memo title without 'linked to'", STORY, MEMO.replace("are linked to about", "go with about", 1), "memo title", False),
+    ("'driver' alone in a title is not cause wording", STORY.replace("Where they come from,", "The driver of lateness, and", 1), MEMO, "story subtitle", True),
+    ("'linked to' in capitals in the memo title", STORY, MEMO.replace("are linked to about", "are Linked To about", 1), "memo title", True),
 ]
 bad = 0
 for name, story, memo, which, want in CASES:

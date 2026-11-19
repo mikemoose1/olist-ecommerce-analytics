@@ -90,22 +90,70 @@ def check_meaning(raw_text):
     return problems
 
 
-# The matched association figure the memo and story printed before the causal estimate (3,335 extra reviews, "about 3,300",
-# 28.7% of them, range 27.7% to 29.4%). Printing one of these values again, or tagging a number with one of the old
-# names, fails even when a fact with that value still exists somewhere.
-RETIRED_NUMBERS = {"3,335", "3335", "3,300", "28.7", "27.7", "29.4"}
+# Retired figures are banned by the tag or the fact that carried them, never by a bare value: a number that merely equals an
+# old one (a different fact that happens to read 28.7) is fine.
+#   - RETIRED_TAGS: the matched-association facts (3,335 extra reviews, about 3,300, 28.7%, range 27.7% to 29.4%) that the
+#     causal review cost replaced. Tagging any number with one of these names fails.
+#   - RETIRED_FACT_VALUES: values a current fact used to hold. If a fact holds one again (say the stretch SQL goes back to the
+#     25th percentile and the facts are rebuilt), or a number is tagged with that fact and prints it, the check fails even
+#     though the tag and the fact agree.
 RETIRED_TAGS = {"low_star_excess_mid", "low_star_share_lo", "low_star_share_mid", "low_star_share_hi"}
+RETIRED_FACT_VALUES = {
+    "c_cost_causal": ({"3,335", "3,300"}, "the retired association figure (use the causal estimate)"),
+    "c_cost_causal_share": ({"28.7"}, "the retired association figure (use the causal estimate)"),
+    "c_stretch_line": ({"2.3"}, "the retired stretch value (25th percentile of the what-if months; the stretch is now the median)"),
+    "c_stretch_exact": ({"2.25"}, "the retired stretch value (25th percentile of the what-if months; the stretch is now the median)"),
+}
+
+# Sentences the memo must keep word for word (tags removed), so the cause wording cannot drift into a stronger or weaker claim.
+# Built from the facts so the numbers in them stay tied. The story has its own list in story/check_story.py.
+def required_sentences(facts):
+    return [
+        f"Late delivery is the estimated cause of about {facts['c_cost_causal']} of the {facts['c_low_star_all']} one- and two-star "
+        f"reviews on these orders, about {facts['c_cost_causal_share']}% of them.",
+        "This is an estimate from past orders, not a randomized test.",
+        f"A stretch line at {facts['c_stretch_line']}% ({facts['c_stretch_exact']}%) shows the middle month if late seller handoffs "
+        "ran late no more often than on-time ones: a what-if, not a tested cause.",
+    ]
+
+
+def survey_channel_problems(mechanism, extra):
+    """The memo says the causal estimate's extra bad reviews were all written before the parcel arrived, and that among reviews
+    written after delivery the estimate is below zero. mechanism and extra come from evidence/review_cost_causal_report.json
+    (mechanism.bad_written_before_delivery / bad_written_after_delivery, headline.extra_bad_reviews)."""
+    before, after = mechanism["bad_written_before_delivery"], mechanism["bad_written_after_delivery"]
+    out = []
+    if before < extra:
+        out.append(f"survey channel: extra bad reviews written before delivery ({before:.0f}) are less than the estimate ({extra:.0f}), so 'all of its extra bad reviews were written before the parcel arrived' is false")
+    if after >= 0:
+        out.append(f"survey channel: the estimate for reviews written after delivery is {after:.0f}, not below zero")
+    return out
+
+
+COUNT_WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10}
+
+
+def check_flagged_count(plain, facts):
+    """'Three months crossed it' must say the number of months above the alarm line (fact c_flagged_n)."""
+    found = re.findall(r"\b(\w+) months? crossed it\b", plain, re.I)
+    if not found:
+        return ["flagged-month count: no 'N months crossed it' sentence"]
+    return [f"flagged-month count: says {w!r}, the alarm line was crossed in {facts['c_flagged_n']} months"
+            for w in found if COUNT_WORDS.get(w.lower()) != int(facts["c_flagged_n"])]
 
 
 def check_memo(raw_text, facts, design=None, sentences=()):
     """Returns (numbers checked, problems). design adds design constants to DESIGN (story/check_story.py uses it).
-    sentences must each appear word for word in the text once the tags are removed."""
+    sentences must each appear word for word in the text once the tags are removed (the memo's required_sentences(facts) and
+    the story's own list are passed in by the caller; MEMO.md callers pass both the repeat sentence and required_sentences)."""
     DESIGN = {**globals()["DESIGN"], **(design or {})}
     plain = re.sub(r"<!--.*?-->", "", raw_text, flags=re.S)
+    plain = re.sub(r"\s+", " ", plain)
     missing = [f"sentence not word for word: {s[:60]!r}..." for s in sentences if s not in plain]
     blank = lambda m: " " * len(m.group(0))
     masked = re.sub(r"<!--.*?-->|\b\d{4}-\d{2}\b|^\s*\d+\.(?=\s)", blank, raw_text, flags=re.S | re.M)   # tags, dates (YYYY-MM), list numbering
     problems, claimed, n = [], set(), 0
+    problems += [f"fact {name} holds {facts[name]}, {why}" for name, (old, why) in RETIRED_FACT_VALUES.items() if facts.get(name) in old]
     for m in NUM.finditer(masked):
         n += 1
         tok, tag = m.group(0), TAG.match(raw_text, m.end())
@@ -114,8 +162,11 @@ def check_memo(raw_text, facts, design=None, sentences=()):
             continue
         claimed.add(tag.start())
         kind, absolute, name = tag.group(1), bool(tag.group(2)), tag.group(3)
-        if tok in RETIRED_NUMBERS or name in RETIRED_TAGS:
+        if name in RETIRED_TAGS:
             problems.append(f"{tok}: tag {kind}:{name} is the retired association figure (use the causal estimate)")
+            continue
+        if kind == "f" and tok in RETIRED_FACT_VALUES.get(name, (set(), ""))[0]:
+            problems.append(f"{tok}: tag {kind}:{name} prints {RETIRED_FACT_VALUES[name][1]}")
             continue
         want = facts.get(name) if kind == "f" else DESIGN.get(name)
         if want is None:
@@ -131,5 +182,5 @@ def check_memo(raw_text, facts, design=None, sentences=()):
             if want != m.group(0):
                 problems.append(f"{m.group(0)}: tag {tag.group(1)}:{tag.group(3)} is {want}")
     problems += [f"tag {t.group(0)} follows no number" for t in TAG.finditer(raw_text) if t.start() not in claimed]
-    problems += check_meaning(raw_text) + missing
+    problems += check_meaning(raw_text) + check_flagged_count(plain, facts) + missing
     return n, problems

@@ -23,7 +23,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 15.4
+  "seconds": 14.0
  },
  {
   "rule": "Raw row counts are as published",
@@ -36,30 +36,30 @@
   },
   "baseline": [
    [
-    "dbt_expectations_source_expect_table_row_count_to_equal_olist_raw_olist_orders_dataset_99441",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
     "pass",
     0
    ],
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
+    "dbt_expectations_source_expect_table_row_count_to_equal_olist_raw_olist_orders_dataset_99441",
     "pass",
     0
    ]
   ],
   "mutant": [
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
+    "dbt_expectations_source_expect_table_row_count_to_equal_olist_raw_olist_orders_dataset_99441",
     "fail",
     1
    ],
    [
-    "dbt_expectations_source_expect_table_row_count_to_equal_olist_raw_olist_orders_dataset_99441",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
     "fail",
     1
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 14.2
+  "seconds": 13.8
  },
  {
   "rule": "Staging keeps every raw row",
@@ -76,12 +76,12 @@
     0
    ],
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_delivery_ref_stg_orders_",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_fct_orders_ref_stg_orders_",
     "pass",
     0
    ],
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_fct_orders_ref_stg_orders_",
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_delivery_ref_stg_orders_",
     "pass",
     0
    ],
@@ -93,6 +93,11 @@
   ],
   "mutant": [
    [
+    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_delivery_ref_stg_orders_",
+    "fail",
+    1
+   ],
+   [
     "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_payment_recon_ref_stg_orders_",
     "fail",
     1
@@ -103,18 +108,13 @@
     1
    ],
    [
-    "dbt_expectations_expect_table_row_count_to_equal_other_table_int_order_delivery_ref_stg_orders_",
-    "fail",
-    1
-   ],
-   [
     "dbt_expectations_expect_table_row_count_to_equal_other_table_stg_orders_source_olist_raw_olist_orders_dataset_",
     "fail",
     1
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 13.8
+  "seconds": 13.6
  },
  {
   "rule": "Modeling never creates or loses money (no fan-out)",
@@ -139,7 +139,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 14.8
+  "seconds": 13.8
  },
  {
   "rule": "Repeat metrics count people, not per-order ids",
@@ -164,7 +164,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 14.6
+  "seconds": 13.8
  },
  {
   "rule": "A multi-seller order is never treated as a single observed parcel",
@@ -189,7 +189,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 14.2
+  "seconds": 13.0
  },
  {
   "rule": "A review dated before delivery is flagged",
@@ -214,7 +214,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 14.2
+  "seconds": 13.7
  },
  {
   "rule": "Paid equals items + freight, or the order is labeled",
@@ -239,7 +239,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 14.0
+  "seconds": 13.3
  },
  {
   "rule": "Real payment gaps stay under 0.5% of orders",
@@ -266,7 +266,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 13.9
+  "seconds": 13.2
  },
  {
   "rule": "Only full months are in the analysis window",
@@ -291,7 +291,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 14.0
+  "seconds": 13.7
  },
  {
   "rule": "Delivery state agrees with status and dates",
@@ -316,7 +316,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 14.3
+  "seconds": 12.9
  },
  {
   "rule": "Orders without items are labeled no_items",
@@ -341,7 +341,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 14.0
+  "seconds": 12.9
  },
  {
   "rule": "Exactly one chosen review per reviewed order",
@@ -366,7 +366,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 14.3
+  "seconds": 13.2
  },
  {
   "rule": "Every order's purchase date exists in dim_date",
@@ -383,17 +383,17 @@
     0
    ],
    [
+    "relationships_fct_order_items_order_id__order_id__ref_fct_orders_",
+    "pass",
+    0
+   ],
+   [
     "relationships_fct_orders_customer_unique_id__customer_unique_id__ref_dim_customer_",
     "pass",
     0
    ],
    [
     "relationships_fct_payments_order_id__order_id__ref_fct_orders_",
-    "pass",
-    0
-   ],
-   [
-    "relationships_fct_order_items_order_id__order_id__ref_fct_orders_",
     "pass",
     0
    ],
@@ -420,12 +420,12 @@
     0
    ],
    [
-    "relationships_fct_payments_order_id__order_id__ref_fct_orders_",
+    "relationships_fct_order_items_order_id__order_id__ref_fct_orders_",
     "pass",
     0
    ],
    [
-    "relationships_fct_order_items_order_id__order_id__ref_fct_orders_",
+    "relationships_fct_payments_order_id__order_id__ref_fct_orders_",
     "pass",
     0
    ],
@@ -441,7 +441,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 13.7
+  "seconds": 13.2
  },
  {
   "rule": "One location per zip",
@@ -466,7 +466,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 14.1
+  "seconds": 13.5
  },
  {
   "rule": "Zip locations are inside Brazil",
@@ -478,12 +478,12 @@
   },
   "baseline": [
    [
-    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lat__5_3___33_8",
+    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lng___34_7___74_0",
     "pass",
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lng___34_7___74_0",
+    "dbt_expectations_expect_column_values_to_be_between_int_geo_zip_lat__5_3___33_8",
     "pass",
     0
    ]
@@ -501,7 +501,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 13.8
+  "seconds": 13.6
  },
  {
   "rule": "Payment types are known values",
@@ -526,7 +526,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 13.9
+  "seconds": 13.7
  },
  {
   "rule": "Trend metrics never include a partial month",
@@ -551,7 +551,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 14.1
+  "seconds": 13.7
  },
  {
   "rule": "Review-cost number ties to the causal analysis and the story (6,366 / 3,110 / 26.7%)",
@@ -576,7 +576,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 15.2
+  "seconds": 13.6
  },
  {
   "rule": "Review-cost bins count the same late orders the analysis saw",
@@ -601,7 +601,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 14.2
+  "seconds": 13.6
  },
  {
   "rule": "Late-rate targets tie to the story numbers (94,931 / 6,518 / 11,635 / 2.27 stars)",
@@ -627,7 +627,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 13.5
+  "seconds": 14.3
  },
  {
   "rule": "Late-rate control limits are fully fitted (the last pass sets aside no further month)",
@@ -652,7 +652,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 13.4
+  "seconds": 13.2
  },
  {
   "rule": "Limits (S1/M2): sigma_z divides by 1.0 instead of the 1.128 constant of the moving-range method",
@@ -676,12 +676,12 @@
     0
    ],
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
     "pass",
     0
    ],
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
     "pass",
     0
    ],
@@ -721,7 +721,7 @@
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_safe_goal_late_rate",
+    "not_null_metric_late_rate_control_chart_laney_signal",
     "pass",
     0
    ],
@@ -731,22 +731,17 @@
     0
    ],
    [
-    "not_null_metric_late_rate_control_chart_laney_signal",
-    "pass",
-    0
-   ],
-   [
     "not_null_metric_late_rate_control_chart_year_month",
     "pass",
     0
    ],
    [
-    "not_null_metric_late_rate_targets_alarm_line_late_rate",
+    "not_null_metric_late_rate_targets_goal_late_rate",
     "pass",
     0
    ],
    [
-    "not_null_metric_late_rate_targets_goal_late_rate",
+    "not_null_metric_late_rate_targets_alarm_line_late_rate",
     "pass",
     0
    ],
@@ -768,6 +763,11 @@
   ],
   "mutant": [
    [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "pass",
+    0
+   ],
+   [
     "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
     "pass",
     0
@@ -783,17 +783,12 @@
     2
    ],
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
-    "pass",
-    0
-   ],
-   [
     "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
     "pass",
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
     "pass",
     0
    ],
@@ -803,7 +798,7 @@
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
     "pass",
     0
    ],
@@ -818,22 +813,17 @@
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_safe_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
     "not_null_metric_late_rate_control_chart_laney_signal",
     "pass",
     0
    ],
    [
-    "not_null_metric_late_rate_control_chart_orders",
+    "not_null_metric_late_rate_control_chart_year_month",
     "pass",
     0
    ],
    [
-    "not_null_metric_late_rate_control_chart_year_month",
+    "not_null_metric_late_rate_control_chart_orders",
     "pass",
     0
    ],
@@ -864,7 +854,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 21.8
+  "seconds": 22.1
  },
  {
   "rule": "Goals (S1/M3): the goals use the median instead of the 25th percentile of the stable months",
@@ -904,7 +894,7 @@
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
     "pass",
     0
    ],
@@ -914,7 +904,7 @@
     0
    ],
    [
-    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
     "pass",
     0
    ],
@@ -924,27 +914,17 @@
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
     "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
     "pass",
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_safe_goal_late_rate",
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
     "pass",
     0
    ],
    [
     "not_null_metric_late_rate_control_chart_laney_signal",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_alarm_line_late_rate",
     "pass",
     0
    ],
@@ -959,12 +939,17 @@
     0
    ],
    [
-    "not_null_metric_late_rate_targets_goal_late_rate",
+    "not_null_metric_late_rate_targets_alarm_line_late_rate",
     "pass",
     0
    ],
    [
     "not_null_metric_late_rate_targets_safe_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_goal_late_rate",
     "pass",
     0
    ],
@@ -986,11 +971,6 @@
     0
    ],
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
-    "fail",
-    2
-   ],
-   [
     "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
     "pass",
     0
@@ -998,25 +978,15 @@
    [
     "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
     "fail",
-    2
+    1
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "fail",
+    1
    ],
    [
     "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
     "pass",
     0
    ],
@@ -1026,12 +996,22 @@
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
     "pass",
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_safe_goal_late_rate",
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
     "pass",
     0
    ],
@@ -1041,12 +1021,17 @@
     0
    ],
    [
+    "not_null_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ],
+   [
     "not_null_metric_late_rate_control_chart_orders",
     "pass",
     0
    ],
    [
-    "not_null_metric_late_rate_control_chart_year_month",
+    "not_null_metric_late_rate_targets_goal_late_rate",
     "pass",
     0
    ],
@@ -1057,11 +1042,6 @@
    ],
    [
     "not_null_metric_late_rate_targets_safe_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_targets_goal_late_rate",
     "pass",
     0
    ],
@@ -1077,7 +1057,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 21.2
+  "seconds": 21.8
  },
  {
   "rule": "Goals (S1/M4): the stable-month filter is dropped, so thin and flagged months count as stable",
@@ -1101,7 +1081,7 @@
     0
    ],
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
     "pass",
     0
    ],
@@ -1111,7 +1091,7 @@
     0
    ],
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
     "pass",
     0
    ],
@@ -1121,7 +1101,7 @@
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
     "pass",
     0
    ],
@@ -1131,7 +1111,7 @@
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
     "pass",
     0
    ],
@@ -1141,17 +1121,7 @@
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_safe_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
     "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_control_chart_laney_signal",
     "pass",
     0
    ],
@@ -1161,12 +1131,17 @@
     0
    ],
    [
-    "not_null_metric_late_rate_targets_alarm_line_late_rate",
+    "not_null_metric_late_rate_control_chart_laney_signal",
     "pass",
     0
    ],
    [
     "not_null_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_alarm_line_late_rate",
     "pass",
     0
    ],
@@ -1198,11 +1173,6 @@
     0
    ],
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
-    "fail",
-    4
-   ],
-   [
     "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
     "pass",
     0
@@ -1210,20 +1180,15 @@
    [
     "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
     "fail",
+    5
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "fail",
     4
    ],
    [
-    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
-    "pass",
-    0
-   ],
-   [
     "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
     "pass",
     0
    ],
@@ -1233,22 +1198,27 @@
     0
    ],
    [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
     "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
     "pass",
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_safe_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
     "not_null_metric_late_rate_control_chart_laney_signal",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
     "pass",
     0
    ],
@@ -1289,7 +1259,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 21.9
+  "seconds": 21.6
  },
  {
   "rule": "Goals (S1/M4b): only the thin-month part of the stable filter is dropped",
@@ -1333,12 +1303,12 @@
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
     "pass",
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
     "pass",
     0
    ],
@@ -1358,17 +1328,12 @@
     0
    ],
    [
-    "not_null_metric_late_rate_control_chart_laney_signal",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_safe_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
     "not_null_metric_late_rate_control_chart_orders",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_laney_signal",
     "pass",
     0
    ],
@@ -1379,6 +1344,11 @@
    ],
    [
     "not_null_metric_late_rate_targets_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
     "pass",
     0
    ],
@@ -1396,11 +1366,6 @@
     "unique_metric_late_rate_control_chart_year_month",
     "pass",
     0
-   ],
-   [
-    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
-    "pass",
-    0
    ]
   ],
   "mutant": [
@@ -1408,11 +1373,6 @@
     "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
     "pass",
     0
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
-    "fail",
-    4
    ],
    [
     "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
@@ -1425,9 +1385,9 @@
     4
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
-    "pass",
-    0
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "fail",
+    5
    ],
    [
     "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
@@ -1435,7 +1395,7 @@
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
     "pass",
     0
    ],
@@ -1445,7 +1405,7 @@
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_safe_goal_late_rate",
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
     "pass",
     0
    ],
@@ -1470,12 +1430,12 @@
     0
    ],
    [
-    "not_null_metric_late_rate_targets_alarm_line_late_rate",
+    "not_null_metric_late_rate_control_chart_year_month",
     "pass",
     0
    ],
    [
-    "not_null_metric_late_rate_control_chart_year_month",
+    "not_null_metric_late_rate_targets_alarm_line_late_rate",
     "pass",
     0
    ],
@@ -1501,7 +1461,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 21.3
+  "seconds": 20.2
  },
  {
   "rule": "Goals (S1/M4c): only the Laney-signal part of the stable filter is dropped",
@@ -1525,22 +1485,17 @@
     0
    ],
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
-    "pass",
-    0
-   ],
-   [
     "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
     "pass",
     0
    ],
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
     "pass",
     0
    ],
    [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
     "pass",
     0
    ],
@@ -1560,7 +1515,17 @@
     0
    ],
    [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "pass",
+    0
+   ],
+   [
     "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_orders",
     "pass",
     0
    ],
@@ -1570,17 +1535,12 @@
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_safe_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
     "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
     "pass",
     0
    ],
    [
-    "not_null_metric_late_rate_control_chart_orders",
+    "not_null_metric_late_rate_control_chart_year_month",
     "pass",
     0
    ],
@@ -1591,11 +1551,6 @@
    ],
    [
     "not_null_metric_late_rate_targets_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_control_chart_year_month",
     "pass",
     0
    ],
@@ -1634,7 +1589,7 @@
    [
     "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
     "fail",
-    4
+    5
    ],
    [
     "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
@@ -1657,17 +1612,12 @@
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
-    "pass",
-    0
-   ],
-   [
     "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
     "pass",
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_safe_goal_late_rate",
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
     "pass",
     0
    ],
@@ -1713,7 +1663,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 22.2
+  "seconds": 20.8
  },
  {
   "rule": "Limits (S1/M5): the moving range counts months that were set aside (sigma_z 4.93 -> about 10)",
@@ -1737,11 +1687,6 @@
     0
    ],
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
-    "pass",
-    0
-   ],
-   [
     "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
     "pass",
     0
@@ -1752,17 +1697,12 @@
     0
    ],
    [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "pass",
+    0
+   ],
+   [
     "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
-    "pass",
-    0
-   ],
-   [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
     "pass",
     0
    ],
@@ -1772,22 +1712,17 @@
     0
    ],
    [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "pass",
+    0
+   ],
+   [
     "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_safe_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "not_null_metric_late_rate_control_chart_laney_signal",
     "pass",
     0
    ],
@@ -1797,7 +1732,12 @@
     0
    ],
    [
-    "not_null_metric_late_rate_targets_alarm_line_late_rate",
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_laney_signal",
     "pass",
     0
    ],
@@ -1807,12 +1747,17 @@
     0
    ],
    [
-    "not_null_metric_late_rate_targets_goal_late_rate",
+    "not_null_metric_late_rate_targets_safe_goal_late_rate",
     "pass",
     0
    ],
    [
-    "not_null_metric_late_rate_targets_safe_goal_late_rate",
+    "not_null_metric_late_rate_targets_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_goal_late_rate",
     "pass",
     0
    ],
@@ -1834,14 +1779,9 @@
     0
    ],
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
-    "pass",
-    0
-   ],
-   [
     "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
     "fail",
-    10
+    11
    ],
    [
     "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
@@ -1849,12 +1789,7 @@
     10
    ],
    [
-    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
-    "pass",
-    0
-   ],
-   [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
     "pass",
     0
    ],
@@ -1869,12 +1804,17 @@
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
     "pass",
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
     "pass",
     0
    ],
@@ -1884,7 +1824,7 @@
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_safe_goal_late_rate",
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
     "pass",
     0
    ],
@@ -1914,18 +1854,18 @@
     0
    ],
    [
-    "unique_metric_late_rate_control_chart_year_month",
+    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
     "pass",
     0
    ],
    [
-    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "unique_metric_late_rate_control_chart_year_month",
     "pass",
     0
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 21.7
+  "seconds": 20.7
  },
  {
   "rule": "Goal line (M6): the goal uses the 60th percentile of the stable months instead of the median (4.43%)",
@@ -1949,17 +1889,17 @@
     0
    ],
    [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
-    "pass",
-    0
-   ],
-   [
     "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
     "pass",
     0
    ],
    [
     "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
     "pass",
     0
    ],
@@ -1989,17 +1929,12 @@
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_safe_goal_late_rate",
-    "pass",
-    0
-   ],
-   [
     "not_null_metric_late_rate_control_chart_laney_signal",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
     "pass",
     0
    ],
@@ -2019,12 +1954,12 @@
     0
    ],
    [
-    "not_null_metric_late_rate_targets_goal_late_rate",
+    "not_null_metric_late_rate_targets_safe_goal_late_rate",
     "pass",
     0
    ],
    [
-    "not_null_metric_late_rate_targets_safe_goal_late_rate",
+    "not_null_metric_late_rate_targets_goal_late_rate",
     "pass",
     0
    ],
@@ -2046,6 +1981,11 @@
     0
    ],
    [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "fail",
+    1
+   ],
+   [
     "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
     "pass",
     0
@@ -2053,25 +1993,10 @@
    [
     "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
     "fail",
-    1
-   ],
-   [
-    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
-    "fail",
-    1
+    2
    ],
    [
     "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
-    "pass",
-    0
-   ],
-   [
-    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
-    "pass",
-    0
-   ],
-   [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
     "pass",
     0
    ],
@@ -2081,7 +2006,12 @@
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
     "pass",
     0
    ],
@@ -2091,7 +2021,7 @@
     0
    ],
    [
-    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_safe_goal_late_rate",
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
     "pass",
     0
    ],
@@ -2121,12 +2051,12 @@
     0
    ],
    [
-    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "not_null_metric_late_rate_targets_safe_goal_late_rate",
     "pass",
     0
    ],
    [
-    "not_null_metric_late_rate_targets_safe_goal_late_rate",
+    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
     "pass",
     0
    ],
@@ -2137,7 +2067,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 22.2
+  "seconds": 20.5
  },
  {
   "rule": "Review ramp ties to the story: bad reviews moved from day 10 to day -5 (totals unchanged; 8.7% and 78% move)",
@@ -2163,7 +2093,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 14.4
+  "seconds": 14.0
  },
  {
   "rule": "Review ramp ties to the story: bad reviews moved from day 1 to day 5 (only the 11-a-day slope moves)",
@@ -2189,7 +2119,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 14.7
+  "seconds": 13.2
  },
  {
   "rule": "Review cost: the range the story quotes (2,880 to 3,350) drifts in the causal report",
@@ -2221,7 +2151,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 22.9
+  "seconds": 19.6
  },
  {
   "rule": "Review cost: the dbt total leaves the range across specifications (and the whole-% share moves off 27)",
@@ -2246,7 +2176,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 14.8
+  "seconds": 13.7
  },
  {
   "rule": "Ontology: an order has exactly one row (no order with two customers)",
@@ -2271,7 +2201,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.5
+  "seconds": 3.0
  },
  {
   "rule": "Ontology: every customer has at least one order",
@@ -2296,7 +2226,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.0
+  "seconds": 2.9
  },
  {
   "rule": "Ontology: every item's product exists",
@@ -2321,7 +2251,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.2
+  "seconds": 3.1
  },
  {
   "rule": "Ontology: every survey response belongs to a real order",
@@ -2346,7 +2276,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.1
+  "seconds": 3.4
  },
  {
   "rule": "Ontology: an order never has two chosen reviews",
@@ -2396,7 +2326,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.0
+  "seconds": 2.8
  },
  {
   "rule": "Ontology stage rule: late always means delivered after the promised day",
@@ -2421,7 +2351,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.1
+  "seconds": 3.2
  },
  {
   "rule": "Ontology: the repeat cohort has one row per person (no duplicate person)",
@@ -2446,7 +2376,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.4
+  "seconds": 3.0
  },
  {
   "rule": "Ontology: every cohort person is a real customer",
@@ -2471,7 +2401,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.3
+  "seconds": 3.4
  },
  {
   "rule": "Ontology: purchased_at is never null",
@@ -2496,7 +2426,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.2
+  "seconds": 3.1
  },
  {
   "rule": "Ontology: purchased_at keeps its TIMESTAMP type (a DATE would lose the 24-hour rule)",
@@ -2521,7 +2451,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.2
+  "seconds": 3.0
  },
  {
   "rule": "Ontology: n_parcels is 0, not null, for an order with no items",
@@ -2546,7 +2476,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.2
+  "seconds": 2.9
  },
  {
   "rule": "Ontology: in_analysis_window is never null",
@@ -2571,7 +2501,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.5
+  "seconds": 3.0
  },
  {
   "rule": "Ontology: review_score is null only when the order has no response",
@@ -2596,7 +2526,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.4
+  "seconds": 2.9
  },
  {
   "rule": "Ontology: review_score never holds a value outside 1 to 5",
@@ -2621,7 +2551,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.5
+  "seconds": 3.0
  },
  {
   "rule": "Ontology: the repeat flag is never null",
@@ -2646,7 +2576,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.3
+  "seconds": 2.9
  },
  {
   "rule": "Ontology: the canceled count and the 6 canceled orders with a delivery date",
@@ -2671,7 +2601,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.0
+  "seconds": 2.9
  },
  {
   "rule": "Ontology: placed an order versus qualifying order (1,113 people with no qualifying order)",
@@ -2696,7 +2626,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.1
+  "seconds": 3.3
  },
  {
   "rule": "Ontology: the order count with no parcels (n_parcels = 0)",
@@ -2721,7 +2651,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.2
+  "seconds": 3.1
  },
  {
   "rule": "Ontology: the analysis-window flag counts (349 outside)",
@@ -2746,7 +2676,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.2
+  "seconds": 3.0
  },
  {
   "rule": "Ontology: the repeat cohort is everyone old enough (77,560 and the 17,423 left out)",
@@ -2771,7 +2701,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.4
+  "seconds": 3.3
  },
  {
   "rule": "Ontology: first_order_at is the purchased_at of the seq = 1 order",
@@ -2796,7 +2726,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.4
+  "seconds": 3.1
  },
  {
   "rule": "Ontology: the headline metric table has its 5 rows",
@@ -2846,7 +2776,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.6
+  "seconds": 3.0
  },
  {
   "rule": "Ontology: qualifying order counts (98,199 qualifying, 1,242 not)",
@@ -2871,7 +2801,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.3
+  "seconds": 3.0
  },
  {
   "rule": "Ontology: the sequence number is null exactly for non-qualifying orders",
@@ -2896,7 +2826,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.2
+  "seconds": 2.9
  },
  {
   "rule": "Ontology: purchase_date is the calendar day of purchased_at",
@@ -2921,7 +2851,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.1
+  "seconds": 2.9
  },
  {
   "rule": "Ontology: n_items is never null",
@@ -2946,7 +2876,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.1
+  "seconds": 3.3
  },
  {
   "rule": "Ontology: delivered_to_customer_at has exactly 2,965 nulls",
@@ -2971,7 +2901,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.3
+  "seconds": 3.1
  },
  {
   "rule": "Ontology: every person has at least one order (n_orders >= 1)",
@@ -2996,7 +2926,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.2
+  "seconds": 2.8
  },
  {
   "rule": "Ontology: qualifying orders never exceed orders",
@@ -3021,7 +2951,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.6
+  "seconds": 2.9
  },
  {
   "rule": "Ontology: first_qualifying_order_at is null exactly when a person has no qualifying order",
@@ -3046,7 +2976,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.4
+  "seconds": 2.9
  },
  {
   "rule": "Ontology: the cohort person id is never null",
@@ -3071,7 +3001,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.3
+  "seconds": 2.9
  },
  {
   "rule": "Ontology: first_order_at is never null",
@@ -3096,7 +3026,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.2
+  "seconds": 3.3
  },
  {
   "rule": "Ontology: first_order_date is the calendar day of first_order_at",
@@ -3121,7 +3051,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.4
+  "seconds": 2.9
  },
  {
   "rule": "Ontology: the headline numerator is null only for the review gap",
@@ -3196,7 +3126,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.2
+  "seconds": 2.8
  },
  {
   "rule": "Ontology: the headline metric name is never null",
@@ -3221,7 +3151,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.9
+  "seconds": 3.0
  },
  {
   "rule": "Ontology: the review score count (768 orders with none)",
@@ -3246,7 +3176,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.1
+  "seconds": 3.0
  },
  {
   "rule": "Ontology fact: people with a qualifying order (94,983)",
@@ -3271,7 +3201,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.4
+  "seconds": 3.5
  },
  {
   "rule": "Ontology fact: people left out of the cohort as too recent (17,423)",
@@ -3296,7 +3226,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.2
+  "seconds": 2.9
  },
  {
   "rule": "Ontology fact: the newest qualifying purchase and the cohort cutoff",
@@ -3321,7 +3251,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.7
+  "seconds": 2.9
  },
  {
   "rule": "Ontology fact: one seq = 1 order per cohort person (the first-order state is unambiguous)",
@@ -3346,7 +3276,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.0
+  "seconds": 2.8
  },
  {
   "rule": "Ontology fact: seq = 1 is the earliest qualifying order",
@@ -3371,7 +3301,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.2
+  "seconds": 3.0
  },
  {
   "rule": "Ontology fact: same-second qualifying orders (281 pairs)",
@@ -3396,7 +3326,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.0
+  "seconds": 2.9
  },
  {
   "rule": "Ontology fact: the order's review_score equals the chosen response's score",
@@ -3421,7 +3351,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.1
+  "seconds": 2.9
  },
  {
   "rule": "Ontology card: promised_days is the days from purchase to the promised date",
@@ -3471,7 +3401,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.2
+  "seconds": 2.9
  },
  {
   "rule": "Ontology card: amount_due is null only on orders with no items",
@@ -3496,7 +3426,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.4
+  "seconds": 2.9
  },
  {
   "rule": "Ontology fact: 5,127 survey responses were sent before delivery",
@@ -3521,7 +3451,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.2
+  "seconds": 3.1
  },
  {
   "rule": "G7 coverage: a metric table cited only as a card's model has no entity",
@@ -3544,7 +3474,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.7
+  "seconds": 2.9
  },
  {
   "rule": "G7 coverage: a column cited only as a metric's source has no contract",
@@ -3567,7 +3497,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.7
+  "seconds": 3.2
  },
  {
   "rule": "G7 entity: the judged-order table has one row per judged order",
@@ -3592,7 +3522,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.0
+  "seconds": 3.3
  },
  {
   "rule": "G7 entity: the monthly table has one row per month",
@@ -3642,7 +3572,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.0
+  "seconds": 3.3
  },
  {
   "rule": "G7 link: every judged order is an order",
@@ -3667,7 +3597,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.2
+  "seconds": 3.1
  },
  {
   "rule": "G7 card: is_late is exactly delivery_state = delivered_late",
@@ -3692,7 +3622,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.2
+  "seconds": 3.1
  },
  {
   "rule": "G7 card: a judged order's review score is 1 to 5 or null",
@@ -3717,7 +3647,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.0
+  "seconds": 3.2
  },
  {
   "rule": "G7 card: the monthly table holds only months inside the window",
@@ -3792,7 +3722,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.4
+  "seconds": 2.9
  },
  {
   "rule": "Card: review_created_on is the day of review_created_at",
@@ -3817,7 +3747,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.4
+  "seconds": 3.0
  },
  {
   "rule": "Fact: one chosen response per order that has any",
@@ -3865,7 +3795,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.8
+  "seconds": 3.0
  },
  {
   "rule": "Coverage: a new warehouse column with no card fails",
@@ -3890,7 +3820,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.1
+  "seconds": 3.0
  },
  {
   "rule": "Coverage: a new warehouse table with no card fails",
@@ -3915,7 +3845,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.2
+  "seconds": 3.0
  },
  {
   "rule": "Coverage: a number shown in ONTOLOGY.md that ontology.yml does not hold fails",
@@ -3938,7 +3868,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.9
+  "seconds": 3.2
  },
  {
   "rule": "Coverage (S5): swapping the customer count for the late-rate denominator fails, though 94,931 exists elsewhere in the YAML",
@@ -3966,7 +3896,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.8
+  "seconds": 2.9
  },
  {
   "rule": "Coverage (S5): swapping the late rate for the review average fails, though 4.156 exists elsewhere in the YAML",
@@ -3994,7 +3924,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.1
+  "seconds": 2.9
  },
  {
   "rule": "Coverage (S5): a number with its marker removed fails",
@@ -4022,7 +3952,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.1
+  "seconds": 2.9
  },
  {
   "rule": "Coverage (S5): a marker that points at nothing fails",
@@ -4050,7 +3980,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.1
+  "seconds": 3.3
  },
  {
   "rule": "Coverage (S5): a marker that follows no number fails",
@@ -4073,7 +4003,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.9
+  "seconds": 3.2
  },
  {
   "rule": "Model (S6): the Model column says 'holds' for a rule no invariant checks (the reviewer's exact case)",
@@ -4129,7 +4059,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.0
+  "seconds": 2.8
  },
  {
   "rule": "Model (S6): a card claims a result that TLC's report does not record",
@@ -4157,7 +4087,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.2
+  "seconds": 3.0
  },
  {
   "rule": "Coverage: a number shown in ONTOLOGY.md that ontology.yml only mentions in prose fails",
@@ -4185,7 +4115,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.0
+  "seconds": 3.3
  },
  {
   "rule": "Ontology fact: 547 orders have more than one survey response",
@@ -4210,7 +4140,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.4
+  "seconds": 3.2
  },
  {
   "rule": "Ontology fact: 789 review_ids sit on more than one order",
@@ -4235,7 +4165,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.2
+  "seconds": 3.0
  },
  {
   "rule": "Coverage: an exemption with no written reason fails",
@@ -4286,7 +4216,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.8
+  "seconds": 3.1
  },
  {
   "rule": "Coverage (M5): a one-digit count is edited (7 sellers -> 70)",
@@ -4314,7 +4244,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.0
+  "seconds": 2.9
  },
  {
   "rule": "Coverage (M5): the headline-metric row count is edited (5 -> 6)",
@@ -4342,7 +4272,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.1
+  "seconds": 2.8
  },
  {
   "rule": "Coverage (M5): an exempt number is edited inside its phrase (29 reachable states -> 92)",
@@ -4370,7 +4300,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.9
+  "seconds": 2.8
  },
  {
   "rule": "Coverage (M5): a timestamp is edited (the cohort cutoff)",
@@ -4398,7 +4328,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.1
+  "seconds": 2.7
  },
  {
   "rule": "Coverage (M5): a duration is edited (at most 90 days -> 60)",
@@ -4426,7 +4356,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.2
+  "seconds": 2.9
  },
  {
   "rule": "Coverage (M5): a duration is edited (24 hours -> 12)",
@@ -4482,7 +4412,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.0
+  "seconds": 3.2
  },
  {
   "rule": "Coverage (M5): number AND marker swapped together (96,096 customer -> 99,441 order) fails on the row's owner",
@@ -4510,7 +4440,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.1
+  "seconds": 2.9
  },
  {
   "rule": "Coverage: a new number hidden as a hyphen range (3-5) fails",
@@ -4538,7 +4468,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.1
+  "seconds": 2.9
  },
  {
   "rule": "Coverage: a new number hidden as digits glued after letters (top5) fails",
@@ -4594,7 +4524,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.2
+  "seconds": 2.8
  },
  {
   "rule": "Coverage: a new number hidden as a digit after an underscore (x_7) fails",
@@ -4622,7 +4552,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.0
+  "seconds": 2.8
  },
  {
   "rule": "Coverage: a new number hidden as a fraction character (\u00bd) fails",
@@ -4650,7 +4580,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.0
+  "seconds": 2.8
  },
  {
   "rule": "Coverage: a new number hidden as a non-ASCII digit (\u0663) fails",
@@ -4678,7 +4608,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.3
+  "seconds": 2.7
  },
  {
   "rule": "Coverage: a new number hidden as a number glued to a unit (30d) fails",
@@ -4706,7 +4636,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.1
+  "seconds": 2.8
  },
  {
   "rule": "Coverage: a new number hidden as an ordinal (2nd) fails",
@@ -4734,7 +4664,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.2
+  "seconds": 2.7
  },
  {
   "rule": "Coverage: a new number hidden as a '..' range (3..5) fails",
@@ -4762,7 +4692,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.1
+  "seconds": 2.8
  },
  {
   "rule": "Coverage: a new number hidden as a number after a colon (count:9) fails",
@@ -4790,7 +4720,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.0
+  "seconds": 2.7
  },
  {
   "rule": "Coverage: a new number hidden as numbers after a comma (3,9) fails",
@@ -4818,7 +4748,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 2.8
+  "seconds": 2.9
  },
  {
   "rule": "Coverage: a new number hidden as a dotted triple (3.2.1) fails",
@@ -4846,7 +4776,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.0
+  "seconds": 3.1
  },
  {
   "rule": "Coverage: a new number hidden as a line-start 'N. ' outside a numbered list fails",
@@ -4874,7 +4804,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.2
+  "seconds": 3.0
  },
  {
   "rule": "Coverage (M5): a fact marker moved to a sentence that does not name it",
@@ -4902,7 +4832,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.7
+  "seconds": 2.8
  },
  {
   "rule": "Coverage (M5): an exemption with a bare value and no context phrase fails",
@@ -4930,7 +4860,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.2
+  "seconds": 2.7
  },
  {
   "rule": "Coverage: an exemption that matches nothing fails",
@@ -4953,7 +4883,7 @@
    ]
   ],
   "verdict": "PROVEN",
-  "seconds": 3.3
+  "seconds": 2.7
  },
  {
   "rule": "Titles: the story title says 'cause' again",
@@ -4978,7 +4908,7 @@
    [
     "title story title",
     "fail",
-    "says 'cause'; a title says 'linked to', not cause; does not say 'linked to'"
+    "says 'cause'; a title says 'linked to', not cause or drive or lead to; does not say 'linked to'"
    ]
   ],
   "verdict": "PROVEN",
@@ -5007,7 +4937,7 @@
    [
     "title story title",
     "fail",
-    "says 'caused'; a title says 'linked to', not cause; does not say 'linked to'"
+    "says 'caused'; a title says 'linked to', not cause or drive or lead to; does not say 'linked to'"
    ]
   ],
   "verdict": "PROVEN",
@@ -5036,7 +4966,7 @@
    [
     "title story title",
     "fail",
-    "says 'cause'; a title says 'linked to', not cause"
+    "says 'cause'; a title says 'linked to', not cause or drive or lead to"
    ]
   ],
   "verdict": "PROVEN",
@@ -5094,7 +5024,7 @@
    [
     "title story subtitle",
     "fail",
-    "says 'causing'; a title says 'linked to', not cause"
+    "says 'causing'; a title says 'linked to', not cause or drive or lead to"
    ]
   ],
   "verdict": "PROVEN",
@@ -5107,8 +5037,8 @@
    "title_replace": [
     [
      "memo",
-     "# Late deliveries: what they cost Olist",
-     "# Late deliveries: what it causes Olist"
+     "# Late deliveries are linked to about a quarter",
+     "# Late deliveries causes about a quarter"
     ]
    ]
   },
@@ -5123,10 +5053,1024 @@
    [
     "title memo title",
     "fail",
-    "says 'causes'; a title says 'linked to', not cause"
+    "says 'causes'; a title says 'linked to', not cause or drive or lead to; does not say 'linked to'"
    ]
   ],
   "verdict": "PROVEN",
   "seconds": 0.3
+ },
+ {
+  "rule": "Titles: the memo title says 'causal'",
+  "selector": "titles:memo title",
+  "mutation": {
+   "title_replace": [
+    [
+     "memo",
+     "# Late deliveries are linked to about a quarter",
+     "# Late deliveries are a causal link to about a quarter"
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "title memo title",
+    "pass",
+    "no cause wording"
+   ]
+  ],
+  "mutant": [
+   [
+    "title memo title",
+    "fail",
+    "says 'causal'; a title says 'linked to', not cause or drive or lead to; does not say 'linked to'"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 0.3
+ },
+ {
+  "rule": "Titles: the memo title says 'drives'",
+  "selector": "titles:memo title",
+  "mutation": {
+   "title_replace": [
+    [
+     "memo",
+     "# Late deliveries are linked to about a quarter",
+     "# Late deliveries drives about a quarter"
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "title memo title",
+    "pass",
+    "no cause wording"
+   ]
+  ],
+  "mutant": [
+   [
+    "title memo title",
+    "fail",
+    "says 'drives'; a title says 'linked to', not cause or drive or lead to; does not say 'linked to'"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 0.3
+ },
+ {
+  "rule": "Titles: the story title says 'driven by'",
+  "selector": "titles:story title",
+  "mutation": {
+   "title_replace": [
+    [
+     "story",
+     "Late deliveries are linked to about a quarter",
+     "Late deliveries are linked to, and driven by, about a quarter"
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "title story title",
+    "pass",
+    "no cause wording"
+   ]
+  ],
+  "mutant": [
+   [
+    "title story title",
+    "fail",
+    "says 'driven'; a title says 'linked to', not cause or drive or lead to"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 0.3
+ },
+ {
+  "rule": "Titles: the story title says 'results in'",
+  "selector": "titles:story title",
+  "mutation": {
+   "title_replace": [
+    [
+     "story",
+     "Late deliveries are linked to about a quarter",
+     "Late deliveries results in about a quarter"
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "title story title",
+    "pass",
+    "no cause wording"
+   ]
+  ],
+  "mutant": [
+   [
+    "title story title",
+    "fail",
+    "says 'results in'; a title says 'linked to', not cause or drive or lead to; does not say 'linked to'"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 0.3
+ },
+ {
+  "rule": "Titles: the memo title says 'leads to'",
+  "selector": "titles:memo title",
+  "mutation": {
+   "title_replace": [
+    [
+     "memo",
+     "# Late deliveries are linked to about a quarter",
+     "# Late deliveries leads to about a quarter"
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "title memo title",
+    "pass",
+    "no cause wording"
+   ]
+  ],
+  "mutant": [
+   [
+    "title memo title",
+    "fail",
+    "says 'leads to'; a title says 'linked to', not cause or drive or lead to; does not say 'linked to'"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 0.3
+ },
+ {
+  "rule": "Titles: the memo title drops 'linked to' for a neutral verb",
+  "selector": "titles:memo title",
+  "mutation": {
+   "title_replace": [
+    [
+     "memo",
+     "# Late deliveries are linked to about a quarter",
+     "# Late deliveries go with about a quarter"
+    ]
+   ]
+  },
+  "baseline": [
+   [
+    "title memo title",
+    "pass",
+    "no cause wording"
+   ]
+  ],
+  "mutant": [
+   [
+    "title memo title",
+    "fail",
+    "does not say 'linked to'"
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 0.3
+ },
+ {
+  "rule": "Stretch: the stretch line goes back to the retired 25th percentile (2.25%)",
+  "selector": "metric_late_rate_control_chart+",
+  "mutation": {
+   "model_edit": {
+    "file": "models/metrics/metric_late_rate_targets.sql",
+    "replace": [
+     [
+      "(select percentile_cont(0.5) within group (order by late_rate_if_handoffs_ok) from stable) as stretch_goal_late_rate",
+      "(select percentile_cont(0.25) within group (order by late_rate_if_handoffs_ok) from stable) as stretch_goal_late_rate"
+     ]
+    ],
+    "rebuild": "metric_late_rate_targets"
+   }
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_laney_signal",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_orders",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_safe_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "unique_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "fail",
+    1
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "fail",
+    2
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_orders",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_laney_signal",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_safe_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "unique_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 21.0
+ },
+ {
+  "rule": "Stretch: the stretch line uses the real late rate, so the what-if is gone",
+  "selector": "metric_late_rate_control_chart+",
+  "mutation": {
+   "model_edit": {
+    "file": "models/metrics/metric_late_rate_targets.sql",
+    "replace": [
+     [
+      "(select percentile_cont(0.5) within group (order by late_rate_if_handoffs_ok) from stable) as stretch_goal_late_rate",
+      "(select percentile_cont(0.5) within group (order by late_rate) from stable) as stretch_goal_late_rate"
+     ]
+    ],
+    "rebuild": "metric_late_rate_targets"
+   }
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_laney_signal",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_orders",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_safe_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "unique_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "fail",
+    1
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "fail",
+    2
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_laney_signal",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "fail",
+    1
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_orders",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_safe_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "unique_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 20.6
+ },
+ {
+  "rule": "Stretch: the stretch line takes every month, not just the stable ones",
+  "selector": "metric_late_rate_control_chart+",
+  "mutation": {
+   "model_edit": {
+    "file": "models/metrics/metric_late_rate_targets.sql",
+    "replace": [
+     [
+      "(select percentile_cont(0.5) within group (order by late_rate_if_handoffs_ok) from stable) as stretch_goal_late_rate",
+      "(select percentile_cont(0.5) within group (order by late_rate_if_handoffs_ok) from months) as stretch_goal_late_rate"
+     ]
+    ],
+    "rebuild": "metric_late_rate_targets"
+   }
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_laney_signal",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_orders",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_safe_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "unique_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "fail",
+    1
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "fail",
+    2
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_orders",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_laney_signal",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_safe_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "unique_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 21.9
+ },
+ {
+  "rule": "Stretch: the Python refit report's stretch value drifts from the dbt model (3.4251% -> 2.2520%)",
+  "selector": "assert_late_rate_targets_match_the_python_refit",
+  "mutation": {
+   "model_edit": {
+    "file": "evidence/late_rate_targets_report.json",
+    "replace": [
+     [
+      "\"stretch_median_if_handoffs_ok\": 0.03425141242937853",
+      "\"stretch_median_if_handoffs_ok\": 0.02251969271900082"
+     ]
+    ],
+    "rebuild": "metric_late_rate_targets"
+   }
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "fail",
+    1
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 20.3
+ },
+ {
+  "rule": "Stretch: the stretch line uses the 60th percentile of the what-if months",
+  "selector": "metric_late_rate_control_chart+",
+  "mutation": {
+   "model_edit": {
+    "file": "models/metrics/metric_late_rate_targets.sql",
+    "replace": [
+     [
+      "(select percentile_cont(0.5) within group (order by late_rate_if_handoffs_ok) from stable) as stretch_goal_late_rate",
+      "(select percentile_cont(0.6) within group (order by late_rate_if_handoffs_ok) from stable) as stretch_goal_late_rate"
+     ]
+    ],
+    "rebuild": "metric_late_rate_targets"
+   }
+  },
+  "baseline": [
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_orders",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_laney_signal",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_safe_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "unique_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ]
+  ],
+  "mutant": [
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_fit_has_converged",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_reconcile_to_story",
+    "pass",
+    0
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_targets_match_the_python_refit",
+    "fail",
+    1
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_late_rate_limits_and_goals_hold_their_values",
+    "fail",
+    2
+   ],
+   [
+    "test.olist_ecommerce_analytics.assert_review_cost_causal_reconciles",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_safe_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_laney_sigma_z__1",
+    "pass",
+    0
+   ],
+   [
+    "dbt_expectations_expect_column_values_to_be_between_metric_late_rate_control_chart_year_month___2018_08____2017_01_",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stable_months_laney_signal_months_thin_months_months_in_window",
+    "pass",
+    0
+   ],
+   [
+    "dbt_utils_expression_is_true_metric_late_rate_targets_stretch_goal_late_rate_goal_late_rate_and_goal_late_rate_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_laney_signal",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_orders",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_alarm_line_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_safe_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "not_null_metric_late_rate_targets_stretch_goal_late_rate",
+    "pass",
+    0
+   ],
+   [
+    "unique_metric_late_rate_control_chart_year_month",
+    "pass",
+    0
+   ]
+  ],
+  "verdict": "PROVEN",
+  "seconds": 23.1
  }
 ]

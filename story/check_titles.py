@@ -2,8 +2,10 @@
 
 Design note: the title says late deliveries are "linked to" the bad reviews, while the body keeps its
 "estimated cause" wording with the method and range beside it. A title is read alone, so it carries no caveat.
-  - the story title and subtitle, and the memo title (its first "# " line), must not say cause, causes, caused or causing
-  - the story title must say "linked to"
+  - the story title and subtitle, and the memo title (its first "# " line), must not use cause wording: cause, causes, caused,
+    causing, causal, drive, drives, driven, driving, drove, "result in", "results in", "resulted in", "lead to", "leads to",
+    "led to", "leading to"
+  - the story title and the memo title must both say "linked to"
 STORY_QMD and MEMO_MD point the check at edited copies (scripts/prove_tests_fail.py uses them); defaults are the real files.
 Prints one PASS or FAIL line per title and exits 1 on any FAIL.
 """
@@ -13,7 +15,8 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
-CAUSE = re.compile(r"\bcaus(?:e|es|ed|ing)\b", re.I)   # "because" does not match: no word boundary before "caus"
+CAUSE = re.compile(r"\bcaus(?:e|es|ed|ing|al)\b|\bdriv(?:e|es|en|ing)\b|\bdrove\b|\bresult(?:s|ed|ing)? in\b|\b(?:lead|leads|led|leading) to\b", re.I)
+# "because" does not match: no word boundary before "caus"; "driver" and "results" alone do not match
 
 
 def story_titles(text):
@@ -30,8 +33,8 @@ def problems(story_text, memo_text):
     """{title name: [problems]} for the story title, story subtitle and memo title."""
     out = {}
     for name, title in {**story_titles(story_text), **memo_title(memo_text)}.items():
-        p = [f"says {m.group(0)!r}; a title says 'linked to', not cause" for m in CAUSE.finditer(title)]
-        if name == "story title" and "linked to" not in title.lower():
+        p = [f"says {m.group(0)!r}; a title says 'linked to', not cause or drive or lead to" for m in CAUSE.finditer(title)]
+        if name in ("story title", "memo title") and "linked to" not in title.lower():
             p.append("does not say 'linked to'")
         if name != "story subtitle" and not title.strip():
             p.append("is missing")

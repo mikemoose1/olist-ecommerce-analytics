@@ -107,9 +107,11 @@ def review_cost(con, all_low_star):
 
 
 def ramp(con):
-    """1-2 star share by whole days past the promise (metric_bad_review_by_days_late) and the ramp the story describes:
-    the share up to the promised day, the straight-line slope between the two break days of the segmented fit in
-    evidence/late_rate_targets_report.json, and the share from the second break day on."""
+    """1-2 star share by whole days past the promise (metric_bad_review_by_days_late) and the ramp the story describes
+    (descriptive, raw shares, not a causal estimate): the share up to the first break day of the segmented fit in
+    evidence/late_rate_targets_report.json (day -1, the day before the promise; day 0 gives the same 8.7%), the
+    least-squares slope of the daily shares from the first to the second break day (about 11 points a day), and the share
+    from the second break day on (about 78%)."""
     seg = json.loads((ROOT / "evidence" / "late_rate_targets_report.json").read_text())["break_point"]["days"]["segmented_share_scale"]
     start, end = (int(x) for x in seg["two_breaks"]["days"])
     rows = [{"segment": str(d), "orders": o, "reviewed": r, "bad": b, "bad_share": round(b / r, 9) if r else None}
@@ -125,7 +127,7 @@ def ramp(con):
 
 def targets(con):
     """The trend chart's lines: each month's Laney p-prime upper limit, the alarm line at a typical month, the goal line
-    (median stable month) and the stretch line (late handoffs no later than on-time ones), from the dbt target models."""
+    (median stable month) and the stretch line (the median stable month if late handoffs ran late no more often than on-time ones, a what-if), from the dbt target models."""
     rows = [{"segment": ym, "orders": n, "late": int(l), "late_rate": round(r, 6), "laney_ucl": round(u, 6),
              "laney_signal": bool(s), "thin_month": bool(t)}
             for ym, n, l, r, u, s, t in con.execute("""select year_month, orders, late_orders, late_rate, laney_ucl, laney_signal, thin_month
@@ -162,6 +164,7 @@ def causal_captions(rc, rp, tg, rep_late, rep_on_time):
         **{f"c_flagged_{i}": m for i, m in enumerate(tg["flagged"], 1)}, "c_flagged_n": str(len(tg["flagged"])),
         "c_goal_line": pct(tg["goal"]), "c_goal_exact": f"{100 * tg['goal']:.2f}", "c_stable_months": str(tg["stable_months"]),
         "c_stretch_line": pct(tg["stretch"]), "c_stretch_exact": f"{100 * tg['stretch']:.2f}",
+        "c_whatif_gap": pct(tg["goal"] - tg["stretch"]),
         "c_whatif_rate": f"{100 * tg['late_rate_if_handoffs_ok']:.2f}",
         "c_rep_late_1dp": pct(rep_late), "c_rep_on_time_1dp": pct(rep_on_time),
     }

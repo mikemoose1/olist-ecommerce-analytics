@@ -13,6 +13,10 @@ import duckdb, numpy as np, pandas as pd
 import statsmodels.formula.api as smf
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, "story"))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import story_data as SD                          # the story's caption numbers, so the memo prints the same value under the same name
+from memo_check import check_memo, required_sentences, survey_channel_problems
 DB = os.environ.get("OLIST_DB_PATH", os.path.join(ROOT, "olist.duckdb"))
 HOLDOUT_START = "2018-05-01"          # fixed in PLAN.md before measuring
 WINDOW_MONTHS = 20                    # 2017-01..2018-08 (D6)
@@ -141,7 +145,7 @@ n_late_rev = int(orders[(orders.late == 1) & orders.review_score.notna()].shape[
 n_low_all = int(orders.low_star.sum())
 R["money"]["low_star_reviews"] = {
     "late_reviewed": n_late_rev, "all_low_star": n_low_all,
-    "status": "history: the matched association the memo printed before PR #7; the memo now prints the causal estimate (metric_review_cost_causal)",
+    "status": "history: the matched association the story printed before PR #7 and the memo printed until PR #8; the memo now prints the causal estimate (metric_review_cost_causal)",
     "excess_from_lateness": {"low": n_late_rev * ls["ci"][0], "mid": n_late_rev * ls["effect"], "high": n_late_rev * ls["ci"][1]},
     "share_of_all_low_star_pct": {k: 100 * n_late_rev * x / n_low_all for k, x in zip(["low", "mid", "high"], [ls["ci"][0], ls["effect"], ls["ci"][1]])}}
 
@@ -361,8 +365,6 @@ for r in R["clusters"]["states_by_rate"][:5]:
 # The review cost, the ramp, the trend lines and the repeat rates come from the dbt metrics and the evidence reports, formatted
 # by story/story_data.py, so MEMO.md and the story print the same value under the same name. The matched association
 # figure above (money.low_star_reviews) stays in the report as history; the memo no longer prints it.
-sys.path.insert(0, os.path.join(ROOT, "story"))
-import story_data as SD
 facts["c_low_star_all"] = n0(n_low_all)
 _, rp = SD.ramp(con)
 _, tg = SD.targets(con)
@@ -391,12 +393,12 @@ with open(os.path.join(out, "recommendation_report.md"), "w") as f:
     f.write("| Fact | Value |\n|---|---|\n" + "".join(f"| {k} | {v} |\n" for k, v in facts.items()))
 
 # ---------------------------------------------------------------- memo check: every number in MEMO.md is tied to the fact it states (see memo_check.py)
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from memo_check import check_memo
 memo_path = os.path.join(ROOT, "recommendation", "MEMO.md")
 problems = []
 if os.path.exists(memo_path):
-    n_numbers, problems = check_memo(open(memo_path).read(), facts, sentences=[REPEAT_SENTENCE])
+    n_numbers, problems = check_memo(open(memo_path).read(), facts, sentences=[REPEAT_SENTENCE, *required_sentences(facts)])
+    rcc = json.load(open(os.path.join(ROOT, "evidence", "review_cost_causal_report.json")))
+    problems += survey_channel_problems(rcc["mechanism"], rcc["headline"]["extra_bad_reviews"])   # the memo's claim about the survey-before-delivery channel
     print(f"memo check: {n_numbers} numbers each tied to a named fact or design constant, {len(problems)} problems" + (f": {problems}" if problems else ""))
 bad_tokens = problems
 for k, v in facts.items():

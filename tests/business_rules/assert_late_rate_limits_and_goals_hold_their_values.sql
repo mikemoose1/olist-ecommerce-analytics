@@ -15,7 +15,8 @@ checks as (
     union all select 'alarm line at the typical order count (8.385% +/- 0.001 pp)', t.alarm_line_late_rate, 0.08385, 0.00001 from t
     union all select 'safe goal, 25th percentile of stable months (3.036% +/- 0.001 pp)', t.safe_goal_late_rate, 0.03036, 0.00001 from t
     union all select 'goal line, median of the stable months (4.433% +/- 0.001 pp)', t.goal_late_rate, 0.04433, 0.00001 from t
-    union all select 'stretch goal, handoffs no later than on-time ones (2.252% +/- 0.001 pp)', t.stretch_goal_late_rate, 0.02252, 0.00001 from t
+    union all select 'stretch goal, median stable month with handoffs no later than on-time ones (3.425% +/- 0.001 pp)', t.stretch_goal_late_rate, 0.034251, 0.00001 from t
+    union all select 'goal minus stretch, the what-if alone (1.007 pp +/- 0.001 pp)', t.goal_late_rate - t.stretch_goal_late_rate, 0.010074, 0.00001 from t
     union all select 'stable months (exactly 15)', t.stable_months, 15, 0 from t
     union all select 'months flagged by the Laney limits (exactly 3)', t.laney_signal_months, 3, 0 from t
     union all select 'months flagged by the plain limits (exactly 16)', t.plain_signal_months, 16, 0 from t

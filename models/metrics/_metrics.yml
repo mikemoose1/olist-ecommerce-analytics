@@ -52,8 +52,10 @@ models:
   - name: metric_late_rate_targets
     description: >
       One row. The alarm line (about 8.4%), the safe goal (about 3%: hit in about one month in four, uncertainty about
-      2.8-4.4%), the goal line (about 4.4%, the median stable month) and the stretch goal (about 2.3%, a what-if with
-      late handoffs fixed) for the monthly late rate. The story draws the alarm line, the goal line and the stretch line.
+      2.8-4.4%), the goal line (about 4.4%, the median stable month) and the stretch goal (about 3.4%, the median stable
+      month if late seller handoffs ran late no more often than on-time ones: a what-if, not a tested cause) for the
+      monthly late rate. Goal and stretch are the same measure on the same stable months, so their gap, about 1 point,
+      is the what-if's effect alone. The old stretch value, the 25th percentile of the what-if series (about 2.25%), is retired. The story draws the alarm line, the goal line and the stretch line.
       "Stable" months are the ones that are not extreme (inside the limits, not thin); it does not mean healthy.
       Values are pinned by assert_late_rate_limits_and_goals_hold_their_values and tied to the Python refit by
       assert_late_rate_targets_match_the_python_refit.
@@ -66,10 +68,10 @@ models:
         description: The median stable month (about 4.4%), the goal line on the story's trend chart.
         data_tests: [not_null]
       - name: stretch_goal_late_rate
+        description: The median stable month with late handoffs no later than on-time ones (about 3.4%), the stretch line on the story's trend chart. Like for like with goal_late_rate.
         data_tests:
           - not_null
     data_tests:
-      - dbt_utils.expression_is_true: {arguments: {expression: "stretch_goal_late_rate <= safe_goal_late_rate"}}
       - dbt_utils.expression_is_true: {arguments: {expression: "safe_goal_late_rate < alarm_line_late_rate"}}
       - dbt_utils.expression_is_true: {arguments: {expression: "stretch_goal_late_rate < goal_late_rate and goal_late_rate < alarm_line_late_rate"}}
       - dbt_utils.expression_is_true: {arguments: {expression: "stable_months + laney_signal_months + thin_months >= months_in_window"}}
