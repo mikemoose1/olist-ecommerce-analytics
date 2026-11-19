@@ -92,8 +92,10 @@ CASES = [
      mut_node("late_rate", threshold="a segment at twice the overall rate that holds a tenth of late orders is worth targeting")),
     ("comment-text node re-edged as a component with its comment claim dropped", "association", "comment_not_arrived_share",
      mut_node("comment_not_arrived_share", edge="component", claims=["terms.chosen_review"])),
-    ("matched estimate without its association-only mark", "association", "excess_low_star_share",
-     mut_node("excess_low_star_share", association=False, answerable="yes")),
+    ("matched estimate without its association-only mark", "association", "lost_repeat_sales",
+     mut_node("lost_repeat_sales", edge="component", association=False, answerable="yes")),
+    ("causal review cost drifts from the per-review rise (total doubled)", "product", "low_star_excess",
+     mut_sql("low_star_excess", "sql", "sum(extra_bad_reviews)", "2 * sum(extra_bad_reviews)")),
     ("keyword rule widened to any comment containing a space", "labels", "holdout", lambda: {"rule": K.NOT_ARRIVED + "| "}),
 ]
 

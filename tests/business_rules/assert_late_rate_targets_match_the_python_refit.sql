@@ -16,6 +16,7 @@ checks as (
     union all select 'stable centre', t.stable_centre_rate, json_extract(p, '$.laney.stable_centre')::double from t, j
     union all select 'alarm line', t.alarm_line_late_rate, json_extract(p, '$.laney.alarm_line')::double from t, j
     union all select 'safe goal', t.safe_goal_late_rate, json_extract(p, '$.goals.safe_25th_pct_of_stable')::double from t, j
+    union all select 'goal line (median stable month)', t.goal_late_rate, json_extract(p, '$.goals.median_stable')::double from t, j
     union all select 'stretch goal', t.stretch_goal_late_rate, json_extract(p, '$.goals.stretch_25th_pct_if_handoffs_ok')::double from t, j
     union all select 'stable months', t.stable_months, json_array_length(json_extract(p, '$.stable_months')) from t, j
     union all select 'flagged months', t.laney_signal_months, json_array_length(json_extract(p, '$.laney.months_flagged')) from t, j

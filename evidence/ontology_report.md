@@ -210,7 +210,7 @@
 | model_link | every invariant TLC checks backs a rule | PASS | invariants in the cfg that no rule claims: none |
 | coverage | allowlist reasons | PASS | 52 exemptions, each with a reason |
 | coverage | tables | PASS | 20 tables; undescribed: none |
-| coverage | columns | PASS | 191 columns; undescribed: none |
+| coverage | columns | PASS | 192 columns; undescribed: none |
 | coverage | numbers in ONTOLOGY.md | PASS | 71 numbers each bound to the ontology.yml value they state; problems: none |
 | coverage | allowlist is current | PASS | entries matching nothing: none |
 | metric | late_rate | PASS | table 6518/94931=6.87 (card 6518/94931=6.87); MetricFlow 6518/94931=0.068660 -> 6.87 |

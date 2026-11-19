@@ -24,7 +24,7 @@ thresholds:
   comment_share: 50
 # The "Threshold." line of each question in QUESTIONS.md, written there by story/kpi_tree.py.
 question_thresholds:
-  Q1: If lateness is linked to {low_star_share}% or more of all 1-2 star reviews, it is a top ratings problem and worth a funded test.
+  Q1: If lateness causes an estimated {low_star_share}% or more of all 1-2 star reviews, it is a top ratings problem and worth a funded test.
   Q2: A segment is a target if its late rate is at least {segment_ratio} times the overall late rate and it holds at least {segment_share}% of late orders.
   Q3: Test the seller fix if late handoffs are {handoff_share}% or more of late orders and run late at least {handoff_ratio} times as often as on-time handoffs.
   Q4: If {comment_share}% or more of late-order comments are about delay or non-arrival, this plan treats the low stars as a delivery problem and leaves product fixes out.
@@ -45,17 +45,17 @@ nodes:
     grain: reviewed judged order
     parent: cost
     edge: component
-    label: Extra 1-2 star reviews linked to lateness
+    edge_label: part of, estimated cause
+    label: Extra 1-2 star reviews caused by lateness (estimate)
     unit: reviews (20-month window)
-    fact: money.low_star_reviews.excess_from_lateness.mid
-    counts: reviewed late orders times the matched gap in the share of 1-2 star reviews
+    sql: select sum(extra_bad_reviews) from metrics.metric_review_cost_causal
+    counts: reviewed late orders in each days-late group times the rise in the chance of a 1-2 star review at that lateness, against the same seller's orders that arrived just on time, in the same category and month
     denominator: none (a count)
-    why_moves: more late orders, or a wider star gap between late orders and on-time look-alikes
+    why_moves: more late orders, or later ones (the chance of a bad review climbs with each day past the promise)
     threshold: above {low_star_share}% of all 1-2 star reviews, lateness is a top ratings problem worth a funded test
-    models: [marts.fct_orders, marts.fct_reviews]
-    claims: [terms.chosen_review, terms.order_review_score, metrics.late_review_gap_raw]
-    answerable: "association only (rests on the matched gap)"
-    association: true
+    models: [metrics.metric_review_cost_causal, seeds.review_cost_effects]
+    claims: [terms.chosen_review, terms.order_review_score, terms.late]
+    answerable: "yes, as an estimate (range across six specifications in evidence/review_cost_causal_report.json)"
   - id: late_reviewed
     grain: judged order
     parent: low_star_excess
@@ -67,23 +67,21 @@ nodes:
     models: [marts.fct_orders]
     claims: [terms.late, terms.chosen_review]
     answerable: "yes"
-  - id: excess_low_star_share
-    grain: reviewed judged order, compared within matched cells (state x category x freight band x month)
+  - id: caused_rise
+    grain: reviewed judged late order, compared with the same seller's just-on-time orders in the same category and month
     parent: low_star_excess
     edge: product
-    label: Matched gap in 1-2 star share (late minus look-alike)
+    label: Average rise in the chance of a 1-2 star review caused by lateness
     unit: share
-    fact: low_star.all.matched.effect
-    ci: [low_star.all.matched.ci]
-    counts: late orders' 1-2 star share minus that of on-time orders in the same state, category, freight band and month
-    why_moves: product and seller quality differences the match cannot see would move it too
-    models: [marts.fct_orders]
-    claims: [metrics.late_review_gap_raw]
-    answerable: "association only"
-    association: true
+    sql: select sum(extra_bad_reviews) / sum(reviewed_late_orders) from metrics.metric_review_cost_causal
+    counts: extra 1-2 star reviews per reviewed late order (review_cost_causal/analyze.py, preferred specification)
+    why_moves: later deliveries; a hidden seller effect would move it too, bounded at about five percent of the total by the late-handoff falsification check
+    models: [metrics.metric_review_cost_causal]
+    claims: [terms.late, terms.chosen_review]
+    answerable: "yes, as an estimate"
   - id: star_penalty
     grain: reviewed judged order, within matched cells
-    parent: excess_low_star_share
+    parent: caused_rise
     edge: association
     label: Star penalty of a late order (matched)
     unit: stars

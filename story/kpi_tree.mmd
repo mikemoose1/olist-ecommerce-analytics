@@ -1,8 +1,8 @@
 flowchart TD
   cost["Cost of late delivery to Olist"]
-  low_star_excess["Extra 1-2 star reviews linked to lateness<br/>3,335"]
+  low_star_excess["Extra 1-2 star reviews caused by lateness (estimate)<br/>3,110"]
   late_reviewed["Late orders with a review<br/>6,366"]
-  excess_low_star_share["Matched gap in 1-2 star share (late minus look-alike)<br/>52.4% [50.7% to 53.7%]"]
+  caused_rise["Average rise in the chance of a 1-2 star review caused by lateness<br/>48.9%"]
   star_penalty["Star penalty of a late order (matched)<br/>-1.96 stars [-2.01 to -1.91]"]
   survey_before_share["Late orders surveyed before the parcel arrived<br/>74.5%"]
   comment_not_arrived_share["Late-order comments about delay or non-arrival<br/>66.7%"]
@@ -20,10 +20,10 @@ flowchart TD
   star_sales_value["Sales value of one star<br/><i>not answerable</i>"]
   carrier["Which carrier was late<br/><i>not answerable</i>"]
   multi_seller_arrival["Lateness of multi-seller orders<br/><i>not answerable</i>"]
-  cost -.->|"part of, association only"| low_star_excess
+  cost -->|"part of, estimated cause"| low_star_excess
   low_star_excess -->|"= x"| late_reviewed
-  low_star_excess -.->|"= x, association only"| excess_low_star_share
-  excess_low_star_share -.->|association only| star_penalty
+  low_star_excess -->|"= x"| caused_rise
+  caused_rise -.->|association only| star_penalty
   star_penalty -.->|association only| survey_before_share
   star_penalty -.->|association only| comment_not_arrived_share
   cost -->|"exposed, not lost"| late_sales
@@ -43,4 +43,4 @@ flowchart TD
   classDef na fill:#eee,stroke:#999,color:#777,stroke-dasharray:4 3
   classDef assoc stroke-dasharray:4 3
   class commission,star_sales_value,carrier,multi_seller_arrival na
-  class low_star_excess,excess_low_star_share,star_penalty,survey_before_share,comment_not_arrived_share,lost_repeat_sales assoc
+  class star_penalty,survey_before_share,comment_not_arrived_share,lost_repeat_sales assoc
