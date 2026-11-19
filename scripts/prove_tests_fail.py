@@ -12,8 +12,8 @@ Output: evidence/mutation_report.md and evidence/mutation_report.json
 
 Speed: cases run in parallel (PROVE_JOBS, default the CPU count up to 4). A case that edits neither project files nor raw files
 runs its dbt tests in a long-lived worker (scripts/dbt_test_worker.py) that parses the project once, instead of starting
-`dbt test` each time. That cut the whole suite (every case, baselines shared) from about 25 min to about 6 min on 4 CPUs, a bit
-over 4x; a single case still costs about 1 s instead of 7 s once the worker is warm. PROVE_NO_WORKER=1 starts `dbt test` for every run, the slow way,
+`dbt test` each time. Measured on the whole suite (every case, baselines shared): 248 cases take about 6.5 min here on 4 CPUs,
+and the CI step (2 vCPU) fell from about 20-22 min to about 10 min. PROVE_NO_WORKER=1 starts `dbt test` for every run, the slow way,
 and must give the same verdicts. A test that errors counts as a broken run, not as a test that caught the mistake.
 """
 import concurrent.futures, json, os, shutil, subprocess, sys, tempfile, threading, time
