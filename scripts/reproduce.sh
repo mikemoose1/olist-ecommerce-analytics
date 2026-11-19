@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # One entry point for every step. `make <target>` calls this; machines without make can run it directly:
 #   bash scripts/reproduce.sh            # = all: setup build verify docs
-#   bash scripts/reproduce.sh build      # any single step: setup data deps build verify ontology story targets prove-tests experiments docs clean
+#   bash scripts/reproduce.sh build      # any single step: setup data deps build verify ontology story targets dashboard prove-tests experiments docs clean
 set -euo pipefail
 cd "$(dirname "$0")/.."
 export DBT_PROFILES_DIR="$PWD"
@@ -12,7 +12,7 @@ data()        { bash scripts/fetch_data.sh; }
 deps()        { venv; "$BIN/dbt" deps --quiet; }
 setup()       { venv; data; deps; }
 build()       { deps; "$BIN/dbt" build --fail-fast; }
-verify()      { "$BIN/python" verification/verify_headlines.py; "$BIN/python" verification/selftest_story_numbers.py; ontology; recommendation; }
+verify()      { "$BIN/python" verification/verify_headlines.py; "$BIN/python" verification/selftest_story_numbers.py; ontology; recommendation; dashboard_checks; }
 recommendation() { "$BIN/python" recommendation/analyze.py; "$BIN/python" recommendation/selftest_memo.py; story_checks; }   # numbers tied to facts, then proof that check can fail
 story_checks() {   # KPI tree adds up, chart data is fresh, captions are tied to facts; each check proven able to fail; then build the page
   "$BIN/python" story/kpi_tree.py --check; "$BIN/python" story/selftest_kpi_tree.py
@@ -36,6 +36,10 @@ ontology()    {
 }
 story()       { story_checks; }   # needs a built warehouse and the analysis report (make build, make recommendation)
 targets()     { "$BIN/python" late_rate_targets/selftest.py; "$BIN/python" late_rate_targets/analyze.py; "$BIN/python" review_cost_causal/label_agreement.py; }   # alarm line, goal lines, review break point (needs make build)
+dashboard_checks() {   # the CSVs Tableau reads match the warehouse, every dashboard number ties to the analysis, and each check is proven able to fail
+  "$BIN/python" dashboard/export_csv.py --check
+  "$BIN/python" verification/verify_dash_exports.py; "$BIN/python" verification/selftest_dash_exports.py; }
+dashboard()   { "$BIN/python" dashboard/export_csv.py; "$BIN/python" verification/verify_dash_exports.py --json; dashboard_checks; }   # write dashboard/data/*.csv for Tableau (needs make build)
 prove_tests() { "$BIN/python" scripts/prove_tests_fail.py; }
 experiments() { "$BIN/python" experiments/run_experiments.py; }
 docs()        { "$BIN/dbt" docs generate --quiet; "$BIN/python" scripts/lineage_mermaid.py; }

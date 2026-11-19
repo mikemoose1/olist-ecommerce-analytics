@@ -1,0 +1,330 @@
+[
+ {
+  "row": "1 review cost",
+  "number": "extra 1-2 star reviews, summary tile",
+  "expected": 3109.9,
+  "got": 3109.916967,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "1 review cost",
+  "number": "share of all 1-2 star reviews, % (tile vs facts.json share)",
+  "expected": 26.729000000000003,
+  "got": 26.728981237645037,
+  "rounded_to": 1,
+  "ok": true
+ },
+ {
+  "row": "1 review cost",
+  "number": "all 1-2 star reviews, added up from the ramp file",
+  "expected": 11635,
+  "got": 11635.0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "1 review cost",
+  "number": "range low (evidence report), nearest 10",
+  "expected": 2880.4599647367017,
+  "got": 2880.4599647367017,
+  "rounded_to": -1,
+  "ok": true
+ },
+ {
+  "row": "1 review cost",
+  "number": "range high (evidence report), nearest 10",
+  "expected": 3352.6633196859902,
+  "got": 3352.6633196859902,
+  "rounded_to": -1,
+  "ok": true
+ },
+ {
+  "row": "1 review cost",
+  "number": "ramp: 1-2 star share up to the promised day, %",
+  "expected": 8.7143,
+  "got": 8.714292212518195,
+  "rounded_to": 1,
+  "ok": true
+ },
+ {
+  "row": "1 review cost",
+  "number": "ramp: 1-2 star share from day 6, %",
+  "expected": 78.2216,
+  "got": 78.22161422708618,
+  "rounded_to": 1,
+  "ok": true
+ },
+ {
+  "row": "1 review cost",
+  "number": "ramp: points a day over days 0 to 6",
+  "expected": 10.896799999999999,
+  "got": 10.896788843028869,
+  "rounded_to": 1,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "months in the monthly file",
+  "expected": 20,
+  "got": 20,
+  "rounded_to": null,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "judged orders",
+  "expected": 94931,
+  "got": 94931.0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "late orders",
+  "expected": 6518,
+  "got": 6518.0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "late rate, %",
+  "expected": 6.866,
+  "got": 6.866039544511277,
+  "rounded_to": 2,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "alarm line at a typical month, %",
+  "expected": 8.3849,
+  "got": 8.384882497953146,
+  "rounded_to": 2,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "goal line, %, shown 4.4",
+  "expected": 4.4325,
+  "got": 4.432537749634681,
+  "rounded_to": 1,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "goal line, %, exact 4.43",
+  "expected": 4.4325,
+  "got": 4.432537749634681,
+  "rounded_to": 2,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "stretch line, %, shown 2.3",
+  "expected": 2.252,
+  "got": 2.2519692719000823,
+  "rounded_to": 1,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "stretch line, %, exact 2.25",
+  "expected": 2.252,
+  "got": 2.2519692719000823,
+  "rounded_to": 2,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "typical month order count",
+  "expected": 6372,
+  "got": 6372.0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "flagged months",
+  "expected": "2017-11, 2018-02, 2018-03",
+  "got": "2017-11, 2018-02, 2018-03",
+  "rounded_to": null,
+  "ok": true
+ },
+ {
+  "row": "2 trend",
+  "number": "latest month late rate, %",
+  "expected": 6.2991,
+  "got": 6.299086392050008,
+  "rounded_to": 1,
+  "ok": true
+ },
+ {
+  "row": "3 handoff",
+  "number": "late rate after a late handoff, %",
+  "expected": 21.207500000000003,
+  "got": 21.207502930832355,
+  "rounded_to": 1,
+  "ok": true
+ },
+ {
+  "row": "3 handoff",
+  "number": "late rate after an on-time handoff, %",
+  "expected": 5.4491,
+  "got": 5.449074074074074,
+  "rounded_to": 1,
+  "ok": true
+ },
+ {
+  "row": "3 handoff",
+  "number": "late handoffs' share of all late orders, %",
+  "expected": 27.753899999999998,
+  "got": 27.75391224301933,
+  "rounded_to": 1,
+  "ok": true
+ },
+ {
+  "row": "3 handoff",
+  "number": "orders handed over late",
+  "expected": 8530.0,
+  "got": 8530.0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "3 handoff",
+  "number": "of those, late orders",
+  "expected": 1809.0,
+  "got": 1809.0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "4 sellers",
+  "number": "sellers with a late order after a late handoff (typed)",
+  "expected": 583,
+  "got": 583,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "4 sellers",
+  "number": "late orders after a late handoff, over all sellers, vs handoff bar",
+  "expected": 1809.0,
+  "got": 1809.0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "4 sellers",
+  "number": "top 10 sellers' share of those, % (typed)",
+  "expected": 19.1,
+  "got": 19.126589275843006,
+  "rounded_to": 1,
+  "ok": true
+ },
+ {
+  "row": "4 sellers",
+  "number": "top seller code (typed)",
+  "expected": "06a2c3af",
+  "got": "06a2c3af",
+  "rounded_to": null,
+  "ok": true
+ },
+ {
+  "row": "4 sellers",
+  "number": "top seller's late orders after a late handoff (typed)",
+  "expected": 66,
+  "got": 66.0,
+  "rounded_to": 0,
+  "ok": true
+ },
+ {
+  "row": "4 sellers",
+  "number": "one row per seller",
+  "expected": 2925,
+  "got": 2925,
+  "rounded_to": null,
+  "ok": true
+ },
+ {
+  "row": "5 where/when",
+  "number": "north and northeast late rate, %",
+  "expected": 12.1603,
+  "got": 12.160268982908377,
+  "rounded_to": 1,
+  "ok": true
+ },
+ {
+  "row": "5 where/when",
+  "number": "rest of Brazil late rate, %",
+  "expected": 6.193,
+  "got": 6.193009118541033,
+  "rounded_to": 1,
+  "ok": true
+ },
+ {
+  "row": "5 where/when",
+  "number": "north and northeast share of late orders, %",
+  "expected": 19.9755,
+  "got": 19.975452592819885,
+  "rounded_to": 1,
+  "ok": true
+ },
+ {
+  "row": "5 where/when",
+  "number": "three worst months' share of late orders, %",
+  "expected": 48.3431,
+  "got": 48.34305001534213,
+  "rounded_to": 1,
+  "ok": true
+ },
+ {
+  "row": "5 where/when",
+  "number": "three worst months, in the monthly bars' flags",
+  "expected": "2017-11, 2018-02, 2018-03",
+  "got": "2017-11, 2018-02, 2018-03",
+  "rounded_to": null,
+  "ok": true
+ },
+ {
+  "row": "5 where/when",
+  "number": "three worst months, named in the summary label",
+  "expected": "2017-11, 2018-02, 2018-03",
+  "got": "2017-11, 2018-02, 2018-03",
+  "rounded_to": null,
+  "ok": true
+ },
+ {
+  "row": "5 where/when",
+  "number": "region map: states in the north and northeast = story NNE",
+  "expected": "AC, AL, AM, AP, BA, CE, MA, PA, PB, PE, PI, RN, RO, RR, SE, TO",
+  "got": "AC, AL, AM, AP, BA, CE, MA, PA, PB, PE, PI, RN, RO, RR, SE, TO",
+  "rounded_to": null,
+  "ok": true
+ },
+ {
+  "row": "5 where/when",
+  "number": "region map: 27 states, each once",
+  "expected": 27,
+  "got": 27,
+  "rounded_to": null,
+  "ok": true
+ },
+ {
+  "row": "6 fixes",
+  "number": "example rows flagged is_example",
+  "expected": 2,
+  "got": 2,
+  "rounded_to": null,
+  "ok": true
+ },
+ {
+  "row": "6 fixes",
+  "number": "example rows with an asterisk on both values",
+  "expected": 2,
+  "got": 2,
+  "rounded_to": null,
+  "ok": true
+ }
+]

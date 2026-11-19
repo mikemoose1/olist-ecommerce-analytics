@@ -32,6 +32,8 @@ models:
       +schema: marts
     metrics:
       +schema: metrics
+    exports:
+      +schema: exports
 
 seeds:
   olist_ecommerce_analytics:

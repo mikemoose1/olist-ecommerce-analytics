@@ -129,10 +129,16 @@ and writes [experiments/results.json](experiments/results.json).
 
 `make story` builds `story/build/story.html`, one static page for an operations manager. The page opens with what late delivery costs, follows the KPI tree down to where late orders come from, and ends at the memo's two tests. [story/QUESTIONS.md](story/QUESTIONS.md) holds the KPI tree and the five questions. [story/TOOLS.md](story/TOOLS.md) records the Evidence, Quarto and Streamlit trials and why the page uses Quarto. `make verify` builds the page and runs four checks. The KPI tree's breakdowns must add up. Every chart count must match the raw CSVs (Part C of `verification/verify_headlines.py`). Every number in the text must be tied to a fact (`story/check_story.py`). Each check has a selftest that plants errors and requires a failure.
 
+## Dashboard data
+
+`make dashboard` writes the tables behind the late-delivery dashboard to `dashboard/data/*.csv`, one file per panel or tile need. Tableau Public cannot read `.hyper` files, and Tableau Desktop reads CSV. Seven dbt models in `models/exports/` make the tables. Reconciliation tests (`tests/business_rules/assert_dash_*`) tie every number the dashboard prints to the analysis, and `verification/verify_dash_exports.py` checks the same numbers in the CSV files. Panel 6 holds invented example numbers, labelled EXAMPLE on every row, because the two fix tests have not run. Details: [dashboard/README.md](dashboard/README.md).
+
 ## What is in the repository
 
 ```
 models/{staging,intermediate,marts,metrics}   dbt models + YAML tests
+models/exports/                               tables for the dashboard (one per panel or tile need)
+dashboard/                                    export_csv.py and data/*.csv: the files Tableau reads
 models/semantic/                              MetricFlow semantic models and metrics
 ontology/                                     ontology.yml, check.py, ONTOLOGY.md, order_lifecycle/ (TLA+ model)
 tests/business_rules/                         singular business-rule tests
