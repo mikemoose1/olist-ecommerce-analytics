@@ -100,7 +100,7 @@ def fig_where_when(f):
     end = len(mon) - 0.4
     b.text(end, 100 * tg["alarm_line"] + 0.5, f"alarm line ({100 * tg['alarm_line']:.2f}% at a typical month)", fontsize=8, color=INK, ha="right")
     b.text(end, 100 * tg["goal"] + 0.4, f"goal {100 * tg['goal']:.1f}%", fontsize=8, color=GOAL, ha="right")
-    b.text(end, 100 * tg["stretch"] - 1.3, f"{100 * tg['stretch']:.1f}% if seller handoffs are fixed", fontsize=8, color=GOAL, ha="right", alpha=.8)
+    b.text(-0.3, 100 * tg["stretch"] - 1.3, f"{100 * tg['stretch']:.1f}% if seller handoffs are fixed", fontsize=8, color=GOAL, ha="left", alpha=.8)
     b.set_xticks(x[::3], [mon[i]["segment"] for i in x[::3]], fontsize=8); b.set_ylim(0, 22); b.set_xlim(-0.5, len(mon) - 0.3)
     b.set_title("By purchase month (open circle: above the alarm line)", loc="left", fontsize=10)
     save(fig, "fig_where_when.png")
