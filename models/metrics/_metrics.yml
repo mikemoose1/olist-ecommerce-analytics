@@ -33,3 +33,40 @@ models:
           - relationships: {arguments: {to: ref('dim_customer'), field: customer_unique_id}}
       - name: repeated
         data_tests: [not_null]
+  - name: metric_late_rate_control_chart
+    description: Late rate by purchase month with p-chart (plain and Laney p-prime) 3-sigma limits that move with each month's order count.
+    columns:
+      - name: year_month
+        data_tests:
+          - unique
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between: {arguments: {min_value: "'2017-01'", max_value: "'2018-08'"}}
+      - name: orders
+        data_tests: [not_null]
+      - name: laney_signal
+        data_tests: [not_null]
+      - name: laney_sigma_z
+        description: How many times larger month-to-month swings are than chance alone explains (1 = chance only).
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between: {arguments: {min_value: 1}}
+  - name: metric_late_rate_targets
+    description: One row. The alarm line, the safe goal and the stretch goal for the monthly late rate.
+    columns:
+      - name: alarm_line_late_rate
+        data_tests: [not_null]
+      - name: safe_goal_late_rate
+        data_tests: [not_null]
+      - name: stretch_goal_late_rate
+        data_tests:
+          - not_null
+    data_tests:
+      - dbt_utils.expression_is_true: {arguments: {expression: "stretch_goal_late_rate <= safe_goal_late_rate"}}
+      - dbt_utils.expression_is_true: {arguments: {expression: "safe_goal_late_rate < alarm_line_late_rate"}}
+      - dbt_utils.expression_is_true: {arguments: {expression: "stable_months + laney_signal_months + thin_months >= months_in_window"}}
+  - name: metric_bad_review_by_days_late
+    description: Share of 1-2 star reviews by days after the promised day (negative = early), capped at -30 and +30.
+    columns:
+      - name: days_past_promise_capped
+        data_tests:
+          - unique
+          - not_null

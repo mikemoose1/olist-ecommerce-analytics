@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # One entry point for every step. `make <target>` calls this; machines without make can run it directly:
 #   bash scripts/reproduce.sh            # = all: setup build verify docs
-#   bash scripts/reproduce.sh build      # any single step: setup data deps build verify ontology story prove-tests experiments docs clean
+#   bash scripts/reproduce.sh build      # any single step: setup data deps build verify ontology story targets prove-tests experiments docs clean
 set -euo pipefail
 cd "$(dirname "$0")/.."
 export DBT_PROFILES_DIR="$PWD"
@@ -35,6 +35,7 @@ ontology()    {
   "$BIN/python" verification/known_answers/selftest_append_only.py        # ...and that guard can fail
 }
 story()       { story_checks; }   # needs a built warehouse and the analysis report (make build, make recommendation)
+targets()     { "$BIN/python" late_rate_targets/selftest.py; "$BIN/python" late_rate_targets/analyze.py; }   # alarm line, goal lines, review break point (needs make build)
 prove_tests() { "$BIN/python" scripts/prove_tests_fail.py; }
 experiments() { "$BIN/python" experiments/run_experiments.py; }
 docs()        { "$BIN/dbt" docs generate --quiet; "$BIN/python" scripts/lineage_mermaid.py; }

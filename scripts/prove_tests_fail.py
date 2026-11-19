@@ -81,6 +81,13 @@ CASES = [
     ("Trend metrics never include a partial month",
      "metric_late_rate_monthly,test_name:expect_column_values_to_be_between",
      {"sql": ["insert into metrics.metric_late_rate_monthly values ('2018-09', 1, 16, 6.25)"]}),
+    ("Late-rate targets tie to the story numbers (94,931 / 6,518 / 11,635 / 2.27 stars)",
+     "assert_late_rate_targets_reconcile_to_story",
+     {"sql": ["update metrics.metric_late_rate_targets set late_orders = late_orders + 1",
+              "update metrics.metric_bad_review_by_days_late set bad_reviews = bad_reviews + 1 where days_past_promise_capped = 3"]}),
+    ("Late-rate control limits are fully fitted (the last pass sets aside no further month)",
+     "assert_late_rate_limits_fit_has_converged",
+     {"sql": ["update metrics.metric_late_rate_control_chart set fit_changed_in_last_pass = true where year_month = '2018-03'"]}),
     # Ontology claims (ontology/check.py): a broken link between business things must fail the check.
     ("Ontology: an order has exactly one row (no order with two customers)",
      "ontology:entity order",

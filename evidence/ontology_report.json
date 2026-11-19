@@ -1227,19 +1227,19 @@
   "kind": "coverage",
   "name": "allowlist reasons",
   "ok": true,
-  "detail": "44 exemptions, each with a reason"
+  "detail": "50 exemptions, each with a reason"
  },
  {
   "kind": "coverage",
   "name": "tables",
   "ok": true,
-  "detail": "16 tables; undescribed: none"
+  "detail": "19 tables; undescribed: none"
  },
  {
   "kind": "coverage",
   "name": "columns",
   "ok": true,
-  "detail": "127 columns; undescribed: none"
+  "detail": "183 columns; undescribed: none"
  },
  {
   "kind": "coverage",
