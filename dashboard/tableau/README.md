@@ -67,3 +67,64 @@ The 4.4% goal and the 3.4% stretch line are Tableau reference lines whose value 
 - The "Mar" month label touches the top of the line (the March peak is the top of the chart). Raising it by an offset changed the y-axis scale (tick marks every 10 points instead of 5) and shrank the plot, so it was left as is.
 - The "8.7% up to the promised day" label sits right next to the y-axis labels. The seller ID header ("Seller (anonymized ID)") is part of the panel's note line, and the panel's note does not say "top 10 by late-shipped late orders" for lack of room; the title says "top 10 sellers" and the bars are late orders shipped late. The export has no seller state, so none is shown.
 - Tableau Public is not used. Nothing here publishes anything.
+
+## Six-chart version (v4)
+
+A second page next to B1: one dashboard with six charts instead of the B1 layout, with the seller panel redrawn around repeat sellers.
+
+![six-chart dashboard](v4_six_chart.png)
+
+What changed against B1:
+
+- **Sellers panel.** Bars are the number of months a seller shipped late: "3 or more months" (117 sellers, 20% of the 583, 1,018 of the 1,809 late orders that were shipped late) and "1 to 2 months" (466 sellers, 791). The title says the 56%.
+- **Four reader fixes on the trend and months charts**
+  1. Warning line: its end label (8.4%) and a short note ("warning line: varies by month") sit at the line, and the line is solid.
+  2. Months chart: each tagged bar is named with month and year (Nov 2017, Feb 2018, Mar 2018, Aug 2018) and carries its late-order count. The count is a sum over the clicked data, so it follows the click filters.
+  3. No label sits on another label or on a line: the late-rate (6.3%) and warning-line (8.4%) end labels are in a right-hand margin at different heights, and the goal label is on the right under the goal line.
+  4. The three dots for months past the warning line sit exactly on the late-rate line's points (each dot is a centred text mark on the point itself).
+- Labels are placed by data: each is a one-point series whose month is where it is drawn and whose value is only its height, so no number on the page comes from those series.
+
+| File | What it is |
+|---|---|
+| `out_v4_six_chart.twb` | the workbook (data folder placeholder `/path/to/olist_dash/data`) |
+| `v4_six_chart.png` | the exported image, full size |
+| `prep3.py`, `prep4.py` | CSVs for this page (step 1 reads the warehouse, step 2 adds the label series and the month tags) |
+| `gen_v4.py` | builds the workbook XML (same control file as B1) |
+| `numbers_check_v4.py` | 82-line number check; output in `evidence/v4/numbers_check_v4.txt` |
+| `click_expect.py`, `harness/click_probe4.py` | expected values for each click from DuckDB; the Mac click harness for this layout |
+| `evidence/v4/` | click test: `results.md`, `expected.md`, four images (downscaled to 1366 x 768) |
+
+### Regenerate
+
+```bash
+# B1 inputs first (see Regenerate above): summary.csv, ramp_b.csv, monthly_long.csv in /tmp/olist_tableau
+export OLIST_DB=olist.duckdb SEEDS=seeds B1DATA=/tmp/olist_tableau   # warehouse file, seeds folder, B1 CSV folder
+python3 dashboard/tableau/prep3.py /tmp/olist_v4/data3                # needs the duckdb package
+python3 dashboard/tableau/prep4.py /tmp/olist_v4/data3 /tmp/olist_v4/data4
+PROTO=P2 NCH=6 TREND=e SELL=repeat YEARTAG=1 \
+  python3 dashboard/tableau/gen_v4.py /tmp/olist_v4/data4 /path/to/olist_dash/data dashboard/tableau/out_v4_six_chart.twb
+DATA=/tmp/olist_v4/data4 TWB_DIR=dashboard/tableau python3 dashboard/tableau/numbers_check_v4.py
+```
+
+The second `gen_v4.py` argument is the folder written into the workbook as where Tableau reads the CSVs; the committed file uses the placeholder. Copy the CSVs from `data4` to the folder you name there, or pass that folder as the argument. `orders.csv` is about 21 MB and is not committed.
+
+### What was checked (2026-11-20)
+
+- The CSVs and the workbook were regenerated from the warehouse with the commands above; the CSVs are byte-identical to the ones the exported image was built from, and the workbook differs from the one opened in Tableau only in the data-folder path.
+- The number check passes: 82 checks, 0 mismatches (every figure and label on the page against DuckDB, `summary.csv`, the CSVs and the workbook text). A deliberately wrong dot height, end label and bar count each turned up as a mismatch when tried, so the checks can fail.
+- Click test in Tableau Desktop 2026.3 on the Mac (`evidence/v4/results.md`): seller-group, region and month clicks each match the warehouse, and clicking again returns an export with the baseline's md5.
+
+| Click | shipped by / after the ship-by date | region N/NE / rest | months Nov / Feb / Mar / Aug | sellers | vs DuckDB |
+|---|---|---|---|---|---|
+| none | 5.4% / 21.2% | 12.2% / 6.2% | 902 / 925 / 1,324 / 393 | 1,018 / 791 | match |
+| seller bar "3 or more months" | 6.1% / 23.5% | 13.6% / 7.8% | 461 / 381 / 555 / 99 | 1,018 | match |
+| region North and northeast | 11.0% / 24.5% | 12.2% / (greyed) | 161 / 147 / 252 / 11 | 139 / 94 | match |
+| month Nov 2017 | 9.3% / 34.0% | 20.3% / 11.6% | 902 (others greyed) | 203 / 114 | match |
+
+The "1 to 2 months" bar was not clicked (expected values are in `evidence/v4/expected.md`).
+
+### Not cleanly fixed
+
+- Month and count labels on the months chart are positioned with padding characters, because Tableau offers no per-label offset. The "Feb 2018" name now clears the Mar 2018 bar. Under some click filters the Feb count (for example "147") sits flush against the left edge of the Mar bar.
+- The label placement is set by hand for this data window (Jan 2017 to Aug 2018); other data would need the padding and fixed axis range revisited.
+- Dual-axis circle marks for the dots were tried and abandoned: Tableau did not accept a hand-written dual axis, so the dots are centred text marks.
