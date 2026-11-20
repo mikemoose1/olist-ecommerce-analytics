@@ -286,11 +286,11 @@
   "bootstrap": {
     "n_boot": 5000,
     "seed": 20261120,
-    "reduction_p025": 227.46476635000002,
-    "reduction_p975": 345.78506449999986,
-    "percent_p025": 7.638450810354021,
-    "percent_p975": 11.340759254630875,
-    "share_reduction_at_least_250": 0.8874
+    "reduction_p025": 225.48815662499996,
+    "reduction_p975": 344.916754025,
+    "percent_p025": 7.54250456540788,
+    "percent_p975": 11.309598712749336,
+    "share_reduction_at_least_250": 0.8782
   },
   "display": {
     "n_reviewed": 89412,
@@ -304,8 +304,8 @@
     "newly_on_time_avoided_rounded": 894,
     "newly_late_n": 1839,
     "newly_late_added_rounded": 650,
-    "bootstrap_reduction_lo_rounded": 227,
-    "bootstrap_reduction_hi_rounded": 346
+    "bootstrap_reduction_lo_rounded": 225,
+    "bootstrap_reduction_hi_rounded": 345
   },
   "p95_share_pct": 9.47808399754799
 }

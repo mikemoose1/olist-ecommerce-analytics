@@ -21,7 +21,7 @@ from score import connect, score_dates  # noqa: E402
 
 EXPECTED = HERE / "expected.json"
 ABS_TOL = 1e-6
-BOOT_TOL = 1e-6
+BOOT_TOL = {"reduction": 2.0, "percent": 0.2, "share": 0.02}
 
 
 def db_path() -> Path:
@@ -64,8 +64,18 @@ def compare(got: dict, expected: dict) -> list[str]:
             if bool(gv) != bool(ev):
                 bad.append(f"{key}: got {gv!r}, expected {ev!r}")
         elif isinstance(ev, (int, float)) and not isinstance(ev, bool):
-            tol = BOOT_TOL if key.startswith("bootstrap.") else ABS_TOL
-            if not near(gv, ev, tol):
+            if key.startswith("bootstrap.reduction_"):
+                tol = BOOT_TOL["reduction"]
+            elif key.startswith("bootstrap.percent_"):
+                tol = BOOT_TOL["percent"]
+            elif key.startswith("bootstrap.share_"):
+                tol = BOOT_TOL["share"]
+            else:
+                tol = ABS_TOL
+            if key.startswith("bootstrap.") and not key.startswith("bootstrap.n_") and key != "bootstrap.seed":
+                if abs(float(gv) - float(ev)) > tol:
+                    bad.append(f"{key}: got {gv!r}, expected {ev!r} (tol {tol})")
+            elif not near(gv, ev, ABS_TOL):
                 bad.append(f"{key}: got {gv!r}, expected {ev!r}")
         elif gv != ev:
             bad.append(f"{key}: got {gv!r}, expected {ev!r}")

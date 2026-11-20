@@ -173,8 +173,10 @@ def evaluate(scored: pd.DataFrame, v2: dict | None = None, v4: dict | None = Non
     }
 
     # Order bootstrap of the p95 V2 reduction. Effects are held fixed; orders are resampled.
-    delta = (reviewed["effect_olist"] - reviewed["effect_p95"]).to_numpy()
-    olist_e = reviewed["effect_olist"].to_numpy()
+    # Sort by order_id so the stream is the same on every machine.
+    boot = reviewed.sort_values("order_id", kind="mergesort")
+    delta = (boot["effect_olist"] - boot["effect_p95"]).to_numpy()
+    olist_e = boot["effect_olist"].to_numpy()
     rng = np.random.default_rng(BOOT_SEED)
     n = len(delta)
     red = np.empty(N_BOOT)
