@@ -285,6 +285,9 @@ terms:
     grain: order
     population: the late-rate population (see metric late_rate)
     time_rule: compare cast(delivered_to_customer_at as date) > estimated_delivery_date
+    sql:
+      file: models/intermediate/int_order_delivery.sql
+      contains: "cast(o.delivered_to_customer_at as date) > o.estimated_delivery_date"
     counterexamples: [delivered at 23:00 on the promised day (on time), a multi-seller order (not judged, C1), an undelivered order past its promise (not judged; it is not delivered)]
     decisions: [D4, C1]
   multi_seller_order:
@@ -392,6 +395,42 @@ terms:
     counts: [{where: "review_score is null", expected: 768}]
     counterexamples: [an earlier answer on the same order, a score of 0 for no response (it is null, and null is skipped by avg())]
     decisions: [C4]
+
+  customer_id:
+    meaning: A receipt number. Olist issues a new one for every order, so it cannot show a repeat buyer.
+    source: staging.stg_customers.customer_id
+    grain: order
+    count: {where: "1=1", expected: 99441}
+  ship_by_date:
+    meaning: The deadline Olist gives a seller to hand the parcel to the carrier. It is kept per item, and the order's ship-by date is the latest one among its items.
+    source: marts.fct_orders.last_shipping_limit_at
+    grain: order
+    time_rule: last_shipping_limit_at is the max shipping_limit_at of the order's items; null exactly when n_items = 0
+    sql:
+      file: models/intermediate/int_order_delivery.sql
+      contains: "max(shipping_limit_at) as last_shipping_limit_at"
+    count: {where: "last_shipping_limit_at is null", expected: 775}
+  handoff_to_carrier:
+    meaning: The moment the seller gave the parcel to the carrier, as recorded on the order. Some orders have none.
+    source: marts.fct_orders.delivered_to_carrier_at
+    grain: order
+    sql:
+      file: models/intermediate/int_order_delivery.sql
+      contains: "o.delivered_to_carrier_at"
+    count: {where: "delivered_to_carrier_at is null", expected: 1783}
+  late_handoff:
+    meaning: The handoff time is later than the order's ship-by time, compared as full timestamps. An order with no handoff time is in neither group.
+    source: marts.fct_orders.delivered_to_carrier_at
+    grain: order
+    population: the late-rate population (see metric late_rate)
+    time_rule: delivered_to_carrier_at > last_shipping_limit_at
+    sql:
+      file: models/metrics/metric_late_rate_control_chart.sql
+      contains: "f.delivered_to_carrier_at > f.last_shipping_limit_at"
+    counts:
+      - {where: "order_id in (select order_id from metrics.metric_late_rate_orders) and delivered_to_carrier_at is not null and delivered_to_carrier_at > last_shipping_limit_at", expected: 8530}
+      - {where: "order_id in (select order_id from metrics.metric_late_rate_orders) and delivered_to_carrier_at is not null", expected: 94930}
+      - {where: "order_id in (select order_id from metrics.metric_late_rate_orders) and delivered_to_carrier_at is null", expected: 1}
 
 metrics:
   late_rate:
