@@ -1,0 +1,180 @@
+<?xml version='1.0' encoding='utf-8' ?>
+
+<!-- build 20263.26.1110.1931                               -->
+<workbook _.fcp.WorkbookFingerprinting.true...author-id='REDACTED' _.fcp.WorkbookFingerprinting.true...creator-author-id='REDACTED' _.fcp.WorkbookFingerprinting.true...creator-license-type='free' _.fcp.WorkbookFingerprinting.true...creator-machine-id='REDACTED' _.fcp.WorkbookFingerprinting.true...license-type='free' _.fcp.WorkbookFingerprinting.true...machine-id='REDACTED' original-version='18.1' source-build='2026.3.1 (20263.26.1110.1931)' source-platform='mac' version='18.1' xmlns:user='http://www.tableausoftware.com/xml/user'>
+  <document-format-change-manifest>
+    <AnimationOnByDefault />
+    <MarkAnimation />
+    <ObjectModelEncapsulateLegacy />
+    <ObjectModelTableType />
+    <SchemaViewerObjectModel />
+    <SheetIdentifierTracking />
+    <WindowsPersistSimpleIdentifiers />
+    <_.fcp.WorkbookFingerprinting.true...WorkbookFingerprinting />
+  </document-format-change-manifest>
+  <preferences>
+    <preference name='ui.encoding.shelf.height' value='24' />
+    <preference name='ui.shelf.height' value='26' />
+  </preferences>
+  <datasources>
+    <datasource caption='monthly_late' inline='true' name='federated.1kq3dmz01rlzm91511k9c1kf0jbg' version='18.1'>
+      <connection class='federated'>
+        <named-connections>
+          <named-connection caption='monthly_late' name='textscan.1wuixa617u424q1chcwjq092haju'>
+            <connection class='textscan' directory='/path/to/data' filename='monthly_late.csv' password='' server='' />
+          </named-connection>
+        </named-connections>
+        <relation connection='textscan.1wuixa617u424q1chcwjq092haju' name='monthly_late.csv' table='[monthly_late#csv]' type='table'>
+          <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+            <column datatype='string' name='year_month' ordinal='0' />
+            <column datatype='integer' name='judged_orders' ordinal='1' />
+            <column datatype='integer' name='late_orders' ordinal='2' />
+            <column datatype='real' name='late_rate_pct' ordinal='3' />
+          </columns>
+        </relation>
+        <metadata-records>
+          <metadata-record class='capability'>
+            <remote-name />
+            <remote-type>0</remote-type>
+            <parent-name>[monthly_late.csv]</parent-name>
+            <remote-alias />
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='character-set'>&quot;UTF-8&quot;</attribute>
+              <attribute datatype='string' name='collation'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='field-delimiter'>&quot;,&quot;</attribute>
+              <attribute datatype='string' name='header-row'>&quot;true&quot;</attribute>
+              <attribute datatype='string' name='locale'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='single-char'>&quot;&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>year_month</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[year_month]</local-name>
+            <parent-name>[monthly_late.csv]</parent-name>
+            <remote-alias>year_month</remote-alias>
+            <ordinal>0</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <object-id>[monthly_late.csv_56BB22D634FD43AD829F5C07F16A5DBC]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>judged_orders</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[judged_orders]</local-name>
+            <parent-name>[monthly_late.csv]</parent-name>
+            <remote-alias>judged_orders</remote-alias>
+            <ordinal>1</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[monthly_late.csv_56BB22D634FD43AD829F5C07F16A5DBC]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>late_orders</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[late_orders]</local-name>
+            <parent-name>[monthly_late.csv]</parent-name>
+            <remote-alias>late_orders</remote-alias>
+            <ordinal>2</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[monthly_late.csv_56BB22D634FD43AD829F5C07F16A5DBC]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>late_rate_pct</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[late_rate_pct]</local-name>
+            <parent-name>[monthly_late.csv]</parent-name>
+            <remote-alias>late_rate_pct</remote-alias>
+            <ordinal>3</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[monthly_late.csv_56BB22D634FD43AD829F5C07F16A5DBC]</object-id>
+          </metadata-record>
+        </metadata-records>
+      </connection>
+      <aliases enabled='yes' />
+      <column caption='monthly_late.csv' datatype='table' name='[__tableau_internal_object_id__].[monthly_late.csv_56BB22D634FD43AD829F5C07F16A5DBC]' role='measure' type='quantitative' />
+      <column caption='Judged Orders' datatype='integer' name='[judged_orders]' role='measure' type='quantitative' />
+      <column caption='Late Orders' datatype='integer' name='[late_orders]' role='measure' type='quantitative' />
+      <column caption='Late Rate Pct' datatype='real' name='[late_rate_pct]' role='measure' type='quantitative' />
+      <column caption='Year Month' datatype='string' name='[year_month]' role='dimension' type='nominal' />
+      <layout dim-ordering='alphabetic' measure-ordering='alphabetic' show-structure='true' />
+      <semantic-values>
+        <semantic-value key='[Country].[Name]' value='&quot;United States&quot;' />
+      </semantic-values>
+      <object-graph>
+        <objects>
+          <object caption='monthly_late.csv' id='monthly_late.csv_56BB22D634FD43AD829F5C07F16A5DBC'>
+            <properties context=''>
+              <relation connection='textscan.1wuixa617u424q1chcwjq092haju' name='monthly_late.csv' table='[monthly_late#csv]' type='table'>
+                <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+                  <column datatype='string' name='year_month' ordinal='0' />
+                  <column datatype='integer' name='judged_orders' ordinal='1' />
+                  <column datatype='integer' name='late_orders' ordinal='2' />
+                  <column datatype='real' name='late_rate_pct' ordinal='3' />
+                </columns>
+              </relation>
+            </properties>
+          </object>
+        </objects>
+      </object-graph>
+    </datasource>
+  </datasources>
+  <worksheets>
+    <worksheet name='Sheet 1'>
+      <table>
+        <view>
+          <datasources />
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Automatic' />
+          </pane>
+        </panes>
+        <rows />
+        <cols />
+      </table>
+      <simple-id uuid='{B72DCFDB-5716-4020-A06F-547A1BFACC77}' />
+    </worksheet>
+  </worksheets>
+  <windows source-height='30'>
+    <window class='worksheet' maximized='true' name='Sheet 1'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='31'>
+            <card type='columns' />
+          </strip>
+          <strip size='31'>
+            <card type='rows' />
+          </strip>
+          <strip size='31'>
+            <card type='title' />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid='{FA8BBDD0-F670-4CFB-8474-070AFF3953EC}' />
+    </window>
+  </windows>
+</workbook>

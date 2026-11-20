@@ -12,7 +12,7 @@ Tables for the late-delivery dashboard (layout B: six number tiles over six pane
 | `handoff.csv` | 2 | late or on-time handoff | panel 3 |
 | `sellers.csv` | 2,925 | seller | panel 4; the chart shows `is_top10` |
 | `region.csv` | 2 | north and northeast, rest of Brazil | panel 5 |
-| `tests_example.csv` | 2 | test | panel 6, **invented example numbers** |
+| `tests_example.csv` | 2 | test | not used by the shipped Tableau dashboard (`tableau/`, layout B1), whose bottom strip names two fixes to test and shows no numbers. If a strip with numbers is ever shown, these are **invented example numbers** |
 
 ## What the numbers mean
 
@@ -37,10 +37,10 @@ Four layers, each proven able to fail:
 
 **What is a consistency check, not evidence.** The review-cost range (2,880 to 3,350, six estimators in `review_cost_causal/`) is not recomputed here. The four rows that compare it with facts.json and the evidence report are labelled "consistency" in the tests and the verifier: they show the export carries the number the analysis wrote, not that the range is right. The 21.7% and 15% are read from the story's month table.
 
-## Panel 6 is an example
+## The tests strip is an example
 
-`seeds/dash_tests_example.csv` holds invented numbers that show the layout. The export marks every row `is_example`, `not run`, "EXAMPLE" in both labels, an asterisk on both values, the banner and a footnote. `assert_dash_tests_are_labelled_example` fails if any row loses one of those. When the tests have run, a results model replaces the seed and that test goes with it.
+The shipped Tableau dashboard (`tableau/`) no longer shows these numbers; its bottom strip says "Two fixes to test next (nothing run yet)" and holds none. The file stays, still labelled, for any layout that shows a strip with numbers. `seeds/dash_tests_example.csv` holds invented numbers that show the layout. The export marks every row `is_example`, `not run`, "EXAMPLE" in both labels, an asterisk on both values, the banner and a footnote. `assert_dash_tests_are_labelled_example` fails if any row loses one of those. When the tests have run, a results model replaces the seed and that test goes with it.
 
 ## Not in these tables
 
-The month filter (click a month to filter panels 3 to 5) is not wired: handoff, seller and region tables cover the whole window. Layout B shows no month filter. If the dashboard needs one, add a month column to those three tables.
+These tables cover the whole window: the handoff, seller and region tables have no month column. The click filters (seller, region, month) in the Tableau dashboard do not use them. They work on a separate order-level file, `orders.csv`, built from the warehouse by `tableau/export_orders.py` (not committed). See `tableau/README.md`.
