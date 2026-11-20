@@ -88,15 +88,16 @@ def apply_bar(v2_net: dict, march_policy: float, march_olist: float, v4_net: dic
     floor8 = 0.08 * v2_net["extra_olist"]
     c1 = reduction >= 250
     c2 = reduction >= floor8
-    c3 = ((v2_net["ci_net_hi"] < 0) or (v2_net["ci_net_lo"] > 0)) and v2_net["ci_net_hi"] != 0 and v2_net["ci_net_lo"] != 0
+    # Reduction-side only: the interval on the reduction must lie entirely above 0.
+    c3 = v2_net["ci_reduction_lo"] > 0
     c4 = march_policy <= march_olist
-    v4_ok = (v4_net["reduction"] > 0) and ((v4_net["ci_net_hi"] < 0) or (v4_net["ci_net_lo"] > 0)) and (v4_net["net_change"] <= 0)
+    v4_ok = v4_net["ci_reduction_lo"] > 0
     checks = [
         {"id": 1, "name": "Net reduction at least 250", "pass": bool(c1), "observed": reduction, "required": 250},
         {"id": 2, "name": "Net reduction at least 8% of window Olist extra", "pass": bool(c2), "observed": reduction, "required": floor8},
-        {"id": 3, "name": "95% interval on the net excludes 0", "pass": bool(c3), "observed": [v2_net["ci_net_lo"], v2_net["ci_net_hi"]]},
+        {"id": 3, "name": "95% interval on the reduction lies entirely above 0", "pass": bool(c3), "observed": [v2_net["ci_reduction_lo"], v2_net["ci_reduction_hi"]]},
         {"id": 4, "name": "March 2018 extra is not higher than Olist", "pass": bool(c4), "observed": {"policy": march_policy, "olist": march_olist}},
-        {"id": 5, "name": "V4 sensitivity net reduction, interval excludes 0", "pass": bool(v4_ok), "observed": {"reduction": v4_net["reduction"], "ci_net": [v4_net["ci_net_lo"], v4_net["ci_net_hi"]]}},
+        {"id": 5, "name": "V4 sensitivity: 95% interval on the reduction lies entirely above 0", "pass": bool(v4_ok), "observed": {"reduction": v4_net["reduction"], "ci_reduction": [v4_net["ci_reduction_lo"], v4_net["ci_reduction_hi"]]}},
     ]
     return {"checks": checks, "overall_pass": all(c["pass"] for c in checks), "failed": [c["name"] for c in checks if not c["pass"]]}
 
@@ -197,19 +198,44 @@ def evaluate(scored: pd.DataFrame, v2: dict | None = None, v4: dict | None = Non
     }
     # Display rounding used on the case study page.
     p95 = out["v2"]["window"]["p95"]
+    st = out["four_states"]["p95"]
+    avoided = -st["newly_on_time"]["sum_delta"]
+    added = st["newly_late"]["sum_delta"]
+    still_red = -st["still_late"]["sum_delta"]
+    if abs(st["still_on_time"]["sum_delta"]) > 1e-9:
+        raise ValueError("still-on-time contribution is not 0")
+    parts = avoided - added + still_red
+    if abs(parts - p95["reduction"]) > 1e-6:
+        raise ValueError(f"four-state identity failed: {parts} vs reduction {p95['reduction']}")
+    if abs(parts + st["sum_delta_all"]) > 1e-6:
+        raise ValueError(f"four-state identity failed vs sum_delta_all: {parts} vs {-st['sum_delta_all']}")
+    avoided_r = int(round(avoided))
+    added_r = int(round(added))
+    still_r = int(round(still_red))
+    net_r = int(round(p95["reduction"]))
+    if avoided_r - added_r + still_r != net_r:
+        raise ValueError(
+            f"rounded parts do not equal the net: {avoided_r} - {added_r} + {still_r} = {avoided_r - added_r + still_r}, net {net_r}"
+        )
+    p90_added_r = int(round(-out["v2"]["window"]["p90"]["reduction"]))
     out["display"] = {
         "n_reviewed": out["n_reviewed"],
         "olist_extra_rounded": int(round(out["v2"]["window"]["olist_extra"])),
         "p95_extra_rounded": int(round(p95["extra_policy"])),
-        "p95_reduction_rounded": int(round(p95["reduction"])),
+        "p95_reduction_rounded": net_r,
         "p95_share_rounded_pct": int(round(100.0 * p95["reduction"] / out["v2"]["window"]["olist_extra"])),
         "range_lo_pct": 7,
         "range_hi_pct": 11,
-        "newly_on_time_n": out["four_states"]["p95"]["newly_on_time"]["n"],
-        "newly_on_time_avoided_rounded": int(round(-out["four_states"]["p95"]["newly_on_time"]["sum_delta"])),
-        "newly_late_n": out["four_states"]["p95"]["newly_late"]["n"],
-        "newly_late_added_rounded": int(round(out["four_states"]["p95"]["newly_late"]["sum_delta"])),
+        "newly_on_time_n": st["newly_on_time"]["n"],
+        "newly_on_time_avoided_rounded": avoided_r,
+        "newly_late_n": st["newly_late"]["n"],
+        "newly_late_added_rounded": added_r,
+        "still_late_n": st["still_late"]["n"],
+        "still_late_reduction_rounded": still_r,
+        "p90_added_rounded": p90_added_r,
+        "bootstrap_n": out["bootstrap"]["n_boot"],
         "bootstrap_reduction_lo_rounded": int(round(out["bootstrap"]["reduction_p025"])),
         "bootstrap_reduction_hi_rounded": int(round(out["bootstrap"]["reduction_p975"])),
+        "parts_sum_rounded": avoided_r - added_r + still_r,
     }
     return out

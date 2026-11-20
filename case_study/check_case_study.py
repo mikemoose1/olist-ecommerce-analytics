@@ -155,12 +155,12 @@ def build_claims(con):
         "report",
     )
     add(
-        f"about {P['newly_on_time_n']:,} orders that had been late would have been on time, avoiding about {P['newly_on_time_avoided_rounded']} bad reviews, while about {P['newly_late_n']:,} orders that had been on time would have been late, adding about {P['newly_late_added_rounded']}",
+        f"about {P['newly_on_time_n']:,} orders that had been late would have been on time, avoiding about {P['newly_on_time_avoided_rounded']} bad reviews, while about {P['newly_late_n']:,} orders that had been on time would have been late, adding about {P['newly_late_added_rounded']}, plus about {P['still_late_reduction_rounded']} fewer from orders late either way",
         "report",
     )
     add("A looser 9-out-of-10 date made things worse", "report")
     add(
-        f"A per-route 19-out-of-20 date cuts extra late-delivery bad reviews from about {P['olist_extra_rounded']:,} to about {P['p95_extra_rounded']:,}, a net of about {P['p95_reduction_rounded']} (about {P['newly_on_time_avoided_rounded']} avoided minus about {P['newly_late_added_rounded']} added)",
+        f"A per-route 19-out-of-20 date cuts extra late-delivery bad reviews from about {P['olist_extra_rounded']:,} to about {P['p95_extra_rounded']:,}, a net of about {P['p95_reduction_rounded']} (about {P['newly_on_time_avoided_rounded']} avoided, minus about {P['newly_late_added_rounded']} added, plus about {P['still_late_reduction_rounded']} fewer from orders late either way)",
         "report",
     )
     return out

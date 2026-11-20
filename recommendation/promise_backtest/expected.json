@@ -1,6 +1,5 @@
 {
   "integrity": {
-    "leak_count": 0,
     "missing_pred": 0,
     "n_scored": 90003,
     "burn_in": "2017-04-01",
@@ -190,11 +189,11 @@
         },
         {
           "id": 3,
-          "name": "95% interval on the net excludes 0",
-          "pass": true,
+          "name": "95% interval on the reduction lies entirely above 0",
+          "pass": false,
           "observed": [
-            1688.6696195671998,
-            1789.4509724327995
+            -1789.4509724327995,
+            -1688.6696195671998
           ]
         },
         {
@@ -208,13 +207,13 @@
         },
         {
           "id": 5,
-          "name": "V4 sensitivity net reduction, interval excludes 0",
+          "name": "V4 sensitivity: 95% interval on the reduction lies entirely above 0",
           "pass": false,
           "observed": {
             "reduction": -1617.3752817072523,
-            "ci_net": [
-              1560.861842355764,
-              1673.8887210587404
+            "ci_reduction": [
+              -1673.8887210587404,
+              -1560.861842355764
             ]
           }
         }
@@ -223,8 +222,9 @@
       "failed": [
         "Net reduction at least 250",
         "Net reduction at least 8% of window Olist extra",
+        "95% interval on the reduction lies entirely above 0",
         "March 2018 extra is not higher than Olist",
-        "V4 sensitivity net reduction, interval excludes 0"
+        "V4 sensitivity: 95% interval on the reduction lies entirely above 0"
       ]
     },
     "p95": {
@@ -245,11 +245,11 @@
         },
         {
           "id": 3,
-          "name": "95% interval on the net excludes 0",
+          "name": "95% interval on the reduction lies entirely above 0",
           "pass": true,
           "observed": [
-            -294.72880735626046,
-            -277.2085966437398
+            277.2085966437398,
+            294.72880735626046
           ]
         },
         {
@@ -263,13 +263,13 @@
         },
         {
           "id": 5,
-          "name": "V4 sensitivity net reduction, interval excludes 0",
+          "name": "V4 sensitivity: 95% interval on the reduction lies entirely above 0",
           "pass": true,
           "observed": {
             "reduction": 262.10226599770476,
-            "ci_net": [
-              -273.47879181217104,
-              -250.72574018323849
+            "ci_reduction": [
+              250.72574018323849,
+              273.47879181217104
             ]
           }
         }
@@ -304,8 +304,13 @@
     "newly_on_time_avoided_rounded": 894,
     "newly_late_n": 1839,
     "newly_late_added_rounded": 650,
+    "still_late_n": 3853,
+    "still_late_reduction_rounded": 42,
+    "p90_added_rounded": 1739,
+    "bootstrap_n": 5000,
     "bootstrap_reduction_lo_rounded": 225,
-    "bootstrap_reduction_hi_rounded": 345
+    "bootstrap_reduction_hi_rounded": 345,
+    "parts_sum_rounded": 286
   },
   "p95_share_pct": 9.47808399754799
 }

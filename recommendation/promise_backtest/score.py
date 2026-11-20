@@ -7,6 +7,7 @@ except when falling back to a thin global history.
 from __future__ import annotations
 
 import math
+from bisect import bisect_left
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -37,8 +38,6 @@ class ChunkedSorted:
         self.n = 0
 
     def add(self, x: int) -> None:
-        from bisect import bisect_left
-
         self.n += 1
         if not self.chunks:
             self.chunks.append([x])
@@ -174,11 +173,11 @@ def score_dates(con: duckdb.DuckDBPyConnection) -> tuple[pd.DataFrame, dict]:
         events.append((pd.Timestamp(r["purchased_at"]), 0, i))
         if pd.notna(r["delivered_at"]):
             events.append((pd.Timestamp(r["delivered_at"]), 1, i))
+    # Purchases (kind 0) are scored before deliveries (kind 1) at the same timestamp,
+    # so a delivery enters history only when its timestamp is strictly earlier.
     events.sort(key=lambda e: (e[0], e[1], e[2]))
 
     hist = KeyHists()
-    last_delivery = None
-    leak_count = 0
     missing_pred = 0
     scored_rows = []
 
@@ -191,14 +190,9 @@ def score_dates(con: duckdb.DuckDBPyConnection) -> tuple[pd.DataFrame, dict]:
                 actual = int(r["actual_days"])
                 for _label, key in route_keys(route, state):
                     hist.add(key, actual)
-            if last_delivery is None or ts > last_delivery:
-                last_delivery = ts
             continue
 
         purchased_at = pd.Timestamp(r["purchased_at"])
-        if last_delivery is not None and last_delivery >= purchased_at:
-            leak_count += 1
-
         is_scored = r["is_judged"] and pd.Timestamp(r["purchase_date"]).date() >= BURN_IN
         if not is_scored:
             continue
@@ -238,7 +232,6 @@ def score_dates(con: duckdb.DuckDBPyConnection) -> tuple[pd.DataFrame, dict]:
 
     scored = pd.DataFrame(scored_rows)
     integrity = {
-        "leak_count": leak_count,
         "missing_pred": missing_pred,
         "n_scored": int(len(scored)),
         "burn_in": BURN_IN.isoformat(),

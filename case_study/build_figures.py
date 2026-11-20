@@ -153,13 +153,22 @@ def fig_promise():
     net = ev["p95_reduction_rounded"]
     avoided = ev["newly_on_time_avoided_rounded"]
     added = ev["newly_late_added_rounded"]
-    fig, ax = plt.subplots(figsize=(7.4, 3.4))
+    still = ev["still_late_reduction_rounded"]
+    fig, ax = plt.subplots(figsize=(7.4, 3.6))
     labels = ["Olist's promise", "Per-route date\nupdated as orders arrive"]
     ax.bar(labels, [olist, p95], color=[GRAY, "white"], edgecolor=[GRAY, ORANGE], hatch=["", "//"], width=0.5, lw=1.5)
-    ax.text(0, olist + 40, f"{olist:,}", ha="center", fontweight="bold", color=DARK)
-    ax.text(1, p95 + 40, f"{p95:,}", ha="center", fontweight="bold", color=ORANGE)
-    ax.text(0.5, -0.28, f"{avoided:,} avoided, {added:,} added, net {net:,}", transform=ax.transAxes, ha="center", color=ORANGE, fontsize=10)
-    ax.set_ylim(0, 3600)
+    ax.text(0, olist + 140, f"{olist:,}", ha="center", fontweight="bold", color=DARK)
+    ax.text(1, p95 + 140, f"{p95:,}", ha="center", fontweight="bold", color=ORANGE)
+    ax.text(
+        0.5,
+        -0.32,
+        f"{avoided:,} avoided, {added:,} added, {still:,} fewer from orders late either way, net {net:,}",
+        transform=ax.transAxes,
+        ha="center",
+        color=ORANGE,
+        fontsize=10,
+    )
+    ax.set_ylim(0, 4200)
     ax.set_ylabel("extra 1-2 star reviews from late delivery")
     ax.yaxis.set_major_formatter(lambda v, _: f"{v:,.0f}")
     save(fig, "promise_date.png")

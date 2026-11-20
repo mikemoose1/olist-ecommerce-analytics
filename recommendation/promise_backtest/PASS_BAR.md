@@ -6,9 +6,9 @@ A date (route p90 or route p95, each judged on its own) passes only if all of th
 
 1. Net reduction versus Olist is at least 250 extra bad reviews.
 2. The same net reduction is at least 8% of Olist's extra computed on this same scored window (not 8% of the full-population 3,110, because the scored window drops early-2017 orders).
-3. A 95% interval on the net, using the seed effect standard errors and treating the order counts as fixed, excludes 0.
+3. A 95% interval on the reduction, using the seed effect standard errors and treating the order counts as fixed, lies entirely above 0 (lower bound > 0).
 4. March 2018 extra under the date is not higher than Olist's March extra on the scored reviewed March orders.
-5. The V4 sensitivity also shows a net reduction whose interval excludes 0. It is not required to clear the 250 / 8% floors, but if V4's net is positive (more extra bad reviews) or its interval includes 0, the date does not pass.
+5. The V4 sensitivity also shows a net reduction whose 95% interval lies entirely above 0. It is not required to clear the 250 / 8% floors, but if that interval does not lie entirely above 0, the date does not pass.
 
 It does not help if no date clears all five. Do not change the bar to rescue a near miss.
 

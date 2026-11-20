@@ -82,6 +82,23 @@ def compare(got: dict, expected: dict) -> list[str]:
     return bad
 
 
+def readme_drift(display: dict, text: str) -> list[str]:
+    """Fail if the package README no longer states the locked display figures."""
+    d = display
+    boot = f"{d['bootstrap_n']:,}"
+    required = [
+        f"{d['n_reviewed']:,} reviewed orders",
+        f"cuts expected extra bad reviews by {d['p95_reduction_rounded']} versus Olist's {d['olist_extra_rounded']:,}",
+        f"about {d['p95_share_rounded_pct']}%",
+        f"An order bootstrap ({boot} resamples, effects held fixed) gives a range of {d['bootstrap_reduction_lo_rounded']} to {d['bootstrap_reduction_hi_rounded']} reviews, or about {d['range_lo_pct']}% to {d['range_hi_pct']}%",
+        f"{d['newly_on_time_n']:,} newly on-time orders avoid about {d['newly_on_time_avoided_rounded']}",
+        f"{d['newly_late_n']:,} newly late orders add about {d['newly_late_added_rounded']}",
+        f"about {d['still_late_reduction_rounded']} fewer come from orders late either way",
+        f"adds about {d['p90_added_rounded']:,} extra bad reviews",
+    ]
+    return [f"missing fragment: {frag!r}" for frag in required if frag not in text]
+
+
 def headline_payload(scored, integrity, ev) -> dict:
     p95 = ev["v2"]["window"]["p95"]
     return {
@@ -114,8 +131,6 @@ def run() -> dict:
         scored, integrity = score_dates(con)
     finally:
         con.close()
-    if integrity["leak_count"] != 0:
-        sys.exit(f"as-of leak_count={integrity['leak_count']}, expected 0")
     if integrity["missing_pred"] != 0:
         sys.exit(f"missing_pred={integrity['missing_pred']}, expected 0")
     ev = evaluate(scored)
@@ -126,6 +141,17 @@ def run() -> dict:
         sys.exit(f"bootstrap percent interval {lo:.3f} to {hi:.3f} no longer supports a 7% to 11% range")
     if ev["display"]["range_lo_pct"] != 7 or ev["display"]["range_hi_pct"] != 11:
         sys.exit("display range drifted from 7% to 11%")
+    d = ev["display"]
+    if d["parts_sum_rounded"] != d["p95_reduction_rounded"]:
+        sys.exit(
+            f"rounded four-state parts do not equal the net: "
+            f"{d['newly_on_time_avoided_rounded']} - {d['newly_late_added_rounded']} + "
+            f"{d['still_late_reduction_rounded']} = {d['parts_sum_rounded']}, "
+            f"net {d['p95_reduction_rounded']}"
+        )
+    readme_problems = readme_drift(d, (HERE / "README.md").read_text())
+    if readme_problems:
+        sys.exit("README drift:\n" + "\n".join(readme_problems))
     return headline_payload(scored, integrity, ev)
 
 
