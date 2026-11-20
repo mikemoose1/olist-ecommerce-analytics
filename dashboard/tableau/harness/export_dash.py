@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
-"""export_dash.py <twb> <out.png> [procname]: open twb in Tableau Desktop, wait for load or error, run Dashboard > Export Image..., save PNG, log UI state, quit app (discarding nothing: never saves)."""
+"""export_dash.py <twb> <out.png> [procname]: open twb in Tableau Desktop, wait for load or error, run Dashboard > Export Image..., save PNG, log UI state, quit app (discarding nothing: never saves). Mac only.
+Settings (environment, current values are the defaults):
+  TABLEAU_APP  path of the app          default '/Applications/Tableau Desktop (Apple silicon) 2026.3.app'
+  EXPORT_DIR   where Tableau saves PNGs default ~/Documents
+Needs macOS Accessibility permission for the app that runs this script."""
 import sys,subprocess,time,os,re
 twb,out=sys.argv[1:3]
-APP='/Applications/Tableau Desktop (Apple silicon) 2026.3.app'
+APP=os.environ.get('TABLEAU_APP','/Applications/Tableau Desktop (Apple silicon) 2026.3.app')
+APPNAME=os.path.basename(APP)[:-4]
+EXPORT_DIR=os.path.expanduser(os.environ.get('EXPORT_DIR','~/Documents'))
 proc=sys.argv[3] if len(sys.argv)>3 else 'Tableau'
 log=out+'.log'; L=[]
 def P(*a):
@@ -22,11 +28,9 @@ while time.time()<end:
 P('state',state,'windows',wins())
 if state=='ERROR':
     P(osa('tell application "System Events" to tell process "%s" to get entire contents of window "Unable to complete action"'%proc))
-    subprocess.run(['osascript','-l','JavaScript',os.path.expanduser('~/tableau-experiments/pressbtn.js'),proc,'Copy Error Message'],capture_output=True)
-    P('clipboard:',subprocess.run(['pbpaste'],capture_output=True,text=True).stdout[:3000])
 else:
     time.sleep(8)
-    osa('tell application "Tableau Desktop (Apple silicon) 2026.3" to activate')
+    osa('tell application "%s" to activate'%APPNAME)
     time.sleep(1)
     P('menu click:',osa('tell application "System Events" to tell process "%s" to click menu item "Export Image..." of menu 1 of menu bar item "Dashboard" of menu bar 1'%proc))
     time.sleep(4)
@@ -44,7 +48,7 @@ else:
     for i in range(10):
         if os.path.exists(out): break
         time.sleep(1)
-    dd=os.path.expanduser('~/Documents/'+os.path.basename(out))
+    dd=os.path.join(EXPORT_DIR,os.path.basename(out))
     for i in range(10):
         if os.path.exists(dd): break
         time.sleep(1)

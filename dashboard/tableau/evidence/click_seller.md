@@ -1,11 +1,14 @@
 VERIFIED
-Claim: In Tableau Desktop, clicking the seller 06a2c3af bar in out_b1_final.twb filters the Handoff, Region and Months panels to that seller; handoff panel moves off 21.2%/5.4%; filtering is undone by clicking again. Trend and ramp stay all-order by design.
-Evidence (Tableau Desktop 2026.3, 2026-11-19 ~20:50 ET):
- baseline click/base_0.png md5 8f7536e2 (handoff 5.4% / 21.2%, region 12.2% / 6.2%)
- treatment click/m481_0.png md5 9161bf3a (handoff 3.0% / 54.5%, region 22.4% / 18.2%, months Feb 2, Mar 17, Aug 1; seller bar outlined, others dimmed)
- DuckDB seller 06a2c3af%: handoff on-time 8/267=3.0%, late 66/121=54.5%; region NNE 19/85=22.4%, rest 55/303=18.2%; months Feb 2, Mar 17, Aug 1; late after late handoff 66.  MATCH.
- clear click/clr_0.png md5 8f7536e2 == baseline (byte-identical).
-Method: Presentation Mode centers the 1366x768 dashboard on the 1728x1117-pt screen (offset 181,174.5); real CGEvent mouse click (osascript -l JavaScript mclick.js) at dashboard point (300,526) = screen (481,700); Esc; Dashboard > Export Image.
-Why earlier clicks failed: System Events 'click at' does an accessibility press on the window, not a mouse event.
-Not tested: clicking a region or month bar (same action mechanism, separate actions).
-Confound: none seen; screencapture still blocked (Screen Recording not granted) but not needed.
+Workbook: ../out_b1_v2.twb (the shipped file). Tableau Desktop 2026.3, macOS, 2026-11-19, about 21:40 ET.
+Claim: clicking the seller 06a2c3af bar filters the handoff, region and month panels to that seller (the handoff panel moves off 5.4% / 21.2%), and clicking again undoes it. Trend and ramp stay all-order by design.
+
+Images (downscaled to 1366 x 768 for this repo; md5 of the full-size exports in brackets):
+ baseline.png      handoff 5.4% / 21.2%, region 12.2% / 6.2%            [ff0f1e647cc5e96dc8d61a1d92395bd5]
+ click_seller.png  handoff 3.0% / 54.5%, region 22.4% / 18.2%, months Feb 2, Mar 17, Aug 1; seller bar outlined, others dimmed   [7664f8463440272d14dd4f942a69bca9]
+ clear (click again): the export has the same md5 as the baseline, so no separate image is kept.   [ff0f1e647cc5e96dc8d61a1d92395bd5]
+
+DuckDB, seller 06a2c3af: handoff on time 8/267 = 3.0%, late 66/121 = 54.5%; region North and northeast 19/85 = 22.4%, rest 55/303 = 18.2%; month late orders Feb 2, Mar 17, Aug 1; late after a late handoff 66. All match the image.
+
+Method: harness/click_probe.py (Presentation Mode centres the 1366 x 768 dashboard on the 1728 x 1117 pt screen, offset 181, 174.5), a real mouse click from harness/mclick.js at dashboard point (300, 526), which is screen (481, 700), then Esc and Dashboard > Export Image. Run from the committed harness/ folder on the Mac.
+Why earlier clicks failed: a System Events "click at" is an accessibility press on the window, not a mouse event.
+Re-run note: this is the second run on out_b1_v2.twb; an earlier run on the same file (about 20:53 ET) gave the same three md5s. The first seller test (about 20:50 ET) was on an earlier workbook without the reference-line change and is not used.

@@ -1,8 +1,21 @@
 #!/usr/bin/env python3
-"""gen_workbook.py <data dir (to read headers)> <data dir as Tableau will see it> <out.twb>
-Layout B workbook for the Olist late-delivery dashboard, derived from the Desktop-saved control
-(../../tableau-experiments/ctrl/ctrl_saved_desktop_free.twb) the same way gen2.py does.
-env OPT: comma list of switches (dual, date, nofilter, nosort ...)."""
+"""gen_workbook.py <data dir to read headers from> <data dir as Tableau will see it> <out.twb>
+
+Builds the Tableau workbook XML for the late-delivery dashboard (layout B1, version 2). The workbook head comes from
+ctrl_saved_desktop_free.twb in this folder, a workbook saved by Tableau Desktop (hand-written workbooks do not open).
+Both data dirs hold orders.csv, ramp_b.csv, monthly_long.csv, summary.csv and tests_example.csv. The second path is
+written into the workbook as the folder Tableau reads the CSVs from.
+
+Settings (environment variables):
+  VAR=b1|b2   top band: b1 = three KPI tiles (shipped), b2 = one-line strip
+  TR=1|''     goal and stretch as parameter-driven reference lines (shipped); '' = old data lines
+  GSZ, SSZ, PAT  goal line size (4), stretch line size (1), stretch pattern (dashed); only with TR=1
+  FILT=col=value  build a copy filtered to that value (used for tests)
+  ONLY=a|b    build only the named worksheets
+  TIPV=a|b|off  Trend tooltip variant
+  X=...       test switches (NODF, NORUNS, NOITAL)
+  OPT         read but has no effect
+"""
 import re,sys,os,csv,uuid,hashlib
 from xml.sax.saxutils import escape,quoteattr
 boxdata,macdata,out=sys.argv[1:4]
