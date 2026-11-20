@@ -91,10 +91,7 @@ def bridge(con):
         "",
         f"Not delivered or conflicting: {_fmt(nd)} not delivered, {conf} with a status that disagrees with the delivery date. These orders have no reliable delivery outcome.",
     ]
-    return "\n".join(lines), {
-        "judged": e,
-        "late_handoff": None,
-    }
+    return "\n".join(lines)
 
 
 def late_rules(con, onto=None):
@@ -120,7 +117,7 @@ def late_rules(con, onto=None):
 def case_study_section(con):
     onto = load()
     rules = late_rules(con, onto)
-    pop, _ = bridge(con)
+    pop = bridge(con)
     return "\n".join([
         "The ZIP-prefix and product-category columns are drawn as soft links, not keys, because the data does not keep them unique or complete. A review ID can appear on more than one order.",
         "",

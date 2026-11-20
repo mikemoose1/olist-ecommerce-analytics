@@ -4,13 +4,13 @@ This project builds a tested data pipeline from about 99,000 real orders of Olis
 
 [![Dashboard of late deliveries, reviews, sellers, regions and months](docs/img/dashboard.png)](docs/img/dashboard.png)
 
-*The dashboard in one view. Click the image for the full-size picture, or [open the live, clickable dashboard](https://mikemoose1.github.io/olist-ecommerce-analytics/#live-dashboard).*
+*The dashboard in one view. Click the image for the full-size picture, or see it in [the full case study](docs/CASE_STUDY.md#dashboard). The interactive version is coming.*
 
 **Role and tools.** An end-to-end analytics project on a public dataset: data modeling and automated data checks in dbt and DuckDB, the review-cost analysis in Python (pandas and statsmodels), a recommendation memo, a Quarto data story and a Tableau dashboard. GitHub Actions rebuilds and checks all of it.
 
 **Code.** This repository. The main folders are [models/](models/) (the dbt layers), [tests/](tests/) (data checks), [review_cost_causal/](review_cost_causal/README.md) (the estimate), [recommendation/](recommendation/MEMO.md) (the memo), [dashboard/](dashboard/tableau/README.md) (the Tableau workbook and its data) and [case_study/](case_study/) (the checks behind these pages).
 
-**Read more.** [The full case study](https://mikemoose1.github.io/olist-ecommerce-analytics/) has the charts, the data model and the verification record ([same text in the repo](docs/CASE_STUDY.md)). [docs/REPRODUCE.md](docs/REPRODUCE.md) has setup and the one command that reproduces everything.
+**Read more.** [The full case study](docs/CASE_STUDY.md) has the charts, the data model and the verification record. [docs/REPRODUCE.md](docs/REPRODUCE.md) has setup and the one command that reproduces everything.
 
 ## The short version
 

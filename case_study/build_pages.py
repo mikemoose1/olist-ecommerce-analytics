@@ -26,7 +26,6 @@ EMBED = """<div id="live-dashboard">
 <a id="dashboard-fallback" href="img/dashboard.png"><img src="img/dashboard.png" alt="Dashboard of late deliveries, reviews, sellers, regions and months" style="width:100%"></a>
 <tableau-viz id="tableauViz" src="__URL__" width="100%" height="768" hide-tabs toolbar="bottom" style="display:none"></tableau-viz>
 <script>
-  // Show the live dashboard once a real Tableau Public address is set. Until then the PNG above stays.
   var viz = document.getElementById("tableauViz");
   if ((viz.getAttribute("src") || "").indexOf("public.tableau.com") !== -1) {
     var lib = document.createElement("script");

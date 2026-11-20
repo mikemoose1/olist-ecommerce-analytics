@@ -2,9 +2,11 @@
 
 This project builds a tested data pipeline from about 99,000 real orders of Olist, a Brazilian online marketplace, and uses it to estimate what late delivery costs. The analysis found an estimated effect of late delivery on about 3,110 of the 11,635 one- and two-star reviews on 94,931 delivered orders, about 27%, with a range of 2,880 to 3,350. It is an estimate from past orders, not a randomized test, so it is not proven cause. Late delivery shows no clear effect on repeat buying. The recommendation is two randomized tests, starting with reminders to sellers about their ship-by date, because 27.8% of late orders were handed to the carrier late. A ship-by date is the deadline Olist gives a seller to hand the parcel to the carrier.
 
+<a id="dashboard"></a>
+
 [![Dashboard of late deliveries, reviews, sellers, regions and months](img/dashboard.png)](img/dashboard.png)
 
-*The dashboard in one view. Click the image for the full-size picture, or [open the live, clickable dashboard](https://mikemoose1.github.io/olist-ecommerce-analytics/#live-dashboard).*
+*The dashboard in one view. Click the image for the full-size picture. The interactive version is coming.*
 
 **Role and tools.** An end-to-end analytics project on a public dataset: data modeling and automated data checks in dbt and DuckDB, the review-cost analysis in Python (pandas and statsmodels), a recommendation memo, a Quarto data story and a Tableau dashboard. GitHub Actions rebuilds and checks all of it.
 

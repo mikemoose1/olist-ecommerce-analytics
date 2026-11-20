@@ -7,11 +7,12 @@ title: Late deliveries and bad reviews at Olist
 
 This project builds a tested data pipeline from about 99,000 real orders of Olist, a Brazilian online marketplace, and uses it to estimate what late delivery costs. The analysis found an estimated effect of late delivery on about 3,110 of the 11,635 one- and two-star reviews on 94,931 delivered orders, about 27%, with a range of 2,880 to 3,350. It is an estimate from past orders, not a randomized test, so it is not proven cause. Late delivery shows no clear effect on repeat buying. The recommendation is two randomized tests, starting with reminders to sellers about their ship-by date, because 27.8% of late orders were handed to the carrier late. A ship-by date is the deadline Olist gives a seller to hand the parcel to the carrier.
 
+<a id="dashboard"></a>
+
 <div id="live-dashboard">
 <a id="dashboard-fallback" href="img/dashboard.png"><img src="img/dashboard.png" alt="Dashboard of late deliveries, reviews, sellers, regions and months" style="width:100%"></a>
 <tableau-viz id="tableauViz" src="TABLEAU_PUBLIC_URL" width="100%" height="768" hide-tabs toolbar="bottom" style="display:none"></tableau-viz>
 <script>
-  // Show the live dashboard once a real Tableau Public address is set. Until then the PNG above stays.
   var viz = document.getElementById("tableauViz");
   if ((viz.getAttribute("src") || "").indexOf("public.tableau.com") !== -1) {
     var lib = document.createElement("script");
