@@ -1,0 +1,85 @@
+item                                                                                                          | on image / csv                 | warehouse                      | result
+tile: late rate, latest month                                                                                 | 6.3%                           | 6.3%                           | OK
+goal                                                                                                          | 4.4%                           | 4.4%                           | OK
+warning line, latest month                                                                                    | 8.4%                           | 8.4%                           | OK
+status, latest month (amber = above goal, under the warning line)                                             | amber                          | amber                          | OK
+months red / amber / green                                                                                    | 3 / 7 / 10                     | 3 / 7 / 10                     | OK
+breach months (dots)                                                                                          | 2017-11,2018-02,2018-03        | 2017-11,2018-02,2018-03        | OK
+arrow glyph on tile 2 (up = above goal)                                                                       | ▲                              | ▲                              | OK
+points above goal                                                                                             | 1.9                            | 1.9                            | OK
+stretch what-if footnote                                                                                      | 3.4%                           | 3.4%                           | OK
+tile P1-2: share of orders shipped late, latest month                                                         | 9.2%                           | 9.2%                           | OK
+tile P1-2: all-months average                                                                                 | 9.0%                           | 9.0%                           | OK
+tile P1-2: points vs average                                                                                  | 0.2                            | 0.2                            | OK
+tile P1-3: late when shipped late                                                                             | 21.2%                          | 21.2%                          | OK
+tile P1-3: late when shipped by ship-by date                                                                  | 5.4%                           | 5.4%                           | OK
+tile P1-3: points worse                                                                                       | 15.8                           | 15.8                           | OK
+share of all late shipped late                                                                                | 27.8%                          | 27.8%                          | OK
+cost estimate (strip)                                                                                         | 3,110                          | 3,110                          | OK
+sparkline values, 20 months x 4 series, max abs diff vs warehouse                                             | 0.0                            | 0.0                            | OK
+sparkline months                                                                                              | 20                             | 20                             | OK
+trend chart values (rate and warning line, 20 months) max abs diff vs warehouse                               | 0.0                            | 0.0                            | OK
+trend breach dots (series e Breach n)                                                                         | 2017-11,2018-02,2018-03        | 2017-11,2018-02,2018-03        | OK
+fix 4: breach dots, one per past-warning month, text is a dot                                                 | 3 / ●                          | 3 / ●                          | OK
+fix 4: every dot has the same month and the same value as a late-rate line point (exact string match)         | True                           | True                           | OK
+fix 4: dot heights equal the warehouse late rate of those months (max abs diff)                               | 0.0                            | 0.0                            | OK
+fix 2: month name labels beside the dots (warehouse months)                                                   | Nov 2017,Feb 2018,Mar 2018     | Nov 2017,Feb 2018,Mar 2018     | OK
+fix 2: month name label text as drawn (padding removed)                                                       | Nov 2017,Feb 2018,Mar 2018     | Nov 2017,Feb 2018,Mar 2018     | OK
+fix 2: month name labels sit at or next to their own month (within 2 months of the dot)                       | True                           | True                           | OK
+fix 1: warning line label at the line end = warehouse value of the latest month                               | 8.4%                           | 8.4%                           | OK
+fix 1: late-rate label at the line end = warehouse latest rate                                                | 6.3%                           | 6.3%                           | OK
+fix 1: warning line label height = line end height                                                            | True                           | True                           | OK
+fix 1: warning line text on the chart                                                                         | warning line: / varies by month | warning line: / varies by month | OK
+fix 1: "varies by month, higher early on": all of the first 6 warning lines are above the latest (8.4%)       | True                           | True                           | OK
+fix 1: ... because those months had fewer orders than the latest month                                        | True                           | True                           | OK
+fix 1: the gray warning line is a solid line, not dashed (varies by month)                                    | solid                          | solid                          | OK
+fix 3: end labels (8.4%, 6.3%) are 1 month right of the last data month, goal label is a reference-line label | 2018-09 / 2018-09              | 2018-09 / 2018-09              | OK
+fix 3: heights of end labels differ by at least 1.5 points (no overlap)                                       | True                           | True                           | OK
+late orders that were shipped late (1,809)                                                                    | 1,809                          | 1,809                          | OK
+sellers with at least one (583)                                                                               | 583                            | 583                            | OK
+repeat: sellers in 3+ months                                                                                  | 117                            | 117                            | OK
+repeat: their share of 1,809                                                                                  | 56%                            | 56%                            | OK
+repeat: share of the 583 sellers                                                                              | 20%                            | 20%                            | OK
+repeat: one-off sellers                                                                                       | 466                            | 466                            | OK
+repeat: one-off late orders                                                                                   | 791                            | 791                            | OK
+size: large sellers behind these orders                                                                       | 148                            | 148                            | OK
+size: large share of 1,809                                                                                    | 53%                            | 53%                            | OK
+size: large share of the 583 sellers                                                                          | 25%                            | 25%                            | OK
+size: mid late orders                                                                                         | 519                            | 519                            | OK
+size: small late orders                                                                                       | 339                            | 339                            | OK
+state: top 5 by late-shipped late orders                                                                      | SP,PR,MG,MA,RJ                 | SP,PR,MG,MA,RJ                 | OK
+state: SP share of 1,809                                                                                      | 72%                            | 72%                            | OK
+state: SP share of the 583 sellers                                                                            | 68%                            | 68%                            | OK
+state: SP sellers                                                                                             | 394                            | 394                            | OK
+seller_groups.csv: large late orders (CSV vs warehouse)                                                       | 951                            | 951                            | OK
+seller_groups.csv: SP late orders (CSV vs warehouse)                                                          | 1302                           | 1302                           | OK
+seller_groups.csv: many-months late orders (CSV vs warehouse)                                                 | 1018                           | 1018                           | OK
+orders.csv rows                                                                                               | 94,931                         | 94,931                         | OK
+orders.csv sum lalh_n                                                                                         | 1,809                          | 1,809                          | OK
+orders.csv seller_size bars add to 1,809                                                                      | 1,809                          | 1,809                          | OK
+orders.csv seller_state bars add to 1,809                                                                     | 1,809                          | 1,809                          | OK
+orders.csv seller_repeat bars add to 1,809                                                                    | 1,809                          | 1,809                          | OK
+fix 2: months chart bar labels (month year, count = sum of the filterable late_tag_n), 4 tagged bars          | Nov 2017 902 / Feb 2018 925 / Mar 2018 1,324 / Aug 2018 393 | Nov 2017 902 / Feb 2018 925 / Mar 2018 1,324 / Aug 2018 393 | OK
+fix 2: bar label counts = warehouse late orders of those months                                               | 902 / 925 / 1,324 / 393        | 902 / 925 / 1,324 / 393        | OK
+fix 2: bar labels follow the click filters (label is a sum, not typed text)                                   | late_tag_n sum                 | late_tag_n sum                 | OK
+fix 2: bar label month and year = warehouse month                                                             | Nov 2017,Feb 2018,Mar 2018,Aug 2018 | Nov 2017,Feb 2018,Mar 2018,Aug 2018 | OK
+fix 2: bar label month and year as drawn                                                                      | Nov 2017,Feb 2018,Mar 2018,Aug 2018 | Nov 2017,Feb 2018,Mar 2018,Aug 2018 | OK
+repeat panel: bar labels as drawn                                                                             | Shipped late in 3 or more months: 117 sellers / Shipped late in 1 to 2 months: 466 sellers | Shipped late in 3 or more months: 117 sellers / Shipped late in 1 to 2 months: 466 sellers | OK
+repeat panel: bar values as drawn (late orders that were shipped late)                                        | 1,018 / 791                    | 1,018 / 791                    | OK
+repeat panel: sellers in each bar as counted in orders.csv (the numbers in the labels)                        | 117 / 466                      | 117 / 466                      | OK
+repeat panel: the two bars add up to all 1,809                                                                | 1,809                          | 1,809                          | OK
+repeat panel: 1,018 of 1,809 and 791 of 1,809 (warehouse)                                                     | 1,018 / 791                    | 1,018 / 791                    | OK
+out_v4_six_chart text: Goal 4.4%                                                                              | present                        | present                        | OK
+out_v4_six_chart text: What-if, not a result: if late-shipped orders                                          | present                        | present                        | OK
+out_v4_six_chart text: ABOVE GOAL                                                                             | present                        | present                        | OK
+out_v4_six_chart text: under the warning line (8.4%)                                                          | present                        | present                        | OK
+out_v4_six_chart text: gray line = warning line, set for each month                                           | present                        | present                        | OK
+out_v4_six_chart text: dots = months past it                                                                  | present                        | present                        | OK
+out_v4_six_chart text: 117 sellers (20% of the 583) shipped late in 3                                         | present                        | present                        | OK
+out_v4_six_chart text: Late rate sits above the 4.4% goal; Nov 2017,                                          | present                        | present                        | OK
+out_v4_six_chart text: 48.3% of late orders came in 3 months: Nov 201                                         | present                        | present                        | OK
+out_v4_six_chart text: North and northeast run 12.2% late vs 6.2% els                                         | present                        | present                        | OK
+out_v4_six_chart text: Aug 2018 late rate, 1.9 points over the 4.4% g                                         | present                        | present                        | OK
+old/invented wording absent from every workbook                                                               | none                           | none                           | OK
+
+82 checks, 0 mismatches
