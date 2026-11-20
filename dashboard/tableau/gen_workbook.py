@@ -3,7 +3,7 @@
 
 Builds the Tableau workbook XML for the late-delivery dashboard (layout B1, version 2). The workbook head comes from
 ctrl_saved_desktop_free.twb in this folder, a workbook saved by Tableau Desktop (hand-written workbooks do not open).
-Both data dirs hold orders.csv, ramp_b.csv, monthly_long.csv, summary.csv and tests_example.csv. The second path is
+Both data dirs hold orders.csv, ramp_b.csv, monthly_long.csv, summary.csv. The second path is
 written into the workbook as the folder Tableau reads the CSVs from.
 
 Settings (environment variables):
@@ -306,7 +306,6 @@ def p0(x): return '%d%%'%round(x*100)
 def p1(x): return '%.1f%%'%(x*100)
 def p2(x): return '%.2f%%'%(x*100)
 def n0(x): return format(int(round(float(x))),',')
-TESTS=list(csv.DictReader(open(os.path.join(boxdata,'tests_example.csv'))))
 ACC=OR; INK='#222222'; MID='#555555'; LIGHT='#B5B5B5'; PALE='#D0D0D0'
 ORD=D_ord=DS('ord','orders','orders.csv'); D={'ord':ORD}
 D['ramp']=DS('ramp','ramp_b','ramp_b.csv'); D['ml']=DS('ml','monthly_long','monthly_long.csv')
@@ -335,13 +334,13 @@ worksheet('Trend',M,[('value','sum'),xk],mark='Line',cols=M.q(*xk),rows=M.q('val
     tip=TIPS.get(os.environ.get('TIPV','a')))
 # ---- 3 why: handoff
 ows('Handoff',ORD,[('has_handoff','nk')],mark='Bar',rows=ORD.q('handoff_group','nk'),cols=ORD.q('late','avg'),color=('handoff_group','nk'),text=('late','avg'),
-    palette_map=[('Handed to carrier after ship-by',ACC),('Handed over on time',LIGHT)],hide_axes=[('late','avg')],extra_uses=[('late','avg'),('handoff_group','nk')],
+    palette_map=[('Shipped after the ship-by date',ACC),('Shipped by the ship-by date',LIGHT)],hide_axes=[('late','avg')],extra_uses=[('late','avg'),('handoff_group','nk')],
     filt=fmember(ORD,'has_handoff','true'),header_w=(('handoff_group','nk'),215),header_font=(10,'normal'),cell_rules=[('cell','height',58,ORD.q('handoff_group','nk'))],
     tip=['Orders: ',('order_code','cnt'),'\nLate orders: ',('late_n','sum'),'\nLate rate: ',('late','avg')])
 # ---- 4 who: sellers (top 10 overall)
 ows('Sellers',ORD,[('is_top10','nk')],mark='Bar',rows=ORD.q('seller_label','nk'),cols=ORD.q('lalh_n','sum'),text=('lalh_n','sum'),pane_color=MID,
     hide_axes=[('lalh_n','sum')],extra_uses=[('lalh_n','sum'),('seller_label','nk')],filt=fmember(ORD,'is_top10','true'),header_w=(('seller_label','nk'),210),header_font=(13,'bold'),cell_rules=[('cell','height',17,ORD.q('seller_label','nk'))],
-    tip=['Orders: ',('order_code','cnt'),'\nOrders handed over late: ',('late_handoff_n','sum'),'\nLate orders after a late handoff: ',('lalh_n','sum'),'\nLate orders (all): ',('late_n','sum'),'\nLate rate: ',('late','avg')])
+    tip=['Orders: ',('order_code','cnt'),'\nOrders shipped late: ',('late_handoff_n','sum'),'\nLate orders that were shipped late: ',('lalh_n','sum'),'\nLate orders (all): ',('late_n','sum'),'\nLate rate: ',('late','avg')])
 # ---- 5 where / when
 ows('Region',ORD,None,mark='Bar',rows=ORD.q('region_group','nk'),cols=ORD.q('late','avg'),color=('region_group','nk'),text=('late','avg'),
     palette_map=[('North and northeast',MID),('Rest of Brazil',LIGHT)],hide_axes=[('late','avg')],extra_uses=[('late','avg'),('region_group','nk')],
@@ -350,7 +349,7 @@ ows('Region',ORD,None,mark='Bar',rows=ORD.q('region_group','nk'),cols=ORD.q('lat
 BK=('month_start','tmn')
 ows('Months',ORD,[BK],mark='Bar',cols=ORD.q(*BK),rows=ORD.q('late_n','sum'),color=('is_worst3_month','nk'),text=[('month_tag','nk'),('late_tag_n','sum')],runs=None if 'NORUNS' in os.environ.get('X','') else [(('month_tag','nk'),8,True,INK),(None,0,0,''),(('late_tag_n','sum'),8,False,MID)],
     palette_map=[('true',MID),('false',PALE)],hide_axes=[('late_n','sum')],extra_uses=[('late_n','sum'),('late_tag_n','sum'),BK],
-    axis_titles={(BK[0],BK[1],'cols'):'',('late_n','sum','rows'):''},xspace=(BK,'#2017-01-01#','6.0','months'),datefmts=[('label','*mmm yyyy',None)],
+    axis_titles={(BK[0],BK[1],'cols'):'Click a month to filter, click again to clear',('late_n','sum','rows'):''},xspace=(BK,'#2017-01-01#','6.0','months'),datefmts=[('label','*mmm yyyy',None)],
     tip=['Orders: ',('order_code','cnt'),'\nLate orders: ',('late_n','sum'),'\nLate rate: ',('late','avg')])
 # ----------------------------------------------------------------------- dashboard
 W,Hh=1366,768
@@ -375,21 +374,20 @@ def ztxt(runs,x,y,w,h,style=''):
     return "        <zone h='%d' id='%d' type='text' w='%d' x='%d' y='%d'><formatted-text>%s</formatted-text>%s</zone>\n"%(P(h),nid(),P(w),P(x),P(y),''.join(rr),style or zstyle())
 NL=('\n',0,0,'')
 fin_a='Late deliveries cost about %s bad reviews; '%n0(F('extra_bad_reviews_rounded'))
-fin_b='late seller handoffs are the biggest fixable cause'
+fin_b='orders that sellers ship late are the biggest fixable cause'
 CX=[1,34,67]; CW=32
 Z=''
-Z+=ztxt([(fin_a,20,True,INK),(fin_b,20,True,ACC),NL,('Orders bought Jan 2017 to Aug 2018  ·  %s delivered orders  ·  %s late (%s)  ·  late = arrived after the promised day'%(n0(F('judged_orders')),n0(F('late_orders')),p2(F('late_rate'))),11,False,MID),NL,
-        ('In Tableau: click a seller, region or month bar to filter',9,False,'#808080')],1,0.4,98,9.6)
-kpi=[('1  COST',INK,'≈'+n0(F('extra_bad_reviews_rounded')),'extra 1-2 star reviews linked to late delivery','range %s to %s  ·  %s of all %s bad reviews'%(n0(F('extra_range_low_rounded')),n0(F('extra_range_high_rounded')),p1(F('extra_share_of_bad_reviews')),n0(F('bad_reviews_all')))),
-     ('2  THIS MONTH VS GOAL',INK,p1(F('latest_month_late_rate')),'%s late rate against the %s goal'%(SUM['latest_month_label'],p1(F('goal_late_rate'))),'alarm line %s this month'%p1(F('latest_month_own_alarm_line_late_rate'))),
-     ('3  HANDOFF GAP',ACC,p1(F('late_handoff_late_rate')),'of orders handed over late arrive late, vs %s when handed over on time'%p1(F('on_time_handoff_late_rate')),'late handoffs start %s of all late orders'%p1(F('late_handoff_share_of_late')))]
+Z+=ztxt([(fin_a,20,True,INK),(fin_b,20,True,ACC),NL,('Orders bought Jan 2017 to Aug 2018  ·  %s delivered orders  ·  %s late (%s)  ·  late = arrived after the promised day'%(n0(F('judged_orders')),n0(F('late_orders')),p2(F('late_rate'))),11,False,MID)],1,0.4,98,9.6)
+kpi=[('1  COST',INK,'≈'+n0(F('extra_bad_reviews_rounded')),'1-2 star reviews added by late delivery','estimate, range %s to %s  ·  %s of all %s 1-2 star reviews'%(n0(F('extra_range_low_rounded')),n0(F('extra_range_high_rounded')),p1(F('extra_share_of_bad_reviews')),n0(F('bad_reviews_all')))),
+     ('2  THIS MONTH VS GOAL',INK,p1(F('latest_month_late_rate')),'%s late rate, %.1f points %s the %s goal'%(SUM['latest_month_label'],abs(F('latest_month_late_rate')-F('goal_late_rate'))*100,'over' if F('latest_month_late_rate')>=F('goal_late_rate') else 'under',p1(F('goal_late_rate'))),'(%s the warning line)'%('under' if F('latest_month_late_rate')<F('latest_month_own_alarm_line_late_rate') else 'over')),
+     ('3  SELLER SHIPS LATE',ACC,p1(F('late_handoff_late_rate')),'of orders shipped after the ship-by date arrive late, vs %s shipped by it'%p1(F('on_time_handoff_late_rate')),'%s of all late orders were shipped late by the seller'%p1(F('late_handoff_share_of_late')))]
 if VAR=='b1':
     for i,(h,c,big,s1,s2) in enumerate(kpi):
         Z+=ztxt([(h,10,True,MID),NL,(big,27,True,c),NL,(s1,9,False,MID),NL,(s2,9,False,MID)],CX[i],10.2,CW,14.6,zstyle(bg='#F2F2F2',margin=4))
     R1T=25.0
 else:
     runs=[]
-    segs=[('≈'+n0(F('extra_bad_reviews_rounded')),INK,' extra bad reviews linked to late delivery'),(p1(F('latest_month_late_rate')),INK,' late in %s, goal %s'%(SUM['latest_month_label'],p1(F('goal_late_rate')))),(p1(F('late_handoff_late_rate')),ACC,' late after a late handoff, vs %s'%p1(F('on_time_handoff_late_rate')))]
+    segs=[('≈'+n0(F('extra_bad_reviews_rounded')),INK,' extra bad reviews linked to late delivery'),(p1(F('latest_month_late_rate')),INK,' late in %s, goal %s'%(SUM['latest_month_label'],p1(F('goal_late_rate')))),(p1(F('late_handoff_late_rate')),ACC,' late when shipped late, vs %s'%p1(F('on_time_handoff_late_rate')))]
     for j,(b,c,t) in enumerate(segs):
         if j: runs.append(('      |      ',14,False,LIGHT))
         runs+= [(b,24,True,c),(t,12,False,MID)]
@@ -400,24 +398,24 @@ def title(n,head,note,x,y,w,hh=TH,hc=INK):
     runs=[('%s  '%n,12,True,MID),(head,12,True,hc)]
     if note: runs+=[NL,(note,9,False,MID)]
     return ztxt(runs,x,y,w,hh)
-r1c=R1T+TH; r1h=(57.6-r1c)
+r1c=R1T+TH; r1h=(55.6-r1c)
 r2T=r1c+r1h+0.6; r2c=r2T+TH; r2h=92.4-r2c
 Z+=title('1','Reviews turn bad fast: %s are 1-2 stars up to the promised day, about %s from day 6 late'%(p1(F('ramp_share_up_to_promised_day')),p0(F('ramp_share_from_day_6'))),'share of reviews that are 1-2 stars, by days past the promised day',CX[0],R1T,CW)
 Z+=zone_sheet('Review ramp',CX[0],r1c,CW,r1h,zstyle(margin=2))
-Z+=title('2','Late rate sits above the %s goal; %s broke the alarm line'%(p1(F('goal_late_rate')),SUM['worst3_months_label']),'gray line = alarm line (moves with order count; typical month %s)'%p1(F('typical_month_alarm_line_late_rate')),CX[1],R1T,CW)
+Z+=title('2','Late rate sits above the %s goal; %s went past the warning line'%(p1(F('goal_late_rate')),SUM['worst3_months_label']),'gray line = warning line: above it is more than random swings',CX[1],R1T,CW)
 Z+=zone_sheet('Trend',CX[1],r1c,CW,r1h,zstyle(margin=2))
-Z+=title('3','Late handoffs: %s of those orders arrive late, vs %s'%(p1(F('late_handoff_late_rate')),p1(F('on_time_handoff_late_rate'))),'%s of %s late; they start %s of all %s late orders'%(n0(F('late_handoff_late_orders')),n0(F('late_handoff_orders')),p1(F('late_handoff_share_of_late')),n0(F('late_orders'))),CX[2],R1T,CW,hc=ACC)
+Z+=title('3','Orders shipped after the ship-by date: %s arrive late, vs %s when shipped by it'%(p1(F('late_handoff_late_rate')),p1(F('on_time_handoff_late_rate'))),'%s of %s arrived late  ·  %s of all %s late orders'%(n0(F('late_handoff_late_orders')),n0(F('late_handoff_orders')),p1(F('late_handoff_share_of_late')),n0(F('late_orders'))),CX[2],R1T,CW,hc=ACC)
 Z+=zone_sheet('Handoff',CX[2],r1c,CW,r1h,zstyle(margin=4))
-Z+=title('4','Calling 10 sellers will not fix it: the top 10 hold only %s of the %s late orders after a late handoff'%(p0(F('top10_share_of_late_after_late_handoff')),n0(F('late_handoff_late_orders'))),'late orders after a late handoff, top 10 of %s sellers'%n0(F('sellers_with_late_after_late_handoff')),CX[0],r2T,CW)
-Z+=zone_sheet('Sellers',CX[0],r2c,CW,r2h,zstyle(margin=2))
-Z+=title('5','North and northeast run %s late vs %s elsewhere'%(p1(F('nne_late_rate')),p1(F('rest_late_rate'))),'late rate by region',CX[1],r2T,CW)
+N_SELL=int(round(F('sellers_with_late_after_late_handoff')))
+CLOSE_H=2.6
+Z+=title('4',"Calling the 10 worst sellers won't fix it: they account for only %s of late orders from late-shipping sellers"%p0(F('top10_share_of_late_after_late_handoff')),'Seller (anonymized ID), late orders  ·  Click a seller to filter the other charts',CX[0],r2T,CW)
+Z+=zone_sheet('Sellers',CX[0],r2c,CW,r2h-CLOSE_H,zstyle(margin=2))
+Z+=ztxt([('The other %d sellers account for the remaining %s.'%(N_SELL-10,p0(1-F('top10_share_of_late_after_late_handoff'))),10,False,MID)],CX[0],r2c+r2h-CLOSE_H,CW,CLOSE_H,zstyle(margin=2))
+Z+=title('5','North and northeast run %s late vs %s elsewhere'%(p1(F('nne_late_rate')),p1(F('rest_late_rate'))),'late rate by region  ·  Click a region to filter',CX[1],r2T,CW)
 Z+=zone_sheet('Region',CX[1],r2c,CW,min(r2h,14),zstyle(margin=2))
 Z+=ztxt([('6  ',12,True,MID),('%s of late orders came in 3 months: %s'%(p1(F('worst3_share_of_late')),SUM['worst3_months_label']),12,True,INK),NL,('those 3 months held %s of all orders (%s of months)'%(p1(F('worst3_share_of_orders')),p0(F('worst3_share_of_months'))),9,False,MID)],CX[2],r2T,CW,TH)
 Z+=zone_sheet('Months',CX[2],r2c,CW,r2h,zstyle(margin=2))
-t1,t2=TESTS[0],TESTS[1]
-EG='#8A8A8A'
-def eg(v): return ('e.g. '+v.rstrip('*'),10,False,EG)
-Z+=ztxt([('Next: test these fixes (EXAMPLE, not run)',11,True,MID),('      invented example numbers, only to show the layout',9,False,MID),NL,('Ship-by reminder, handoffs after ship-by: ',10,False,MID),eg(t1['no_change_group_display']),(' usual way vs ',10,False,MID),eg(t1['test_group_display']),(' in the test group   ·   Buffer days north/northeast, average stars: ',10,False,MID),eg(t2['no_change_group_display']),(' vs ',10,False,MID),eg(t2['test_group_display'])],1,93.1,98,6.8,zstyle(border=MID,bstyle='dashed',bw=1,margin=4))
+Z+=ztxt([('Two fixes to test next (nothing run yet)',11,True,MID),NL,("1) Remind sellers of the ship-by date. We'll track the share of orders shipped late.      2) Add buffer days to promised dates in the north and northeast. We'll track late rate and average stars.",10,False,MID)],1,93.1,98,6.8,zstyle(border=MID,bstyle='dashed',bw=1,margin=4))
 ACTIONS=''
 def action(cap,src,exclude):
     return ("    <action caption='%s' name='[Action_%s]'>\n      <activation auto-clear='true' type='on-select' />\n      <source dashboard='%s' type='sheet' worksheet='%s' />\n      <command command='tsc:tsl-filter'>\n        <param name='exclude' value='%s' />\n        <param name='special-fields' value='all' />\n        <param name='target' value='%s' />\n      </command>\n    </action>\n")%(cap,h32(cap)[:16],DASH,src,exclude,DASH)
@@ -464,11 +462,11 @@ if TR:
     GS=os.environ.get('GSZ','4'); SS=os.environ.get('SSZ','1')
     GP=F('goal_late_rate'); SP=F('stretch_whatif_late_rate')
     PARAMS="    <datasource hasconnection='false' inline='true' name='Parameters' version='18.1'>\n      <aliases enabled='yes' />\n"
-    for i,(cap,v) in enumerate([('Goal',GP),('Stretch what-if',SP)],1):
+    for i,(cap,v) in enumerate([('Goal (a typical steady month)',GP),('If no seller shipped late',SP)],1):
         PARAMS+="      <column caption='%s' datatype='real' default-format='p1%%' name='[Parameter %d]' param-domain-type='range' role='measure' type='quantitative' value='%r'>\n        <calculation class='tableau' formula='%r' />\n        <range granularity='0.001' max='0.2' min='0.0' />\n      </column>\n"%(cap,i,v,v)
     PARAMS+="    </datasource>\n"
     PDEP="          <datasource-dependencies datasource='Parameters'>\n"
-    for i,(cap,v) in enumerate([('Goal',GP),('Stretch what-if',SP)],1):
+    for i,(cap,v) in enumerate([('Goal (a typical steady month)',GP),('If no seller shipped late',SP)],1):
         PDEP+="            <column caption='%s' datatype='real' default-format='p1%%' name='[Parameter %d]' param-domain-type='range' role='measure' type='quantitative' value='%r'>\n              <calculation class='tableau' formula='%r' />\n              <range granularity='0.001' max='0.2' min='0.0' />\n            </column>\n"%(cap,i,v,v)
     PDEP+="          </datasource-dependencies>\n"
     ax=M.q('value','sum')
