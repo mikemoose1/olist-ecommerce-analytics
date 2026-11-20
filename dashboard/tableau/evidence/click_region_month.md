@@ -1,9 +1,9 @@
 VERIFIED (region click) and VERIFIED (month click)
-Workbook: ../out_b1_v2.twb (the shipped file, wording version 3). Tableau Desktop 2026.3, macOS, 2026-11-19, about 21:56 ET.
+Workbook: ../out_b1_v2.twb (the shipped file, wording version 3). Tableau Desktop 2026.3, macOS, 2026-11-19, about 21:56 ET. NOTE: run on the previous commit (59411e8). The two wording fixes after it (title, stretch label, seller title) do not touch the filters, and the seller click was re-run on the final file (click_seller.md), but the region and month clicks were not re-run on the final file, and click_region.png / click_month.png show the previous title and stretch label.
 Harness: harness/click_probe.py with harness/mclick.js (Presentation Mode, real mouse click, Esc, Export Image). Screen points: region bar North and northeast (915, 699); month bar Mar 2018 (1412, 802).
 
 Images (downscaled to 1366 x 768; md5 of the full-size exports in brackets):
- baseline.png      [7ec795fb934e96f9cf3fc17100dbde11]
+ baseline.png      [7ec795fb934e96f9cf3fc17100dbde11] (the previous commit's baseline; the final baseline is in click_seller.md)
  click_region.png  [c831b96d1f38e22ae3eb88d98fabb5d5]
  click_month.png   [f69491e92ddfd6fc369a158afb1387a7]
  clear after each click: the export has the baseline md5 (7ec795fb...) both times, so no separate images are kept.

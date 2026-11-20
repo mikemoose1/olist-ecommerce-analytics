@@ -1,11 +1,11 @@
 VERIFIED
-Workbook: ../out_b1_v2.twb (the shipped file, wording version 3). Tableau Desktop 2026.3, macOS, 2026-11-19, about 21:55 ET.
+Workbook: ../out_b1_v2.twb (the shipped file, wording version 3). Tableau Desktop 2026.3, macOS, 2026-11-19, about 22:12 ET (re-run after the last small wording fixes; layout unchanged).
 Claim: clicking the seller 06a2c3af bar filters the shipped-late, region and month panels to that seller (the "Orders shipped after the ship-by date" panel moves off 5.4% / 21.2%), and clicking again undoes it. Trend and ramp stay all-order by design.
 
 Images (downscaled to 1366 x 768 for this repo; md5 of the full-size exports in brackets):
- baseline.png      shipped by 5.4% / shipped after 21.2%, region 12.2% / 6.2%            [7ec795fb934e96f9cf3fc17100dbde11]
- click_seller.png  shipped by 3.0% / shipped after 54.5%, region 22.4% / 18.2%, months Feb 2, Mar 17, Aug 1; seller bar outlined, others dimmed   [33344d59a1ae0d5939c073d0ec082f47]
- clear (click again): the export has the same md5 as the baseline, so no separate image is kept.   [7ec795fb934e96f9cf3fc17100dbde11]
+ baseline.png      shipped by 5.4% / shipped after 21.2%, region 12.2% / 6.2%            [3d7e2dc7f0152a281d6b0fd6983db0f4]
+ click_seller.png  shipped by 3.0% / shipped after 54.5%, region 22.4% / 18.2%, months Feb 2, Mar 17, Aug 1; seller bar outlined, others dimmed   [751945d03ae420ec4f4c0fc56253b71e]
+ clear (click again): the export has the same md5 as the baseline, so no separate image is kept.   [3d7e2dc7f0152a281d6b0fd6983db0f4]
 
 DuckDB (orders.csv built from the warehouse by export_orders.py), seller 06a2c3af: shipped by the ship-by date 8/267 = 3.0%, shipped after 66/121 = 54.5%; region North and northeast 22.4%, rest 18.2%; seller bar 66. All match the image.
 

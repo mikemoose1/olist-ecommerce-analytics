@@ -39,5 +39,5 @@ for i,m in enumerate(M):
     if m['year_month']==M[-1]['year_month']: add(m,i,'Latest month','late_rate','%s %s'%(m['month_label'],p1(m['late_rate'])))
     if m['year_month']=='2018-05': add(m,i,'Alarm label','own_month_alarm_line_late_rate','warning line %s'%p1(F('latest_month_own_alarm_line_late_rate')),0.03)
     if (not REF) and m['year_month']=='2017-02': add(m,i,'Goal label','goal_late_rate','Goal %s\n(a typical\nsteady month)'%p1(m['goal_late_rate']),0.003)
-    if (not REF) and m['year_month']=='2018-01': add(m,i,'Stretch label','stretch_whatif_late_rate','If no seller shipped late: %s'%p1(m['stretch_whatif_late_rate']))
+    if (not REF) and m['year_month']=='2018-01': add(m,i,'Stretch label','stretch_whatif_late_rate','What-if %s: late-shipped like the rest'%p1(m['stretch_whatif_late_rate']),-0.026)
 wr('monthly_long',rows)
