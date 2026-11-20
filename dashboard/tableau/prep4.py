@@ -24,8 +24,15 @@ PM=int(E_('PADM','17')); PMF=int(E_('PADM_FEB','34')); PN=int(E_('PADN','3'))
 def tag(ym,txt,k):
     # Feb label shifts left and Mar label shifts right (no-break spaces) so 'Feb 2018' and '1,324' stop colliding
     return (NB*k if ym=='2018-03' else '')+txt+(E_('FEBCH','\u3164')*(int(E_('FEBN','4')) if k==PM else 0) if ym=='2018-02' else '')+(E_('FEBCH','\u3164')*int(E_('NOVN','4')) if ym=='2017-11' and k==PM else '')
-REN={'Many months (3 or more): 117 sellers':'Shipped late in 3 or more months: 117 sellers','Few months (1 to 2): 466 sellers':'Shipped late in 1 to 2 months: 466 sellers'}
-for r in rd: r['seller_repeat']=REN.get(r['seller_repeat'],r['seller_repeat'])
+# seller-group bar labels: prep3.py writes "<group words>: <n> sellers" with n counted from the warehouse rows; only the words change here, n is kept
+import re
+REN=(('Many months (3 or more)','Shipped late in 3 or more months'),('Few months (1 to 2)','Shipped late in 1 to 2 months'))
+def ren(v):
+    for old,new in REN:
+        m=re.fullmatch(re.escape(old)+r': (\d+) sellers',v)
+        if m: return '%s: %s sellers'%(new,m.group(1))
+    return v
+for r in rd: r['seller_repeat']=ren(r['seller_repeat'])
 cols=list(rd[0].keys())+['tag_m','tag_y','tag_n']
 with open(os.path.join(out,'orders.csv'),'w',newline='',encoding='utf-8') as f:
     w=csv.writer(f,lineterminator='\n'); w.writerow(cols)
@@ -58,7 +65,6 @@ lab('k2 end warn',nextm(last,int(E_('END_DX','1'))),bym[last]['c Alarm line'],NB
 wm=E_('WARN_MONTH','2017-07'); wy=bym[wm]['c Alarm line']
 lab('k3 warn a',wm,wy-R_('WARN_DY1','0.015'),E_('WARN_T1','warning line:'))
 lab('k4 warn b',wm,wy-R_('WARN_DY2','0.033'),E_('WARN_T2','varies by month'))
-NM={'2017-11':('0','%+.3f'%R_('NOV_DY','0.0'),'-2'),}
 nov,feb,mar=breach
 lab('k5 name nov',nextm(nov,-int(E_('NOV_DX','2'))),bym[nov]['g Late rate']+R_('NOV_DY','0.0'),mname(nov))
 lab('k6 name feb',nextm(feb,-int(E_('FEB_DX','2'))),bym[feb]['g Late rate']+R_('FEB_DY','0.008'),mname(feb))

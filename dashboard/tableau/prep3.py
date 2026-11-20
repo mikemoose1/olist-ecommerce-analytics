@@ -51,14 +51,9 @@ order by j.order_id
 cur=con.execute(q); cols=[d[0] for d in cur.description]; R=cur.fetchall()
 import collections
 ix={c:i for i,c in enumerate(cols)}
+R=[list(r) for r in R]
 # seller-group labels carry the number of sellers in the group (computed from these rows)
 top5=[r[0] for r in con.execute("""select d.state from (select order_id, min(seller_id) sid from marts.fct_order_items group by 1) s join marts.dim_seller d on d.seller_id=s.sid join metrics.metric_late_rate_orders o on o.order_id=s.order_id join marts.fct_orders f on f.order_id=s.order_id where o.is_late and f.delivered_to_carrier_at>f.last_shipping_limit_at group by 1 order by count(*) desc limit 5""").fetchall()]
-sel=collections.defaultdict(set)
-for r in R:
-    r=list(r)
-for i,r in enumerate(R):
-    R[i]=list(r)
-    if R[i][ix['lalh_n']]==1: pass
 nsell=collections.defaultdict(set)
 for r in R:
     code=r[ix['seller_code']]
@@ -103,7 +98,6 @@ sc=dict(latest_label=last[2],latest_rate=last[5],goal=last[6],alarm=last[7],stat
 wr('v3_scalars.csv',list(sc),[list(sc.values())])
 wr('status_now.csv',['label','value','status'],[('Late rate, %s'%last[2],last[5],status(last))])
 # seller group tables for checks
-for col,lab in (('seller_size','size'),('seller_state','state'),('seller_repeat','repeat')): pass
 
 # ---------------- trend variants (declutter). One CSV per variant, same columns.
 p1=lambda x:'%.1f%%'%(x*100)
@@ -127,7 +121,6 @@ con.execute("create temp table oo as select * from read_csv(?,header=true,all_va
 G=[]
 for kind,col in (('size','seller_size'),('state','seller_state'),('repeat','seller_repeat')):
     for g,n,lalh in con.execute("select %s,count(*),sum(cast(lalh_n as int)) from oo where seller_in_scope='true' group by 1 order by 3 desc"%col).fetchall():
-        tot=con.execute("select count(*) from oo").fetchone()[0]
         G.append((kind,g,n,lalh,lalh/con.execute("select sum(cast(lalh_n as int)) from oo").fetchone()[0]))
 # share of ALL orders for the same groups needs all rows: recompute with the underlying seller attributes
 wr('seller_groups.csv',['kind','grp','orders_in_scope','late_shipped_late_orders','share_of_late_shipped_late'],G)

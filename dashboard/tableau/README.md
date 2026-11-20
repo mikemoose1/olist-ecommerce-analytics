@@ -90,11 +90,13 @@ What changed against B1:
 | `v4_six_chart.png` | the exported image, full size |
 | `prep3.py`, `prep4.py` | CSVs for this page (step 1 reads the warehouse, step 2 adds the label series and the month tags) |
 | `gen_v4.py` | builds the workbook XML (same control file as B1) |
-| `numbers_check_v4.py` | 82-line number check; output in `evidence/v4/numbers_check_v4.txt` |
+| `numbers_check_v4.py` | 82-check number check; output in `evidence/v4/numbers_check_v4.txt` |
 | `click_expect.py`, `harness/click_probe4.py` | expected values for each click from DuckDB; the Mac click harness for this layout |
 | `evidence/v4/` | click test: `results.md`, `expected.md`, four images (downscaled to 1366 x 768) |
 
 ### Regenerate
+
+Run from the repo root with the project venv active. `OLIST_DB` points at the same DuckDB file as `OLIST_DB_PATH` (used by `export_orders.py`).
 
 ```bash
 # B1 inputs first (see Regenerate above): summary.csv, ramp_b.csv, monthly_long.csv in /tmp/olist_tableau

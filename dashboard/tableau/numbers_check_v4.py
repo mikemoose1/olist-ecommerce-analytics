@@ -14,7 +14,6 @@ con.execute("create temp table b as select o.order_id,o.is_late,o.purchase_date 
 m=q("select ym,count(*),sum(is_late::int),avg(is_late::int),sum((hl is true)::int),sum((hl is true and is_late)::int),sum((hl is false)::int),sum((hl is false and is_late)::int) from b group by 1 order by 1")
 mm=q("select year_month,goal_late_rate,own_month_alarm_line_late_rate from exports.export_dash_monthly order by 1")
 last=m[-1]; goal=mm[-1][1]; alarm=mm[-1][2]
-chk('latest month label','Aug 2018',V['latest_label'],lambda x:x) if False else None
 chk('tile: late rate, latest month','6.3%',last[3],P1); chk('goal','4.4%',goal,P1); chk('warning line, latest month','8.4%',alarm,P1)
 stat=lambda r,g,a:'red' if r[3]>a else 'amber' if r[3]>g else 'green'
 chk('status, latest month (amber = above goal, under the warning line)','amber',stat(last,goal,alarm))
@@ -58,7 +57,6 @@ chk('fix 4: every dot has the same month and the same value as a late-rate line 
 chk('fix 4: dot heights equal the warehouse late rate of those months (max abs diff)','0.0',max(abs(f(d['value'])-[r[3] for r in m if r[0]==d['year_month']][0]) for d in dots),lambda x:'0.0' if x<1e-9 else 'nonzero %g'%x)
 # fix 2: month names beside the dots, tick format
 nm={r['series']:r for r in TRN if r['series'].startswith('k')}
-chk('fix 2: month name labels beside the dots (warehouse months)','Nov 2017,Feb 2018,Mar 2018',','.join(nm[k]['lab'].replace(NB,'') for k in ('k5 name nov','k6 name feb','k7 name mar')),lambda x:x) if False else None
 chk('fix 2: month name labels beside the dots (warehouse months)','Nov 2017,Feb 2018,Mar 2018',','.join(mname(y) for y in brm))
 chk('fix 2: month name label text as drawn (padding removed)','Nov 2017,Feb 2018,Mar 2018',','.join(nm[k]['lab'].replace(NB,'') for k in ('k5 name nov','k6 name feb','k7 name mar')))
 chk('fix 2: month name labels sit at or next to their own month (within 2 months of the dot)','True',all(abs((int(nm[k]['year_month'][:4])*12+int(nm[k]['year_month'][5:7]))-(int(b[:4])*12+int(b[5:7])))<=2 for k,b in zip(('k5 name nov','k6 name feb','k7 name mar'),brm)),str)
@@ -70,7 +68,7 @@ chk('fix 1: warning line text on the chart','warning line: / varies by month',nm
 first6=[(r[2],r[1]) for r in m[:6]]; AL=[mm[i][2] for i in range(6)]
 chk('fix 1: "varies by month, higher early on": all of the first 6 warning lines are above the latest (8.4%)','True',all(a>alarm for a in AL),str)
 chk('fix 1: ... because those months had fewer orders than the latest month','True',all(r[1]<last[1] for r in m[:6]),str)
-chk('fix 1: the gray warning line is a solid line, not dashed (varies by month)','solid','solid')
+chk('fix 1: the gray warning line is a solid line, not dashed (varies by month)','solid','dashed' if re.search(r"line-pattern[^>]*dashed",open(TW+'/out_v4_six_chart.twb',encoding='utf8').read().replace('&apos;',"'")) else 'solid')
 chk('fix 3: end labels (8.4%, 6.3%) are 1 month right of the last data month, goal label is a reference-line label','2018-09 / 2018-09',nm['k2 end warn']['year_month']+' / '+nm['k1 end late']['year_month'])
 chk('fix 3: heights of end labels differ by at least 1.5 points (no overlap)','True',abs(f(nm['k2 end warn']['value'])-f(nm['k1 end late']['value']))>=0.015,str)
 
@@ -100,7 +98,7 @@ oo=duckdb.connect(); oo.execute("create table o as select * from read_csv('%s/or
 chk('orders.csv rows','94,931',oo.execute("select count(*) from o").fetchone()[0],N)
 chk('orders.csv sum lalh_n','1,809',oo.execute("select sum(cast(lalh_n as int)) from o").fetchone()[0],N)
 for col in ('seller_size','seller_state','seller_repeat'):
-    chk('orders.csv %s bars add to 1,809'%col,'1,809',oo.execute("select sum(cast(lalh_n as int)) from o where seller_in_scope='true'").fetchone()[0],N)
+    chk('orders.csv %s bars add to 1,809'%col,'1,809',oo.execute("select sum(s) from (select sum(cast(lalh_n as int)) s from o where seller_in_scope='true' group by %s)"%col).fetchone()[0],N)
 # months chart: bar labels with year (tag_m / tag_y / tag_n from orders.csv)
 PADS="chr(160),'')"
 tg=oo.execute("select year_month,max(replace(replace(tag_m,chr(160),''),chr(12644),'')),sum(cast(late_tag_n as int)) from o where tag_m<>'' group by 1 order by 1").fetchall()
