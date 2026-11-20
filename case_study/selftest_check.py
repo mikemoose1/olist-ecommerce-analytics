@@ -1,4 +1,4 @@
-"""Prove check_case_study.py and erd.py can fail: the real README passes, and each planted error is caught."""
+"""Prove check_case_study.py and erd.py can fail: the real README.md and docs/CASE_STUDY.md pass, and each planted error is caught."""
 import pathlib
 import shutil
 import sys
@@ -8,23 +8,24 @@ import check_case_study as C
 import erd
 from common import connect
 
-README = C.README.read_text()
+README = C.FULL.read_text()          # the full case study; the cases below plant errors in it
+SHORT = C.README.read_text()         # the short README.md
 CLAIMS = C.build_claims(connect())
 ERD = erd.mermaid()
-PAGES_OK = None
 
 
-def caught(text, erd_text=ERD):
-    return bool(C.problems(text, CLAIMS, erd_text))
+def caught(text, erd_text=ERD, which="f"):
+    return bool(C.problems(text, CLAIMS, which, erd_text if which == "f" else None))
 
 
-def sub(old, new):
-    assert old in README, f"selftest out of date: {old!r}"
-    return README.replace(old, new, 1)
+def sub(old, new, text=None):
+    text = README if text is None else text
+    assert old in text, f"selftest out of date: {old!r}"
+    return text.replace(old, new, 1)
 
 
 CASES = [
-    ("the real README", README, False),
+    ("the real docs/CASE_STUDY.md", README, False),
     ("a headline count changed (3,110 to 3,310)", sub("about 3,110 of the 11,635", "about 3,310 of the 11,635"), True),
     ("the late rate changed (6.87% to 6.78%)", sub("6.87% of delivered orders", "6.78% of delivered orders"), True),
     ("a handoff share changed (21.2% to 12.2%)", sub("late 21.2% of the time", "late 12.2% of the time"), True),
@@ -32,8 +33,22 @@ CASES = [
     ("a new number nobody checked", sub("## Question\n", "## Question\n\nThe study covers 12,345 sellers.\n"), True),
     ("a new number word nobody checked", sub("## Question\n", "## Question\n\nThree regions drive it.\n"), True),
     ("the repeat range changed", sub("-0.52 to 0.22", "-0.62 to 0.22"), True),
+    ("the 5.49% what-if rate changed (5.49% to 5.94%)", sub("moves the late rate from 6.87% to 5.49%", "moves the late rate from 6.87% to 5.94%"), True),
+    ("the goal line changed (4.4% to 4.8%)", sub("The goal, 4.4%,", "The goal, 4.8%,"), True),
+    ("the warning line changed (8.4% to 8.9%)", sub("It sits at 8.4%", "It sits at 8.9%"), True),
+    ("the stable-month count changed (15 to 17)", sub("of the 15 stable months", "of the 17 stable months"), True),
+    ("the old causal wording back in the limits table", sub("Late delivery is estimated to account for about 3,110 bad reviews", "Late delivery caused about 3,110 bad reviews"), True),
+    ("the points unit dropped from the repeat range", sub("-0.52 to 0.22 percentage points", "-0.52 to 0.22 points"), True),
     ("the check count changed (36 of 36)", sub("pass 36 of 36", "pass 35 of 36"), True),
     ("the holdout figure changed (1.56 to 1.65)", sub("It was 1.56 stars", "It was 1.65 stars"), True),
+]
+SHORT_CASES = [
+    ("the real README.md", SHORT, False),
+    ("README.md: a headline count changed (3,110 to 3,310)", sub("about 3,110 of the 11,635", "about 3,310 of the 11,635", SHORT), True),
+    ("README.md: the late rate changed (6.87% to 6.78%)", sub("6.87% of delivered orders", "6.78% of delivered orders", SHORT), True),
+    ("README.md: the dashboard what-if changed (3.4% to 3.9%)", sub("The what-if rate of 3.4%", "The what-if rate of 3.9%", SHORT), True),
+    ("README.md: the warning line changed (8.4% to 8.9%)", sub("the warning line, 8.4%,", "the warning line, 8.9%,", SHORT), True),
+    ("README.md: a new number nobody checked", sub("## The short version\n", "## The short version\n\nThe study covers 12,345 sellers.\n", SHORT), True),
 ]
 ERD_CASES = [
     ("the ERD drawn with a wrong cardinality", README, ERD.replace("customers ||--|| orders", "customers ||--o{ orders")),
@@ -43,6 +58,10 @@ ERD_CASES = [
 bad = 0
 for name, text, want in CASES:
     ok = caught(text) == want
+    bad += not ok
+    print(("PASS " if ok else "FAIL ") + name)
+for name, text, want in SHORT_CASES:
+    ok = caught(text, which="s") == want
     bad += not ok
     print(("PASS " if ok else "FAIL ") + name)
 for name, text, erd_text in ERD_CASES:
@@ -78,6 +97,6 @@ for name, file, edit in DATA_CASES:
     bad += not ok
     print(("PASS " if ok else "FAIL ") + "ERD data check catches " + name)
 
-total = len(CASES) + len(ERD_CASES) + len(DATA_CASES)
+total = len(CASES) + len(SHORT_CASES) + len(ERD_CASES) + len(DATA_CASES)
 print(f"{'FAIL' if bad else 'PASS'}  case study selftest: {total - bad}/{total} cases behave")
 sys.exit(1 if bad else 0)

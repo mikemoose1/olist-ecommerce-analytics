@@ -1,6 +1,6 @@
 # Reproduce and inspect the Olist analytics build (dbt + DuckDB)
 
-This is the technical reference for the [case study](../README.md). It holds the setup command, every table and test, the data problems found and the choices measured.
+This is the technical reference for the [case study](../README.md) (full text: [CASE_STUDY.md](CASE_STUDY.md)). It holds the setup command, every table and test, the data problems found and the choices measured.
 
 ## In plain language
 

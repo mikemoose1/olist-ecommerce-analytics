@@ -1,11 +1,12 @@
-"""Check every number in README.md against the data.
+"""Check every number in README.md (the short summary) and docs/CASE_STUDY.md (the full case study) against the data.
 
-Each CLAIM is a sentence fragment as README.md prints it, rebuilt here from a query on the warehouse (source "warehouse"),
+Each CLAIM is a sentence fragment as the page prints it, rebuilt here from a query on the warehouse (source "warehouse"),
 from the analysis report (source "report", numbers that the recommendation analysis produces and `make verify` already
-reconciles) or from another repo file (source "repo"). The check fails when
-  - a fragment is missing from README.md or differs from what the data gives,
-  - any number or number word left in the README prose is not inside a checked fragment,
-  - the ERD in README.md differs from case_study/erd.py, or the ERD fails its data checks,
+reconciles) or from another repo file (source "repo"). A claim names the pages it must appear in ("f" full, "s" short).
+The check fails when
+  - a fragment is missing from a page it belongs to, or differs from what the data gives,
+  - any number or number word left in a page's prose is not inside a checked fragment,
+  - the ERD in docs/CASE_STUDY.md differs from case_study/erd.py, or the ERD fails its data checks,
   - docs/index.md is not the current output of case_study/build_pages.py.
 Needs `make build` and `make recommendation` first. Selftest: case_study/selftest_check.py.
 """
@@ -16,7 +17,8 @@ import sys
 from common import ROOT, connect, facts, row
 import erd
 
-README = ROOT / "README.md"
+README = ROOT / "README.md"                      # the short summary
+FULL = ROOT / "docs" / "CASE_STUDY.md"           # the full case study; docs/index.md (Pages) is built from it
 DEFINITION_PHRASES = ["one- and two-star", "one or two stars", "one- or two-star", "Test 1", "test 1"]   # the 1-2 star definition (review_score <= 2); a list label   # the 1-2 star definition: review_score <= 2
 
 
@@ -27,10 +29,10 @@ def pct(x, d=1):
 def build_claims(con):
     F = facts()
     one = lambda q: row(con, q)
-    out = []   # (fragment, source)
+    out = []   # (fragment, source, pages): pages is "f" (full case study), "s" (short README) or "fs" (both)
 
-    def add(fragment, source):
-        out.append((fragment, source))
+    def add(fragment, source, pages="f"):
+        out.append((fragment, source, pages))
 
     # --- the data behind the sentences
     orders_raw = one("select count(*) from staging.stg_orders")[0]
@@ -72,28 +74,28 @@ def build_claims(con):
     rate = 100 * late / judged
     caused_r = round(caused)
 
-    add(f"about {round(orders_raw, -3):,} real orders", "warehouse")
-    add(f"about {caused_r:,} of the {total_bad:,} one- and two-star reviews on {judged:,} delivered orders, about {100 * caused / total_bad:.0f}%, with a range of {F['c_cost_range_lo']} to {F['c_cost_range_hi']}", "warehouse+report")
-    add(f"because {pct(seller_side)}% of late orders were handed to the carrier late", "warehouse")
+    add(f"about {round(orders_raw, -3):,} real orders", "warehouse", "fs")
+    add(f"about {caused_r:,} of the {total_bad:,} one- and two-star reviews on {judged:,} delivered orders, about {100 * caused / total_bad:.0f}%, with a range of {F['c_cost_range_lo']} to {F['c_cost_range_hi']}", "warehouse+report", "fs")
+    add(f"because {pct(seller_side)}% of late orders were handed to the carrier late", "warehouse", "fs")
     add(f"nine tables from {y0} to {y1}" if manifest_n == 9 else "NINE_MISMATCH", "warehouse")
     add(f"{ids:,} IDs for {people:,} people", "warehouse")
     add(f"{multi:,} orders ship from several sellers", "warehouse")
     add(f"{pct(100 * survey_before / survey_n, 2)}% of the reviews on delivered orders are dated before delivery", "warehouse")
-    add(f"{pct(rate, 2)}% of delivered orders ({late:,} of {judged:,}) arrived late. Late orders average {s_late:.2f} stars and on-time orders {s_ok:.2f}", "warehouse")
+    add(f"{pct(rate, 2)}% of delivered orders ({late:,} of {judged:,}) arrived late. Late orders average {s_late:.2f} stars and on-time orders {s_ok:.2f}", "warehouse", "fs")
     add(f"{pct(bad_late)}% of late ones get", "warehouse")
     add(f"against {pct(bad_ok)}% of on-time ones", "warehouse")
-    add(f"climb about {F['c_ramp_slope']} points for each day late and level off near {F['c_ramp_plateau']}% from day {F['c_ramp_end_day']}", "report")
+    add(f"climb about {F['c_ramp_slope']} percentage points for each day late and level off near {F['c_ramp_plateau']}% from day {F['c_ramp_end_day']}", "report")
     add(f"The estimate is about {caused_r:,} of {total_bad:,} ({100 * caused / total_bad:.0f}%)", "warehouse")
-    add(f"give {F['c_cost_range_lo']} to {F['c_cost_range_hi']}", "report")
+    add(f"give {F['c_cost_range_lo']} to {F['c_cost_range_hi']}", "report", "fs")
     add(f"Roughly one bad review in four" if 0.23 <= caused / total_bad <= 0.30 else "QUARTER_MISMATCH", "warehouse")
     add(f"About a quarter of the bad reviews" if 0.23 <= caused / total_bad <= 0.30 else "QUARTER_MISMATCH", "warehouse")
     memo = (ROOT / "recommendation" / "MEMO.md").read_text()
     window = "90" if "90<!--d:repeat_window_days-->" in memo else "WINDOW_MISMATCH"
     add(f"{repeat90:.2f}% of customers order again within {window} days", "warehouse+repo")
-    add(f"came back {abs(float(F['rep_matched'])):.2f} points less often, with a range of {F['rep_matched_lo']} to {F['rep_matched_hi']} points", "report")
+    add(f"came back {abs(float(F['rep_matched'])):.2f} percentage points less often, with a range of {F['rep_matched_lo']} to {F['rep_matched_hi']} percentage points", "report", "fs")
     add(f"Three months ({n_months[top_months[0]]}, {n_months[top_months[1]]} and {n_months[top_months[2]]}) hold {pct(100 * top_late / all_late)}% of late orders and {pct(100 * top_orders / all_orders)}% of all orders", "warehouse")
     add(f"run {pct(nne)}% late", "warehouse")
-    add(f"On {pct(hl_share)}% of orders the seller handed the parcel to the carrier after the ship-by date. Those orders were late {pct(late_if_hl)}% of the time, against {pct(late_if_ok)}% when the handoff was on time", "warehouse")
+    add(f"On {pct(hl_share)}% of orders the seller handed the parcel to the carrier after the ship-by date. Those orders were late {pct(late_if_hl)}% of the time, against {pct(late_if_ok)}% when the handoff was on time", "warehouse", "fs")
     ratio = late_if_hl / late_if_ok
     add("about four times as likely" if round(ratio) == 4 else "RATIO_MISMATCH", "warehouse")
     add(f"they make up {pct(seller_side)}% of late orders", "warehouse")
@@ -103,21 +105,48 @@ def build_claims(con):
     n_hold = int(F["holdout_last_month"][-2:]) - int(F["holdout_first_month"][-2:]) + 1
     words = {3: "three", 4: "four", 5: "five", 6: "six"}
     add(f"It was {abs(hold):.2f} stars in the last {words[n_hold]} months, against {abs(disc):.2f} earlier" if F["holdout_first_month"][:4] == F["holdout_last_month"][:4] else "HOLDOUT_MISMATCH", "report")
-    add(f"Late delivery caused about {caused_r:,} bad reviews", "warehouse")
-    readme = README.read_text()
+    add(f"Late delivery is estimated to account for about {caused_r:,} bad reviews", "warehouse")
+    # the goal line, the warning line and the what-if rates, from the targets table and the memo's own figures
+    t = one("select 100*alarm_line_late_rate, 100*goal_late_rate, 100*stretch_goal_late_rate, 100*late_rate_if_handoffs_ok, stable_months, laney_signal_months, typical_orders "
+            "from metrics.metric_late_rate_targets")
+    alarm, goal, stretch, whatif_pooled, stable, flagged_n, typical = t
+    flagged = sorted(F[f"c_flagged_{i}"] for i in (1, 2, 3))
+    assert flagged_n == 3 and len(flagged) == 3
+    assert f"{goal:.1f}" == F["c_goal_line"] and f"{stretch:.1f}" == F["c_stretch_line"] and f"{whatif_pooled:.2f}" == F["c_whatif_rate"]
+    assert f"{alarm:.2f}" == F["c_alarm_line"] and int(stable) == int(F["c_stable_months"]) and f"{typical:,.0f}" == F["c_typical_orders"]
+    gap = f"{goal - stretch:.1f}"
+    assert gap == F["c_whatif_gap"], (gap, F["c_whatif_gap"])
+    spc = (ROOT / "late_rate_targets" / "spc.py").read_text()
+    memo = (ROOT / "recommendation" / "MEMO.md").read_text()
+    add(f"The {goal:.1f}% goal and the {alarm:.1f}% warning line", "warehouse")
+    add(f"It sits at {alarm:.1f}% for a typical month of {typical:,.0f} orders", "warehouse")
+    add(f"the average late rate of the stable months plus three standard deviations" if "centre + 3 * sigma_z * sig" in spc else "SPC_MISMATCH", "repo")
+    add(f"Three months crossed it: {n_months[flagged[0]]}, {n_months[flagged[1]]} and {n_months[flagged[2]]}", "warehouse")
+    add(f"The goal, {goal:.1f}%, is the median late rate of the {int(stable)} stable months", "warehouse", "fs")
+    add(f"and the warning line, {alarm:.1f}%,", "warehouse", "s")
+    add("so half of them already beat it" if "so half of them already beat it" in memo else "HALF_MISMATCH", "repo")
+    add("it includes the three spike months" if flagged_n == 3 else "SPIKE_MISMATCH", "warehouse")
+    add("Three months crossed the line", "warehouse", "s")
+    add(f"The {whatif_pooled:.2f}% is the pooled version: it takes all {judged:,} orders and moves the late rate from {rate:.2f}% to {whatif_pooled:.2f}%", "warehouse")
+    add(f"The {stretch:.1f}% is the dashboard's version for a typical stable month: it moves the median stable month from the {goal:.1f}% goal down to {stretch:.1f}%, a drop of about {gap} percentage point", "warehouse")
+    add(f"Why the dashboard says {stretch:.1f}% and this page says {whatif_pooled:.2f}%", "warehouse")
+    add(f"The what-if rate of {stretch:.1f}% on the dashboard moves a typical stable month down from the goal by about {gap} percentage point", "warehouse", "s")
+    add(f"The {whatif_pooled:.2f}% on the full page is the same what-if on all {judged:,} orders pooled, from {rate:.2f}%", "warehouse", "s")
+    add(f"The estimated effect is about {caused_r:,} of {total_bad:,} ({100 * caused / total_bad:.0f}%)", "warehouse", "s")
+    readme = FULL.read_text()
     after = readme.split("Three problems in the tables would have skewed the results.\n", 1)[1].split("\n\n", 1)[0]
     add("Three problems in the tables" if len([l for l in after.splitlines() if l.startswith("- ")]) == 3 else "THREE_MISMATCH", "repo")
     add("the nine source tables" if manifest_n == 9 else "NINE_MISMATCH", "repo")
     add(f"The keys and links in the diagram above pass {erd_ok} of {len(erd_res)} checks", "warehouse")
     add(f"All {proven} rules in the check suite", "repo" if proven == len(mut) else "MUTATION_MISMATCH")
-    add("and six reasonable ways of comparing" if "six specifications" in (ROOT / "review_cost_causal" / "README.md").read_text() else "SIX_MISMATCH", "repo")
-    add("two randomized tests" if "## What to do: two tests" in memo else "TWO_MISMATCH", "repo")
-    add("Run two randomized tests" if "## What to do: two tests" in memo else "TWO_MISMATCH", "repo")
+    add("and six reasonable ways of comparing" if "six specifications" in (ROOT / "review_cost_causal" / "README.md").read_text() else "SIX_MISMATCH", "repo", "fs")
+    add("two randomized tests" if "## What to do: two tests" in memo else "TWO_MISMATCH", "repo", "fs")
+    add("Run two randomized tests" if "## What to do: two tests" in memo else "TWO_MISMATCH", "repo", "fs")
     add("over 8 weeks" if "8<!--d:test_weeks--> weeks" in memo else "WEEKS_MISMATCH", "repo")
     add("8 weeks of orders" if "8<!--d:test_weeks--> weeks" in memo else "WEEKS_MISMATCH", "repo")
-    add("Half of the sellers, picked at random" if "Pick half of sellers at random" in memo else "HALF_MISMATCH", "repo")
-    add("The other half see no change" if "The other half see no change" in memo else "HALF_MISMATCH", "repo")
-    add("on a random half of orders" if "on a random half of orders" in memo else "HALF_MISMATCH", "repo")
+    add("Half of the sellers, picked at random" if "Pick half of sellers at random" in memo else "HALF_MISMATCH", "repo", "fs")
+    add("The other half see no change" if "The other half see no change" in memo else "HALF_MISMATCH", "repo", "fs")
+    add("on a random half of orders" if "on a random half of orders" in memo else "HALF_MISMATCH", "repo", "fs")
     return out
 
 
@@ -125,7 +154,7 @@ NUMBER = re.compile(r"(?<![\w.])-?\d[\d,]*(?:\.\d+)?%?|\b(?:three|four|five|six|
 
 
 def prose(text):
-    """README text without code blocks, link targets, image files and list numbers."""
+    """Page text without code blocks, link targets, image files and list numbers."""
     text = re.sub(r"```.*?```", "", text, flags=re.S)
     text = re.sub(r"\]\([^)]*\)", "]", text)
     text = re.sub(r"`[^`]*`", "", text)
@@ -133,42 +162,47 @@ def prose(text):
     return text
 
 
-def problems(readme_text, claims, erd_text, index_text=None, pages_text=None):
+def problems(page_text, claims, which, erd_text=None):
+    """Problems on one page. which is "f" (docs/CASE_STUDY.md) or "s" (README.md). The ERD is checked on the full page only."""
     out = []
-    text = original = prose(readme_text)
-    for frag, src in claims:
-        if frag not in original:
-            out.append(f"claim fragment not in README (or the data disagrees): {frag!r} [{src}]")
-        text = text.replace(frag, " ")
+    text = original = prose(page_text)
+    for frag, src, pages in claims:
+        if which in pages and frag not in original:
+            out.append(f"claim fragment not in page (or the data disagrees): {frag!r} [{src}]")
+        text = text.replace(frag, " ") if which in pages else text
     for ph in DEFINITION_PHRASES:
         text = text.replace(ph, " ")
     for m in NUMBER.finditer(text):
         s = max(0, m.start() - 30)
         out.append(f"unchecked number {m.group(0)!r} near: {text[s:m.end() + 20]!r}")
-    block = re.search(r"```mermaid\n(.*?)\n```", readme_text, re.S)
-    if not block or block.group(1) != erd_text:
-        out.append("README's erDiagram differs from case_study/erd.py")
-    if pages_text is not None and index_text != pages_text:
-        out.append("docs/index.md is stale: run python case_study/build_pages.py")
+    if erd_text is not None:
+        block = re.search(r"```mermaid\n(.*?)\n```", page_text, re.S)
+        if not block or block.group(1) != erd_text:
+            out.append("the page's erDiagram differs from case_study/erd.py")
     return out
+
+
+def pages_problems(index_text, pages_text):
+    return [] if index_text == pages_text else ["docs/index.md is stale: run python case_study/build_pages.py"]
 
 
 def main():
     con = connect()
     claims = build_claims(con)
-    readme_text = README.read_text()
     index = ROOT / "docs" / "index.md"
     import build_pages
     current = index.read_text() if index.exists() else ""
-    pages_text = build_pages.render(readme_text, build_pages.embedded_url(current))
-    found = problems(readme_text, claims, erd.mermaid(), index.read_text() if index.exists() else "", pages_text)
+    full_text = FULL.read_text()
+    found = [f"[README.md] {p}" for p in problems(README.read_text(), claims, "s")]
+    found += [f"[docs/CASE_STUDY.md] {p}" for p in problems(full_text, claims, "f", erd.mermaid())]
+    found += pages_problems(current, build_pages.render(full_text, build_pages.embedded_url(current)))
     for p in found:
         print("FAIL ", p)
     erd_bad = [d for d, ok, _ in erd.check_data() if not ok]
     for d in erd_bad:
         print("FAIL  ERD:", d)
     n = len(claims)
-    print(f"{'FAIL' if found or erd_bad else 'PASS'}  case study: {n} fragments checked against the data, {len(found)} problems, {len(erd_bad)} ERD check failures")
+    print(f"{'FAIL' if found or erd_bad else 'PASS'}  case study: {n} fragments checked against the data on README.md and docs/CASE_STUDY.md, {len(found)} problems, {len(erd_bad)} ERD check failures")
     sys.exit(1 if found or erd_bad else 0)
 
 

@@ -5,10 +5,10 @@ title: Late deliveries and bad reviews at Olist
 
 # Late deliveries and bad reviews at Olist
 
-This project builds a tested data pipeline from about 99,000 real orders of Olist, a Brazilian online marketplace, and uses it to estimate what late delivery costs. Late delivery is the estimated cause of about 3,110 of the 11,635 one- and two-star reviews on 94,931 delivered orders, about 27%, with a range of 2,880 to 3,350, and it shows no clear effect on repeat buying. The recommendation is two randomized tests, starting with reminders to sellers about their ship-by date, because 27.8% of late orders were handed to the carrier late.
+This project builds a tested data pipeline from about 99,000 real orders of Olist, a Brazilian online marketplace, and uses it to estimate what late delivery costs. The analysis found an estimated effect of late delivery on about 3,110 of the 11,635 one- and two-star reviews on 94,931 delivered orders, about 27%, with a range of 2,880 to 3,350. It is an estimate from past orders, not a randomized test, so it is not proven cause. Late delivery shows no clear effect on repeat buying. The recommendation is two randomized tests, starting with reminders to sellers about their ship-by date, because 27.8% of late orders were handed to the carrier late. A ship-by date is the deadline Olist gives a seller to hand the parcel to the carrier.
 
 <div id="live-dashboard">
-<img id="dashboard-fallback" src="img/dashboard.png" alt="Dashboard of late deliveries, reviews, sellers, regions and months" style="width:100%">
+<a id="dashboard-fallback" href="img/dashboard.png"><img src="img/dashboard.png" alt="Dashboard of late deliveries, reviews, sellers, regions and months" style="width:100%"></a>
 <tableau-viz id="tableauViz" src="TABLEAU_PUBLIC_URL" width="100%" height="768" hide-tabs toolbar="bottom" style="display:none"></tableau-viz>
 <script>
   // Show the live dashboard once a real Tableau Public address is set. Until then the PNG above stays.
@@ -24,9 +24,11 @@ This project builds a tested data pipeline from about 99,000 real orders of Olis
 </script>
 </div>
 
-*The dashboard in one view. Click a bar or a month to filter the other charts.*
+*The dashboard in one view. Click a bar or a month to filter the other charts. [Full-size image](img/dashboard.png).*
 
-**Scope.** An end-to-end analytics project on a public dataset. It covers data modeling in dbt and DuckDB, automated data checks, a review-cost estimate, a recommendation memo and a Tableau dashboard. The cause figure is an estimate from past orders, not a randomized test. [The limits](#limits-what-is-causal-and-what-is-only-linked) say what is causal and what is only linked.
+**Role and tools.** An end-to-end analytics project on a public dataset: data modeling and automated data checks in dbt and DuckDB, the review-cost analysis in Python (pandas and statsmodels), a recommendation memo, a Quarto data story and a Tableau dashboard. GitHub Actions rebuilds and checks all of it.
+
+**Code.** This repository. The main folders are [models/](https://github.com/mikemoose1/olist-ecommerce-analytics/tree/main/models/) (the dbt layers), [tests/](https://github.com/mikemoose1/olist-ecommerce-analytics/tree/main/tests/) (data checks), [review_cost_causal/](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/review_cost_causal/README.md) (the estimate), [recommendation/](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/recommendation/MEMO.md) (the memo), [dashboard/](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/dashboard/tableau/README.md) (the Tableau workbook and its data) and [case_study/](https://github.com/mikemoose1/olist-ecommerce-analytics/tree/main/case_study/) (the checks behind this page). The short summary is the [README](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/README.md).
 
 ## Question
 
@@ -123,23 +125,27 @@ The cost estimate compares each late order with the same seller's orders that ar
 
 ![Share of reviews with one or two stars, by days after the promised day](img/reviews_by_days_late.png)
 
-*Bad reviews climb about 11 points for each day late and level off near 78% from day 6. Part of the climb is survey timing.*
+*Bad reviews climb about 11 percentage points for each day late and level off near 78% from day 6. Part of the climb is survey timing.*
 
 **About a quarter of the bad reviews are an estimated effect of lateness.** The estimate is about 3,110 of 11,635 (27%), and six reasonable ways of comparing give 2,880 to 3,350.
 
-![Bar splitting all bad reviews into those estimated to be caused by late delivery and the rest](img/cause_share.png)
+![Bar splitting all bad reviews into those estimated to come from late delivery and the rest](img/cause_share.png)
 
 *Roughly one bad review in four on delivered orders is estimated to come from late delivery.*
 
-**Repeat buying shows no clear effect.** 1.28% of customers order again within 90 days. After matching, customers whose first order was late came back 0.10 points less often, with a range of -0.52 to 0.22 points that includes zero.
+**Repeat buying shows no clear effect.** 1.28% of customers order again within 90 days. After matching, customers whose first order was late came back 0.10 percentage points less often, with a range of -0.52 to 0.22 percentage points that includes zero.
 
 **Lateness clusters in time and place.** Three months (November 2017, February 2018 and March 2018) hold 48.3% of late orders and 21.7% of all orders. The north and northeast regions run 12.2% late.
 
-**Seller handoff is the biggest fixable cause found.** On 9.0% of orders the seller handed the parcel to the carrier after the ship-by date. Those orders were late 21.2% of the time, against 5.4% when the handoff was on time.
+**Late seller handoff is the biggest linked source of lateness found.** On 9.0% of orders the seller handed the parcel to the carrier after the ship-by date. Those orders were late 21.2% of the time, against 5.4% when the handoff was on time.
 
 ![Late rate by seller handoff, and the share of late orders by handoff](img/seller_handoff.png)
 
 *Orders shipped after the ship-by date are about four times as likely to arrive late, and they make up 27.8% of late orders.*
+
+### The 4.4% goal and the 8.4% warning line
+
+Both lines on the dashboard's monthly chart come from the data, not from a target set by hand. The warning line is a control limit: the average late rate of the stable months plus three standard deviations, widened to match how much the rate really swings from month to month, which is far more than chance alone would give (a Laney p-prime chart, method in [late_rate_targets/spc.py](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/late_rate_targets/spc.py)). It sits at 8.4% for a typical month of 6,372 orders, and higher for smaller months. A month above it is a real change, not bad luck. Three months crossed it: November 2017, February 2018 and March 2018. The goal, 4.4%, is the median late rate of the 15 stable months, so half of them already beat it. A stable month is one that is not above the warning line and has enough orders to judge. Stable means not extreme. It does not mean healthy.
 
 ## Recommendation
 
@@ -152,6 +158,8 @@ Run two randomized tests before any rollout. Details and measures are in [recomm
 
 *A ceiling for test 1, not a result. About 1,300 fewer late orders (20.6% of them) would take the late rate from 6.87% to 5.49%.*
 
+**Why the dashboard says 3.4% and this page says 5.49%.** Both ask the same what-if: what would the late rate be if late-shipped orders were late only as often as the rest. They start from different bases. The 5.49% is the pooled version: it takes all 94,931 orders and moves the late rate from 6.87% to 5.49%. The 3.4% is the dashboard's version for a typical stable month: it moves the median stable month from the 4.4% goal down to 3.4%, a drop of about 1.0 percentage point. The pooled rate is higher because it includes the three spike months that a typical month leaves out.
+
 ## How it was verified
 
 - Each headline number is recalculated straight from the raw files and matches ([evidence/verification_report.md](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/evidence/verification_report.md)).
@@ -163,14 +171,18 @@ Run two randomized tests before any rollout. Details and measures are in [recomm
 
 ## Limits: what is causal and what is only linked
 
+This page uses its labels the same way throughout. An estimated effect comes from comparing past orders and adjusting for seller, category and month. It is a reasonable estimate, not proven cause. Linked means seen together, with no cause claimed. Not shown means the data cannot tell.
+
 | Statement | Status | Why |
 |---|---|---|
-| Late delivery caused about 3,110 bad reviews | Estimated cause | Compared with the same seller's orders in the same category and month. It is an estimate from past orders, not a randomized test. |
+| Late delivery is estimated to account for about 3,110 bad reviews | Estimated effect | Compared with the same seller's orders in the same category and month. It is an estimate from past orders, not a randomized test, so not proven cause. |
 | Part of that effect is survey timing | Linked | 74.5% of late orders' surveys went out before delivery, so some customers rated while still waiting. |
 | Hidden seller sloppiness inflates the estimate | Small | If it sat inside every late order it would explain about 150 of the reviews at the top of its range. |
 | Late handoff leads to late arrival | Linked | The carrier may have been late anyway. The reminder test is what would show cause. |
 | Late delivery lowers repeat buying | Not shown | The range includes zero, so the data cannot tell a real drop from chance. |
 | The star penalty holds over time | Smaller recently | It was 1.56 stars in the last four months, against 2.05 earlier. |
+
+The dashboard title says "linked to" for the first row and "fixable cause" for the handoff. Read the first as the estimated effect above and the second as the untested link in the handoff row.
 
 The data has no revenue, commission or checkout figures, so the case for fixing lateness rests on ratings, not on money.
 
@@ -188,5 +200,6 @@ Neither test has run. Test 1 needs seller-level random assignment and 8 weeks of
 | The dashboard and how it was built | [dashboard/tableau/README.md](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/dashboard/tableau/README.md) |
 | Every table, grain and rule | [MODELING.md](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/MODELING.md) |
 | Setup, tests and every number | [docs/REPRODUCE.md](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/docs/REPRODUCE.md) |
+| The short summary | [README](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/README.md) |
 
 Data: the public [Olist Brazilian e-commerce dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) on Kaggle. Raw files are downloaded, not committed.

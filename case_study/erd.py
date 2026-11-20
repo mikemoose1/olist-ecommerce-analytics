@@ -1,7 +1,7 @@
-"""The entity-relationship diagram in the README, as data.
+"""The entity-relationship diagram in docs/CASE_STUDY.md, as data.
 
 SPEC is the one source. `mermaid()` draws it, and `check_data()` tests every key and every cardinality
-against the raw CSVs in data/raw with DuckDB. check_case_study.py fails if the README's diagram differs
+against the raw CSVs in data/raw with DuckDB. check_case_study.py fails if the case study's diagram differs
 from `mermaid()`. Run `python case_study/erd.py` to check the data and print the diagram.
 
 Cardinality marks follow Mermaid: `||` exactly one, `|o` zero or one, `|{` one or many, `o{` zero or many.

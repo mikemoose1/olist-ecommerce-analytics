@@ -44,7 +44,7 @@ dashboard_checks() {   # the CSVs Tableau reads match the warehouse, every dashb
   "$BIN/python" verification/verify_dash_exports.py; "$BIN/python" verification/selftest_dash_exports.py
   "$BIN/python" verification/column_sweep.py --check; }   # every column of every export: one wrong cell at a time, something must fail
 dashboard()   { "$BIN/python" dashboard/export_csv.py; "$BIN/python" verification/verify_dash_exports.py --json; dashboard_checks; }   # write dashboard/data/*.csv for Tableau (needs make build)
-case_study_checks() {   # every number and key in README.md matches the data, docs/index.md is current, and each check is proven able to fail
+case_study_checks() {   # every number on README.md and docs/CASE_STUDY.md and every key in its ERD matches the data, docs/index.md is current, and each check is proven able to fail
   "$BIN/python" case_study/check_case_study.py; "$BIN/python" case_study/selftest_check.py; }
 case_study()  { "$BIN/python" case_study/build_figures.py; "$BIN/python" case_study/build_pages.py; case_study_checks; }   # redraw docs/img figures and docs/index.md, then check (needs make build, make recommendation)
 prove_tests() { "$BIN/python" scripts/prove_tests_fail.py; }
