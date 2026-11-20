@@ -148,6 +148,21 @@ def build_claims(con):
     add("Half of the sellers, picked at random" if "Pick half of sellers at random" in memo else "HALF_MISMATCH", "repo", "fs")
     add("The other half see no change" if "The other half see no change" in memo else "HALF_MISMATCH", "repo", "fs")
     add("on a random half of orders" if "on a random half of orders" in memo else "HALF_MISMATCH", "repo", "fs")
+    # per-route printed-date backtest (locked display figures from recommendation/promise_backtest/expected.json)
+    P = json.loads((ROOT / "recommendation" / "promise_backtest" / "expected.json").read_text())["display"]
+    add(
+        f"On the {P['n_reviewed']:,} reviewed orders from April 2017 onward, the stricter 19-out-of-20 per-route date would likely have cut the extra one- and two-star reviews attributed to late delivery by about {P['p95_share_rounded_pct']}% (about {P['p95_reduction_rounded']} of {P['olist_extra_rounded']:,}), with a realistic range of about {P['range_lo_pct']}% to {P['range_hi_pct']}% from resampling orders",
+        "report",
+    )
+    add(
+        f"about {P['newly_on_time_n']:,} orders that had been late would have been on time, avoiding about {P['newly_on_time_avoided_rounded']} bad reviews, while about {P['newly_late_n']:,} orders that had been on time would have been late, adding about {P['newly_late_added_rounded']}",
+        "report",
+    )
+    add("A looser 9-out-of-10 date made things worse", "report")
+    add(
+        f"A per-route 19-out-of-20 date cuts extra late-delivery bad reviews from about {P['olist_extra_rounded']:,} to about {P['p95_extra_rounded']:,}, a net of about {P['p95_reduction_rounded']} (about {P['newly_on_time_avoided_rounded']} avoided minus about {P['newly_late_added_rounded']} added)",
+        "report",
+    )
     return out
 
 

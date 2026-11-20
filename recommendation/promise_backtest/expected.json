@@ -1,0 +1,311 @@
+{
+  "integrity": {
+    "leak_count": 0,
+    "missing_pred": 0,
+    "n_scored": 90003,
+    "burn_in": "2017-04-01",
+    "min_cell": 30
+  },
+  "n_scored": 90003,
+  "n_reviewed": 89412,
+  "n_unreviewed": 591,
+  "n_reviewed_march2018": 6859,
+  "v2_olist_extra": 3017.157287,
+  "v2_p90": {
+    "extra_policy": 4756.217583,
+    "extra_olist": 3017.157287,
+    "net_change": 1739.0602959999997,
+    "reduction": -1739.0602959999997,
+    "se": 25.709528792244814,
+    "ci_net_lo": 1688.6696195671998,
+    "ci_net_hi": 1789.4509724327995,
+    "ci_reduction_lo": -1789.4509724327995,
+    "ci_reduction_hi": -1688.6696195671998,
+    "counts_policy": {
+      "late_d1": 1377,
+      "late_d2": 1084,
+      "late_d3": 1031,
+      "late_d4_6": 2096,
+      "late_d7_13": 2513,
+      "late_d14p": 2071
+    },
+    "counts_olist": {
+      "late_d1": 799,
+      "late_d2": 524,
+      "late_d3": 483,
+      "late_d4_6": 1249,
+      "late_d7_13": 1703,
+      "late_d14p": 1432
+    }
+  },
+  "v2_p95": {
+    "extra_policy": 2731.188585,
+    "extra_olist": 3017.157287,
+    "net_change": -285.9687020000001,
+    "reduction": 285.9687020000001,
+    "se": 4.469441508296087,
+    "ci_net_lo": -294.72880735626046,
+    "ci_net_hi": -277.2085966437398,
+    "ci_reduction_lo": 277.2085966437398,
+    "ci_reduction_hi": 294.72880735626046,
+    "counts_policy": {
+      "late_d1": 675,
+      "late_d2": 612,
+      "late_d3": 483,
+      "late_d4_6": 1245,
+      "late_d7_13": 1419,
+      "late_d14p": 1258
+    },
+    "counts_olist": {
+      "late_d1": 799,
+      "late_d2": 524,
+      "late_d3": 483,
+      "late_d4_6": 1249,
+      "late_d7_13": 1703,
+      "late_d14p": 1432
+    }
+  },
+  "v2_march_olist_extra": 657.6320519999999,
+  "v2_march_p90": {
+    "extra_policy": 751.530742,
+    "extra_olist": 657.6320519999999,
+    "reduction": -93.8986900000001
+  },
+  "v2_march_p95": {
+    "extra_policy": 417.81480500000004,
+    "extra_olist": 657.6320519999999,
+    "reduction": 239.8172469999999
+  },
+  "v4_olist_extra": 2794.990259210485,
+  "v4_p90": {
+    "extra_policy": 4412.365540917737,
+    "extra_olist": 2794.990259210485,
+    "net_change": 1617.3752817072523,
+    "reduction": -1617.3752817072523,
+    "se": 28.83338742422871,
+    "ci_net_lo": 1560.861842355764,
+    "ci_net_hi": 1673.8887210587404,
+    "ci_reduction_lo": -1673.8887210587404,
+    "ci_reduction_hi": -1560.861842355764,
+    "counts_policy": {
+      "late_d1": 1377,
+      "late_d2": 1084,
+      "late_d3": 1031,
+      "late_d4_6": 2096,
+      "late_d7_13": 2513,
+      "late_d14p": 2071
+    },
+    "counts_olist": {
+      "late_d1": 799,
+      "late_d2": 524,
+      "late_d3": 483,
+      "late_d4_6": 1249,
+      "late_d7_13": 1703,
+      "late_d14p": 1432
+    }
+  },
+  "v4_p95": {
+    "extra_policy": 2532.88799321278,
+    "extra_olist": 2794.990259210485,
+    "net_change": -262.10226599770476,
+    "reduction": 262.10226599770476,
+    "se": 5.804349905339942,
+    "ci_net_lo": -273.47879181217104,
+    "ci_net_hi": -250.72574018323849,
+    "ci_reduction_lo": 250.72574018323849,
+    "ci_reduction_hi": 273.47879181217104,
+    "counts_policy": {
+      "late_d1": 675,
+      "late_d2": 612,
+      "late_d3": 483,
+      "late_d4_6": 1245,
+      "late_d7_13": 1419,
+      "late_d14p": 1258
+    },
+    "counts_olist": {
+      "late_d1": 799,
+      "late_d2": 524,
+      "late_d3": 483,
+      "late_d4_6": 1249,
+      "late_d7_13": 1703,
+      "late_d14p": 1432
+    }
+  },
+  "four_states": {
+    "p90": {
+      "newly_on_time": {
+        "n": 1200,
+        "sum_delta": -401.08273400000456
+      },
+      "newly_late": {
+        "n": 5182,
+        "sum_delta": 1911.4518349999803
+      },
+      "still_late": {
+        "n": 4990,
+        "sum_delta": 228.69119500000062
+      },
+      "still_on_time": {
+        "n": 78040,
+        "sum_delta": 0.0
+      },
+      "sum_delta_all": 1739.0602959999765
+    },
+    "p95": {
+      "newly_on_time": {
+        "n": 2337,
+        "sum_delta": -894.3867879999704
+      },
+      "newly_late": {
+        "n": 1839,
+        "sum_delta": 650.184059999993
+      },
+      "still_late": {
+        "n": 3853,
+        "sum_delta": -41.765974000000185
+      },
+      "still_on_time": {
+        "n": 81383,
+        "sum_delta": 0.0
+      },
+      "sum_delta_all": -285.96870199997755
+    }
+  },
+  "bar": {
+    "p90": {
+      "checks": [
+        {
+          "id": 1,
+          "name": "Net reduction at least 250",
+          "pass": false,
+          "observed": -1739.0602959999997,
+          "required": 250
+        },
+        {
+          "id": 2,
+          "name": "Net reduction at least 8% of window Olist extra",
+          "pass": false,
+          "observed": -1739.0602959999997,
+          "required": 241.37258296000002
+        },
+        {
+          "id": 3,
+          "name": "95% interval on the net excludes 0",
+          "pass": true,
+          "observed": [
+            1688.6696195671998,
+            1789.4509724327995
+          ]
+        },
+        {
+          "id": 4,
+          "name": "March 2018 extra is not higher than Olist",
+          "pass": false,
+          "observed": {
+            "policy": 751.530742,
+            "olist": 657.6320519999999
+          }
+        },
+        {
+          "id": 5,
+          "name": "V4 sensitivity net reduction, interval excludes 0",
+          "pass": false,
+          "observed": {
+            "reduction": -1617.3752817072523,
+            "ci_net": [
+              1560.861842355764,
+              1673.8887210587404
+            ]
+          }
+        }
+      ],
+      "overall_pass": false,
+      "failed": [
+        "Net reduction at least 250",
+        "Net reduction at least 8% of window Olist extra",
+        "March 2018 extra is not higher than Olist",
+        "V4 sensitivity net reduction, interval excludes 0"
+      ]
+    },
+    "p95": {
+      "checks": [
+        {
+          "id": 1,
+          "name": "Net reduction at least 250",
+          "pass": true,
+          "observed": 285.9687020000001,
+          "required": 250
+        },
+        {
+          "id": 2,
+          "name": "Net reduction at least 8% of window Olist extra",
+          "pass": true,
+          "observed": 285.9687020000001,
+          "required": 241.37258296000002
+        },
+        {
+          "id": 3,
+          "name": "95% interval on the net excludes 0",
+          "pass": true,
+          "observed": [
+            -294.72880735626046,
+            -277.2085966437398
+          ]
+        },
+        {
+          "id": 4,
+          "name": "March 2018 extra is not higher than Olist",
+          "pass": true,
+          "observed": {
+            "policy": 417.81480500000004,
+            "olist": 657.6320519999999
+          }
+        },
+        {
+          "id": 5,
+          "name": "V4 sensitivity net reduction, interval excludes 0",
+          "pass": true,
+          "observed": {
+            "reduction": 262.10226599770476,
+            "ci_net": [
+              -273.47879181217104,
+              -250.72574018323849
+            ]
+          }
+        }
+      ],
+      "overall_pass": true,
+      "failed": []
+    }
+  },
+  "overall": {
+    "p90_pass": false,
+    "p95_pass": true,
+    "any_pass": true
+  },
+  "bootstrap": {
+    "n_boot": 5000,
+    "seed": 20261120,
+    "reduction_p025": 227.46476635000002,
+    "reduction_p975": 345.78506449999986,
+    "percent_p025": 7.638450810354021,
+    "percent_p975": 11.340759254630875,
+    "share_reduction_at_least_250": 0.8874
+  },
+  "display": {
+    "n_reviewed": 89412,
+    "olist_extra_rounded": 3017,
+    "p95_extra_rounded": 2731,
+    "p95_reduction_rounded": 286,
+    "p95_share_rounded_pct": 9,
+    "range_lo_pct": 7,
+    "range_hi_pct": 11,
+    "newly_on_time_n": 2337,
+    "newly_on_time_avoided_rounded": 894,
+    "newly_late_n": 1839,
+    "newly_late_added_rounded": 650,
+    "bootstrap_reduction_lo_rounded": 227,
+    "bootstrap_reduction_hi_rounded": 346
+  },
+  "p95_share_pct": 9.47808399754799
+}

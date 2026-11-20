@@ -4,6 +4,7 @@ Run after `make build` and `make recommendation`:  python case_study/build_figur
 Every plotted value comes from DuckDB. Where the analysis report holds the same number, the script
 asserts that the two agree before it draws anything.
 """
+import json
 import pathlib
 
 import matplotlib
@@ -142,6 +143,28 @@ def fig_whatif(con):
     save(fig, "what_if.png")
 
 
+
+
+def fig_promise():
+    """Extra late-delivery bad reviews under Olist's promise vs the route p95 date."""
+    ev = json.loads((ROOT / "recommendation" / "promise_backtest" / "expected.json").read_text())["display"]
+    olist = ev["olist_extra_rounded"]
+    p95 = ev["p95_extra_rounded"]
+    net = ev["p95_reduction_rounded"]
+    avoided = ev["newly_on_time_avoided_rounded"]
+    added = ev["newly_late_added_rounded"]
+    fig, ax = plt.subplots(figsize=(7.4, 3.4))
+    labels = ["Olist's promise", "Per-route date\nupdated as orders arrive"]
+    ax.bar(labels, [olist, p95], color=[GRAY, "white"], edgecolor=[GRAY, ORANGE], hatch=["", "//"], width=0.5, lw=1.5)
+    ax.text(0, olist + 40, f"{olist:,}", ha="center", fontweight="bold", color=DARK)
+    ax.text(1, p95 + 40, f"{p95:,}", ha="center", fontweight="bold", color=ORANGE)
+    ax.text(0.5, -0.28, f"{avoided:,} avoided, {added:,} added, net {net:,}", transform=ax.transAxes, ha="center", color=ORANGE, fontsize=10)
+    ax.set_ylim(0, 3600)
+    ax.set_ylabel("extra 1-2 star reviews from late delivery")
+    ax.yaxis.set_major_formatter(lambda v, _: f"{v:,.0f}")
+    save(fig, "promise_date.png")
+
+
 if __name__ == "__main__":
     con = connect()
     fig_pipeline()
@@ -149,4 +172,5 @@ if __name__ == "__main__":
     fig_cause(con)
     fig_handoff(con)
     fig_whatif(con)
+    fig_promise()
     print("wrote", ", ".join(sorted(p.name for p in OUT.glob("*.png"))))

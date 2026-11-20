@@ -175,6 +175,14 @@ Run two randomized tests before any rollout. Details and measures are in [recomm
 
 **Why the dashboard says 3.4% and this page says 5.49%.** Both ask the same what-if: what would the late rate be if late-shipped orders were late only as often as the rest. They start from different bases. The 5.49% is the pooled version: it takes all 94,931 orders and moves the late rate from 6.87% to 5.49%. The 3.4% is the dashboard's version for a typical stable month: it moves the median stable month from the 4.4% goal down to 3.4%, a drop of about 1.0 percentage point. The pooled rate is higher because it includes the three spike months that a typical month leaves out.
 
+### A short-term printed date
+
+The analysis also replayed history with a per-route delivery date, updated as orders arrive, in place of Olist's single promise. Actual delivery times were left unchanged. On the 89,412 reviewed orders from April 2017 onward, the stricter 19-out-of-20 per-route date would likely have cut the extra one- and two-star reviews attributed to late delivery by about 9% (about 286 of 3,017), with a realistic range of about 7% to 11% from resampling orders. That cut is a net: about 2,337 orders that had been late would have been on time, avoiding about 894 bad reviews, while about 1,839 orders that had been on time would have been late, adding about 650. A looser 9-out-of-10 date made things worse. This is a printed-date stopgap, not a logistics fix. The data cannot show whether a different date would have changed who bought, or whether it would have raised repeat buying.
+
+![Extra late-delivery bad reviews under Olist's promise and under a per-route date](img/promise_date.png)
+
+*A per-route 19-out-of-20 date cuts extra late-delivery bad reviews from about 3,017 to about 2,731, a net of about 286 (about 894 avoided minus about 650 added).*
+
 ## How it was verified
 
 - Each headline number is recalculated straight from the raw files and matches ([evidence/verification_report.md](../evidence/verification_report.md)).
