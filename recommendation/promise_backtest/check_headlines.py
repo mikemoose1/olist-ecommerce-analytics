@@ -82,6 +82,39 @@ def compare(got: dict, expected: dict) -> list[str]:
     return bad
 
 
+
+def identity_problems(payload: dict) -> list[str]:
+    """Unrounded and rounded four-state identity: avoided - added + still-late reduction equals the net."""
+    st = payload["four_states"]["p95"]
+    if "v2_p95" in payload:
+        reduction = payload["v2_p95"]["reduction"]
+    else:
+        reduction = payload["v2"]["window"]["p95"]["reduction"]
+    display = payload["display"]
+    avoided = -st["newly_on_time"]["sum_delta"]
+    added = st["newly_late"]["sum_delta"]
+    still_red = -st["still_late"]["sum_delta"]
+    bad = []
+    if abs(st["still_on_time"]["sum_delta"]) > 1e-9:
+        bad.append(f"still-on-time contribution is not 0: {st['still_on_time']['sum_delta']}")
+    parts = avoided - added + still_red
+    if abs(parts - reduction) > 1e-6:
+        bad.append(f"four-state identity failed: {parts} vs reduction {reduction}")
+    if abs(parts + st["sum_delta_all"]) > 1e-6:
+        bad.append(f"four-state identity failed vs sum_delta_all: {parts} vs {-st['sum_delta_all']}")
+    avoided_r = display["newly_on_time_avoided_rounded"]
+    added_r = display["newly_late_added_rounded"]
+    still_r = display["still_late_reduction_rounded"]
+    net_r = display["p95_reduction_rounded"]
+    parts_r = avoided_r - added_r + still_r
+    if parts_r != net_r:
+        bad.append(
+            f"rounded four-state parts do not equal the net: "
+            f"{avoided_r} - {added_r} + {still_r} = {parts_r}, net {net_r}"
+        )
+    return bad
+
+
 def readme_drift(display: dict, text: str) -> list[str]:
     """Fail if the package README no longer states the locked display figures."""
     d = display
@@ -141,14 +174,10 @@ def run() -> dict:
         sys.exit(f"bootstrap percent interval {lo:.3f} to {hi:.3f} no longer supports a 7% to 11% range")
     if ev["display"]["range_lo_pct"] != 7 or ev["display"]["range_hi_pct"] != 11:
         sys.exit("display range drifted from 7% to 11%")
+    id_bad = identity_problems(ev)
+    if id_bad:
+        sys.exit("four-state identity:\n" + "\n".join(id_bad))
     d = ev["display"]
-    if d["parts_sum_rounded"] != d["p95_reduction_rounded"]:
-        sys.exit(
-            f"rounded four-state parts do not equal the net: "
-            f"{d['newly_on_time_avoided_rounded']} - {d['newly_late_added_rounded']} + "
-            f"{d['still_late_reduction_rounded']} = {d['parts_sum_rounded']}, "
-            f"net {d['p95_reduction_rounded']}"
-        )
     readme_problems = readme_drift(d, (HERE / "README.md").read_text())
     if readme_problems:
         sys.exit("README drift:\n" + "\n".join(readme_problems))

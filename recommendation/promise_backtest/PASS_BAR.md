@@ -12,6 +12,9 @@ A date (route p90 or route p95, each judged on its own) passes only if all of th
 
 It does not help if no date clears all five. Do not change the bar to rescue a near miss.
 
+On 20 November 2026, items 3 and 5 were reworded after the totals to require the interval to sit on the reduction side (lower bound > 0). This only tightens the wording; which dates pass did not change (p90 FAIL, p95 PASS).
+
+
 Interval method, locked with the bar:
 
 - extra(policy) = sum over bins of n_policy[b] * effect[b], and 0 for on-time orders.

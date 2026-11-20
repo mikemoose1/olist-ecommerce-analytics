@@ -202,21 +202,10 @@ def evaluate(scored: pd.DataFrame, v2: dict | None = None, v4: dict | None = Non
     avoided = -st["newly_on_time"]["sum_delta"]
     added = st["newly_late"]["sum_delta"]
     still_red = -st["still_late"]["sum_delta"]
-    if abs(st["still_on_time"]["sum_delta"]) > 1e-9:
-        raise ValueError("still-on-time contribution is not 0")
-    parts = avoided - added + still_red
-    if abs(parts - p95["reduction"]) > 1e-6:
-        raise ValueError(f"four-state identity failed: {parts} vs reduction {p95['reduction']}")
-    if abs(parts + st["sum_delta_all"]) > 1e-6:
-        raise ValueError(f"four-state identity failed vs sum_delta_all: {parts} vs {-st['sum_delta_all']}")
     avoided_r = int(round(avoided))
     added_r = int(round(added))
     still_r = int(round(still_red))
     net_r = int(round(p95["reduction"]))
-    if avoided_r - added_r + still_r != net_r:
-        raise ValueError(
-            f"rounded parts do not equal the net: {avoided_r} - {added_r} + {still_r} = {avoided_r - added_r + still_r}, net {net_r}"
-        )
     p90_added_r = int(round(-out["v2"]["window"]["p90"]["reduction"]))
     out["display"] = {
         "n_reviewed": out["n_reviewed"],
