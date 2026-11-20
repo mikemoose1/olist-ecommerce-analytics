@@ -1,8 +1,10 @@
 """The entity-relationship diagram in docs/CASE_STUDY.md, as data.
 
 SPEC is the one source. `mermaid()` draws it, and `check_data()` tests every key and every cardinality
-against the raw CSVs in data/raw with DuckDB. check_case_study.py fails if the case study's diagram differs
-from `mermaid()`. Run `python case_study/erd.py` to check the data and print the diagram.
+against the raw CSVs in data/raw with DuckDB. A column marked FK must belong to a true foreign-key
+relation: the parent key is unique, and no child row is blank or orphaned. check_case_study.py fails
+if the case study's diagram differs from `mermaid()`. Run `python case_study/erd.py` to check the data
+and print the diagram.
 
 Cardinality marks follow Mermaid: `||` exactly one, `|o` zero or one, `|{` one or many, `o{` zero or many.
 """
@@ -24,21 +26,24 @@ FILES = {
 }
 
 # table -> (primary key columns, columns drawn as (type, name, mark)). Names are the raw CSV column names.
+# Marks: PK, FK, PK,FK, or a token expanded in mermaid(). Zip prefixes and product category are
+# soft links, not foreign keys: the parent is not unique, or some child rows have no parent.
 TABLES = {
-    "customers": (["customer_id"], [("string", "customer_id", "PK"), ("string", "customer_unique_id", "person"), ("string", "customer_zip_code_prefix", "FK")]),
+    "customers": (["customer_id"], [("string", "customer_id", "PK"), ("string", "customer_unique_id", "person"), ("string", "customer_zip_code_prefix", "soft_zip")]),
     "orders": (["order_id"], [("string", "order_id", "PK"), ("string", "customer_id", "FK"), ("string", "order_status", ""), ("timestamp", "order_purchase_timestamp", ""),
                               ("timestamp", "order_delivered_customer_date", ""), ("timestamp", "order_estimated_delivery_date", "")]),
     "order_items": (["order_id", "order_item_id"], [("string", "order_id", "PK,FK"), ("int", "order_item_id", "PK"), ("string", "product_id", "FK"), ("string", "seller_id", "FK"),
                                                    ("timestamp", "shipping_limit_date", ""), ("decimal", "price", "")]),
-    "sellers": (["seller_id"], [("string", "seller_id", "PK"), ("string", "seller_zip_code_prefix", "FK")]),
-    "products": (["product_id"], [("string", "product_id", "PK"), ("string", "product_category_name", "FK")]),
+    "sellers": (["seller_id"], [("string", "seller_id", "PK"), ("string", "seller_zip_code_prefix", "soft_zip")]),
+    "products": (["product_id"], [("string", "product_id", "PK"), ("string", "product_category_name", "soft_cat")]),
     "category_translation": (["product_category_name"], [("string", "product_category_name", "PK"), ("string", "product_category_name_english", "")]),
     "order_payments": (["order_id", "payment_sequential"], [("string", "order_id", "PK,FK"), ("int", "payment_sequential", "PK"), ("decimal", "payment_value", "")]),
-    "order_reviews": (["review_id", "order_id"], [("string", "review_id", "PK"), ("string", "order_id", "PK,FK"), ("int", "review_score", "")]),
+    "order_reviews": (["review_id", "order_id"], [("string", "review_id", "review_pk"), ("string", "order_id", "PK,FK"), ("int", "review_score", "")]),
     "geolocation": ([], [("string", "geolocation_zip_code_prefix", "zip"), ("double", "geolocation_lat", ""), ("double", "geolocation_lng", "")]),
 }
 
-# (parent, parent key, parent mark, child mark, child, child column, label). `kind` is "fk" for a true foreign key.
+# (parent, parent key, parent mark, child mark, child, child column, kind). kind is "fk" for a true
+# foreign key, or "soft" for a drawn link that is not a key.
 RELATIONS = [
     ("customers", "customer_id", "||", "||", "orders", "customer_id", "fk"),
     ("orders", "order_id", "||", "o{", "order_items", "order_id", "fk"),
@@ -46,10 +51,47 @@ RELATIONS = [
     ("sellers", "seller_id", "||", "|{", "order_items", "seller_id", "fk"),
     ("orders", "order_id", "||", "o{", "order_payments", "order_id", "fk"),
     ("orders", "order_id", "||", "o{", "order_reviews", "order_id", "fk"),
-    ("category_translation", "product_category_name", "|o", "|{", "products", "product_category_name", "fk"),
+    ("category_translation", "product_category_name", "|o", "|{", "products", "product_category_name", "soft"),
 ]
 # Zip prefixes join approximately: geolocation holds many points per zip, and a zip has many customers or sellers.
 ZIP_LINKS = [("customers", "customer_zip_code_prefix"), ("sellers", "seller_zip_code_prefix")]
+
+MARKS = {
+    "person": '"person id, not unique"',
+    "zip": '"zip prefix, not unique"',
+    "soft_zip": '"zip prefix, soft link"',
+    "soft_cat": '"soft link, some blank or untranslated"',
+    "review_pk": 'PK "repeats across orders"',
+}
+
+
+def _fk_mark(mark):
+    return "FK" in {p.strip() for p in mark.split(",") if p.strip()}
+
+
+def _column_marks(table):
+    return {name: mark for _, name, mark in TABLES[table][1]}
+
+
+def check_marks():
+    """Mark contracts that can be checked without reading the CSVs."""
+    res = []
+
+    def add(desc, ok, detail=""):
+        res.append((desc, bool(ok), detail))
+
+    geo_mark = _column_marks("geolocation")["geolocation_zip_code_prefix"]
+    add("geolocation.geolocation_zip_code_prefix is not marked as a unique key", geo_mark not in ("PK", "FK") and not _fk_mark(geo_mark), geo_mark)
+
+    drawn_fk = [(t, name) for t, (_, cols) in TABLES.items() for _, name, mark in cols if _fk_mark(mark)]
+    rel_fk = [(child, col) for *_, child, col, kind in RELATIONS if kind == "fk"]
+    for t, name in drawn_fk:
+        add(f"{t}.{name}: marked FK only when it is a true foreign key", (t, name) in rel_fk)
+    for child, col in rel_fk:
+        add(f"{child}.{col}: a true foreign key is marked FK", (child, col) in drawn_fk, _column_marks(child).get(col, ""))
+    for child, col in ZIP_LINKS:
+        add(f"{child}.{col}: zip prefix is not marked FK", not _fk_mark(_column_marks(child)[col]), _column_marks(child)[col])
+    return res
 
 
 def mermaid():
@@ -57,11 +99,11 @@ def mermaid():
     for parent, key, pm, cm, child, col, _ in RELATIONS:
         out.append(f'    {parent} {pm}--{cm} {child} : "{col}"')
     for child, col in ZIP_LINKS:
-        out.append(f'    geolocation }}o--o{{ {child} : "zip prefix"')
+        out.append(f'    geolocation }}o--o{{ {child} : "zip prefix (approximate)"')
     for t, (_, cols) in TABLES.items():
         out.append(f"    {t} {{")
         for typ, name, mark in cols:
-            m = {"person": '"person id, not unique"', "zip": '"zip prefix, not unique"'}.get(mark, mark)
+            m = MARKS.get(mark, mark)
             out.append(f"        {typ} {name} {m}".rstrip())
         out.append("    }")
     return "\n".join(out)
@@ -90,13 +132,20 @@ def check_data():
     add("geolocation: zip prefix is not unique", one("select count(*) from geolocation") > one("select count(distinct geolocation_zip_code_prefix) from geolocation"))
     add("customers: one person owns several customer_ids", one("select count(distinct customer_unique_id) from customers") < one("select count(*) from customers"))
 
-    for parent, key, pm, cm, child, col, _ in RELATIONS:
+    res.extend(check_marks())
+
+    for parent, key, pm, cm, child, col, kind in RELATIONS:
         tag = f"{parent}.{key} -> {child}.{col}"
         orphans = one(f"select count(*) from {child} c where c.{col} is not null and c.{col} not in (select {key} from {parent})")
         nulls = one(f"select count(*) from {child} where {col} is null")
+        p_unique = one(f"select count(*) from {parent}") == one(f"select count(*) from (select distinct {key} from {parent})")
+        if kind == "fk":
+            add(f"{tag}: FK parent key is unique, and no child row is blank or orphaned",
+                p_unique and orphans == 0 and nulls == 0,
+                f"parent unique {p_unique}, {orphans} orphans, {nulls} nulls")
         if pm == "|o":   # the parent is optional: some child rows must really lack one
             add(f"{tag}: a child may lack a parent (|o is earned)", orphans + nulls > 0, f"{orphans} child rows name a missing parent, {nulls} are blank")
-        else:
+        elif kind != "fk":
             add(f"{tag}: every child row has a parent", orphans == 0 and nulls == 0, f"{orphans} orphans, {nulls} nulls")
         per_parent = f"select p.{key} k, count(c.{col}) n from {parent} p left join {child} c on c.{col} = p.{key} group by 1"
         zero = one(f"select count(*) from ({per_parent}) where n = 0")

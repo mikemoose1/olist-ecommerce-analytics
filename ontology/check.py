@@ -227,6 +227,20 @@ def check_metrics(con, mf):
             f"MetricFlow by month vs table: {same}/{len(table_m)} months identical (numerator and denominator)"
 
 
+
+def check_term_sql():
+    """A term with a sql: card must point at a real dbt file that contains the stated snippet."""
+    for name, card in ONTO["terms"].items():
+        loc = card.get("sql")
+        if not loc:
+            continue
+        path = os.path.join(ROOT, loc["file"])
+        exists = os.path.isfile(path)
+        text = open(path).read() if exists else ""
+        ok = exists and loc["contains"] in text
+        yield "term_sql", name, ok, f"{loc['file']} contains {loc['contains']!r}"
+
+
 def check_diagram():
     doc = open(MD).read()
     yield "diagram", "ONTOLOGY.md entity diagram", mermaid() in doc, "regenerate with: python ontology/check.py --mermaid"
@@ -242,7 +256,7 @@ def main():
         mf["monthly"] = mf_monthly_late()
     con = duckdb.connect(DB, read_only=True)
     results = []
-    for gen in (check_entities(con), check_relationships(con), check_columns(con), check_term_counts(con), check_column_facts(con), check_facts(con), check_stage_rules(con), check_model_links(),
+    for gen in (check_entities(con), check_relationships(con), check_columns(con), check_term_counts(con), check_term_sql(), check_column_facts(con), check_facts(con), check_stage_rules(con), check_model_links(),
                 coverage.check_coverage(con, ONTO, MD, ALLOW),
                 check_metrics(con, mf), check_diagram()):
         for kind, name, ok, detail in gen:

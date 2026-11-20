@@ -16,6 +16,7 @@ import sys
 
 from common import ROOT, connect, facts, row
 import erd
+import ontology_view
 
 README = ROOT / "README.md"                      # the short summary
 FULL = ROOT / "docs" / "CASE_STUDY.md"           # the full case study; docs/index.md (Pages) is built from it
@@ -137,7 +138,7 @@ def build_claims(con):
     after = readme.split("Three problems in the tables would have skewed the results.\n", 1)[1].split("\n\n", 1)[0]
     add("Three problems in the tables" if len([l for l in after.splitlines() if l.startswith("- ")]) == 3 else "THREE_MISMATCH", "repo")
     add("the nine source tables" if manifest_n == 9 else "NINE_MISMATCH", "repo")
-    add(f"The keys and links in the diagram above pass {erd_ok} of {len(erd_res)} checks", "warehouse")
+    add(f"The keys and links in the diagram above pass {erd_ok} of {len(erd_res)} checks against the raw files, including that every column marked FK has a unique parent and no orphans", "warehouse")
     add(f"All {proven} rules in the check suite", "repo" if proven == len(mut) else "MUTATION_MISMATCH")
     add("and six reasonable ways of comparing" if "six specifications" in (ROOT / "review_cost_causal" / "README.md").read_text() else "SIX_MISMATCH", "repo", "fs")
     add("two randomized tests" if "## What to do: two tests" in memo else "TWO_MISMATCH", "repo", "fs")
@@ -162,9 +163,13 @@ def prose(text):
     return text
 
 
-def problems(page_text, claims, which, erd_text=None):
+def problems(page_text, claims, which, erd_text=None, ontology_section=None):
     """Problems on one page. which is "f" (docs/CASE_STUDY.md) or "s" (README.md). The ERD is checked on the full page only."""
     out = []
+    if which == "f" and ontology_section is not None:
+        if ontology_section not in page_text:
+            out.append("ontology section differs from case_study/ontology_view.py")
+        page_text = page_text.replace(ontology_section, "\n")
     text = original = prose(page_text)
     for frag, src, pages in claims:
         if which in pages and frag not in original:
@@ -194,7 +199,7 @@ def main():
     current = index.read_text() if index.exists() else ""
     full_text = FULL.read_text()
     found = [f"[README.md] {p}" for p in problems(README.read_text(), claims, "s")]
-    found += [f"[docs/CASE_STUDY.md] {p}" for p in problems(full_text, claims, "f", erd.mermaid())]
+    found += [f"[docs/CASE_STUDY.md] {p}" for p in problems(full_text, claims, "f", erd.mermaid(), ontology_view.case_study_section(con))]
     found += pages_problems(current, build_pages.render(full_text, build_pages.embedded_url(current)))
     for p in found:
         print("FAIL ", p)

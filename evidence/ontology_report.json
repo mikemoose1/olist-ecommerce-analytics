@@ -343,6 +343,30 @@
  },
  {
   "kind": "column",
+  "name": "terms.customer_id",
+  "ok": true,
+  "detail": "staging.stg_customers.customer_id"
+ },
+ {
+  "kind": "column",
+  "name": "terms.ship_by_date",
+  "ok": true,
+  "detail": "marts.fct_orders.last_shipping_limit_at"
+ },
+ {
+  "kind": "column",
+  "name": "terms.handoff_to_carrier",
+  "ok": true,
+  "detail": "marts.fct_orders.delivered_to_carrier_at"
+ },
+ {
+  "kind": "column",
+  "name": "terms.late_handoff",
+  "ok": true,
+  "detail": "marts.fct_orders.delivered_to_carrier_at"
+ },
+ {
+  "kind": "column",
   "name": "metrics.late_rate",
   "ok": true,
   "detail": "metrics.metric_late_rate_orders.is_late"
@@ -436,6 +460,54 @@
   "name": "order_review_score",
   "ok": true,
   "detail": "review_score is null: 768 (card 768)"
+ },
+ {
+  "kind": "term_count",
+  "name": "customer_id",
+  "ok": true,
+  "detail": "1=1: 99441 (card 99441)"
+ },
+ {
+  "kind": "term_count",
+  "name": "ship_by_date",
+  "ok": true,
+  "detail": "last_shipping_limit_at is null: 775 (card 775)"
+ },
+ {
+  "kind": "term_count",
+  "name": "handoff_to_carrier",
+  "ok": true,
+  "detail": "delivered_to_carrier_at is null: 1783 (card 1783)"
+ },
+ {
+  "kind": "term_count",
+  "name": "late_handoff",
+  "ok": true,
+  "detail": "order_id in (select order_id from metrics.metric_late_rate_orders) and delivered_to_carrier_at is not null and delivered_to_carrier_at > last_shipping_limit_at: 8530 (card 8530); order_id in (select order_id from metrics.metric_late_rate_orders) and delivered_to_carrier_at is not null: 94930 (card 94930); order_id in (select order_id from metrics.metric_late_rate_orders) and delivered_to_carrier_at is null: 1 (card 1)"
+ },
+ {
+  "kind": "term_sql",
+  "name": "late",
+  "ok": true,
+  "detail": "models/intermediate/int_order_delivery.sql contains 'cast(o.delivered_to_customer_at as date) > o.estimated_delivery_date'"
+ },
+ {
+  "kind": "term_sql",
+  "name": "ship_by_date",
+  "ok": true,
+  "detail": "models/intermediate/int_order_delivery.sql contains 'max(shipping_limit_at) as last_shipping_limit_at'"
+ },
+ {
+  "kind": "term_sql",
+  "name": "handoff_to_carrier",
+  "ok": true,
+  "detail": "models/intermediate/int_order_delivery.sql contains 'o.delivered_to_carrier_at'"
+ },
+ {
+  "kind": "term_sql",
+  "name": "late_handoff",
+  "ok": true,
+  "detail": "models/metrics/metric_late_rate_control_chart.sql contains 'f.delivered_to_carrier_at > f.last_shipping_limit_at'"
  },
  {
   "kind": "column_fact",

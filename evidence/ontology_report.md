@@ -1,6 +1,6 @@
 # Ontology check: every claim in ontology/ontology.yml against the warehouse
 
-216/216 PASS
+228/228 PASS
 
 | Kind | Claim | Result | Detail |
 |---|---|---|---|
@@ -61,6 +61,10 @@
 | column | terms.placed_an_order | PASS | marts.dim_customer.n_orders |
 | column | terms.parcel_count | PASS | marts.fct_orders.n_parcels |
 | column | terms.order_review_score | PASS | marts.fct_orders.review_score |
+| column | terms.customer_id | PASS | staging.stg_customers.customer_id |
+| column | terms.ship_by_date | PASS | marts.fct_orders.last_shipping_limit_at |
+| column | terms.handoff_to_carrier | PASS | marts.fct_orders.delivered_to_carrier_at |
+| column | terms.late_handoff | PASS | marts.fct_orders.delivered_to_carrier_at |
 | column | metrics.late_rate | PASS | metrics.metric_late_rate_orders.is_late |
 | column | metrics.late_rate_monthly | PASS | metrics.metric_late_rate_monthly.year_month |
 | column | metrics.repeat_rate_90d | PASS | metrics.metric_repeat_rate_90d_people.repeated |
@@ -77,6 +81,14 @@
 | term_count | placed_an_order | PASS | n_orders >= 1: 96096 (card 96096); n_qualifying_orders >= 1: 94983 (card 94983); n_qualifying_orders = 0: 1113 (card 1113) |
 | term_count | parcel_count | PASS | n_parcels = 0: 775 (card 775); n_parcels = 1: 97388 (card 97388); n_parcels > 1: 1278 (card 1278) |
 | term_count | order_review_score | PASS | review_score is null: 768 (card 768) |
+| term_count | customer_id | PASS | 1=1: 99441 (card 99441) |
+| term_count | ship_by_date | PASS | last_shipping_limit_at is null: 775 (card 775) |
+| term_count | handoff_to_carrier | PASS | delivered_to_carrier_at is null: 1783 (card 1783) |
+| term_count | late_handoff | PASS | order_id in (select order_id from metrics.metric_late_rate_orders) and delivered_to_carrier_at is not null and delivered_to_carrier_at > last_shipping_limit_at: 8530 (card 8530); order_id in (select order_id from metrics.metric_late_rate_orders) and delivered_to_carrier_at is not null: 94930 (card 94930); order_id in (select order_id from metrics.metric_late_rate_orders) and delivered_to_carrier_at is null: 1 (card 1) |
+| term_sql | late | PASS | models/intermediate/int_order_delivery.sql contains 'cast(o.delivered_to_customer_at as date) > o.estimated_delivery_date' |
+| term_sql | ship_by_date | PASS | models/intermediate/int_order_delivery.sql contains 'max(shipping_limit_at) as last_shipping_limit_at' |
+| term_sql | handoff_to_carrier | PASS | models/intermediate/int_order_delivery.sql contains 'o.delivered_to_carrier_at' |
+| term_sql | late_handoff | PASS | models/metrics/metric_late_rate_control_chart.sql contains 'f.delivered_to_carrier_at > f.last_shipping_limit_at' |
 | column_fact | marts.fct_orders.purchased_at | PASS | type TIMESTAMP (card TIMESTAMP); nulls 0 (card 0); holds [purchase_date = cast(purchased_at as date)]: 0 violations |
 | column_fact | marts.fct_orders.purchase_date | PASS | type DATE (card DATE); nulls 0 (card 0); holds [purchase_date = cast(purchased_at as date)]: 0 violations |
 | column_fact | marts.fct_orders.is_qualifying_order | PASS | type BOOLEAN (card BOOLEAN); nulls 0 (card 0); holds [is_qualifying_order = (order_status not in ('canceled', 'unavailable') and n_items > 0)]: 0 violations |

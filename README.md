@@ -14,6 +14,8 @@ This project builds a tested data pipeline from about 99,000 real orders of Olis
 
 ## The short version
 
+A customer ID is a new receipt number on every order, so the analysis counts people, not IDs. An order is late when it arrives on a later calendar day than the promised date.
+
 **Question.** What does late delivery cost Olist, and where should an operations manager act first?
 
 **Finding.** 6.87% of delivered orders (6,518 of 94,931) arrived late. Late orders average 2.27 stars and on-time orders 4.31. The estimated effect is about 3,110 of 11,635 (27%) bad reviews, and six reasonable ways of comparing give 2,880 to 3,350. On 9.0% of orders the seller handed the parcel to the carrier after the ship-by date. Those orders were late 21.2% of the time, against 5.4% when the handoff was on time.

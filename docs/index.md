@@ -51,12 +51,12 @@ erDiagram
     orders ||--o{ order_payments : "order_id"
     orders ||--o{ order_reviews : "order_id"
     category_translation |o--|{ products : "product_category_name"
-    geolocation }o--o{ customers : "zip prefix"
-    geolocation }o--o{ sellers : "zip prefix"
+    geolocation }o--o{ customers : "zip prefix (approximate)"
+    geolocation }o--o{ sellers : "zip prefix (approximate)"
     customers {
         string customer_id PK
         string customer_unique_id "person id, not unique"
-        string customer_zip_code_prefix FK
+        string customer_zip_code_prefix "zip prefix, soft link"
     }
     orders {
         string order_id PK
@@ -76,11 +76,11 @@ erDiagram
     }
     sellers {
         string seller_id PK
-        string seller_zip_code_prefix FK
+        string seller_zip_code_prefix "zip prefix, soft link"
     }
     products {
         string product_id PK
-        string product_category_name FK
+        string product_category_name "soft link, some blank or untranslated"
     }
     category_translation {
         string product_category_name PK
@@ -92,7 +92,7 @@ erDiagram
         decimal payment_value
     }
     order_reviews {
-        string review_id PK
+        string review_id PK "repeats across orders"
         string order_id PK,FK
         int review_score
     }
@@ -109,13 +109,52 @@ erDiagram
 </script>
 
 
-*Keys and links of the nine source tables. Each one was tested against the raw files. For the built models, see [the dbt lineage graph](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/docs/LINEAGE.md).*
+*Keys and links of the nine source tables. Soft links (zip prefixes and product category) are not keys. A review ID can repeat across orders. Each mark was tested against the raw files, including that every column marked FK has a unique parent and no orphans. For the built models, see [the dbt lineage graph](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/docs/LINEAGE.md).*
 
 Three problems in the tables would have skewed the results.
 
 - Every order has a new customer ID. There are 99,441 IDs for 96,096 people, so repeat buyers look like strangers until they are matched on the person ID.
 - 1,278 orders ship from several sellers but carry one delivery date, so their late status cannot be observed. They are left out of the late rate.
 - Review surveys can be sent before the parcel arrives. By calendar day, 5.19% of the reviews on delivered orders are dated before delivery.
+
+The ZIP-prefix and product-category columns are drawn as soft links, not keys, because the data does not keep them unique or complete. A review ID can appear on more than one order.
+
+### What the words mean
+
+An ontology here is the project's agreed list of business concepts: what each one means, and where it lives in the data. The table and the rules below are generated from [ontology/ontology.yml](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/ontology/ontology.yml), and a script checks them against the warehouse.
+
+| Concept | Meaning | Lives in |
+|---|---|---|
+| Customer ID | A receipt number. Olist issues a new one for every order, so it cannot show a repeat buyer. | `staging.stg_customers.customer_id` |
+| Person | A real buyer, identified by customer_unique_id. "Customer" in every metric means person. | `marts.dim_customer.customer_unique_id` |
+| Order | One checkout by one customer. It can contain items from several sellers. | `marts.fct_orders.order_id` |
+| Late | Delivered on a later calendar day than the promised date. Same-day delivery is on time. | `metrics.metric_late_rate_orders.is_late` |
+| Ship-by date | The deadline Olist gives a seller to hand the parcel to the carrier. It is kept per item, and the order's ship-by date is the latest one among its items. | `marts.fct_orders.last_shipping_limit_at` |
+| Handoff to carrier | The moment the seller gave the parcel to the carrier, as recorded on the order. Some orders have none. | `marts.fct_orders.delivered_to_carrier_at` |
+| Late handoff | The handoff time is later than the order's ship-by time, compared as full timestamps. An order with no handoff time is in neither group. | `marts.fct_orders.delivered_to_carrier_at` |
+| Multi-seller order | An order with items from two or more sellers (2+ parcels). Its parcels can arrive on different days, but Olist records one delivery date. | `marts.fct_orders.n_parcels` |
+
+### What counts as late
+
+Late. Delivered on a later calendar day than the promised date. Same-day delivery is on time. It is judged only on the late-rate population, after the filters below.
+
+Late handoff. The handoff time is later than the order's ship-by time, compared as full timestamps. An order with no handoff time is in neither group. Among the judged orders, 94,930 have a handoff time and 8,530 of them were late. 1 judged order has no handoff time and is in neither group.
+
+### Which orders are judged
+
+The late rate uses a defined set of orders, not every row. The project setting `multi_seller_late_rule` is `exclude_multi_seller`. Each row shows how many orders remain after that filter.
+
+| Step | Rule | Orders left | Removed |
+|---|---|---|---|
+| A | All orders in the source | 99,441 |  |
+| B | Delivered, with a delivery date (delivery_state on time or late) | 96,470 | 2,971 |
+| C | At least one item (n_items above zero) | 96,470 | none |
+| D | Bought in the analysis window (in_analysis_window) | 96,203 | 267 |
+| E | Single-seller orders only (delivery evidence is not multi-parcel) | 94,931 | 1,272 |
+
+The 1,272 orders removed at the last step are the multi-seller orders that were still left. The source has 1,278 such orders. The other 6 were already removed by an earlier step. Each seller ships its own parcel, but the data keeps one delivery date for the order, so whether it was late cannot be observed.
+
+Not delivered or conflicting: 2,957 not delivered, 14 with a status that disagrees with the delivery date. These orders have no reliable delivery outcome.
 
 The cost estimate compares each late order with the same seller's orders that arrived just on time, in the same product category and month. Details are in [MODELING.md](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/MODELING.md), [the lineage graph](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/docs/LINEAGE.md) and [review_cost_causal/](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/review_cost_causal/README.md).
 
@@ -163,7 +202,7 @@ Run two randomized tests before any rollout. Details and measures are in [recomm
 ## How it was verified
 
 - Each headline number is recalculated straight from the raw files and matches ([evidence/verification_report.md](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/evidence/verification_report.md)).
-- The keys and links in the diagram above pass 36 of 36 checks against the raw files ([case_study/erd.py](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/case_study/erd.py)).
+- The keys and links in the diagram above pass 51 of 51 checks against the raw files, including that every column marked FK has a unique parent and no orphans ([case_study/erd.py](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/case_study/erd.py)).
 - Every data check was shown to fail on planted bad data. All 248 rules in the check suite are proven this way ([evidence/mutation_report.md](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/evidence/mutation_report.md)).
 - Every number in the memo is tied to the analysis output, and a script fails if one drifts ([recommendation/memo_check.py](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/recommendation/memo_check.py)).
 - Every number on this page is checked against the warehouse by [case_study/check_case_study.py](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/case_study/check_case_study.py).
@@ -198,6 +237,7 @@ Neither test has run. Test 1 needs seller-level random assignment and 8 weeks of
 | The estimate and its checks | [review_cost_causal/README.md](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/review_cost_causal/README.md) |
 | The data story and KPI tree | [story/QUESTIONS.md](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/story/QUESTIONS.md) |
 | The dashboard and how it was built | [dashboard/tableau/README.md](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/dashboard/tableau/README.md) |
+| The official concept map | [ontology/ONTOLOGY.md](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/ontology/ONTOLOGY.md) |
 | Every table, grain and rule | [MODELING.md](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/MODELING.md) |
 | Setup, tests and every number | [docs/REPRODUCE.md](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/docs/REPRODUCE.md) |
 | The short summary | [README](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/README.md) |

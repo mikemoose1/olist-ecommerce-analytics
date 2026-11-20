@@ -6,16 +6,18 @@ import tempfile
 
 import check_case_study as C
 import erd
+import ontology_view
 from common import connect
 
 README = C.FULL.read_text()          # the full case study; the cases below plant errors in it
 SHORT = C.README.read_text()         # the short README.md
 CLAIMS = C.build_claims(connect())
 ERD = erd.mermaid()
+SECTION = ontology_view.case_study_section(connect())
 
 
 def caught(text, erd_text=ERD, which="f"):
-    return bool(C.problems(text, CLAIMS, which, erd_text if which == "f" else None))
+    return bool(C.problems(text, CLAIMS, which, erd_text if which == "f" else None, SECTION if which == "f" else None))
 
 
 def sub(old, new, text=None):
@@ -39,9 +41,12 @@ CASES = [
     ("the stable-month count changed (15 to 17)", sub("of the 15 stable months", "of the 17 stable months"), True),
     ("the old causal wording back in the limits table", sub("Late delivery is estimated to account for about 3,110 bad reviews", "Late delivery caused about 3,110 bad reviews"), True),
     ("the points unit dropped from the repeat range", sub("-0.52 to 0.22 percentage points", "-0.52 to 0.22 points"), True),
-    ("the check count changed (36 of 36)", sub("pass 36 of 36", "pass 35 of 36"), True),
+    ("the check count changed (51 of 51)", sub("pass 51 of 51", "pass 50 of 51"), True),
     ("the holdout figure changed (1.56 to 1.65)", sub("It was 1.56 stars", "It was 1.65 stars"), True),
+    ("the late definition counts same-day arrival as late", sub("Late. Delivered on a later calendar day than the promised date. Same-day delivery is on time.", "Late. Arriving on the promised day counts as late."), True),
+    ("the late-rate population includes multi-seller orders", sub("Single-seller orders only", "All orders, including those with several sellers"), True),
 ]
+
 SHORT_CASES = [
     ("the real README.md", SHORT, False),
     ("README.md: a headline count changed (3,110 to 3,310)", sub("about 3,110 of the 11,635", "about 3,310 of the 11,635", SHORT), True),
@@ -97,6 +102,35 @@ for name, file, edit in DATA_CASES:
     bad += not ok
     print(("PASS " if ok else "FAIL ") + "ERD data check catches " + name)
 
-total = len(CASES) + len(SHORT_CASES) + len(ERD_CASES) + len(DATA_CASES)
+
+import copy
+MARK_CASES = [
+    ("a customer zip prefix marked FK", "customers", "customer_zip_code_prefix", "FK"),
+    ("a seller zip prefix marked FK", "sellers", "seller_zip_code_prefix", "FK"),
+    ("a product category marked FK", "products", "product_category_name", "FK"),
+    ("geolocation zip marked as a unique key", "geolocation", "geolocation_zip_code_prefix", "PK"),
+]
+TABLE_BAK = copy.deepcopy(erd.TABLES)
+REL_BAK = copy.deepcopy(erd.RELATIONS)
+for name, table, col, mark in MARK_CASES:
+    pk, cols = erd.TABLES[table]
+    erd.TABLES[table] = (pk, [(a, b, mark if b == col else c) for a, b, c in cols])
+    ok = any(not r[1] for r in erd.check_marks())
+    erd.TABLES.clear()
+    erd.TABLES.update(copy.deepcopy(TABLE_BAK))
+    bad += not ok
+    print(("PASS " if ok else "FAIL ") + "ERD mark check catches " + name)
+
+# Wrong cardinality: orders ||--|| order_items. Needs the CSV checks.
+erd.RELATIONS[:] = [
+    (r[0], r[1], r[2], "||", r[4], r[5], r[6]) if r[0] == "orders" and r[4] == "order_items" else r
+    for r in erd.RELATIONS
+]
+ok = any(not r[1] for r in erd.check_data())
+erd.RELATIONS[:] = copy.deepcopy(REL_BAK)
+bad += not ok
+print(("PASS " if ok else "FAIL ") + "ERD data check catches a wrong orders-to-items cardinality")
+
+total = len(CASES) + len(SHORT_CASES) + len(ERD_CASES) + len(DATA_CASES) + len(MARK_CASES) + 1
 print(f"{'FAIL' if bad else 'PASS'}  case study selftest: {total - bad}/{total} cases behave")
 sys.exit(1 if bad else 0)
