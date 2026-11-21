@@ -136,19 +136,19 @@ The cost estimate compares each late order with the same seller's orders that ar
 
 ## Findings
 
-**Late orders are rare and rated much lower.** 6.87% of delivered orders (6,518 of 94,931) arrived late. Late orders average 2.27 stars and on-time orders 4.31. Among reviewed orders, 62.4% of late ones get one or two stars, against 8.7% of on-time ones.
+**Late orders are rare and rated much lower.** 6.87% of delivered orders bought from January 2017 to August 2018 (6,518 of 94,931) arrived late. Late orders average 2.27 stars and on-time orders 4.31. Among reviewed orders, 62.4% of late ones get one or two stars, against 8.7% of on-time ones.
 
 ![Share of reviews with one or two stars, by days after the promised day](img/reviews_by_days_late.png)
 
 *Bad reviews climb about 11 percentage points for each day late and level off near 78% from day 6. Part of the climb is survey timing.*
 
-**About a quarter of the bad reviews are an estimated effect of lateness.** The estimate is about 3,110 of 11,635 (27%), and six reasonable ways of comparing give 2,880 to 3,350.
+**About a quarter of the bad reviews are an estimated effect of lateness.** The estimate is about 3,110 of 11,635 (27%). The 2,880 to 3,350 range is the spread of six comparison methods, not a confidence interval. The preferred method's own 95% interval is 3,025 to 3,195.
 
 ![Bar splitting all bad reviews into those estimated to come from late delivery and the rest](img/cause_share.png)
 
 *Roughly one bad review in four on delivered orders is estimated to come from late delivery.*
 
-**Repeat buying shows no clear effect.** 1.28% of customers order again within 90 days. After matching, customers whose first order was late came back 0.10 percentage points less often, with a range of -0.52 to 0.22 percentage points that includes zero.
+**Repeat buying shows no clear effect.** 1.28% of customers (991 of 77,560) order again within 90 days. Only 3.04% (2,887 of 94,983) ever ordered twice. After matching, customers whose first order was late came back 0.10 percentage points less often, with a range of -0.52 to 0.22 percentage points that includes zero.
 
 **Lateness clusters in time and place.** Three months (November 2017, February 2018 and March 2018) hold 48.3% of late orders and 21.7% of all orders. The north and northeast regions run 12.2% late.
 
@@ -177,7 +177,7 @@ Run two randomized tests before any rollout. Details and measures are in [recomm
 
 ### A short-term printed date
 
-The analysis also replayed history with a per-route delivery date, updated as orders arrive, in place of Olist's single promise. Actual delivery times were left unchanged. On the 89,412 reviewed orders from April 2017 onward, the stricter 19-out-of-20 per-route date would likely have cut the extra one- and two-star reviews attributed to late delivery by about 9% (about 286 of 3,017), with a realistic range of about 7% to 11% from resampling orders. That cut is a net: about 2,337 orders that had been late would have been on time, avoiding about 894 bad reviews, while about 1,839 orders that had been on time would have been late, adding about 650, plus about 42 fewer from orders late either way. A looser 9-out-of-10 date made things worse. This is a printed-date stopgap, not a logistics fix. The data cannot show whether a different date would have changed who bought, or whether it would have raised repeat buying.
+The analysis also replayed history with a per-route delivery date, updated as orders arrive, in place of Olist's single promise. Actual delivery times were left unchanged. On the 89,412 reviewed orders from April 2017 onward, the stricter 19-out-of-20 per-route date would likely have cut the extra one- and two-star reviews attributed to late delivery by about 9% (about 286 of 3,017), with a realistic range of about 7% to 11%, or about 225 to 345 reviews, from 5,000 resamples of orders. That cut is a net: about 2,337 orders that had been late would have been on time, avoiding about 894 bad reviews, while about 1,839 orders that had been on time would have been late, adding about 650, plus about 42 fewer from orders late either way. Dates were scored as a walk-forward as-of replay: a delivery entered history only if it arrived strictly before the purchase, after an April 2017 burn-in, with a fallback from the route to the customer's state to a global date and a minimum of 30 orders. A looser 9-out-of-10 date failed the pre-declared pass bar and would have added about 1,739 extra bad reviews. A more detailed per-order model did not beat the simple per-route rule, so the per-route 19-out-of-20 date was the one that was judged. This is a printed-date stopgap, not a logistics fix. The data cannot show whether a different date would have changed who bought, or whether it would have raised repeat buying.
 
 ![Extra late-delivery bad reviews under Olist's promise and under a per-route date](img/promise_date.png)
 
@@ -186,7 +186,7 @@ The analysis also replayed history with a per-route delivery date, updated as or
 ## How it was verified
 
 - Each headline number is recalculated straight from the raw files and matches ([evidence/verification_report.md](../evidence/verification_report.md)).
-- The keys and links in the diagram above pass 51 of 51 checks against the raw files, including that every column marked FK has a unique parent and no orphans ([case_study/erd.py](../case_study/erd.py)).
+- The keys and links of the nine source tables pass 51 of 51 checks against the raw files, including that every column marked FK has a unique parent and no orphans ([case_study/erd.py](../case_study/erd.py)).
 - Every data check was shown to fail on planted bad data. All 248 rules in the check suite are proven this way ([evidence/mutation_report.md](../evidence/mutation_report.md)).
 - Every number in the memo is tied to the analysis output, and a script fails if one drifts ([recommendation/memo_check.py](../recommendation/memo_check.py)).
 - Every number on this page is checked against the warehouse by [case_study/check_case_study.py](../case_study/check_case_study.py).
@@ -208,6 +208,18 @@ This page uses its labels the same way throughout. An estimated effect comes fro
 The dashboard title says "linked to" for the first row and "fixable cause" for the handoff. Read the first as the estimated effect above and the second as the untested link in the handoff row.
 
 The data has no revenue, commission or checkout figures, so the case for fixing lateness rests on ratings, not on money.
+
+## What the data couldn't answer
+
+These are questions the data is too thin or too incomplete to answer. Weaker results, such as a date rule that made reviews worse, are covered in the method above, not here.
+
+**Would fewer late deliveries, or a different printed date, raise repeat buying?** Only 3.04% of customers (2,887 of 94,983) ever ordered twice, and 1.28% (991 of 77,560) did so within 90 days, so the sample is too small to tell a real change from chance. A file of people and their later orders, in a market where repeat buying is more common, would be needed.
+
+**Can orders just before and just after the promised date be compared as if the cutoff were as good as random?** That cutoff check failed its density test: fewer parcels arrive one day late than the trend predicts, so those groups are not alike. The comparison would need arrivals that do not thin out just after the promised day.
+
+**How should seller logistics be fixed?** The data shows whether a seller handed a parcel to the carrier after the ship-by date, but not why. There are no seller operations or carrier files (warehouse capacity, pickup failures, routing). Those files would be needed to design an operations fix. The ship-by reminder test is the step the data can support.
+
+**Would a longer promised date lower checkout conversion?** Conversion, commission and revenue are not in the data, so that risk cannot be measured here. A test that records whether the customer completed the purchase would be needed.
 
 ## What's next
 
