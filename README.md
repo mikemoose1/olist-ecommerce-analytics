@@ -18,7 +18,7 @@ A customer ID is a new receipt number on every order, so the analysis counts peo
 
 **Question.** What does late delivery cost Olist, and where should an operations manager act first?
 
-**Finding.** 6.87% of delivered orders (6,518 of 94,931) arrived late. Late orders average 2.27 stars and on-time orders 4.31. The estimated effect is about 3,110 of 11,635 (27%) bad reviews, and six reasonable ways of comparing give 2,880 to 3,350. On 9.0% of orders the seller handed the parcel to the carrier after the ship-by date. Those orders were late 21.2% of the time, against 5.4% when the handoff was on time.
+**Finding.** 6.87% of delivered orders bought from January 2017 to August 2018 (6,518 of 94,931) arrived late. Late orders average 2.27 stars and on-time orders 4.31. The estimated effect is about 3,110 of 11,635 (27%). The 2,880 to 3,350 range is the spread of six comparison methods, not a confidence interval. The preferred method's own 95% interval is 3,025 to 3,195. On 9.0% of orders the seller handed the parcel to the carrier after the ship-by date. Those orders were late 21.2% of the time, against 5.4% when the handoff was on time.
 
 **Recommendation.** Run two randomized tests before any rollout. First, ship-by reminders. Half of the sellers, picked at random, get a reminder the day before each ship-by date and a visible on-time score. The other half see no change. Second, buffer days in the promise for north and northeast addresses and in high-lateness months, on a random half of orders. A per-route printed date, updated as orders arrive, is a short-term option while those tests run; the full case study has the result.
 

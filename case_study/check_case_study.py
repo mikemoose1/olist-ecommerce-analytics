@@ -49,6 +49,9 @@ def build_claims(con):
     caused = one("select sum(extra_bad_reviews) from metrics.metric_review_cost_causal")[0]
     y0, y1 = one("select min(year(purchase_date)), max(year(purchase_date)) from marts.fct_orders")
     repeat90 = one("select value_pct from metrics.metric_repeat_rate_90d")[0]
+    ev90_n, ev90_d = one("select numerator, denominator from metrics.metric_repeat_rate_90d")
+    ever_pct, ever_n, ever_d = one("select value_pct, numerator, denominator from metrics.metric_repeat_rate_ever")
+    win0, win1 = one("select min(year_month), max(year_month) from marts.dim_date where in_analysis_window")
     top_months = sorted(r[0] for r in con.sql("select year_month from metrics.metric_late_rate_monthly order by value_pct desc limit 3").fetchall())
     top_late, top_orders = one(
         "select sum(numerator), sum(denominator) from (select * from metrics.metric_late_rate_monthly order by value_pct desc limit 3)")
@@ -82,17 +85,22 @@ def build_claims(con):
     add(f"{ids:,} IDs for {people:,} people", "warehouse")
     add(f"{multi:,} orders ship from several sellers", "warehouse")
     add(f"{pct(100 * survey_before / survey_n, 2)}% of the reviews on delivered orders are dated before delivery", "warehouse")
-    add(f"{pct(rate, 2)}% of delivered orders ({late:,} of {judged:,}) arrived late. Late orders average {s_late:.2f} stars and on-time orders {s_ok:.2f}", "warehouse", "fs")
+    add(f"{pct(rate, 2)}% of delivered orders bought from {n_months[win0]} to {n_months[win1]} ({late:,} of {judged:,}) arrived late. Late orders average {s_late:.2f} stars and on-time orders {s_ok:.2f}", "warehouse", "fs")
     add(f"{pct(bad_late)}% of late ones get", "warehouse")
     add(f"against {pct(bad_ok)}% of on-time ones", "warehouse")
     add(f"climb about {F['c_ramp_slope']} percentage points for each day late and level off near {F['c_ramp_plateau']}% from day {F['c_ramp_end_day']}", "report")
     add(f"The estimate is about {caused_r:,} of {total_bad:,} ({100 * caused / total_bad:.0f}%)", "warehouse")
-    add(f"give {F['c_cost_range_lo']} to {F['c_cost_range_hi']}", "report", "fs")
+    add(f"{F['c_cost_range_lo']} to {F['c_cost_range_hi']}", "report", "fs")
+    add(f"The {F['c_cost_range_lo']} to {F['c_cost_range_hi']} range is the spread of six comparison methods, not a confidence interval", "report", "fs")
+    causal = json.loads((ROOT / "evidence" / "review_cost_causal_report.json").read_text())
+    ci_lo, ci_hi = causal["headline"]["ci95"]
+    add(f"The preferred method's own 95% interval is {round(ci_lo):,} to {round(ci_hi):,}", "report", "fs")
     add(f"Roughly one bad review in four" if 0.23 <= caused / total_bad <= 0.30 else "QUARTER_MISMATCH", "warehouse")
     add(f"About a quarter of the bad reviews" if 0.23 <= caused / total_bad <= 0.30 else "QUARTER_MISMATCH", "warehouse")
     memo = (ROOT / "recommendation" / "MEMO.md").read_text()
     window = "90" if "90<!--d:repeat_window_days-->" in memo else "WINDOW_MISMATCH"
-    add(f"{repeat90:.2f}% of customers order again within {window} days", "warehouse+repo")
+    add(f"{repeat90:.2f}% of customers ({int(ev90_n):,} of {int(ev90_d):,}) order again within {window} days", "warehouse")
+    add(f"Only {ever_pct:.2f}% ({int(ever_n):,} of {int(ever_d):,}) ever ordered twice", "warehouse")
     add(f"came back {abs(float(F['rep_matched'])):.2f} percentage points less often, with a range of {F['rep_matched_lo']} to {F['rep_matched_hi']} percentage points", "report", "fs")
     add(f"Three months ({n_months[top_months[0]]}, {n_months[top_months[1]]} and {n_months[top_months[2]]}) hold {pct(100 * top_late / all_late)}% of late orders and {pct(100 * top_orders / all_orders)}% of all orders", "warehouse")
     add(f"run {pct(nne)}% late", "warehouse")
@@ -108,9 +116,19 @@ def build_claims(con):
     add(f"It was {abs(hold):.2f} stars in the last {words[n_hold]} months, against {abs(disc):.2f} earlier" if F["holdout_first_month"][:4] == F["holdout_last_month"][:4] else "HOLDOUT_MISMATCH", "report")
     add(f"Late delivery is estimated to account for about {caused_r:,} bad reviews", "warehouse")
     # the goal line, the warning line and the what-if rates, from the targets table and the memo's own figures
-    t = one("select 100*alarm_line_late_rate, 100*goal_late_rate, 100*stretch_goal_late_rate, 100*late_rate_if_handoffs_ok, stable_months, laney_signal_months, typical_orders "
+    t = one("select 100*alarm_line_late_rate, 100*goal_late_rate, 100*stretch_goal_late_rate, 100*late_rate_if_handoffs_ok, stable_months, laney_signal_months, typical_orders, thin_months "
             "from metrics.metric_late_rate_targets")
-    alarm, goal, stretch, whatif_pooled, stable, flagged_n, typical = t
+    alarm, goal, stretch, whatif_pooled, stable, flagged_n, typical, thin_n_t = t
+    in_fit_n, thin_in_fit = one(
+        "select count(*) filter (where not laney_signal), "
+        "count(*) filter (where not laney_signal and thin_month) "
+        "from metrics.metric_late_rate_control_chart"
+    )
+    chart_sql = (ROOT / "models" / "metrics" / "metric_late_rate_control_chart.sql").read_text()
+    if "sum(late_orders) filter (where in_fit)" not in chart_sql:
+        raise SystemExit("Laney centre is not fitted on in_fit months in metric_late_rate_control_chart.sql")
+    if int(in_fit_n) != 17 or int(thin_in_fit) != 2 or int(thin_n_t) != 2:
+        raise SystemExit(f"unexpected in-fit/thin counts: in_fit={in_fit_n}, thin_in_fit={thin_in_fit}, thin_months={thin_n_t}")
     flagged = sorted(F[f"c_flagged_{i}"] for i in (1, 2, 3))
     assert flagged_n == 3 and len(flagged) == 3
     assert f"{goal:.1f}" == F["c_goal_line"] and f"{stretch:.1f}" == F["c_stretch_line"] and f"{whatif_pooled:.2f}" == F["c_whatif_rate"]
@@ -121,7 +139,7 @@ def build_claims(con):
     memo = (ROOT / "recommendation" / "MEMO.md").read_text()
     add(f"The {goal:.1f}% goal and the {alarm:.1f}% warning line", "warehouse")
     add(f"It sits at {alarm:.1f}% for a typical month of {typical:,.0f} orders", "warehouse")
-    add(f"the average late rate of the stable months plus three standard deviations" if "centre + 3 * sigma_z * sig" in spc else "SPC_MISMATCH", "repo")
+    add(f"the average late rate of the {int(in_fit_n)} months left in the fit, including the {int(thin_in_fit)} thin months, plus three standard deviations" if "centre + 3 * sigma_z * sig" in spc else "SPC_MISMATCH", "repo")
     add(f"Three months crossed it: {n_months[flagged[0]]}, {n_months[flagged[1]]} and {n_months[flagged[2]]}", "warehouse")
     add(f"The goal, {goal:.1f}%, is the median late rate of the {int(stable)} stable months", "warehouse", "fs")
     add(f"and the warning line, {alarm:.1f}%,", "warehouse", "s")
@@ -138,9 +156,27 @@ def build_claims(con):
     after = readme.split("Three problems in the tables would have skewed the results.\n", 1)[1].split("\n\n", 1)[0]
     add("Three problems in the tables" if len([l for l in after.splitlines() if l.startswith("- ")]) == 3 else "THREE_MISMATCH", "repo")
     add("the nine source tables" if manifest_n == 9 else "NINE_MISMATCH", "repo")
-    add(f"The keys and links in the diagram above pass {erd_ok} of {len(erd_res)} checks against the raw files, including that every column marked FK has a unique parent and no orphans", "warehouse")
+    add(f"pass {erd_ok} of {len(erd_res)} checks against the raw files, including that every column marked FK has a unique parent and no orphans", "warehouse")
     add(f"All {proven} rules in the check suite", "repo" if proven == len(mut) else "MUTATION_MISMATCH")
-    add("and six reasonable ways of comparing" if "six specifications" in (ROOT / "review_cost_causal" / "README.md").read_text() else "SIX_MISMATCH", "repo", "fs")
+    # the six named methods in the case study must match the specifications in the causal report
+    SPEC_PHRASES = (
+        ("V2_preferred", "just-on-time baseline"),
+        ("V1_baseline_all_on_time", "any on-time baseline"),
+        ("V3_product_fe", "same product"),
+        ("V5_plus_state_fe", "plus customer state"),
+        ("V4_same_actual_delivery_time", "same actual delivery time"),
+        ("V0_no_seller_fe", "no seller matching"),
+    )
+    fe_keys = set(causal["fe"])
+    want_keys = {k for k, _ in SPEC_PHRASES}
+    six_ok = (
+        fe_keys == want_keys
+        and len(SPEC_PHRASES) == 6
+        and "six specifications" in (ROOT / "review_cost_causal" / "README.md").read_text()
+    )
+    add("the spread of six comparison methods" if six_ok else "SIX_MISMATCH", "repo", "fs")
+    for key, phrase in SPEC_PHRASES:
+        add(phrase if key in fe_keys else f"SPEC_MISSING_{key}", "report")
     add("two randomized tests" if "## What to do: two tests" in memo else "TWO_MISMATCH", "repo", "fs")
     add("Run two randomized tests" if "## What to do: two tests" in memo else "TWO_MISMATCH", "repo", "fs")
     add("over 8 weeks" if "8<!--d:test_weeks--> weeks" in memo else "WEEKS_MISMATCH", "repo")
@@ -149,16 +185,81 @@ def build_claims(con):
     add("The other half see no change" if "The other half see no change" in memo else "HALF_MISMATCH", "repo", "fs")
     add("on a random half of orders" if "on a random half of orders" in memo else "HALF_MISMATCH", "repo", "fs")
     # per-route printed-date backtest (locked display figures from recommendation/promise_backtest/expected.json)
-    P = json.loads((ROOT / "recommendation" / "promise_backtest" / "expected.json").read_text())["display"]
+    exp_all = json.loads((ROOT / "recommendation" / "promise_backtest" / "expected.json").read_text())
+    P = exp_all["display"]
+    burn = exp_all["integrity"]["burn_in"]
+    min_cell = exp_all["integrity"]["min_cell"]
+    p90_fail = exp_all["bar"]["p90"]["overall_pass"] is False
     add(
-        f"On the {P['n_reviewed']:,} reviewed orders from April 2017 onward, the stricter 19-out-of-20 per-route date would likely have cut the extra one- and two-star reviews attributed to late delivery by about {P['p95_share_rounded_pct']}% (about {P['p95_reduction_rounded']} of {P['olist_extra_rounded']:,}), with a realistic range of about {P['range_lo_pct']}% to {P['range_hi_pct']}% from resampling orders",
+        f"On the {P['n_reviewed']:,} reviewed orders from April 2017 onward, the stricter 19-out-of-20 per-route date would likely have cut the extra one- and two-star reviews attributed to late delivery by about {P['p95_share_rounded_pct']}% (about {P['p95_reduction_rounded']} of {P['olist_extra_rounded']:,}), with a realistic range of about {P['range_lo_pct']}% to {P['range_hi_pct']}%, or about {P['bootstrap_reduction_lo_rounded']} to {P['bootstrap_reduction_hi_rounded']} reviews, from {P['bootstrap_n']:,} resamples of orders",
         "report",
     )
     add(
         f"about {P['newly_on_time_n']:,} orders that had been late would have been on time, avoiding about {P['newly_on_time_avoided_rounded']} bad reviews, while about {P['newly_late_n']:,} orders that had been on time would have been late, adding about {P['newly_late_added_rounded']}, plus about {P['still_late_reduction_rounded']} fewer from orders late either way",
         "report",
     )
-    add("A looser 9-out-of-10 date made things worse", "report")
+    add(
+        f"A looser 9-out-of-10 date failed the pre-declared pass bar and would have added about {P['p90_added_rounded']:,} extra bad reviews" if p90_fail else "P90_PASS_MISMATCH",
+        "report",
+    )
+    add("A more detailed per-order model did not beat the simple per-route rule on accuracy, in an earlier test", "report")
+    density_fail = causal["rd_density_passed"] is False
+    burn_month = {1: "January", 2: "February", 3: "March", 4: "April", 5: "May", 6: "June",
+                  7: "July", 8: "August", 9: "September", 10: "October", 11: "November", 12: "December"}
+    by, bm, bd = (int(x) for x in burn.split("-"))
+    add(
+        f"after an {burn_month[bm]} {by} burn-in, with a fallback from the route to the customer's state to a global date and a minimum of {min_cell} orders",
+        "report",
+    )
+    add(
+        f"If even the global history is thinner than that, a global date with no {min_cell}-order floor is used as a last resort",
+        "report",
+    )
+    add(f"Only {ever_pct:.2f}% of customers ({int(ever_n):,} of {int(ever_d):,}) ever ordered twice", "warehouse")
+    add(
+        "the cutoff check failed its density test" if density_fail else "DENSITY_MISMATCH",
+        "report",
+    )
+    add("There are no seller operations or carrier files", "repo")
+    add("Olist's commission and conversion are not in the data", "repo")
+    add(
+        "The per-route 19-out-of-20 date was the one that was judged",
+        "report",
+    )
+    add("A 19-out-of-20 date is the 95th percentile of past delivery times on that route: 19 times out of 20", "report")
+    pass_bar = (ROOT / "recommendation" / "promise_backtest" / "PASS_BAR.md").read_text()
+    add(
+        "On 20 November 2026, pass-bar items 3 and 5 were reworded after the totals were known"
+        if "On 20 November 2026, items 3 and 5 were reworded after the totals" in pass_bar
+        else "PASSBAR_NOTE_MISMATCH",
+        "repo",
+    )
+    add(
+        "which dates passed did not change"
+        if "which dates pass did not change" in pass_bar
+        else "PASSBAR_OUTCOME_MISMATCH",
+        "repo",
+    )
+    thin_sql = (ROOT / "models" / "metrics" / "metric_late_rate_control_chart.sql").read_text()
+    thin_n = 2000
+    if f"orders < {thin_n} as thin_month" not in thin_sql:
+        raise SystemExit("thin_month cutoff missing from metric_late_rate_control_chart.sql")
+    add(f"has at least {thin_n:,} orders, the cutoff used to drop thin months from the goal", "warehouse")
+    add(
+        f"Sales values are in the orders; late orders in the last {F['last12_n']} months of the window carried {F['late_gmv_last12']} of sales",
+        "report",
+    )
+    ever_sql = (ROOT / "models" / "metrics" / "metric_repeat_rate_ever.sql").read_text()
+    if "all time, no window" not in ever_sql or "is_qualifying_order" not in ever_sql or "in_analysis_window" in ever_sql or "metric_late_rate" in ever_sql:
+        raise SystemExit("metric_repeat_rate_ever.sql is not an all-time qualifying-order count")
+    add(
+        f"The {int(ever_d):,} is every customer with a qualifying order, all time, not limited to the late-rate window, and counts a same-day second order as a repeat; the {int(ev90_d):,} is the customers who had a full {window} days of follow-up",
+        "warehouse",
+    )
+    add("The data can't support that design", "repo")
+    add("bunching at the promised date", "repo")
+    # the couldn't-answer 90-day clause uses a slightly different lead-in
+    add(f"and {repeat90:.2f}% ({int(ev90_n):,} of {int(ev90_d):,}) did so within {window} days among customers with {window} days of follow-up", "warehouse")
     add(
         f"A per-route 19-out-of-20 date cuts extra late-delivery bad reviews from about {P['olist_extra_rounded']:,} to about {P['p95_extra_rounded']:,}, a net of about {P['p95_reduction_rounded']} (about {P['newly_on_time_avoided_rounded']} avoided, minus about {P['newly_late_added_rounded']} added, plus about {P['still_late_reduction_rounded']} fewer from orders late either way)",
         "report",

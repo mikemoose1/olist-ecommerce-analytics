@@ -10,11 +10,11 @@ Needs a built warehouse (`make build`). The warehouse path is `OLIST_DB_PATH`, o
 python recommendation/promise_backtest/check_headlines.py
 ```
 
-`make verify` runs that check. It rebuilds the walk-forward dates from the warehouse, applies the published V2 effects (V4 as a sensitivity), and fails if any locked headline in `expected.json` has drifted. The pass bar was written before the totals; both land in the same commit. The figures in the section below are also checked against `expected.json`.
+`make verify` runs that check. It rebuilds the walk-forward dates from the warehouse, applies the published V2 effects (V4 as a sensitivity), and fails if any locked headline in `expected.json` has drifted. The pass bar was written before the totals; both land in the same commit. On 20 November 2026, pass-bar items 3 and 5 were reworded after the totals were known, to require the interval to sit on the reduction side; which dates passed did not change. The figures in the section below are also checked against `expected.json`.
 
 ## What the analysis found
 
-On 89,412 reviewed orders purchased from April 2017 onward, the pre-declared route p95 date (arrive by 19 times out of 20) cuts expected extra bad reviews by 286 versus Olist's 3,017, about 9%. An order bootstrap (5,000 resamples, effects held fixed) gives a range of 225 to 345 reviews, or about 7% to 11%. That cut is a net: 2,337 newly on-time orders avoid about 894 extra bad reviews, 1,839 newly late orders add about 650, and about 42 fewer come from orders late either way. March 2018 also improves. The pass bar is met. The looser route p90 date (arrive by 9 times out of 10) fails the bar and adds about 1,739 extra bad reviews, because it marks too many orders late.
+On 89,412 reviewed orders purchased from April 2017 onward, the pre-declared route p95 date (arrive by 19 times out of 20) cuts expected extra bad reviews by 286 versus Olist's 3,017, about 9%. An order bootstrap (5,000 resamples, effects held fixed) gives a range of 225 to 345 reviews, or about 8% to 11%. That cut is a net: 2,337 newly on-time orders avoid about 894 extra bad reviews, 1,839 newly late orders add about 650, and about 42 fewer come from orders late either way. March 2018 also improves. The pass bar is met. The looser route p90 date (arrive by 9 times out of 10) fails the bar and adds about 1,739 extra bad reviews, because it marks too many orders late.
 
 The data cannot measure checkout conversion or whether honest dates would raise repeat buying.
 
