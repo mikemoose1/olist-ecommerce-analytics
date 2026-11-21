@@ -167,13 +167,15 @@ def run() -> dict:
     if integrity["missing_pred"] != 0:
         sys.exit(f"missing_pred={integrity['missing_pred']}, expected 0")
     ev = evaluate(scored)
-    # The 7-11% range on the page is the bootstrap percent interval rounded outward
-    # on the low end and to the nearest whole percent on the high end.
+    # The displayed percent range is the bootstrap percent interval rounded to
+    # the nearest whole percent (7.54% to 11.31% displays as 8% to 11%).
     lo, hi = ev["bootstrap"]["percent_p025"], ev["bootstrap"]["percent_p975"]
-    if not (7 <= lo < 8 and 11 <= hi < 12):
-        sys.exit(f"bootstrap percent interval {lo:.3f} to {hi:.3f} no longer supports a 7% to 11% range")
-    if ev["display"]["range_lo_pct"] != 7 or ev["display"]["range_hi_pct"] != 11:
-        sys.exit("display range drifted from 7% to 11%")
+    lo_d, hi_d = int(round(lo)), int(round(hi))
+    if ev["display"]["range_lo_pct"] != lo_d or ev["display"]["range_hi_pct"] != hi_d:
+        sys.exit(
+            f"display range {ev['display']['range_lo_pct']}% to {ev['display']['range_hi_pct']}% "
+            f"does not match rounded bootstrap percentiles {lo:.3f} to {hi:.3f} ({lo_d}% to {hi_d}%)"
+        )
     id_bad = identity_problems(ev)
     if id_bad:
         sys.exit("four-state identity:\n" + "\n".join(id_bad))
