@@ -10,7 +10,7 @@ Needs a built warehouse (`make build`). The warehouse path is `OLIST_DB_PATH`, o
 python recommendation/promise_backtest/check_headlines.py
 ```
 
-`make verify` runs that check. It rebuilds the walk-forward dates from the warehouse, applies the published V2 effects (V4 as a sensitivity), and fails if any locked headline in `expected.json` has drifted. The pass bar was written before the totals; both land in the same commit. The figures in the section below are also checked against `expected.json`.
+`make verify` runs that check. It rebuilds the walk-forward dates from the warehouse, applies the published V2 effects (V4 as a sensitivity), and fails if any locked headline in `expected.json` has drifted. The pass bar was written before the totals; both land in the same commit. On 20 November 2026, pass-bar items 3 and 5 were reworded after the totals were known, to require the interval to sit on the reduction side; which dates passed did not change. The figures in the section below are also checked against `expected.json`.
 
 ## What the analysis found
 

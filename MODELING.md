@@ -14,7 +14,7 @@ The most important findings here are that Olist's `customer_id` changes with eve
 
 Status: **design approved and built.** This is the design written before any SQL, updated where the build or the adversarial review corrected it (marked *Update*). Shipped values and the picks for C1-C6 are in the README.
 Every number below comes from DuckDB 2.0.0 queries on the nine raw CSVs in
-`/workspace/olist-eda/data/` (sha256 verified against `data_sha256.txt`, all 9 OK on 2026-11-17).
+`data/raw/` (sha256 verified against `seeds/raw_file_manifest.csv`, all 9 OK on 2026-11-17).
 The queries are in `analysis_design_phase/design_checks.py` and `analysis_design_phase/headline_checks.py`; their output is in
 `analysis_design_phase/*.json`. Rerun with `.venv/bin/python analysis_design_phase/design_checks.py`.
 
@@ -76,7 +76,7 @@ raw (9 CSVs as-is, sha256 pinned)
 ```
 
 Raw: DuckDB reads the CSVs as dbt sources. A `raw_manifest` seed holds the 9 sha256 hashes from
-`data_sha256.txt`, and the build fails if any file's hash differs.
+`seeds/raw_file_manifest.csv`, and the build fails if any file's hash differs.
 
 ---
 
