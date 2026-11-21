@@ -136,6 +136,7 @@ Raw: DuckDB reads the CSVs as dbt sources. A `raw_manifest` seed holds the 9 sha
 | P8 | Orders with no items: 775 (603 unavailable, 164 canceled, 5 created, 2 invoiced, 1 shipped). 1 order has no payment | "Order value metrics only use orders with items": `fct_orders.n_items` not null; `recon_status` in (`no_items`,`no_payment`) for those |
 | P9 | Reviews not unique by `review_id` (789 shared ids; 547 orders with more than one review) | "Exactly one chosen review per reviewed order": unique on `order_id` where `is_chosen_for_order` |
 | P10 | Payment oddities: 3 `not_defined` rows, 9 rows of R$0, 2 rows with 0 installments, 80 orders with gaps in `payment_sequential` | Documented, accepted-values on type. Range test `installments >= 0`, plus a warn-severity test for gaps |
+| P11 | The delivery-date model's seller handoff-speed history (`recommendation/delivery_date_model/features.py`) counts a handoff only if that order was eventually delivered. At checkout it is not yet known which earlier orders will be delivered, so this uses a little hindsight | Disclosed as a known limit, not fixed: fixing it would mean scoring the holdout a second time, and the holdout is scored once |
 
 Each custom test gets a known-bad fixture (a seed or unit test) that must make it **fail**. A test that can't fail doesn't count.
 

@@ -7,9 +7,12 @@ Scored on the holdout months (Mar - Aug 2018) on judged orders.
 """
 from __future__ import annotations
 
+import json
+import os
 import sys
 from pathlib import Path
 
+import duckdb
 import pandas as pd
 
 HERE = Path(__file__).resolve().parent
@@ -92,8 +95,5 @@ def run(con) -> dict:
 
 
 if __name__ == "__main__":
-    import json
-    import os
-    import duckdb
     con = duckdb.connect(os.environ.get("OLIST_DB_PATH", str(HERE.parent.parent / "olist.duckdb")), read_only=True)
     print(json.dumps(run(con), indent=2))

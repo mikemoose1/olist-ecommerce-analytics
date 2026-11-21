@@ -59,7 +59,7 @@ CHART_KEYS = {
 }
 # Each lever in the recommendation must name its driver in its own bold lead sentence.
 # A lever that rests on a borderline pass must say so in its bold lead (wave-4 readers missed the hedge in the body).
-LEVER_HEDGES = ["not ready", None]
+LEVER_HEDGES = ["do not adopt", None]
 LEVER_DRIVERS = [["ddm_olist_extra", "ddm_model_extra", "ddm_model_extra_days"], ["ddm_sellers_late_flagged", "ddm_sellers_late_other"]]
 
 

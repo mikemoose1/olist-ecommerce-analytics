@@ -29,7 +29,7 @@ CASES = [
     ("second chart in a question section", edit("![](fig_repeat.png)", "![](fig_repeat.png)\n\n![](fig_cost.png)")),
     ("number in the title", edit("about a quarter of", "27% of")),
     ("model lever loses its driver", edit(": on held-out orders it cut extra late-delivery bad reviews from about 1,275<!--f:ddm_olist_extra--> to about 464<!--f:ddm_model_extra-->, with dates 4.5<!--f:ddm_model_extra_days--> days longer than Olist's.**", ".**")),
-    ("model lever's bold lead loses its not-ready hedge", edit("delivery-date model, but it is not ready: on held-out", "delivery-date model: on held-out")),
+    ("model lever's bold lead loses its do-not-adopt hedge", edit("as the promise engine, but do not adopt this version: on held-out", "as the promise engine: on held-out")),
     ("seller lever names only one driver", edit(" against 7.2<!--f:ddm_sellers_late_other-->% for the rest.**", ".**")),
     ("model lever's extra days misprinted 4.5 -> 1.5", edit("with dates 4.5<!--f:ddm_model_extra_days-->", "with dates 1.5<!--f:ddm_model_extra_days-->")),
     ("chart's key number left only in the image", edit(", 12.0<!--f:c_segment_thr-->% (the dashed line in the region panel),", "")),

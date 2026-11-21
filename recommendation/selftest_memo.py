@@ -23,7 +23,7 @@ CASES = [  # (name, old text, new text, text the problem list must contain)
     ("a design constant with a different value (20 -> 25 orders)", "20<!--d:min_seller_orders-->", "25<!--d:min_seller_orders-->", "min_seller_orders"),
     ("a sign dropped where the prose says -0.10", "-0.10<!--f:rep_matched-->", "0.10<!--f:rep_matched-->", "rep_matched"),
     ("a tag that follows no number", "twice as often as average", "twice as often<!--f:late_rate--> as average", "follows no number"),
-    ("a new bare number slipped into a sentence", "It is not ready to launch.", "It is not ready to launch for 14 days.", "14: no tag"),
+    ("a new bare number slipped into a sentence", "It is not adopted now.", "It is not ready to launch for 14 days.", "14: no tag"),
     ("the model's cut misprinted (811 -> 911)", "811<!--f:ddm_model_reduction-->", "911<!--f:ddm_model_reduction-->", "ddm_model_reduction"),
     ("the length cap misprinted (1 -> 2 days)", "1<!--d:length_cap_days--> day", "2<!--d:length_cap_days--> day", "length_cap_days"),
     # review L2: a label or a direction swapped while every value and tag stays put

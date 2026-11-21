@@ -7,24 +7,33 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from sklearn.inspection import permutation_importance
+from sklearn.metrics import make_scorer, mean_pinball_loss
+from threadpoolctl import threadpool_limits
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parent / "promise_backtest"))
 sys.path.insert(0, str(HERE))
 import features as F  # noqa: E402
 import model as M  # noqa: E402
 from baselines import route_p95_leads  # noqa: E402
+from evaluate import bin_of, load_v2  # noqa: E402
 
 # The setting scored for information (PASS_BAR.md): the largest tune-block reduction among settings
 # that met the length cap. check_headlines.py confirms it against tune_results.json.
 INFO_CFG = {"quantile": 0.97, "label_lag_days": 45, "learning_rate": 0.05, "max_iter": 300,
             "max_leaf_nodes": 15, "min_samples_leaf": 200}
 COVERAGE_TARGET_PCT = 90
+# Bar item 2 (PASS_BAR.md): mean promise at most this many days longer than Olist's, median at most this many.
+# check_headlines.py fails if PASS_BAR.md states different thresholds.
+LENGTH_CAP_MEAN_DAYS = 1.0
+LENGTH_CAP_MEDIAN_DAYS = 1
 
 
 def info_cfg_from_tune(tune: dict) -> tuple[dict, int]:
     ok = [r for r in tune["results"]
-          if r["summary"]["mean_extra_days_vs_olist"] <= 1.0
-          and r["summary"]["median_lead"] <= r["summary"]["olist_median_lead"] + 1]
+          if r["summary"]["mean_extra_days_vs_olist"] <= LENGTH_CAP_MEAN_DAYS
+          and r["summary"]["median_lead"] <= r["summary"]["olist_median_lead"] + LENGTH_CAP_MEDIAN_DAYS]
     best = max(ok, key=lambda r: r["summary"]["reduction_v2"])
     return best["cfg"], int(np.floor(best["summary"]["coverage_pct"]))
 
@@ -38,7 +47,7 @@ def apply_bar(res: dict, name: str, march: dict, paired: dict | None) -> dict:
          "pass": bool(p["v2"]["reduction"] > 0 and boot["reduction_p025"] > 0),
          "observed": [p["v2"]["reduction"], boot["reduction_p025"], boot["reduction_p975"]]},
         {"id": 2, "name": "Mean promise at most 1.0 day longer than Olist, median at most 1 day longer",
-         "pass": bool(p["mean_extra_days_vs_olist"] <= 1.0 and p["median_lead"] <= ol["median_lead"] + 1),
+         "pass": bool(p["mean_extra_days_vs_olist"] <= LENGTH_CAP_MEAN_DAYS and p["median_lead"] <= ol["median_lead"] + LENGTH_CAP_MEDIAN_DAYS),
          "observed": [p["mean_extra_days_vs_olist"], p["median_lead"], ol["median_lead"]]},
         {"id": 3, "name": "March 2018 extra not higher than Olist",
          "pass": bool(march[f"{name}_extra_v2"] <= march["olist_extra_v2"]),
@@ -56,9 +65,6 @@ def apply_bar(res: dict, name: str, march: dict, paired: dict | None) -> dict:
 
 def importance(models: dict, df_rows: pd.DataFrame, month: str = "2018-03", n_repeats: int = 3) -> list:
     """Permutation importance (pinball loss) of the March 2018 model on March 2018 orders."""
-    from sklearn.inspection import permutation_importance
-    from sklearn.metrics import make_scorer, mean_pinball_loss
-    from threadpoolctl import threadpool_limits
     model, _ = models[month]
     rows = df_rows[df_rows["year_month"] == month]
     scorer = make_scorer(mean_pinball_loss, alpha=INFO_CFG["quantile"], greater_is_better=False)
@@ -72,7 +78,6 @@ def importance(models: dict, df_rows: pd.DataFrame, month: str = "2018-03", n_re
 def risk_flag(rows: pd.DataFrame) -> dict:
     """Orders where the model's date is later than Olist's printed date: a late-risk list at checkout.
     Fixed rule, not tuned: flagged = model lead > Olist lead."""
-    from evaluate import bin_of, load_v2
     v2 = load_v2()
     flagged = rows["model_lead"] > rows["olist_lead"]
     late = rows["olist_days_late"] > 0

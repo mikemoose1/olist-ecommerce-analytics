@@ -560,5 +560,9 @@
     "sellers_late_other_1dp": 7.2,
     "sellers_late_share_1dp": 18.1,
     "sellers_order_share_1dp": 18.6
+  },
+  "locks": {
+    "pass_bar_sha256": "7641d99544e1cc050f2778a05249de5126a6bb4a251b8fa148656f6cacc6d67b",
+    "tune_results_sha256": "98367bf3e02f5cc3b46116a88fca6592ee76d6cfcd3ac2a7cc7b830c1a0049dc"
   }
 }

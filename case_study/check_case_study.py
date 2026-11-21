@@ -20,7 +20,8 @@ import ontology_view
 
 README = ROOT / "README.md"                      # the short summary
 FULL = ROOT / "docs" / "CASE_STUDY.md"           # the full case study; docs/index.md (Pages) is built from it
-DEFINITION_PHRASES = ["one- and two-star", "one or two stars", "one- or two-star", "Test 1", "test 1"]  # review_score <= 2, and the Test 1 label
+DEFINITION_PHRASES = ["one- and two-star", "one or two stars", "one- or two-star", "Test 1", "test 1",
+                      '"Two fixes to test next"']  # review_score <= 2, the Test 1 label, and a panel title quoted from the dashboard image
 
 
 def pct(x, d=1):
@@ -112,6 +113,7 @@ def build_claims(con):
     add(f"about {F['c_cost_bias_hi']} of the reviews at the top of its range", "report")
     n_hold = int(F["holdout_last_month"][-2:]) - int(F["holdout_first_month"][-2:]) + 1
     words = {3: "three", 4: "four", 5: "five", 6: "six"}
+    add(f"The star penalty for a late order was smaller in the last {words[n_hold]} months of the window: {abs(hold):.2f} stars, against {abs(disc):.2f} earlier" if F["holdout_first_month"][:4] == F["holdout_last_month"][:4] else "HOLDOUT_MISMATCH", "report", "fs")
     add(f"It was {abs(hold):.2f} stars in the last {words[n_hold]} months, against {abs(disc):.2f} earlier" if F["holdout_first_month"][:4] == F["holdout_last_month"][:4] else "HOLDOUT_MISMATCH", "report")
     add(f"Late delivery is estimated to account for about {caused_r:,} bad reviews", "warehouse")
     # the goal line, the warning line and the what-if rates, from the targets table and the memo's own figures
@@ -194,7 +196,7 @@ def build_claims(con):
         f"A looser 9-out-of-10 date failed the pre-declared pass bar and would have added about {P['p90_added_rounded']:,} extra bad reviews" if p90_fail else "P90_PASS_MISMATCH",
         "report",
     )
-    add("An earlier, simpler per-order model did not beat the per-route rule on accuracy", "report")
+    add("The first promise-backtest model, a simpler per-order model, did not beat the per-route rule on accuracy", "report")
     density_fail = causal["rd_density_passed"] is False
     burn_month = {1: "January", 2: "February", 3: "March", 4: "April", 5: "May", 6: "June",
                   7: "July", 8: "August", 9: "September", 10: "October", 11: "November", 12: "December"}
@@ -278,14 +280,16 @@ def build_claims(con):
     add(f"about {D['olist_extra']:,} under Olist's printed promise, about {D['route_extra']} under the per-route date and about {D['model_extra']} under the model. In {n_months[hm[0]]}: {D['march_olist']}, {D['march_route']} and {D['march_model']}", "report")
     add(f"On the {D['n_reviewed']:,} reviewed holdout orders, extra late-delivery bad reviews fall from about {D['olist_extra']:,} under Olist's printed promise to about {D['model_extra']}, a cut of about {D['model_reduction']} ({D['model_reduction_pct']}%), with a range of {D['model_boot_lo']} to {D['model_boot_hi']} from {H['model']['bootstrap_vs_olist']['n_boot']:,} resamples of orders", "report")
     add(f"That is about {D['model_per_1000']} fewer per 1,000 reviewed orders, and about {D['model_vs_route']} fewer than the simpler per-route date (range {D['model_vs_route_lo']} to {D['model_vs_route_hi']})", "report")
-    add(f"{D['model_coverage_1dp']}% of orders arrive by the model's date, against {D['olist_coverage_1dp']}% for Olist's", "report")
+    add(f"{D['model_coverage_1dp']}% of orders arrive by the model's date, against {D['olist_coverage_1dp']}% for Olist's and {D['route_coverage_1dp']}% for the per-route date", "report")
+    add(f"In tuning the same setting was only {D['tune_info_extra_days_1dp']} days longer than Olist's; the gap grew because Olist shortened its own promise from an average of {D['tune_olist_mean_lead_1dp']} days in the tuning block to {D['olist_mean_lead_1dp']} on the holdout" if D["olist_mean_lead_1dp"] < D["tune_olist_mean_lead_1dp"] else "OLIST_LEAD_MISMATCH", "report")
+    add(f"so the first model learns only from orders bought {train_span}", "report")
     add(f"The model's dates are {D['model_extra_days_1dp']} days longer than Olist's on average (median {D['model_median_lead']} days against {D['olist_median_lead']})", "report")
     add("The cap on extra length, 1 day, was missed by a wide margin", "report")
     add(f"In tuning, none of the {D['n_configs']} settings passed: every setting short enough for the cap did worse than Olist in {n_months[tm[0]]}" if D["tune_info_nov_model"] > D["tune_info_nov_olist"] else "TUNE_NOV_MISMATCH", "report")
     add(f"cost fewer sales than the commercial lead will trade for about {D['model_per_1000']} fewer bad reviews per 1,000 orders", "report")
     add(f"dates about {D['model_extra_days_1dp']} days longer", "report")
     sf = ddm["seller_flags"]
-    add(f"with sellers whose late handoffs arrived late in {sf['min_months']} or more earlier months, the list holds {D['sellers_flagged_first']} sellers in {n_months[hm[0]]} and {D['sellers_flagged_last']} by {n_months[hm[-1]].split()[0]}", "report")
+    add(f"with sellers who had orders both handed to the carrier late and delivered late in {sf['min_months']} or more earlier months, the list holds {D['sellers_flagged_first']} sellers in {n_months[hm[0]]} and {D['sellers_flagged_last']} by {n_months[hm[-1]].split()[0]}", "report")
     add(f"those sellers handed parcels over late more often ({D['sellers_handoff_flagged_1dp']}% of orders, against {D['sellers_handoff_other_1dp']}%), but their orders did not arrive late more often ({D['sellers_late_flagged_1dp']}%, against {D['sellers_late_other_1dp']}%)" if D["sellers_late_flagged_1dp"] <= D["sellers_late_other_1dp"] else "SELLER_MISMATCH", "report")
     add(f"They carried {D['sellers_late_share_1dp']}% of late orders on {D['sellers_order_share_1dp']}% of orders", "report")
     tr = [x["summary"] for x in json.loads((ROOT / "recommendation" / "delivery_date_model" / "tune_results.json").read_text())["results"]]
@@ -293,7 +297,7 @@ def build_claims(con):
     shape_ok = (len(tr) == D["n_configs"] and round(best_in) == D["tune_info_reduction"]
                 and all(x["mean_extra_days_vs_olist"] > 1.0 for x in tr if x["reduction_v2"] > best_in) and D["tune_route_reduction"] < 0)
     add(f"Left, all {len(tr)} settings tried on the tuning block: the best within the 1-day cap cut about {D['tune_info_reduction']} at {D['tune_info_extra_days_1dp']} days longer, every setting that cut more was over the cap, and the per-route date did worse than Olist there (about {-D['tune_route_reduction']} more)" if shape_ok else "TRADEOFF_MISMATCH", "report")
-    add(f"Right, the holdout shows only the dates already scored on it: the model cut about {D['model_reduction']} at {D['model_extra_days_1dp']} days longer and the per-route date about {D['route_reduction']} at {D['route_extra_days_1dp']}", "report")
+    add(f"Right, the holdout shows only the dates already scored on it, the model and the per-route baseline, with Olist's promise at the origin: the model cut about {D['model_reduction']} at {D['model_extra_days_1dp']} days longer and the per-route date about {D['route_reduction']} at {D['route_extra_days_1dp']}", "report")
     add(f"On the {hold_span} holdout above, the same per-route date cut about {D['route_reduction']} extra bad reviews (range {D['route_boot_lo']} to {D['route_boot_hi']}) but printed dates {D['route_extra_days_1dp']} days longer than Olist's on average, missing the same 1-day cap", "report")
     add(f"In tuning, the model met {n_months[tm[0]]} with no earlier November to learn from" if tm[0].endswith("-11") else "NOV_MISMATCH", "report")
     novembers = one("select count(distinct year_month) from marts.dim_date where in_analysis_window and year_month like '%-11'")[0]

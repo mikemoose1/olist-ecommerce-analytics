@@ -8,18 +8,27 @@ Needs `make build`. OLIST_DB_PATH picks the warehouse file (default: olist.duckd
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
+import re
 import sys
 from pathlib import Path
+
+import duckdb
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
 sys.path.insert(0, str(HERE))
+import holdout  # noqa: E402
+import model as M  # noqa: E402
+import seller_flags  # noqa: E402
+import tune as T  # noqa: E402
 
 EXPECTED = HERE / "expected.json"
 README = HERE / "README.md"
 TUNE = HERE / "tune_results.json"
+PASS_BAR = HERE / "PASS_BAR.md"
 ABS_TOL = 1e-6
 BOOT_TOL = {"reduction": 2.0, "percent": 0.2}
 
@@ -136,11 +145,11 @@ def tradeoff_problems(tune: dict, d: dict) -> list[str]:
     """What the trade-off chart and its caption say about the tuning grid: the best setting within the 1-day cap is the
     labelled one, and every setting that prevented more ran over the cap."""
     rs = [x["summary"] for x in tune["results"]]
-    inside = [s for s in rs if s["mean_extra_days_vs_olist"] <= 1.0]
+    inside = [s for s in rs if s["mean_extra_days_vs_olist"] <= holdout.LENGTH_CAP_MEAN_DAYS]
     bad = []
     if round(max(s["reduction_v2"] for s in inside)) != d["tune_info_reduction"]:
         bad.append("trade-off: the best setting within the cap is not the labelled one")
-    if any(s["mean_extra_days_vs_olist"] <= 1.0 for s in rs if s["reduction_v2"] > max(x["reduction_v2"] for x in inside)):
+    if any(s["mean_extra_days_vs_olist"] <= holdout.LENGTH_CAP_MEAN_DAYS for s in rs if s["reduction_v2"] > max(x["reduction_v2"] for x in inside)):
         bad.append("trade-off: a setting that prevented more stayed within the cap")
     if len(rs) != d["n_configs"]:
         bad.append("trade-off: tune_results.json does not hold every setting")
@@ -211,9 +220,50 @@ def readme_drift(d: dict, text: str) -> list[str]:
     return [f"missing fragment: {f!r}" for f in readme_fragments(d) if f not in text]
 
 
+def sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def locks() -> dict:
+    """Hashes of the locked bar and of the tuning results the chart plots. expected.json records them, so editing
+    either file without a reviewed --write fails the check."""
+    return {"pass_bar_sha256": sha256(PASS_BAR), "tune_results_sha256": sha256(TUNE)}
+
+
+def bar_problems(text: str, tune: dict) -> list[str]:
+    """PASS_BAR.md and the code that applies it must state the same thresholds and the same scored setting."""
+    bad = []
+    def find(pat, what):
+        m = re.search(pat, text)
+        if m is None:
+            bad.append(f"PASS_BAR.md: cannot find {what}")
+        return m
+    m = find(r"mean per-order promise is at most ([\d.]+) day longer than Olist's, and the median promise at most (\d+) day", "the length cap")
+    if m and (float(m.group(1)) != holdout.LENGTH_CAP_MEAN_DAYS or int(m.group(2)) != holdout.LENGTH_CAP_MEDIAN_DAYS):
+        bad.append(f"PASS_BAR.md length cap {m.group(1)} / {m.group(2)} days, holdout.py applies {holdout.LENGTH_CAP_MEAN_DAYS} / {holdout.LENGTH_CAP_MEDIAN_DAYS}")
+    m = find(r"At least (\d+)% of scored holdout orders", "the coverage target")
+    if m and int(m.group(1)) != holdout.COVERAGE_TARGET_PCT:
+        bad.append(f"PASS_BAR.md coverage target {m.group(1)}%, holdout.py applies {holdout.COVERAGE_TARGET_PCT}%")
+    for n in re.findall(r"([\d,]+)-resample", text):
+        if int(n.replace(",", "")) != M.N_BOOT:
+            bad.append(f"PASS_BAR.md says {n} resamples, model.py draws {M.N_BOOT}")
+    m = find(r"quantile ([\d.]+), a (\d+)-day label lag, learning rate ([\d.]+), (\d+) trees of up to (\d+) leaves, at least (\d+) orders per leaf", "the scored setting")
+    if m:
+        stated = {"quantile": float(m.group(1)), "label_lag_days": int(m.group(2)), "learning_rate": float(m.group(3)),
+                  "max_iter": int(m.group(4)), "max_leaf_nodes": int(m.group(5)), "min_samples_leaf": int(m.group(6))}
+        if stated != holdout.INFO_CFG:
+            bad.append(f"PASS_BAR.md scored setting {stated} differs from holdout.INFO_CFG {holdout.INFO_CFG}")
+    m = find(r"tune-block coverage was ([\d.]+)%, so the coverage target below is (\d+)%", "the tune-block coverage")
+    if m:
+        info = next(x["summary"] for x in tune["results"] if x["cfg"] == holdout.INFO_CFG)
+        if f"{info['coverage_pct']:.2f}" != m.group(1):
+            bad.append(f"PASS_BAR.md tune-block coverage {m.group(1)}%, tune_results.json {info['coverage_pct']:.2f}%")
+        if int(m.group(2)) != holdout.COVERAGE_TARGET_PCT:
+            bad.append(f"PASS_BAR.md derived coverage target {m.group(2)}%, holdout.py applies {holdout.COVERAGE_TARGET_PCT}%")
+    return bad
+
+
 def build_payload(con) -> dict:
-    import holdout
-    import seller_flags
     tune = json.loads(TUNE.read_text())
     cfg, cov = holdout.info_cfg_from_tune(tune)
     if cfg != holdout.INFO_CFG or cov != holdout.COVERAGE_TARGET_PCT:
@@ -223,20 +273,24 @@ def build_payload(con) -> dict:
     df = holdout.build_frame(con)
     r = holdout.run(con, df=df)
     s = seller_flags.run(con)
-    return {"holdout": r, "seller_flags": s, "display": display(r, s, tune), "_tune_recheck": tune_recheck(df, tune)}
+    return {"holdout": r, "seller_flags": s, "display": display(r, s, tune), "locks": locks(), "_tune_recheck": tune_recheck(df, tune)}
 
 
 def tune_recheck(df, tune: dict) -> list[str]:
     """Re-run the tuning block for the setting the trade-off chart labels and for the route p95 date, and fail if
     tune_results.json (which the chart plots) no longer matches. The full 56-setting grid is rerun by tune.py."""
-    import model as M
-    import tune as T
-    import holdout
     rows, _ = M.walk_forward(df, M.TUNE_MONTHS, holdout.INFO_CFG)
     rows = rows[rows["route_p95_lead"].notna()].copy()
     rows["route_p95_lead"] = rows["route_p95_lead"].astype(int)
     res = M.score_block(rows, {"model": "model_lead", "route_p95": "route_p95_lead"})
-    got = T.summarize(res)
+    rerun = {"summary": T.summarize(res), "route_reduction": res["route_p95"]["v2"]["reduction"],
+             "route_extra_days": res["route_p95"]["mean_extra_days_vs_olist"], "olist_mean_lead": res["olist"]["mean_lead"]}
+    return tune_diff(rerun, tune)
+
+
+def tune_diff(rerun: dict, tune: dict) -> list[str]:
+    """Compare a rerun of the labelled setting and the route p95 date on the tuning block with tune_results.json."""
+    got = rerun["summary"]
     want = next(x["summary"] for x in tune["results"] if x["cfg"] == holdout.INFO_CFG)
     bad = []
     for k in ("reduction_v2", "mean_extra_days_vs_olist", "median_lead", "olist_median_lead", "coverage_pct"):
@@ -247,9 +301,9 @@ def tune_recheck(df, tune: dict) -> list[str]:
             if not near(got["spikes"][mo][side], v[side]):
                 bad.append(f"tune_results.json spike {mo} {side}: file {v[side]!r}, rerun {got['spikes'][mo][side]!r}")
     rt = tune["route_p95_tune"]
-    for got_v, want_v, name in ((res["route_p95"]["v2"]["reduction"], rt["v2"]["reduction"], "route p95 reduction"),
-                                (res["route_p95"]["mean_extra_days_vs_olist"], rt["mean_extra_days_vs_olist"], "route p95 extra days"),
-                                (res["olist"]["mean_lead"], tune["olist_tune"]["mean_lead"], "Olist mean lead")):
+    for got_v, want_v, name in ((rerun["route_reduction"], rt["v2"]["reduction"], "route p95 reduction"),
+                                (rerun["route_extra_days"], rt["mean_extra_days_vs_olist"], "route p95 extra days"),
+                                (rerun["olist_mean_lead"], tune["olist_tune"]["mean_lead"], "Olist mean lead")):
         if not near(got_v, want_v):
             bad.append(f"tune_results.json {name}: file {want_v!r}, rerun {got_v!r}")
     return bad
@@ -259,7 +313,6 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--write", action="store_true")
     args = ap.parse_args()
-    import duckdb
     con = duckdb.connect(str(db_path()), read_only=True)
     got = json.loads(json.dumps(build_payload(con), default=float))
     recheck = got.pop("_tune_recheck")
@@ -268,6 +321,7 @@ def main() -> None:
         print(f"wrote {EXPECTED.name}")
     expected = json.loads(EXPECTED.read_text())
     bad = compare(got, expected) + identity_problems(got) + readme_drift(got["display"], README.read_text()) + recheck + tradeoff_problems(json.loads(TUNE.read_text()), got["display"])
+    bad += bar_problems(PASS_BAR.read_text(), json.loads(TUNE.read_text()))
     for line in bad:
         print("FAIL ", line)
     d = got["display"]
