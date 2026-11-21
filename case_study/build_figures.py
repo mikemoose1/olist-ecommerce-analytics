@@ -174,6 +174,33 @@ def fig_promise():
     save(fig, "promise_date.png")
 
 
+def fig_delivery_model():
+    """Extra late-delivery bad reviews on the holdout under Olist's promise, the route p95 date and the per-order model."""
+    d = json.loads((ROOT / "recommendation" / "delivery_date_model" / "expected.json").read_text())["display"]
+    groups = ["All holdout orders\n(March to August 2018)", "March 2018\n(the spike month)"]
+    vals = {
+        "Olist's promise": ([d["olist_extra"], d["march_olist"]], GRAY, GRAY, ""),
+        "Per-route date": ([d["route_extra"], d["march_route"]], "white", GRAY, "//"),
+        "Per-order model": ([d["model_extra"], d["march_model"]], ORANGE, ORANGE, ""),
+    }
+    fig, ax = plt.subplots(figsize=(8.2, 3.9))
+    w = 0.26
+    for i, (name, (ys, face, edge, hatch)) in enumerate(vals.items()):
+        xs = [g + (i - 1) * w for g in range(len(groups))]
+        ax.bar(xs, ys, width=w, color=face, edgecolor=edge, hatch=hatch, lw=1.4, label=name)
+        for x, y in zip(xs, ys):
+            ax.text(x, y + 25, f"{y:,}", ha="center", fontsize=10, fontweight="bold", color=ORANGE if name == "Per-order model" else DARK)
+    ax.set_xticks(range(len(groups)), groups)
+    ax.set_ylim(0, d["olist_extra"] * 1.18)
+    ax.set_ylabel("extra 1-2 star reviews from late delivery")
+    ax.yaxis.set_major_formatter(lambda v, _: f"{v:,.0f}")
+    ax.legend(frameon=False, fontsize=10, loc="upper right")
+    ax.text(0.5, -0.3,
+            f"The model's dates were {d['model_extra_days_1dp']} days longer than Olist's on average; the per-route date's {d['route_extra_days_1dp']}. The locked cap was 1 day.",
+            transform=ax.transAxes, ha="center", color=DARK, fontsize=9.5)
+    save(fig, "delivery_model.png")
+
+
 if __name__ == "__main__":
     con = connect()
     fig_pipeline()
@@ -182,4 +209,5 @@ if __name__ == "__main__":
     fig_handoff(con)
     fig_whatif(con)
     fig_promise()
+    fig_delivery_model()
     print("wrote", ", ".join(sorted(p.name for p in OUT.glob("*.png"))))

@@ -1,0 +1,1601 @@
+{
+  "tune_months": [
+    "2017-11",
+    "2017-12",
+    "2018-01",
+    "2018-02"
+  ],
+  "n_configs": 56,
+  "olist_tune": {
+    "extra_v2": 1304.685905,
+    "coverage_pct": 89.90084606255503,
+    "mean_lead": 25.745760116381454,
+    "median_lead": 25.0
+  },
+  "route_p95_tune": {
+    "v2": {
+      "extra_policy": 1552.367509,
+      "extra_base": 1304.685905,
+      "reduction": -247.68160399999988,
+      "se": 4.3857517244922795,
+      "ci_reduction_lo": -256.2776773800048,
+      "ci_reduction_hi": -239.085530619995
+    },
+    "coverage_pct": 87.66126871099883,
+    "mean_extra_days_vs_olist": -1.75820221277899,
+    "median_lead": 22.0
+  },
+  "results": [
+    {
+      "cfg": {
+        "quantile": 0.9,
+        "label_lag_days": 30,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -871.8832369999998,
+        "mean_extra_days_vs_olist": -5.177213736074423,
+        "median_lead": 20.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 82.21737299490832,
+        "spikes": {
+          "2017-11": {
+            "model": 783.970291,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 431.875338,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.9,
+        "label_lag_days": 30,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -992.1104799999996,
+        "mean_extra_days_vs_olist": -5.568163546571724,
+        "median_lead": 19.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 81.26028865663642,
+        "spikes": {
+          "2017-11": {
+            "model": 823.851055,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 456.875524,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.9,
+        "label_lag_days": 30,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -953.563703,
+        "mean_extra_days_vs_olist": -5.330040963209678,
+        "median_lead": 19.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 81.59335400635504,
+        "spikes": {
+          "2017-11": {
+            "model": 821.313654,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 429.066997,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.9,
+        "label_lag_days": 30,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -1052.074135,
+        "mean_extra_days_vs_olist": -5.720378239730485,
+        "median_lead": 19.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 80.66306802955476,
+        "spikes": {
+          "2017-11": {
+            "model": 821.13069,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 450.913865,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.9,
+        "label_lag_days": 45,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -930.9887729999998,
+        "mean_extra_days_vs_olist": -5.473488763829868,
+        "median_lead": 19.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 81.57804065694269,
+        "spikes": {
+          "2017-11": {
+            "model": 774.345501,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 413.416892,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.9,
+        "label_lag_days": 45,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -1152.021946,
+        "mean_extra_days_vs_olist": -6.179395888365683,
+        "median_lead": 18.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 79.64090195628039,
+        "spikes": {
+          "2017-11": {
+            "model": 866.8951109999999,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 449.913227,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.9,
+        "label_lag_days": 45,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -1072.855201,
+        "mean_extra_days_vs_olist": -5.8836951112132,
+        "median_lead": 18.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 80.36062937866085,
+        "spikes": {
+          "2017-11": {
+            "model": 840.621809,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 437.599807,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.9,
+        "label_lag_days": 45,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -1265.3734389999997,
+        "mean_extra_days_vs_olist": -6.484590942153822,
+        "median_lead": 18.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 78.67616094330232,
+        "spikes": {
+          "2017-11": {
+            "model": 920.632713,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 454.720039,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.93,
+        "label_lag_days": 30,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -568.5960499999999,
+        "mean_extra_days_vs_olist": -3.8197618774166378,
+        "median_lead": 21.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 84.75938899735844,
+        "spikes": {
+          "2017-11": {
+            "model": 693.6970249999999,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 353.183092,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.93,
+        "label_lag_days": 30,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -638.9054819999999,
+        "mean_extra_days_vs_olist": -4.102101757206845,
+        "median_lead": 21.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 84.17748171968914,
+        "spikes": {
+          "2017-11": {
+            "model": 707.017617,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 366.326315,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.93,
+        "label_lag_days": 30,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -627.9013239999999,
+        "mean_extra_days_vs_olist": -3.9561655373071476,
+        "median_lead": 21.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 84.16599670762987,
+        "spikes": {
+          "2017-11": {
+            "model": 716.120418,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 351.04183,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.93,
+        "label_lag_days": 30,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -771.3254599999998,
+        "mean_extra_days_vs_olist": -4.585161364419433,
+        "median_lead": 21.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 82.97921212817273,
+        "spikes": {
+          "2017-11": {
+            "model": 767.963838,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 407.01643,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.93,
+        "label_lag_days": 45,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -606.8173579999998,
+        "mean_extra_days_vs_olist": -4.070671107537996,
+        "median_lead": 20.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 84.43015198499292,
+        "spikes": {
+          "2017-11": {
+            "model": 687.763476,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 337.429712,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.93,
+        "label_lag_days": 45,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -738.4301799999998,
+        "mean_extra_days_vs_olist": -4.574327169710195,
+        "median_lead": 20.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 83.3620458634815,
+        "spikes": {
+          "2017-11": {
+            "model": 715.309214,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 365.26111699999996,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.93,
+        "label_lag_days": 45,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -760.9203809999997,
+        "mean_extra_days_vs_olist": -4.711649630565446,
+        "median_lead": 20.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 83.13234562229623,
+        "spikes": {
+          "2017-11": {
+            "model": 752.776493,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 371.391345,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.93,
+        "label_lag_days": 45,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -849.6039669999998,
+        "mean_extra_days_vs_olist": -4.991577657823207,
+        "median_lead": 19.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 82.38581983844416,
+        "spikes": {
+          "2017-11": {
+            "model": 761.514404,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 383.421314,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.95,
+        "label_lag_days": 30,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -217.10164899999995,
+        "mean_extra_days_vs_olist": -1.855441981547414,
+        "median_lead": 23.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 87.87182726541863,
+        "spikes": {
+          "2017-11": {
+            "model": 604.438045,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 257.39124499999997,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.95,
+        "label_lag_days": 30,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -279.3884149999999,
+        "mean_extra_days_vs_olist": -2.3448949121396576,
+        "median_lead": 23.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 87.25929328892462,
+        "spikes": {
+          "2017-11": {
+            "model": 610.84663,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 286.120549,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.95,
+        "label_lag_days": 30,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -338.854971,
+        "mean_extra_days_vs_olist": -2.5092454347077062,
+        "median_lead": 22.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 86.63910263772443,
+        "spikes": {
+          "2017-11": {
+            "model": 648.948888,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 320.060538,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.95,
+        "label_lag_days": 30,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -431.00252899999987,
+        "mean_extra_days_vs_olist": -3.054821790896214,
+        "median_lead": 22.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 85.86960682975385,
+        "spikes": {
+          "2017-11": {
+            "model": 654.144152,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 310.16732,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.95,
+        "label_lag_days": 45,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -294.9000289999999,
+        "mean_extra_days_vs_olist": -2.495922820718962,
+        "median_lead": 22.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 87.0219363730332,
+        "spikes": {
+          "2017-11": {
+            "model": 601.068776,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 259.769952,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.95,
+        "label_lag_days": 45,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -395.12027999999987,
+        "mean_extra_days_vs_olist": -2.8195704605489835,
+        "median_lead": 22.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 86.21798552888481,
+        "spikes": {
+          "2017-11": {
+            "model": 686.495124,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 278.987105,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.95,
+        "label_lag_days": 45,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -391.60457199999996,
+        "mean_extra_days_vs_olist": -2.8894376172428315,
+        "median_lead": 21.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 86.28689560124037,
+        "spikes": {
+          "2017-11": {
+            "model": 619.945936,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 302.835244,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.95,
+        "label_lag_days": 45,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -511.7635459999999,
+        "mean_extra_days_vs_olist": -3.329083878871406,
+        "median_lead": 21.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 85.17667776884498,
+        "spikes": {
+          "2017-11": {
+            "model": 717.048994,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 301.385687,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.96,
+        "label_lag_days": 30,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -47.61532399999987,
+        "mean_extra_days_vs_olist": -0.8565139160062785,
+        "median_lead": 24.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 89.20791700164618,
+        "spikes": {
+          "2017-11": {
+            "model": 546.628462,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 247.68140799999998,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.96,
+        "label_lag_days": 30,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -129.36187599999994,
+        "mean_extra_days_vs_olist": -1.3076834730676468,
+        "median_lead": 24.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 88.44607786838176,
+        "spikes": {
+          "2017-11": {
+            "model": 573.022057,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 245.648506,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.96,
+        "label_lag_days": 30,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -155.1817779999999,
+        "mean_extra_days_vs_olist": -1.4256728302898052,
+        "median_lead": 23.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 88.30060104896444,
+        "spikes": {
+          "2017-11": {
+            "model": 564.758734,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 278.51492,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.96,
+        "label_lag_days": 30,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -256.30994199999986,
+        "mean_extra_days_vs_olist": -1.9826193484169825,
+        "median_lead": 23.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 87.46219516863826,
+        "spikes": {
+          "2017-11": {
+            "model": 636.423764,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 279.803881,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.96,
+        "label_lag_days": 45,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -51.434320999999954,
+        "mean_extra_days_vs_olist": -1.0189502698977835,
+        "median_lead": 23.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 89.16197695340914,
+        "spikes": {
+          "2017-11": {
+            "model": 524.203592,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 243.365755,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.96,
+        "label_lag_days": 45,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -168.42238399999997,
+        "mean_extra_days_vs_olist": -1.7192297385245587,
+        "median_lead": 23.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 88.10535584395697,
+        "spikes": {
+          "2017-11": {
+            "model": 573.534853,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 263.859956,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.96,
+        "label_lag_days": 45,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -208.512657,
+        "mean_extra_days_vs_olist": -1.8572413001033652,
+        "median_lead": 22.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 87.62298533746794,
+        "spikes": {
+          "2017-11": {
+            "model": 597.436333,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 275.035008,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.96,
+        "label_lag_days": 45,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -301.18464700000004,
+        "mean_extra_days_vs_olist": -2.4206959917307915,
+        "median_lead": 22.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 87.02576471038628,
+        "spikes": {
+          "2017-11": {
+            "model": 622.132638,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 290.502486,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.97,
+        "label_lag_days": 30,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": 115.89269200000012,
+        "mean_extra_days_vs_olist": 0.4558018452586042,
+        "median_lead": 25.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 90.51720837640212,
+        "spikes": {
+          "2017-11": {
+            "model": 494.14890199999996,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 204.201677,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.97,
+        "label_lag_days": 30,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": 33.01782100000014,
+        "mean_extra_days_vs_olist": -0.0712070747674285,
+        "median_lead": 25.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 89.83576432755255,
+        "spikes": {
+          "2017-11": {
+            "model": 521.75022,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 223.990015,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.97,
+        "label_lag_days": 30,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": 22.07907800000021,
+        "mean_extra_days_vs_olist": 0.06450748439952529,
+        "median_lead": 25.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 89.79365261666858,
+        "spikes": {
+          "2017-11": {
+            "model": 531.368612,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 229.049733,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.97,
+        "label_lag_days": 30,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -73.18319899999983,
+        "mean_extra_days_vs_olist": -0.653344052677922,
+        "median_lead": 24.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 88.87485165192757,
+        "spikes": {
+          "2017-11": {
+            "model": 584.439993,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 235.779488,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.97,
+        "label_lag_days": 45,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": 149.51389000000017,
+        "mean_extra_days_vs_olist": 0.42751043221928714,
+        "median_lead": 25.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 90.72776693082194,
+        "spikes": {
+          "2017-11": {
+            "model": 467.08333600000003,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 203.27265200000002,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.97,
+        "label_lag_days": 45,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": 59.28545700000018,
+        "mean_extra_days_vs_olist": -0.06224876536120363,
+        "median_lead": 24.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 90.01186784579457,
+        "spikes": {
+          "2017-11": {
+            "model": 513.991611,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 211.555726,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.97,
+        "label_lag_days": 45,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -26.565018999999893,
+        "mean_extra_days_vs_olist": -0.3726886413230734,
+        "median_lead": 24.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 89.23088702576472,
+        "spikes": {
+          "2017-11": {
+            "model": 569.726045,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 247.464067,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.97,
+        "label_lag_days": 45,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": -103.75487199999998,
+        "mean_extra_days_vs_olist": -0.9606829753837908,
+        "median_lead": 24.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 88.5303012901497,
+        "spikes": {
+          "2017-11": {
+            "model": 598.582395,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 250.133952,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.98,
+        "label_lag_days": 30,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": 344.76222600000006,
+        "mean_extra_days_vs_olist": 2.4624248688794457,
+        "median_lead": 27.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 92.37778033000268,
+        "spikes": {
+          "2017-11": {
+            "model": 420.855012,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 165.026185,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.98,
+        "label_lag_days": 30,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": 282.95656900000006,
+        "mean_extra_days_vs_olist": 2.115577504689713,
+        "median_lead": 27.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 91.86478312468894,
+        "spikes": {
+          "2017-11": {
+            "model": 445.555353,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 158.146019,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.98,
+        "label_lag_days": 30,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": 255.96280300000012,
+        "mean_extra_days_vs_olist": 1.825925500555109,
+        "median_lead": 26.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 91.63125454615061,
+        "spikes": {
+          "2017-11": {
+            "model": 458.570815,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 186.930417,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.98,
+        "label_lag_days": 30,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": 159.13286200000016,
+        "mean_extra_days_vs_olist": 1.3629263810727001,
+        "median_lead": 26.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 90.7086252440565,
+        "spikes": {
+          "2017-11": {
+            "model": 529.912901,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 172.473477,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.98,
+        "label_lag_days": 45,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": 386.6539510000001,
+        "mean_extra_days_vs_olist": 2.658014624248689,
+        "median_lead": 27.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 92.6763906435435,
+        "spikes": {
+          "2017-11": {
+            "model": 394.612206,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 163.829767,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.98,
+        "label_lag_days": 45,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": 278.44734300000005,
+        "mean_extra_days_vs_olist": 1.9518012327246277,
+        "median_lead": 26.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 91.79587305233338,
+        "spikes": {
+          "2017-11": {
+            "model": 457.78343,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 165.290969,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.98,
+        "label_lag_days": 45,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": 306.29650700000013,
+        "mean_extra_days_vs_olist": 2.5686995138011564,
+        "median_lead": 26.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 91.96049155851614,
+        "spikes": {
+          "2017-11": {
+            "model": 480.599093,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 142.353098,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.98,
+        "label_lag_days": 45,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": 198.74636699999996,
+        "mean_extra_days_vs_olist": 1.1523678266528847,
+        "median_lead": 25.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 91.03020558171586,
+        "spikes": {
+          "2017-11": {
+            "model": 481.40752,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 206.33299,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.99,
+        "label_lag_days": 30,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": 674.4719680000001,
+        "mean_extra_days_vs_olist": 6.530301290149688,
+        "median_lead": 31.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 95.03464645304544,
+        "spikes": {
+          "2017-11": {
+            "model": 298.495458,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 117.514171,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.99,
+        "label_lag_days": 30,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": 625.745805,
+        "mean_extra_days_vs_olist": 6.633819532177175,
+        "median_lead": 30.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 94.66712606714903,
+        "spikes": {
+          "2017-11": {
+            "model": 335.484973,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 125.769363,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.99,
+        "label_lag_days": 30,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": 552.1835320000001,
+        "mean_extra_days_vs_olist": 5.289422303893419,
+        "median_lead": 30.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 94.18092722330692,
+        "spikes": {
+          "2017-11": {
+            "model": 352.765175,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 151.809898,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.99,
+        "label_lag_days": 30,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": 553.6236070000001,
+        "mean_extra_days_vs_olist": 5.679070479690671,
+        "median_lead": 30.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 94.04310707859577,
+        "spikes": {
+          "2017-11": {
+            "model": 375.162063,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 134.2098,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.99,
+        "label_lag_days": 45,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": 707.367153,
+        "mean_extra_days_vs_olist": 7.087822058879828,
+        "median_lead": 31.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 95.1992649592282,
+        "spikes": {
+          "2017-11": {
+            "model": 269.755915,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 113.74864,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.99,
+        "label_lag_days": 45,
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": 635.66159,
+        "mean_extra_days_vs_olist": 6.272501052792772,
+        "median_lead": 31.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 94.64415604303052,
+        "spikes": {
+          "2017-11": {
+            "model": 300.784206,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 119.165353,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.99,
+        "label_lag_days": 45,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": 646.035101,
+        "mean_extra_days_vs_olist": 6.47264652961219,
+        "median_lead": 31.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 94.7398644768577,
+        "spikes": {
+          "2017-11": {
+            "model": 315.394333,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 137.194232,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    },
+    {
+      "cfg": {
+        "quantile": 0.99,
+        "label_lag_days": 45,
+        "learning_rate": 0.1,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 200
+      },
+      "summary": {
+        "reduction_v2": 565.2277280000001,
+        "mean_extra_days_vs_olist": 5.59947934611998,
+        "median_lead": 30.0,
+        "olist_median_lead": 25.0,
+        "coverage_pct": 94.03927874124268,
+        "spikes": {
+          "2017-11": {
+            "model": 347.392728,
+            "olist": 439.632931
+          },
+          "2018-02": {
+            "model": 121.724125,
+            "olist": 477.051469
+          }
+        },
+        "eligible": false
+      }
+    }
+  ],
+  "pick": null,
+  "pick_summary": null,
+  "coverage_target_pct": null
+}

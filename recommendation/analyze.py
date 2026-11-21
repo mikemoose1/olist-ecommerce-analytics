@@ -370,6 +370,17 @@ _, rp = SD.ramp(con)
 _, tg = SD.targets(con)
 facts.update(SD.causal_captions(SD.review_cost(con, n_low_all), rp, tg,
                                 R["repeat90"]["all"]["raw"]["late"], R["repeat90"]["all"]["raw"]["on_time"]))
+# The per-order delivery-date model (recommendation/delivery_date_model): its locked display figures, checked against the
+# warehouse by its own check_headlines.py, printed in the memo as ddm_* facts.
+DDM = json.load(open(os.path.join(ROOT, "recommendation", "delivery_date_model", "expected.json")))
+for k, v in DDM["display"].items():
+    if isinstance(v, bool) or isinstance(v, list):
+        continue
+    facts[f"ddm_{k.removesuffix('_1dp')}"] = f"{v:.1f}" if k.endswith("_1dp") else f"{int(v):,}"
+_hm = DDM["holdout"]["integrity"]
+facts.update({"ddm_train_first": _hm["train_from"][:7], "ddm_train_last": f"{pd.Period(_hm['tune_months'][0]) - 1}",
+              "ddm_tune_first": _hm["tune_months"][0], "ddm_tune_last": _hm["tune_months"][-1],
+              "ddm_holdout_first": _hm["holdout_months"][0], "ddm_holdout_last": _hm["holdout_months"][-1]})
 REPEAT_SENTENCE = json.load(open(os.path.join(ROOT, "evidence", "repeat_first_order_report.json")))["story_sentence"]
 R["memo_facts"] = facts
 

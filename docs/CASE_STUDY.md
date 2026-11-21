@@ -1,6 +1,6 @@
 # Late deliveries and bad reviews at Olist
 
-This project builds a tested data pipeline from about 99,000 real orders of Olist, a Brazilian online marketplace, and uses it to estimate what late delivery costs. The analysis found an estimated effect of late delivery on about 3,110 of the 11,635 one- and two-star reviews on 94,931 delivered orders, about 27%, with a range of 2,880 to 3,350. It is an estimate from past orders, not a randomized test, so it is not proven cause. Late delivery shows no clear effect on repeat buying. The recommendation is two randomized tests, starting with reminders to sellers about their ship-by date, because 27.8% of late orders were handed to the carrier late. A ship-by date is the deadline Olist gives a seller to hand the parcel to the carrier.
+This project builds a tested data pipeline from about 99,000 real orders of Olist, a Brazilian online marketplace, and uses it to estimate what late delivery costs. The analysis found an estimated effect of late delivery on about 3,110 of the 11,635 one- and two-star reviews on 94,931 delivered orders, about 27%, with a range of 2,880 to 3,350. It is an estimate from past orders, not a randomized test, so it is not proven cause. Late delivery shows no clear effect on repeat buying. The lead recommendation is a per-order delivery-date model. Scored once on held-out orders from March to August 2018, it would have cut extra late-delivery bad reviews by about 64% (about 811 of 1,275), but only by printing dates 4.5 days longer than Olist's on average, so it failed its pass bar and waits on checkout data that Olist has and this dataset does not.
 
 <a id="dashboard"></a>
 
@@ -8,7 +8,7 @@ This project builds a tested data pipeline from about 99,000 real orders of Olis
 
 *The dashboard in one view. Click the image for the full-size picture. The interactive version is coming.*
 
-**Role and tools.** An end-to-end analytics project on a public dataset: data modeling and automated data checks in dbt and DuckDB, the review-cost analysis in Python (pandas and statsmodels), a recommendation memo, a Quarto data story and a Tableau dashboard. GitHub Actions rebuilds and checks all of it.
+**Role and tools.** An end-to-end analytics project on a public dataset: data modeling and automated data checks in dbt and DuckDB, the review-cost analysis in Python (pandas and statsmodels), a delivery-date model (scikit-learn), a recommendation memo, a Quarto data story and a Tableau dashboard. GitHub Actions rebuilds and checks all of it.
 
 **Code.** This repository. The main folders are [models/](../models/) (the dbt layers), [tests/](../tests/) (data checks), [review_cost_causal/](../review_cost_causal/README.md) (the estimate), [recommendation/](../recommendation/MEMO.md) (the memo), [dashboard/](../dashboard/tableau/README.md) (the Tableau workbook and its data) and [case_study/](../case_study/) (the checks behind this page). The short summary is the [README](../README.md).
 
@@ -158,26 +158,46 @@ The cost estimate compares each late order with the same seller's orders that ar
 
 *Orders shipped after the ship-by date are about four times as likely to arrive late, and they make up 27.8% of late orders.*
 
+![Late rate today against the what-if rate if late-shipped orders were as reliable as the rest](img/what_if.png)
+
+*A ceiling, not a result. About 1,300 fewer late orders (20.6% of them) would take the late rate from 6.87% to 5.49%, if late-shipped orders were as reliable as the rest.*
+
+**Why the dashboard says 3.4% and this page says 5.49%.** Both ask the same what-if: what would the late rate be if late-shipped orders were late only as often as the rest. They start from different bases. The 5.49% is the pooled version: it takes all 94,931 orders and moves the late rate from 6.87% to 5.49%. The 3.4% is the dashboard's version for a typical stable month: it moves the median stable month from the 4.4% goal down to 3.4%, a drop of about 1.0 percentage point. The pooled rate is higher because it includes the three spike months that a typical month leaves out.
+
 ### The 4.4% goal and the 8.4% warning line
 
 Both lines on the dashboard's monthly chart come from the data, not from a target set by hand. The warning line is a control limit: the average late rate of the 17 months left in the fit, including the 2 thin months, plus three standard deviations, widened to match how much the rate really swings from month to month, which is far more than chance alone would give (a Laney p-prime chart, method in [late_rate_targets/spc.py](../late_rate_targets/spc.py)). It sits at 8.4% for a typical month of 6,372 orders, and higher for smaller months. A month above it is a real change, not bad luck. Three months crossed it: November 2017, February 2018 and March 2018. The goal, 4.4%, is the median late rate of the 15 stable months, so half of them already beat it. A stable month is one that is not above the warning line and has at least 2,000 orders, the cutoff used to drop thin months from the goal. Stable means not extreme. It does not mean healthy.
 
 ## Recommendation
 
-Run two randomized tests before any rollout. Details and measures are in [recommendation/MEMO.md](../recommendation/MEMO.md).
+The code, the pass bar and the full results are in [recommendation/delivery_date_model/README.md](../recommendation/delivery_date_model/README.md). The one-page memo is [recommendation/MEMO.md](../recommendation/MEMO.md).
 
-1. **Ship-by reminders.** Half of the sellers, picked at random, get a reminder the day before each ship-by date and a visible on-time score. The other half see no change. Measure the share of late handoffs first, then the late rate and average stars, over 8 weeks.
-2. **Buffer days in the promise.** For north and northeast addresses and in high-lateness months, add buffer days to the promised date on a random half of orders. Measure average stars and checkout conversion first. Conversion is not in the data and is the main risk.
+### Build a per-order delivery-date model, and launch it once checkout data shows what a longer date costs
 
-![Late rate today against the what-if rate if late-shipped orders were as reliable as the rest](img/what_if.png)
+At checkout, the model sets each order's date from facts known at that moment: the route's past delivery times, the distance, the seller's past handoff speed and lateness, the parcel, the freight, Olist's own printed lead time and how busy the platform is. It is gradient boosting that predicts a high percentile of the delivery time, retrained every month only on orders already delivered. It was built the way a production model would be: trained on orders bought January to October 2017, tuned on November 2017 to February 2018, and scored once on a holdout of March to August 2018, after the pass bar was written down.
 
-*A ceiling for test 1, not a result. About 1,300 fewer late orders (20.6% of them) would take the late rate from 6.87% to 5.49%.*
+![Extra late-delivery bad reviews on the holdout under Olist's promise, the per-route date and the per-order model](img/delivery_model.png)
 
-**Why the dashboard says 3.4% and this page says 5.49%.** Both ask the same what-if: what would the late rate be if late-shipped orders were late only as often as the rest. They start from different bases. The 5.49% is the pooled version: it takes all 94,931 orders and moves the late rate from 6.87% to 5.49%. The 3.4% is the dashboard's version for a typical stable month: it moves the median stable month from the 4.4% goal down to 3.4%, a drop of about 1.0 percentage point. The pooled rate is higher because it includes the three spike months that a typical month leaves out.
+*Extra late-delivery bad reviews on the holdout: about 1,275 under Olist's printed promise, about 670 under the per-route date and about 464 under the model. In March 2018: 658, 418 and 283.*
 
-### A short-term printed date
+- **Gain.** On the 38,307 reviewed holdout orders, extra late-delivery bad reviews fall from about 1,275 under Olist's printed promise to about 464, a cut of about 811 (64%), with a range of 773 to 852 from 5,000 resamples of orders. That is about 21 fewer per 1,000 reviewed orders, and about 206 fewer than the simpler per-route date (range 183 to 230). 97.3% of orders arrive by the model's date, against 92.9% for Olist's.
+- **Cost.** The model's dates are 4.5 days longer than Olist's on average (median 26 days against 22). Most of the cut comes from printing a later date where a parcel is likely to run late.
+- **Why it is not ready.** The cap on extra length, 1 day, was missed by a wide margin. In tuning, none of the 56 settings passed: every setting short enough for the cap did worse than Olist in November 2017, the first peak season the model met, with no earlier November to learn from. By the rule written before the holdout was scored, the model is not adopted in this round.
+- **Owner.** The delivery-promise product owner, with logistics. The commercial lead sets the conversion threshold.
+- **Decision rule.** Launch when Olist's checkout data shows that dates about 4.5 days longer cost fewer sales than the commercial lead will trade for about 21 fewer bad reviews per 1,000 orders.
+- **Data it needs.** Checkout conversion by promised days, which is not in this data, and a second peak season to train and test on.
 
-The analysis also replayed history with a per-route delivery date, updated as orders arrive, in place of Olist's single promise. Actual delivery times were left unchanged. A 19-out-of-20 date is the 95th percentile of past delivery times on that route: 19 times out of 20, a parcel on the route had arrived by that day. On the 89,412 reviewed orders from April 2017 onward, the stricter 19-out-of-20 per-route date would likely have cut the extra one- and two-star reviews attributed to late delivery by about 9% (about 286 of 3,017), with a realistic range of about 8% to 11%, or about 225 to 345 reviews, from 5,000 resamples of orders. That cut is a net: about 2,337 orders that had been late would have been on time, avoiding about 894 bad reviews, while about 1,839 orders that had been on time would have been late, adding about 650, plus about 42 fewer from orders late either way. Dates were scored as a walk-forward as-of replay: a delivery entered history only if it arrived strictly before the purchase, after an April 2017 burn-in, with a fallback from the route to the customer's state to a global date and a minimum of 30 orders. If even the global history is thinner than that, a global date with no 30-order floor is used as a last resort. A looser 9-out-of-10 date failed the pre-declared pass bar and would have added about 1,739 extra bad reviews. A more detailed per-order model did not beat the simple per-route rule on accuracy, in an earlier test. The per-route 19-out-of-20 date was the one that was judged. On 20 November 2026, pass-bar items 3 and 5 were reworded after the totals were known, to require the interval to sit on the reduction side; which dates passed did not change. This is a printed-date stopgap, not a logistics fix. The data cannot show whether a different date would have changed who bought, or whether it would have raised repeat buying.
+### Do not build a seller penalty list from past lateness
+
+A list of sellers who were late in past months looks like an obvious target. Built as of each month, using only orders delivered by then, with sellers whose late handoffs arrived late in 3 or more earlier months, the list holds 46 sellers in March 2018 and 106 by August. In the months that followed, those sellers handed parcels over late more often (11.4% of orders, against 6.9%), but their orders did not arrive late more often (6.9%, against 7.2%). They carried 18.1% of late orders on 18.6% of orders. A penalty or ranking program built on that list would not be expected to cut late deliveries.
+
+- **Owner.** Marketplace seller operations.
+- **Decision rule.** Revisit only if a list built the same way shows its sellers running late more often than the rest in the months after.
+- **Data it needs** for any seller fix: seller operations and carrier files (pickups, routing, capacity).
+
+### The simpler per-route date
+
+The analysis also replayed history with a per-route delivery date, updated as orders arrive, in place of Olist's single promise. Actual delivery times were left unchanged. A 19-out-of-20 date is the 95th percentile of past delivery times on that route: 19 times out of 20, a parcel on the route had arrived by that day. On the 89,412 reviewed orders from April 2017 onward, the stricter 19-out-of-20 per-route date would likely have cut the extra one- and two-star reviews attributed to late delivery by about 9% (about 286 of 3,017), with a realistic range of about 8% to 11%, or about 225 to 345 reviews, from 5,000 resamples of orders. That cut is a net: about 2,337 orders that had been late would have been on time, avoiding about 894 bad reviews, while about 1,839 orders that had been on time would have been late, adding about 650, plus about 42 fewer from orders late either way. Dates were scored as a walk-forward as-of replay: a delivery entered history only if it arrived strictly before the purchase, after an April 2017 burn-in, with a fallback from the route to the customer's state to a global date and a minimum of 30 orders. If even the global history is thinner than that, a global date with no 30-order floor is used as a last resort. A looser 9-out-of-10 date failed the pre-declared pass bar and would have added about 1,739 extra bad reviews. An earlier, simpler per-order model did not beat the per-route rule on accuracy. The per-route 19-out-of-20 date was the one that was judged. On 20 November 2026, pass-bar items 3 and 5 were reworded after the totals were known, to require the interval to sit on the reduction side; which dates passed did not change. This is a printed-date stopgap, not a logistics fix. On the March to August 2018 holdout above, the same per-route date cut about 605 extra bad reviews (range 568 to 646) but printed dates 4.3 days longer than Olist's on average, missing the same 1-day cap, so it is no shortcut around the conversion question. The data cannot show whether a different date would have changed who bought, or whether it would have raised repeat buying.
 
 ![Extra late-delivery bad reviews under Olist's promise and under a per-route date](img/promise_date.png)
 
@@ -188,6 +208,7 @@ The analysis also replayed history with a per-route delivery date, updated as or
 - Each headline number is recalculated straight from the raw files and matches ([evidence/verification_report.md](../evidence/verification_report.md)).
 - The keys and links of the nine source tables pass 51 of 51 checks against the raw files, including that every column marked FK has a unique parent and no orphans ([case_study/erd.py](../case_study/erd.py)).
 - Every data check was shown to fail on planted bad data. All 248 rules in the check suite are proven this way ([evidence/mutation_report.md](../evidence/mutation_report.md)).
+- The delivery-date model's holdout results are rebuilt from the warehouse on every run and must match its locked results ([recommendation/delivery_date_model/check_headlines.py](../recommendation/delivery_date_model/check_headlines.py)).
 - Every number in the memo is tied to the analysis output, and a script fails if one drifts ([recommendation/memo_check.py](../recommendation/memo_check.py)).
 - Every number on this page is checked against the warehouse by [case_study/check_case_study.py](../case_study/check_case_study.py).
 - GitHub Actions rebuilds the project and reruns all checks on every change. One command, `make`, reproduces everything ([docs/REPRODUCE.md](REPRODUCE.md)).
@@ -201,7 +222,7 @@ This page uses its labels the same way throughout. An estimated effect comes fro
 | Late delivery is estimated to account for about 3,110 bad reviews | Estimated effect | Compared with the same seller's orders in the same category and month. It is an estimate from past orders, not a randomized test, so not proven cause. |
 | Part of that effect is survey timing | Linked | 74.5% of late orders' surveys went out before delivery, so some customers rated while still waiting. |
 | Hidden seller sloppiness inflates the estimate | Small | If it sat inside every late order it would explain about 150 of the reviews at the top of its range. |
-| Late handoff leads to late arrival | Linked | The carrier may have been late anyway. The reminder test is what would show cause. |
+| Late handoff leads to late arrival | Linked | The carrier may have been late anyway. Seller operations and carrier files would be needed to show cause. |
 | Late delivery lowers repeat buying | Not shown | The range includes zero, so the data cannot tell a real drop from chance. |
 | The star penalty holds over time | Smaller recently | It was 1.56 stars in the last four months, against 2.05 earlier. |
 
@@ -217,17 +238,22 @@ These are questions the data is too thin or too incomplete to answer. Weaker res
 
 **Can orders just before and just after the promised date be compared as if the cutoff were as good as random?** The data can't support that design. Fewer parcels arrive one day late than the trend predicts (bunching at the promised date), so the cutoff check failed its density test and those groups are not alike.
 
-**How should seller logistics be fixed?** The data shows whether a seller handed a parcel to the carrier after the ship-by date, but not why. There are no seller operations or carrier files (warehouse capacity, pickup failures, routing). Those files would be needed to design an operations fix. The ship-by reminder test is the step the data can support.
+**How should seller logistics be fixed?** The data shows whether a seller handed a parcel to the carrier after the ship-by date, but not why. There are no seller operations or carrier files (warehouse capacity, pickup failures, routing). Those files would be needed to design an operations fix.
+
+**Would a later, more reliable date cost sales?** Checkout conversion is not in the data. The delivery-date model cuts bad reviews mostly by printing a later date where a parcel is likely to run late, so whether it pays depends on how many shoppers a later date turns away.
+
+**Can a model learn the peak season?** The window holds a single November peak. In tuning, the model met November 2017 with no earlier November to learn from, and every setting within the length cap did worse than Olist's promise that month. A second peak season would be needed to train and test on.
 
 ## What's next
 
-Neither test has run. Test 1 needs seller-level random assignment and 8 weeks of orders. The what-if rate above is its upper bound until then.
+The delivery-date model needs checkout conversion by promised days and a second peak season, neither of which is in this data. With both, the next round rebuilds it with the length cap inside the model and scores it once on the new peak.
 
 ## Go deeper
 
 | To see | Open |
 |---|---|
 | The one-page decision memo | [recommendation/MEMO.md](../recommendation/MEMO.md) |
+| The delivery-date model, its pass bar and holdout | [recommendation/delivery_date_model/README.md](../recommendation/delivery_date_model/README.md) |
 | The estimate and its checks | [review_cost_causal/README.md](../review_cost_causal/README.md) |
 | The data story and KPI tree | [story/QUESTIONS.md](../story/QUESTIONS.md) |
 | The dashboard and how it was built | [dashboard/tableau/README.md](../dashboard/tableau/README.md) |

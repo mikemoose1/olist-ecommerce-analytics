@@ -7,4 +7,5 @@ statsmodels==0.15.0
 PyYAML==6.0.3
 dbt-metricflow==0.16.0
 matplotlib==3.11.2
+scikit-learn==1.9.1
 quarto-cli==1.11.9
