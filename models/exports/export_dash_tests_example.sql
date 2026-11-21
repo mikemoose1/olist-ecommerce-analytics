@@ -1,5 +1,5 @@
--- Dashboard panel 6 (text table): the two fix tests, with INVENTED example numbers. The tests have not run.
--- Grain: one row per test (2 rows). PK: test_id. Every row says EXAMPLE three ways so it cannot pass for a result:
+-- Dashboard panel 6 (text table): a launch test of the per-order delivery date, two readouts, with INVENTED example
+-- numbers. The test has not run. Grain: one row per readout (2 rows). PK: test_id. Every row says EXAMPLE three ways so it cannot pass for a result:
 -- is_example, the banner text, and an asterisk on every value. When real results exist, a results model replaces this
 -- one and the test assert_dash_tests_are_labelled_example is deleted with the seed.
 select

@@ -8,7 +8,7 @@ Olist is a Brazilian online marketplace. This project takes about 99,000 of its 
 
 The main finding is that late delivery goes with much worse reviews. Orders that arrive late score about 2 stars lower than on-time orders, and only 6.87% of orders are late. That raw comparison alone does not show cause, because late orders may differ in other ways. So [review_cost_causal/](../review_cost_causal/README.md) compares each late order with the same seller's orders that arrived just on time, in the same product category and month. Late delivery is the estimated cause of about 3,110 of the 11,635 one- and two-star reviews, about 27%, with a range of 2,880 to 3,350. That is an estimate from past orders, not a randomized test. Only 1.28% of customers place a second order within 90 days.
 
-[recommendation/MEMO.md](../recommendation/MEMO.md) turns that into a decision for an operations manager: what late delivery costs, where it clusters, and two changes Olist could test. The cost shows up in ratings. A late first order shows no clear effect on whether people come back.
+[recommendation/MEMO.md](../recommendation/MEMO.md) turns that into a decision for an operations manager: what late delivery costs, where it clusters, and what to do about it. The cost shows up in ratings. There is too little repeat buying to tell whether a late first order keeps people from coming back.
 
 Those numbers only matter if they are right, so each known data problem has an automatic check, and each check was shown to fail when given bad data. A separate recalculation straight from the original files confirms every headline number. One command rebuilds everything from scratch, and GitHub reruns all checks on every change.
 
@@ -129,7 +129,7 @@ and writes [experiments/results.json](../experiments/results.json).
 
 ## Data story
 
-`make story` builds `story/build/story.html`, one static page for an operations manager. The page opens with what late delivery costs, follows the KPI tree down to where late orders come from, and ends at the memo's two tests. [story/QUESTIONS.md](../story/QUESTIONS.md) holds the KPI tree and the five questions. [story/TOOLS.md](../story/TOOLS.md) records the Evidence, Quarto and Streamlit trials and why the page uses Quarto. `make verify` builds the page and runs four checks. The KPI tree's breakdowns must add up. Every chart count must match the raw CSVs (Part C of `verification/verify_headlines.py`). Every number in the text must be tied to a fact (`story/check_story.py`). Each check has a selftest that plants errors and requires a failure.
+`make story` builds `story/build/story.html`, one static page for an operations manager. The page opens with what late delivery costs, follows the KPI tree down to where late orders come from, and ends at the memo's recommendations. [story/QUESTIONS.md](../story/QUESTIONS.md) holds the KPI tree and the five questions. [story/TOOLS.md](../story/TOOLS.md) records the Evidence, Quarto and Streamlit trials and why the page uses Quarto. `make verify` builds the page and runs four checks. The KPI tree's breakdowns must add up. Every chart count must match the raw CSVs (Part C of `verification/verify_headlines.py`). Every number in the text must be tied to a fact (`story/check_story.py`). Each check has a selftest that plants errors and requires a failure.
 
 ## Dashboard data
 

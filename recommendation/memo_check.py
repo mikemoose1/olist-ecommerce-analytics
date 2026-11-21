@@ -25,6 +25,9 @@ DESIGN = {
     "repeat_window_days": "90",       # repeat_rate_90d window (C6)
     "min_seller_orders": "20",        # sellers with fewer orders are left out of the seller concentration
     "test_weeks": "8",                # proposed test length
+    "per_orders": "1,000",            # the delivery-date model's gain is stated per 1,000 reviewed orders
+    "length_cap_days": "1",           # the delivery-date model's locked cap on extra promise length (delivery_date_model/PASS_BAR.md)
+    "repeat_late_months": "3",        # a seller is flagged after late handoffs that arrived late in this many earlier months (seller_flags.py)
     "thin_cell": "10",                # a survey-timing day with fewer orders than this in either group is called thin (analyze.py THIN_CELL)
     "near_miss_days": "1-3", "week_days": "7",   # sizes of the "1-3 days late" and "within 7 days" shares
     "promise_short_days": "0-14", "promise_long_days": "36",   # promise-length groups

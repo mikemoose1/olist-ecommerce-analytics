@@ -1,0 +1,568 @@
+{
+  "holdout": {
+    "n_scored": 38511,
+    "n_reviewed": 38307,
+    "olist": {
+      "extra_v2": 1275.2405999999999,
+      "coverage_pct": 92.87476305471164,
+      "mean_lead": 22.45683051595648,
+      "median_lead": 22.0
+    },
+    "months": {
+      "2018-03": {
+        "n_reviewed": 6859,
+        "olist_extra_v2": 657.6320519999999,
+        "olist_coverage_pct": 80.84767828728484,
+        "model_extra_v2": 283.109786,
+        "model_coverage_pct": 91.08925213366122,
+        "model_mean_extra_days": 5.841602777375958,
+        "route_p95_extra_v2": 417.81480500000004,
+        "route_p95_coverage_pct": 87.25589469116159,
+        "route_p95_mean_extra_days": 3.400838998987415
+      },
+      "2018-04": {
+        "n_reviewed": 6626,
+        "olist_extra_v2": 145.896036,
+        "olist_coverage_pct": 95.41229385307346,
+        "model_extra_v2": 57.60588,
+        "model_coverage_pct": 98.21589205397301,
+        "model_mean_extra_days": 4.782308845577211,
+        "route_p95_extra_v2": 73.768884,
+        "route_p95_coverage_pct": 97.67616191904048,
+        "route_p95_mean_extra_days": 2.9124437781109447
+      },
+      "2018-05": {
+        "n_reviewed": 6616,
+        "olist_extra_v2": 202.140299,
+        "olist_coverage_pct": 93.344375847011,
+        "model_extra_v2": 22.434829999999998,
+        "model_coverage_pct": 99.08146363499472,
+        "model_mean_extra_days": 8.4377352808312,
+        "route_p95_extra_v2": 82.362576,
+        "route_p95_coverage_pct": 97.0938111730161,
+        "route_p95_mean_extra_days": 3.6243035687396477
+      },
+      "2018-06": {
+        "n_reviewed": 5966,
+        "olist_extra_v2": 35.58745,
+        "olist_coverage_pct": 98.81449323760228,
+        "model_extra_v2": 37.032596,
+        "model_coverage_pct": 98.74770412422775,
+        "model_mean_extra_days": -2.6151277341793286,
+        "route_p95_extra_v2": 38.850808,
+        "route_p95_coverage_pct": 98.73100684588411,
+        "route_p95_mean_extra_days": -1.143095675404909
+      },
+      "2018-07": {
+        "n_reviewed": 6022,
+        "olist_extra_v2": 93.386603,
+        "olist_coverage_pct": 96.56709027892391,
+        "model_extra_v2": 46.320043,
+        "model_coverage_pct": 98.2340320184849,
+        "model_mean_extra_days": 2.830335038785278,
+        "route_p95_extra_v2": 44.330253,
+        "route_p95_coverage_pct": 98.34956263409804,
+        "route_p95_mean_extra_days": 6.962039940584255
+      },
+      "2018-08": {
+        "n_reviewed": 6218,
+        "olist_extra_v2": 140.59816,
+        "olist_coverage_pct": 93.70091360794999,
+        "model_extra_v2": 17.306269999999998,
+        "model_coverage_pct": 99.07036384035904,
+        "model_mean_extra_days": 6.755088956563552,
+        "route_p95_extra_v2": 12.780523,
+        "route_p95_coverage_pct": 99.48709729123257,
+        "route_p95_mean_extra_days": 9.89998397179035
+      }
+    },
+    "model": {
+      "v2": {
+        "extra_policy": 463.80940499999997,
+        "extra_base": 1275.2405999999999,
+        "reduction": 811.4311949999999,
+        "se": 9.744163283742838,
+        "ci_reduction_lo": 792.3326349638639,
+        "ci_reduction_hi": 830.5297550361358
+      },
+      "v4": {
+        "extra_policy": 430.36836209536744,
+        "extra_base": 1183.0749611142087,
+        "reduction": 752.7065990188412,
+        "se": 11.764968036481736,
+        "ci_reduction_lo": 729.647261667337,
+        "ci_reduction_hi": 775.7659363703453
+      },
+      "coverage_pct": 97.30985952065645,
+      "mean_lead": 26.92173664667238,
+      "median_lead": 26.0,
+      "mean_extra_days_vs_olist": 4.4649061307158995,
+      "counts_policy": {
+        "late_d1": 147,
+        "late_d2": 109,
+        "late_d3": 108,
+        "late_d4_6": 218,
+        "late_d7_13": 212,
+        "late_d14p": 217
+      },
+      "four_states": {
+        "newly_on_time": {
+          "n": 1741,
+          "sum_delta": -711.422019
+        },
+        "newly_late": {
+          "n": 70,
+          "sum_delta": 19.607001000000004
+        },
+        "still_late": {
+          "n": 941,
+          "sum_delta": -119.61617699999998
+        },
+        "still_on_time": {
+          "n": 35555,
+          "sum_delta": 0.0
+        }
+      },
+      "bootstrap_vs_olist": {
+        "n_boot": 5000,
+        "seed": 20261121,
+        "reduction_p025": 772.604090375,
+        "reduction_p975": 852.430710225,
+        "percent_p025": 61.740953310415435,
+        "percent_p975": 65.50975032584131
+      }
+    },
+    "route_p95": {
+      "v2": {
+        "extra_policy": 669.9078489999999,
+        "extra_base": 1275.2405999999999,
+        "reduction": 605.3327509999999,
+        "se": 7.3686249784049265,
+        "ci_reduction_lo": 590.8902460423262,
+        "ci_reduction_hi": 619.7752559576736
+      },
+      "v4": {
+        "extra_policy": 622.0388926763235,
+        "extra_base": 1183.0749611142087,
+        "reduction": 561.0360684378852,
+        "se": 8.978004234740016,
+        "ci_reduction_lo": 543.4391801377948,
+        "ci_reduction_hi": 578.6329567379756
+      },
+      "coverage_pct": 96.26859858222326,
+      "mean_lead": 26.71815844823557,
+      "median_lead": 24.0,
+      "mean_extra_days_vs_olist": 4.261327932279089,
+      "counts_policy": {
+        "late_d1": 165,
+        "late_d2": 153,
+        "late_d3": 116,
+        "late_d4_6": 339,
+        "late_d7_13": 364,
+        "late_d14p": 266
+      },
+      "four_states": {
+        "newly_on_time": {
+          "n": 1530,
+          "sum_delta": -603.027237
+        },
+        "newly_late": {
+          "n": 251,
+          "sum_delta": 88.743614
+        },
+        "still_late": {
+          "n": 1152,
+          "sum_delta": -91.049128
+        },
+        "still_on_time": {
+          "n": 35374,
+          "sum_delta": 0.0
+        }
+      },
+      "bootstrap_vs_olist": {
+        "n_boot": 5000,
+        "seed": 20261121,
+        "reduction_p025": 568.06318135,
+        "reduction_p975": 645.8429228,
+        "percent_p025": 45.23166539364198,
+        "percent_p975": 49.72913997052238
+      }
+    },
+    "counts_olist": {
+      "late_d1": 377,
+      "late_d2": 235,
+      "late_d3": 229,
+      "late_d4_6": 585,
+      "late_d7_13": 750,
+      "late_d14p": 506
+    },
+    "integrity": {
+      "holdout_months": [
+        "2018-03",
+        "2018-04",
+        "2018-05",
+        "2018-06",
+        "2018-07",
+        "2018-08"
+      ],
+      "tune_months": [
+        "2017-11",
+        "2017-12",
+        "2018-01",
+        "2018-02"
+      ],
+      "missing_route_p95": 0,
+      "train_from": "2017-01-01",
+      "n_train_by_month": {
+        "2018-03": 45935,
+        "2018-04": 52909,
+        "2018-05": 60006,
+        "2018-06": 66788,
+        "2018-07": 74417,
+        "2018-08": 79846
+      }
+    },
+    "cfg": {
+      "quantile": 0.97,
+      "label_lag_days": 45,
+      "learning_rate": 0.05,
+      "max_iter": 300,
+      "max_leaf_nodes": 15,
+      "min_samples_leaf": 200
+    },
+    "coverage_target_pct": 90,
+    "paired_model_vs_route_p95": {
+      "n_boot": 5000,
+      "seed": 20261122,
+      "reduction_p025": 182.61693962500001,
+      "reduction_p975": 230.12456615,
+      "percent_p025": 27.810334642631656,
+      "percent_p975": 33.70051015212342,
+      "point": 206.09844399999997
+    },
+    "bar": {
+      "model": {
+        "checks": [
+          {
+            "id": 1,
+            "name": "Net reduction vs Olist above 0, bootstrap 2.5th percentile above 0",
+            "pass": true,
+            "observed": [
+              811.4311949999999,
+              772.604090375,
+              852.430710225
+            ]
+          },
+          {
+            "id": 2,
+            "name": "Mean promise at most 1.0 day longer than Olist, median at most 1 day longer",
+            "pass": false,
+            "observed": [
+              4.4649061307158995,
+              26.0,
+              22.0
+            ]
+          },
+          {
+            "id": 3,
+            "name": "March 2018 extra not higher than Olist",
+            "pass": true,
+            "observed": [
+              283.109786,
+              657.6320519999999
+            ]
+          },
+          {
+            "id": 4,
+            "name": "Coverage at least 90%",
+            "pass": true,
+            "observed": 97.30985952065645
+          },
+          {
+            "id": 5,
+            "name": "Fewer extra bad reviews than route p95, paired bootstrap 2.5th percentile above 0",
+            "pass": true,
+            "observed": [
+              206.09844399999997,
+              182.61693962500001,
+              230.12456615
+            ]
+          }
+        ],
+        "overall_pass": false,
+        "failed": [
+          "Mean promise at most 1.0 day longer than Olist, median at most 1 day longer"
+        ]
+      },
+      "route_p95": {
+        "checks": [
+          {
+            "id": 1,
+            "name": "Net reduction vs Olist above 0, bootstrap 2.5th percentile above 0",
+            "pass": true,
+            "observed": [
+              605.3327509999999,
+              568.06318135,
+              645.8429228
+            ]
+          },
+          {
+            "id": 2,
+            "name": "Mean promise at most 1.0 day longer than Olist, median at most 1 day longer",
+            "pass": false,
+            "observed": [
+              4.261327932279089,
+              24.0,
+              22.0
+            ]
+          },
+          {
+            "id": 3,
+            "name": "March 2018 extra not higher than Olist",
+            "pass": true,
+            "observed": [
+              417.81480500000004,
+              657.6320519999999
+            ]
+          },
+          {
+            "id": 4,
+            "name": "Coverage at least 90%",
+            "pass": true,
+            "observed": 96.26859858222326
+          }
+        ],
+        "overall_pass": false,
+        "failed": [
+          "Mean promise at most 1.0 day longer than Olist, median at most 1 day longer"
+        ]
+      }
+    },
+    "decision": {
+      "model_passed_tuning": false,
+      "model_passes_holdout": false,
+      "model_adopted": false,
+      "route_p95_meets_1_to_3": false
+    },
+    "risk_flag": {
+      "n_orders": 38511,
+      "n_flagged": 27753,
+      "flagged_share_pct": 72.06512425021423,
+      "n_late": 2744,
+      "late_flagged": 2595,
+      "late_caught_pct": 94.56997084548105,
+      "late_rate_flagged_pct": 9.350340503729326,
+      "late_rate_unflagged_pct": 1.3850158021937164,
+      "extra_v2_olist": 1275.2406,
+      "extra_v2_olist_flagged": 1206.177705,
+      "extra_caught_pct": 94.58432432279838
+    },
+    "importance_march2018": [
+      {
+        "feature": "customer_state_code",
+        "pinball_increase": 0.4903971457593428
+      },
+      {
+        "feature": "distance_km",
+        "pinball_increase": 0.05703605459719004
+      },
+      {
+        "feature": "olist_lead",
+        "pinball_increase": 0.03442177402349548
+      },
+      {
+        "feature": "route_p90",
+        "pinball_increase": 0.0321749681023246
+      },
+      {
+        "feature": "seller_handoff_days",
+        "pinball_increase": 0.030250210897221057
+      },
+      {
+        "feature": "freight",
+        "pinball_increase": 0.025492395718032263
+      },
+      {
+        "feature": "seller_state_code",
+        "pinball_increase": 0.014706515331182946
+      },
+      {
+        "feature": "global_buys_7d",
+        "pinball_increase": 0.013052941973635082
+      },
+      {
+        "feature": "route_n",
+        "pinball_increase": 0.005406502673945972
+      },
+      {
+        "feature": "n_items",
+        "pinball_increase": 0.0038036115159599446
+      },
+      {
+        "feature": "global_open",
+        "pinball_increase": 0.0013015043765574053
+      },
+      {
+        "feature": "seller_late_share",
+        "pinball_increase": 0.0011019128784016303
+      },
+      {
+        "feature": "route_p50",
+        "pinball_increase": 0.0008092459228536963
+      },
+      {
+        "feature": "same_state",
+        "pinball_increase": 0.0
+      },
+      {
+        "feature": "purchase_month",
+        "pinball_increase": 0.0
+      },
+      {
+        "feature": "price",
+        "pinball_increase": -0.0011845080150882186
+      },
+      {
+        "feature": "recent_p50_14d",
+        "pinball_increase": -0.0013907973995639367
+      },
+      {
+        "feature": "seller_open",
+        "pinball_increase": -0.0015718136115060826
+      },
+      {
+        "feature": "purchase_weekday",
+        "pinball_increase": -0.0018506348694011798
+      },
+      {
+        "feature": "seller_mean_days",
+        "pinball_increase": -0.0023925475684311395
+      },
+      {
+        "feature": "freight_share",
+        "pinball_increase": -0.0028104057833952347
+      },
+      {
+        "feature": "weight_g",
+        "pinball_increase": -0.004985340742957571
+      },
+      {
+        "feature": "route_p95",
+        "pinball_increase": -0.005053071549284323
+      },
+      {
+        "feature": "seller_load_30d",
+        "pinball_increase": -0.00684106198658796
+      },
+      {
+        "feature": "volume_cm3",
+        "pinball_increase": -0.007865768075388857
+      },
+      {
+        "feature": "seller_n",
+        "pinball_increase": -0.009416128853698913
+      },
+      {
+        "feature": "cstate_p95",
+        "pinball_increase": -0.020397800845153597
+      },
+      {
+        "feature": "cstate_p50",
+        "pinball_increase": -0.02156853050636613
+      }
+    ]
+  },
+  "seller_flags": {
+    "months": [
+      "2018-03",
+      "2018-04",
+      "2018-05",
+      "2018-06",
+      "2018-07",
+      "2018-08"
+    ],
+    "min_months": 3,
+    "n_orders": 38511,
+    "n_late": 2744,
+    "flagged_sellers_first_month": 46,
+    "flagged_sellers_last_month": 106,
+    "sellers_active": 2140,
+    "flagged_orders": 7157,
+    "flagged_order_share_pct": 18.584300589441977,
+    "flagged_late": 496,
+    "flagged_late_share_pct": 18.075801749271136,
+    "handoff_late_flagged_pct": 11.401425178147269,
+    "handoff_late_other_pct": 6.895451935957135,
+    "late_rate_flagged_pct": 6.930278049462064,
+    "late_rate_other_pct": 7.169739108247751,
+    "ceiling_late_avoided": -17.13822797729159,
+    "extra_v2_all": 1275.2406,
+    "extra_v2_flagged": 228.5661,
+    "ceiling_extra_v2_avoided": -7.8976167937105615
+  },
+  "display": {
+    "n_configs": 56,
+    "tune_info_reduction": 150,
+    "tune_info_extra_days_1dp": 0.4,
+    "tune_info_nov_model": 467,
+    "tune_info_nov_olist": 440,
+    "tune_route_reduction": -248,
+    "tune_olist_mean_lead_1dp": 25.7,
+    "n_scored": 38511,
+    "n_reviewed": 38307,
+    "olist_extra": 1275,
+    "olist_mean_lead_1dp": 22.5,
+    "olist_median_lead": 22,
+    "olist_coverage_1dp": 92.9,
+    "model_extra": 464,
+    "model_reduction": 811,
+    "model_reduction_pct": 64,
+    "model_boot_lo": 773,
+    "model_boot_hi": 852,
+    "model_per_1000": 21,
+    "model_coverage_1dp": 97.3,
+    "model_extra_days_1dp": 4.5,
+    "model_median_lead": 26,
+    "model_newly_on_time_n": 1741,
+    "model_newly_on_time_avoided": 711,
+    "model_newly_late_n": 70,
+    "model_newly_late_added": 20,
+    "model_still_late_reduction": 120,
+    "model_v4_reduction": 753,
+    "route_extra": 670,
+    "route_reduction": 605,
+    "route_boot_lo": 568,
+    "route_boot_hi": 646,
+    "route_extra_days_1dp": 4.3,
+    "route_coverage_1dp": 96.3,
+    "model_vs_route": 206,
+    "model_vs_route_lo": 183,
+    "model_vs_route_hi": 230,
+    "march_olist": 658,
+    "march_model": 283,
+    "march_route": 418,
+    "march_olist_coverage_1dp": 80.8,
+    "march_model_coverage_1dp": 91.1,
+    "later_than_olist_pct": 72,
+    "coverage_target_pct": 90,
+    "top_features": [
+      "customer_state_code",
+      "distance_km",
+      "olist_lead",
+      "route_p90",
+      "seller_handoff_days"
+    ],
+    "sellers_flagged_first": 46,
+    "sellers_flagged_last": 106,
+    "sellers_handoff_flagged_1dp": 11.4,
+    "sellers_handoff_other_1dp": 6.9,
+    "sellers_late_flagged_1dp": 6.9,
+    "sellers_late_other_1dp": 7.2,
+    "sellers_late_share_1dp": 18.1,
+    "sellers_order_share_1dp": 18.6
+  },
+  "locks": {
+    "pass_bar_sha256": "7641d99544e1cc050f2778a05249de5126a6bb4a251b8fa148656f6cacc6d67b",
+    "tune_results_sha256": "98367bf3e02f5cc3b46116a88fca6592ee76d6cfcd3ac2a7cc7b830c1a0049dc"
+  }
+}

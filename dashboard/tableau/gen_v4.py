@@ -492,7 +492,7 @@ DASHES=[]   # (name, zones xml, actions xml)
 if need1:
     zid[0]=10; Z=''
     d1='Late-delivery status board, %s'%LAT
-    Z+=ztxt([(d1,20,True,INK),NL,('Orders that sellers ship late are the biggest fixable cause',20,True,ACC),NL,('Status board  \u00b7  page 1 of 2  \u00b7  orders bought %s to %s  \u00b7  %s delivered orders  \u00b7  late = arrived after the promised day'%(SC['first_label'],LAT,n0(F('judged_orders'))),11,False,MID)],1,0.4,98,13.2)
+    Z+=ztxt([(d1,20,True,INK),NL,('Orders that sellers ship late are the biggest linked source of lateness',20,True,ACC),NL,('Status board  \u00b7  page 1 of 2  \u00b7  orders bought %s to %s  \u00b7  %s delivered orders  \u00b7  late = arrived after the promised day'%(SC['first_label'],LAT,n0(F('judged_orders'))),11,False,MID)],1,0.4,98,13.2)
     Y0=14.4; chip=STAT=='chip'; arr=STAT=='chip'
     def tile(i,head,big,bigc,sub1,sub2,chiptxt,chipbg,chipfg,sheet,cap,bulletsheet=None):
         z=''; x=CX[i]
@@ -520,7 +520,7 @@ if need2:
     zid[0]=10; Z=''
     if PROTO=='P2':
         DNAME='Story (%s charts)'%NCH
-        fin_a='Late deliveries are linked to about %s bad reviews; '%n0(F('extra_bad_reviews_rounded')); fin_b='sellers shipping late is the biggest fixable cause'
+        fin_a='Late deliveries are linked to about %s bad reviews; '%n0(F('extra_bad_reviews_rounded')); fin_b='sellers shipping late is the biggest linked source of lateness'
         Z+=ztxt([(fin_a,20,True,INK),(fin_b,20,True,ACC),NL,('Orders bought %s to %s  \u00b7  %s delivered orders  \u00b7  %s late (%s)  \u00b7  late = arrived after the promised day'%(SC['first_label'],LAT,n0(F('judged_orders')),n0(F('late_orders')),p2(F('late_rate'))),11,False,MID)],1,0.4,98,9.6)
         Z+=ztxt([('1  COST',10,True,MID),NL,('\u2248'+n0(F('extra_bad_reviews_rounded')),27,True,INK),NL,('1-2 star reviews linked to late delivery',9,False,MID),NL,('estimate, range %s to %s  \u00b7  %s of all %s 1-2 star reviews'%(n0(F('extra_range_low_rounded')),n0(F('extra_range_high_rounded')),p1(F('extra_share_of_bad_reviews')),n0(F('bad_reviews_all'))),9,False,MID)],CX[0],10.2,CW,14.6,zstyle(bg=TILE,margin=4))
         Z+=ztxt([('2  THIS MONTH VS GOAL',10,True,MID),NL,(p1(LR),22,True,INK),NL,('%s %s late rate, %.1f points %s the %s goal'%(arrow,LAT,dpts,'over' if LR>GP else 'under',p1(GP)),9,False,MID)],CX[1],10.2,CW,11.4,zstyle(bg=TILE,margin=4))
@@ -565,11 +565,11 @@ if need2:
             Z+=zone_sheet('Region',X2,r2c,HW,min(r2h,24),zstyle(margin=2))
             BOT=93.1
         whatif=('      \u00b7      What-if, not a result: if late-shipped orders were late as rarely as the rest, the rate would be %s.'%p1(SP_)) if foot_t else ''
-        Z+=ztxt([('Two fixes to test next (nothing run yet)',11,True,MID),(whatif,10,False,MID),NL,("1) Remind sellers of the ship-by date. We'll track the share of orders shipped late.      2) Add buffer days to promised dates in the north and northeast. We'll track late rate and average stars.",10,False,MID)],1,BOT,98,6.8,zstyle(border=MID,bstyle='dashed',bw=1,margin=4))
+        Z+=ztxt([('Next step (nothing launched yet)',11,True,MID),(whatif,10,False,MID),NL,("Keep building the per-order delivery-date model; launch only once checkout conversion by promised days and a second peak season show the longer date is worth it.      No seller penalty list: flagged sellers did not run late more often.",10,False,MID)],1,BOT,98,6.8,zstyle(border=MID,bstyle='dashed',bw=1,margin=4))
         srcs=[('Filter by seller','Sellers'),('Filter by region','Region')]+([('Filter by month','Months')] if NCH=='6' else [])
     else:
         DNAME='Diagnosis'
-        Z+=ztxt([('Why orders are late, and where to act',20,True,INK),NL,('Orders that sellers ship late are the biggest fixable cause',16,True,ACC),NL,('Diagnosis  \u00b7  page 2 of 2  \u00b7  first tab = status board  \u00b7  click a seller, region or month bar to filter the other charts',11,False,MID)],1,0.4,98,13.2)
+        Z+=ztxt([('Why orders are late, and where to act',20,True,INK),NL,('Orders that sellers ship late are the biggest linked source of lateness',16,True,ACC),NL,('Diagnosis  \u00b7  page 2 of 2  \u00b7  first tab = status board  \u00b7  click a seller, region or month bar to filter the other charts',11,False,MID)],1,0.4,98,13.2)
         TOP=14.4; TH=9.0; HW=49; X2=51; rowh=38.4; r1c=TOP+TH; r1h=rowh-TH; r2T=TOP+rowh+0.6; r2c=r2T+TH; r2h=rowh-TH
         Z+=title('1','Orders shipped after the ship-by date: %s arrive late, vs %s when shipped by it'%(p1(LH),p1(OK_)),'%s of %s arrived late  \u00b7  %s of all %s late orders'%(n0(F('late_handoff_late_orders')),n0(F('late_handoff_orders')),p1(F('late_handoff_share_of_late')),n0(F('late_orders'))),1,TOP,HW,hc=ACC)
         Z+=zone_sheet('Handoff',1,r1c,HW,r1h,zstyle(margin=4))
@@ -581,7 +581,7 @@ if need2:
         Z+=zone_sheet('Region',1,r2c,HW,min(r2h,24),zstyle(margin=2))
         Z+=ztxt([('4  ',12,True,MID),('%s of late orders came in 3 months: %s'%(p1(F('worst3_share_of_late')),SUM['worst3_months_label']),12,True,INK),NL,('those 3 months held %s of all orders (%s of months)'%(p1(F('worst3_share_of_orders')),p0(F('worst3_share_of_months'))),9,False,MID)],X2,r2T,HW,TH)
         Z+=zone_sheet('Months',X2,r2c,HW,r2h,zstyle(margin=2))
-        Z+=ztxt([('Two fixes to test next (nothing run yet)',11,True,MID),NL,("1) Remind sellers of the ship-by date. We'll track the share of orders shipped late.      2) Add buffer days to promised dates in the north and northeast. We'll track late rate and average stars.",10,False,MID)],1,93.1,98,6.8,zstyle(border=MID,bstyle='dashed',bw=1,margin=4))
+        Z+=ztxt([('Next step (nothing launched yet)',11,True,MID),NL,("Keep building the per-order delivery-date model; launch only once checkout conversion by promised days and a second peak season show the longer date is worth it.      No seller penalty list: flagged sellers did not run late more often.",10,False,MID)],1,93.1,98,6.8,zstyle(border=MID,bstyle='dashed',bw=1,margin=4))
         srcs=[('Filter by seller','Sellers'),('Filter by region','Region'),('Filter by month','Months')]
     DASHES.append((DNAME,Z,mk_actions(DNAME,srcs)))
 ACTIONS="  <actions>\n"+''.join(a for _,_,a in DASHES)+"  </actions>\n" if any(a for _,_,a in DASHES) else ''
