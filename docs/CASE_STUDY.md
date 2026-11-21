@@ -187,6 +187,10 @@ At checkout, the model sets each order's date from facts known at that moment: t
 - **Decision rule.** Launch when Olist's checkout data shows that dates about 4.5 days longer cost fewer sales than the commercial lead will trade for about 21 fewer bad reviews per 1,000 orders.
 - **Data it needs.** Checkout conversion by promised days, which is not in this data, and a second peak season to train and test on.
 
+![Bad reviews prevented against Olist's promise, by how many days longer each date is on average, on the tuning block and on the holdout](img/delivery_tradeoff.png)
+
+*Each point is one delivery date: the late-delivery bad reviews it prevents against Olist's promise, by how many days longer it is on average. This chart shows the trade-off. It is not a pass test, and the FAIL result above is unchanged. Left, all 56 settings tried on the tuning block: the best within the 1-day cap cut about 150 at 0.4 days longer, every setting that cut more was over the cap, and the per-route date did worse than Olist there (about 248 more). Right, the holdout shows only the dates already scored on it: the model cut about 811 at 4.5 days longer and the per-route date about 605 at 4.3. No other setting was scored on the holdout.*
+
 ### Do not build a seller penalty list from past lateness
 
 A list of sellers who were late in past months looks like an obvious target. Built as of each month, using only orders delivered by then, with sellers whose late handoffs arrived late in 3 or more earlier months, the list holds 46 sellers in March 2018 and 106 by August. In the months that followed, those sellers handed parcels over late more often (11.4% of orders, against 6.9%), but their orders did not arrive late more often (6.9%, against 7.2%). They carried 18.1% of late orders on 18.6% of orders. A penalty or ranking program built on that list would not be expected to cut late deliveries.

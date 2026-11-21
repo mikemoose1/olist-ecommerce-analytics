@@ -288,6 +288,12 @@ def build_claims(con):
     add(f"with sellers whose late handoffs arrived late in {sf['min_months']} or more earlier months, the list holds {D['sellers_flagged_first']} sellers in {n_months[hm[0]]} and {D['sellers_flagged_last']} by {n_months[hm[-1]].split()[0]}", "report")
     add(f"those sellers handed parcels over late more often ({D['sellers_handoff_flagged_1dp']}% of orders, against {D['sellers_handoff_other_1dp']}%), but their orders did not arrive late more often ({D['sellers_late_flagged_1dp']}%, against {D['sellers_late_other_1dp']}%)" if D["sellers_late_flagged_1dp"] <= D["sellers_late_other_1dp"] else "SELLER_MISMATCH", "report")
     add(f"They carried {D['sellers_late_share_1dp']}% of late orders on {D['sellers_order_share_1dp']}% of orders", "report")
+    tr = [x["summary"] for x in json.loads((ROOT / "recommendation" / "delivery_date_model" / "tune_results.json").read_text())["results"]]
+    best_in = max(x["reduction_v2"] for x in tr if x["mean_extra_days_vs_olist"] <= 1.0)
+    shape_ok = (len(tr) == D["n_configs"] and round(best_in) == D["tune_info_reduction"]
+                and all(x["mean_extra_days_vs_olist"] > 1.0 for x in tr if x["reduction_v2"] > best_in) and D["tune_route_reduction"] < 0)
+    add(f"Left, all {len(tr)} settings tried on the tuning block: the best within the 1-day cap cut about {D['tune_info_reduction']} at {D['tune_info_extra_days_1dp']} days longer, every setting that cut more was over the cap, and the per-route date did worse than Olist there (about {-D['tune_route_reduction']} more)" if shape_ok else "TRADEOFF_MISMATCH", "report")
+    add(f"Right, the holdout shows only the dates already scored on it: the model cut about {D['model_reduction']} at {D['model_extra_days_1dp']} days longer and the per-route date about {D['route_reduction']} at {D['route_extra_days_1dp']}", "report")
     add(f"On the {hold_span} holdout above, the same per-route date cut about {D['route_reduction']} extra bad reviews (range {D['route_boot_lo']} to {D['route_boot_hi']}) but printed dates {D['route_extra_days_1dp']} days longer than Olist's on average, missing the same 1-day cap", "report")
     add(f"In tuning, the model met {n_months[tm[0]]} with no earlier November to learn from" if tm[0].endswith("-11") else "NOV_MISMATCH", "report")
     novembers = one("select count(distinct year_month) from marts.dim_date where in_analysis_window and year_month like '%-11'")[0]

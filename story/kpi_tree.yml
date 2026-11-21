@@ -202,7 +202,7 @@ nodes:
                   else 'handed over on time' end, count(*)
       from judged where is_late group by 1 order by 2 desc, 1
     why_moves: sellers missing their ship-by date
-    threshold: if late handoffs are {handoff_share}% or more of late orders and run late at {handoff_ratio}x the on-time-handoff rate, test seller reminders
+    threshold: if late handoffs are {handoff_share}% or more of late orders and run late at {handoff_ratio}x the on-time-handoff rate, treat seller handoffs as a major source of lateness
     models: [marts.fct_orders]
     claims: [columns.marts.fct_orders.delivered_to_carrier_at, columns.marts.fct_orders.last_shipping_limit_at]
     answerable: "yes"

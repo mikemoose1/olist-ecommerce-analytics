@@ -5,7 +5,7 @@ Numbers: every number carries a tag, and recommendation/memo_check.py checks it,
   <!--d:name-->  a design constant: memo_check.DESIGN, or a story threshold below
 Shape: each question section (## Q...) opens with one bold one-sentence takeaway and holds exactly one chart; each chart's
 key numbers are also in its section's text (CHART_KEYS, for text-only readers); each lever in "What to do" names its driver
-in its bold lead (LEVER_DRIVERS); a scoped count carries its population right after it (SCOPED_FACTS); and a lever resting on a borderline pass says so there (LEVER_HEDGES); the page holds both KPI tree markers.
+in its bold lead (LEVER_DRIVERS); a scoped count carries its population right after it (SCOPED_FACTS); and a lever that failed its pass bar says so there (LEVER_HEDGES); the page holds both KPI tree markers.
 Number words: the title, subtitle, headings, bold lines and chart alt text cannot carry tags, so every number word there
 ("two in three", "about four times", "three ... months") must sit in a phrase of NUMBER_PHRASES that checks it against the
 facts, and alt text (either quote style) and every header string outside `format:` hold no numerals.
@@ -59,8 +59,8 @@ CHART_KEYS = {
 }
 # Each lever in the recommendation must name its driver in its own bold lead sentence.
 # A lever that rests on a borderline pass must say so in its bold lead (wave-4 readers missed the hedge in the body).
-LEVER_HEDGES = [None, "borderline"]
-LEVER_DRIVERS = [["late_if_handoff_late", "late_if_handoff_ok", "seller_side_pct"], ["nne_rate", "top3_months_late"]]
+LEVER_HEDGES = ["not ready", None]
+LEVER_DRIVERS = [["ddm_olist_extra", "ddm_model_extra", "ddm_model_extra_days"], ["ddm_sellers_late_flagged", "ddm_sellers_late_other"]]
 
 
 WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10,
@@ -191,7 +191,7 @@ def check_shape(text):
             problems.append(f"lever {i}: its bold lead does not name its driver {sorted(set(want) - tags_in(lead))}")
     for i, (lead, hedge) in enumerate(zip(items, LEVER_HEDGES), 1):
         if hedge and hedge not in lead.lower():
-            problems.append(f"lever {i}: its bold lead does not say it rests on a {hedge} pass")
+            problems.append(f"lever {i}: its bold lead does not carry its hedge {hedge!r}")
     for m in ("<!-- KPI_TREE_TOP -->", "<!-- KPI_TREE_FULL -->"):
         if m not in text:
             problems.append(f"missing {m}")

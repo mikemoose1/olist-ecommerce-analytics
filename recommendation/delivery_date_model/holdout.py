@@ -90,9 +90,14 @@ def risk_flag(rows: pd.DataFrame) -> dict:
     }
 
 
-def run(con, with_importance: bool = True) -> dict:
+def build_frame(con) -> pd.DataFrame:
     df = F.build(con)
     df["route_p95_lead"] = df["order_id"].map(route_p95_leads(con))
+    return df
+
+
+def run(con, with_importance: bool = True, df: pd.DataFrame | None = None) -> dict:
+    df = build_frame(con) if df is None else df
     rows, models = M.walk_forward(df, M.HOLDOUT_MONTHS, INFO_CFG, keep_models=with_importance)
     missing_route = int(rows["route_p95_lead"].isna().sum())
     rows = rows[rows["route_p95_lead"].notna()].copy()

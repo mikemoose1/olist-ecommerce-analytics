@@ -28,10 +28,10 @@ CASES = [
     ("takeaway split into two sentences", edit("arrives late about four times as often.**", "arrives late. It happens about four times as often.**")),
     ("second chart in a question section", edit("![](fig_repeat.png)", "![](fig_repeat.png)\n\n![](fig_cost.png)")),
     ("number in the title", edit("about a quarter of", "27% of")),
-    ("seller lever loses its driver", edit("Hold sellers to their ship-by date, because late handoffs end late 21.2<!--f:late_if_handoff_late-->% of the time against 5.4<!--f:late_if_handoff_ok-->% and make up 27.8<!--f:seller_side_pct-->% of late orders.**",
-                                            "Hold sellers to their ship-by date.**")),
-    ("buffer lever's bold lead loses its borderline hedge", edit("% late, a borderline pass, and three highest-lateness", "% late and three highest-lateness")),
-    ("buffer lever names only one driver", edit(" and three highest-lateness months held 48.3<!--f:top3_months_late-->% of late orders.**", ".**")),
+    ("model lever loses its driver", edit(": on held-out orders it cut extra late-delivery bad reviews from about 1,275<!--f:ddm_olist_extra--> to about 464<!--f:ddm_model_extra-->, with dates 4.5<!--f:ddm_model_extra_days--> days longer than Olist's.**", ".**")),
+    ("model lever's bold lead loses its not-ready hedge", edit("delivery-date model, but it is not ready: on held-out", "delivery-date model: on held-out")),
+    ("seller lever names only one driver", edit(" against 7.2<!--f:ddm_sellers_late_other-->% for the rest.**", ".**")),
+    ("model lever's extra days misprinted 4.5 -> 1.5", edit("with dates 4.5<!--f:ddm_model_extra_days-->", "with dates 1.5<!--f:ddm_model_extra_days-->")),
     ("chart's key number left only in the image", edit(", 12.0<!--f:c_segment_thr-->% (the dashed line in the region panel),", "")),
     ("handoff denominator dropped from the text", edit(" sellers handed 8,530<!--f:c_handoff_orders--> orders over after ship-by, and", "")),
     ("late-handoff share loses its all-late-orders denominator", edit(" of all 6,518<!--f:late_orders--> late orders.", " of late orders.")),
@@ -107,8 +107,8 @@ CASES = [
 
 # Honest edits with no wrong number. Each must leave the story with no problems.
 MUST_PASS = [
-    ("number-free subtitle: the tests", edit("and two tests that would show", "and the tests that would show")),
-    ("number-free heading: run these tests", edit("## What to do: two tests", "## What to do: run these tests")),
+    ("number-free subtitle: a better date", edit("what a per-order delivery date could win back", "what a better delivery date could win back")),
+    ("number-free heading: a model, and no penalty list", edit("## What to do: a per-order delivery date, and no seller penalty list", "## What to do: a model, and no penalty list")),
     ("number-free takeaway: the highest-lateness months", edit("addresses and three highest-lateness months hold", "addresses and the highest-lateness months hold")),
     ("number-free takeaway: these peak months", edit("addresses and three highest-lateness months hold", "addresses and these peak months hold")),
     ("number-free takeaway: Delays in late comments", edit("**Two in three comments on late orders are about", "**Delays in late comments are mostly about")),

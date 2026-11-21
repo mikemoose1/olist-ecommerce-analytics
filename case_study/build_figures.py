@@ -201,6 +201,54 @@ def fig_delivery_model():
     save(fig, "delivery_model.png")
 
 
+def fig_tradeoff():
+    """Descriptive trade-off: bad reviews prevented vs Olist against average extra days vs Olist. Not a pass test.
+
+    Left: all tuning settings on the tuning block (tune_results.json). Right: only what was already scored on the
+    holdout (expected.json): the one model setting and the route p95 date. No new setting is scored on the holdout.
+    """
+    tune = json.loads((ROOT / "recommendation" / "delivery_date_model" / "tune_results.json").read_text())
+    ev = json.loads((ROOT / "recommendation" / "delivery_date_model" / "expected.json").read_text())
+    d, h = ev["display"], ev["holdout"]
+    assert len(tune["results"]) == d["n_configs"]
+    cap = 1.0
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(11, 4.2), sharey=True)
+    qs = sorted({r["cfg"]["quantile"] for r in tune["results"]})
+    cmap = plt.get_cmap("Oranges")
+    for i, q in enumerate(qs):
+        pts = [r["summary"] for r in tune["results"] if r["cfg"]["quantile"] == q]
+        a1.scatter([p["mean_extra_days_vs_olist"] for p in pts], [p["reduction_v2"] for p in pts],
+                   s=22, color=cmap(0.3 + 0.7 * i / max(1, len(qs) - 1)), edgecolor=DARK, lw=0.3, label=f"{q:.2f}")
+    rt = tune["route_p95_tune"]
+    a1.scatter([rt["mean_extra_days_vs_olist"]], [rt["v2"]["reduction"]], marker="s", s=50, color="white", edgecolor=GRAY, lw=1.5, hatch="//")
+    a1.annotate("per-route date", (rt["mean_extra_days_vs_olist"], rt["v2"]["reduction"]), xytext=(8, -14), textcoords="offset points", fontsize=9, color=DARK)
+    a1.set_title("Tuning block, November 2017 to February 2018\nevery setting tried", fontsize=11)
+    a1.legend(title="quantile", fontsize=8, title_fontsize=8, frameon=False, loc="upper left", ncol=2)
+    m, r = h["model"], h["route_p95"]
+    a2.scatter([m["mean_extra_days_vs_olist"]], [m["v2"]["reduction"]], s=70, color=ORANGE, edgecolor=DARK, lw=0.5, zorder=3)
+    a2.annotate(f"per-order model\n{d['model_reduction']} at +{d['model_extra_days_1dp']} days", (m["mean_extra_days_vs_olist"], m["v2"]["reduction"]),
+                xytext=(-120, 0), textcoords="offset points", fontsize=9, color=ORANGE, va="center")
+    a2.scatter([r["mean_extra_days_vs_olist"]], [r["v2"]["reduction"]], marker="s", s=60, color="white", edgecolor=GRAY, lw=1.5, hatch="//", zorder=3)
+    a2.annotate(f"per-route date\n{d['route_reduction']} at +{d['route_extra_days_1dp']} days", (r["mean_extra_days_vs_olist"], r["v2"]["reduction"]),
+                xytext=(-120, -6), textcoords="offset points", fontsize=9, color=DARK, va="center")
+    a2.set_title("Holdout, March to August 2018\nonly the dates already scored", fontsize=11)
+    for ax in (a1, a2):
+        ax.scatter([0], [0], marker="D", s=40, color=GRAY, zorder=3)
+        ax.annotate("Olist's promise", (0, 0), xytext=(-8, 10), textcoords="offset points", fontsize=9, color=DARK, ha="right")
+        ax.axhline(0, color=GRAY, lw=0.8)
+        ax.axvline(cap, color=DARK, lw=1.2, ls="--")
+        ax.text(cap, 1.0, " 1-day cap", transform=ax.get_xaxis_transform(), fontsize=9, color=DARK, va="top")
+        ax.set_xlabel("average extra days vs Olist's promise")
+        ax.yaxis.set_major_formatter(lambda v, _: f"{v:,.0f}")
+    a1.set_ylabel("bad reviews prevented vs Olist")
+    lo = min(min(x["summary"]["reduction_v2"] for x in tune["results"]), rt["v2"]["reduction"])
+    a1.set_ylim(lo * 1.1, max(m["v2"]["reduction"], max(x["summary"]["reduction_v2"] for x in tune["results"])) * 1.3)
+    a2.set_xlim(-0.5, 5.3)
+    fig.text(0.5, -0.04, "A trade-off, not a pass test. The pass bar and its FAIL result are unchanged.", ha="center", fontsize=9.5, color=DARK)
+    fig.tight_layout()
+    save(fig, "delivery_tradeoff.png")
+
+
 if __name__ == "__main__":
     con = connect()
     fig_pipeline()
@@ -210,4 +258,5 @@ if __name__ == "__main__":
     fig_whatif(con)
     fig_promise()
     fig_delivery_model()
+    fig_tradeoff()
     print("wrote", ", ".join(sorted(p.name for p in OUT.glob("*.png"))))

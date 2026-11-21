@@ -129,7 +129,7 @@ and writes [experiments/results.json](../experiments/results.json).
 
 ## Data story
 
-`make story` builds `story/build/story.html`, one static page for an operations manager. The page opens with what late delivery costs, follows the KPI tree down to where late orders come from, and ends at the memo's two tests. [story/QUESTIONS.md](../story/QUESTIONS.md) holds the KPI tree and the five questions. [story/TOOLS.md](../story/TOOLS.md) records the Evidence, Quarto and Streamlit trials and why the page uses Quarto. `make verify` builds the page and runs four checks. The KPI tree's breakdowns must add up. Every chart count must match the raw CSVs (Part C of `verification/verify_headlines.py`). Every number in the text must be tied to a fact (`story/check_story.py`). Each check has a selftest that plants errors and requires a failure.
+`make story` builds `story/build/story.html`, one static page for an operations manager. The page opens with what late delivery costs, follows the KPI tree down to where late orders come from, and ends at the memo's recommendations. [story/QUESTIONS.md](../story/QUESTIONS.md) holds the KPI tree and the five questions. [story/TOOLS.md](../story/TOOLS.md) records the Evidence, Quarto and Streamlit trials and why the page uses Quarto. `make verify` builds the page and runs four checks. The KPI tree's breakdowns must add up. Every chart count must match the raw CSVs (Part C of `verification/verify_headlines.py`). Every number in the text must be tied to a fact (`story/check_story.py`). Each check has a selftest that plants errors and requires a failure.
 
 ## Dashboard data
 
