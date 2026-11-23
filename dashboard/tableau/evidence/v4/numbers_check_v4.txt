@@ -96,7 +96,7 @@ out_v4_six_chart text: Late rate sits above the 4.4% goal; Nov 2017,            
 out_v4_six_chart text: 48.3% of late orders came in 3 months: Nov 201                                         | present                        | present                        | OK
 out_v4_six_chart text: North and northeast run 12.2% late vs 6.2% els                                         | present                        | present                        | OK
 out_v4_six_chart text: Aug 2018 late rate, 1.9 points over the 4.4% g                                         | present                        | present                        | OK
-out_v4_six_chart text: Not a target list: these sellers were not late                                         | present                        | present                        | OK
+out_v4_six_chart text: Not a target list: sellers flagged this way we                                         | present                        | present                        | OK
 out_v4_six_chart text: 94,931 delivered orders                                                                | present                        | present                        | OK
 out_v4_six_chart text: 6,518 late (6.87%)                                                                     | present                        | present                        | OK
 out_v4_six_chart text: range 2,880 to 3,350                                                                   | present                        | present                        | OK
@@ -108,6 +108,10 @@ out_v4_six_chart text: those 3 months held 21.7% of all orders (15% o           
 out_v4_six_chart text: Next step (nothing launched yet)                                                       | present                        | present                        | OK
 out_v4_six_chart text: Per-order delivery-date model: not adopted yet                                         | present                        | present                        | OK
 out_v4_six_chart text: No seller penalty list: sellers flagged for re                                         | present                        | present                        | OK
+out_b1_v2 text: Next step (nothing launched yet)                                                              | present                        | present                        | OK
+out_b1_v2 text: Not a target list: flagged sellers were not la                                                | present                        | present                        | OK
+out_b1_v2 text: Per-order delivery-date model: not adopted yet                                                | present                        | present                        | OK
+out_b1_v2 text: No seller penalty list: sellers flagged for re                                                | present                        | present                        | OK
 old/invented wording absent from every workbook                                                               | none                           | none                           | OK
 
-110 checks, 0 mismatches
+114 checks, 0 mismatches

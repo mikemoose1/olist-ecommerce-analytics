@@ -90,7 +90,7 @@ What changed against B1:
 | `v4_six_chart.png` | the exported image, full size |
 | `prep3.py`, `prep4.py` | CSVs for this page (step 1 reads the warehouse, step 2 adds the label series and the month tags) |
 | `gen_v4.py` | builds the workbook XML (same control file as B1) |
-| `numbers_check_v4.py` | 110-check number check; output in `evidence/v4/numbers_check_v4.txt` |
+| `numbers_check_v4.py` | 114-check number check; output in `evidence/v4/numbers_check_v4.txt` |
 | `click_expect.py`, `harness/click_probe4.py` | expected values for each click from DuckDB; the Mac click harness for this layout |
 | `evidence/v4/` | click test: `results.md`, `expected.md`, four images (downscaled to 1366 x 768) |
 
@@ -113,7 +113,7 @@ The second `gen_v4.py` argument is the folder written into the workbook as where
 ### What was checked (2026-11-20)
 
 - The CSVs and the workbook were regenerated from the warehouse with the commands above; the CSVs are byte-identical to the ones the exported image was built from, and the workbook differs from the one opened in Tableau only in the data-folder path.
-- The number check passes: 82 checks, 0 mismatches (every figure and label on the page against DuckDB, `summary.csv`, the CSVs and the workbook text). A deliberately wrong dot height, end label and bar count each turned up as a mismatch when tried, so the checks can fail.
+- The number check passed before the 2026-11-23 rebuild: 82 checks, 0 mismatches (every figure and label on the page against DuckDB, `summary.csv`, the CSVs and the workbook text). A deliberately wrong dot height, end label and bar count each turned up as a mismatch when tried, so the checks can fail.
 - Click test in Tableau Desktop 2026.3 on the Mac (`evidence/v4/results.md`): seller-group, region and month clicks each match the warehouse, and clicking again returns an export with the baseline's md5.
 
 | Click | shipped by / after the ship-by date | region N/NE / rest | months Nov / Feb / Mar / Aug | sellers | vs DuckDB |
@@ -131,15 +131,18 @@ Both workbooks and both images were regenerated with the commands above and expo
 
 - Bottom strip: the old "Two fixes to test next" (seller ship-by reminders, buffer days) is replaced by the case study's recommendation, on three lines so nothing is cut off. The rows above it are 1.5 points shorter.
 - Title: "biggest linked source" (was "biggest fixable cause", then "biggest linked source of lateness", which did not fit on one line).
-- Six-chart sellers panel: a second note line, "Not a target list: these sellers were not late more often afterward".
+- Sellers panel notes: the six-chart page says "Not a target list: sellers flagged this way were not late more often afterward"; B1 says "Not a target list: flagged sellers were not late more often afterward" under its top-10 title.
 - Review ramp: the line no longer breaks between day 0 and 1 and between day 5 and 6 (`prep.py` repeats the last point of each phase as the first point of the next).
 - Six-chart months chart: the Feb 2018 count (925) is padded left so it no longer touches the Mar 2018 bar (`prep4.py` `tag_pad`).
-- `numbers_check_v4.py` now also checks the header, tile 1, panel 1, 3 and 6 numbers, the ramp labels and bridge rows, the strip and the panel note, and fails if the retired strip wording is in the workbook: 110 checks, 0 mismatches. On the previous workbook it reports 5 mismatches.
+- `numbers_check_v4.py` now also checks the header, tile 1, panel 1, 3 and 6 numbers, the ramp labels and bridge rows, the strip and the panel note, and fails if the retired strip wording is in either workbook. It also checks the B1 strip and note: 114 checks, 0 mismatches. On the workbooks before this rebuild it reports 6 mismatches.
+
+**Images not yet re-exported for the panel notes.** `v4_six_chart.png`, `B1_v2.png` and `docs/img/dashboard.png` were exported before the panel notes above were reworded (six-chart) and added (B1). The six-chart image still shows the earlier note, "these sellers were not late more often afterward", and B1 shows no note. The workbooks are current; the images need one more export from Tableau Desktop.
 
 The click tests above were not re-run for this rebuild; the filters, actions and data are unchanged.
 
 ### Not cleanly fixed
 
-- Month and count labels on the months chart are positioned with padding characters, because Tableau offers no per-label offset. On the six-chart page the "Feb 2018" name and count now clear the Mar 2018 bar; on B1 the Feb count still touches it.
+- Month and count labels on the months chart are positioned with padding characters, because Tableau offers no per-label offset. On the six-chart page the "Feb 2018" name and count now clear the Mar 2018 bar.
+- B1 (`B1_v2.png`) still has these older layout problems, not fixed in this rebuild: in panel 2 the "Mar" label is clipped at the top, and the what-if, goal and "Aug 2018" labels are crossed by lines; in panel 4 the 10th seller row is cut off; in panel 6 the Feb count (925) touches the Mar 2018 bar. The six-chart page is the one the case study shows.
 - The label placement is set by hand for this data window (Jan 2017 to Aug 2018); other data would need the padding and fixed axis range revisited.
 - Dual-axis circle marks for the dots were tried and abandoned: Tableau did not accept a hand-written dual axis, so the dots are centred text marks.

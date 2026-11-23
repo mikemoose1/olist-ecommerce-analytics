@@ -408,8 +408,9 @@ Z+=title('3','Orders shipped after the ship-by date: %s arrive late, vs %s when 
 Z+=zone_sheet('Handoff',CX[2],r1c,CW,r1h,zstyle(margin=4))
 N_SELL=int(round(F('sellers_with_late_after_late_handoff')))
 CLOSE_H=2.6
-Z+=title('4',"Calling the top 10 sellers won't fix it: they account for only %s of the %s late orders that were shipped late"%(p0(F('top10_share_of_late_after_late_handoff')),n0(F('late_handoff_late_orders'))),'Seller (anonymized ID), late orders  ·  Click a seller to filter the other charts',CX[0],r2T,CW)
-Z+=zone_sheet('Sellers',CX[0],r2c,CW,r2h-CLOSE_H,zstyle(margin=2))
+T4=3.4   # room for the note line under the seller panel title (two lines if it wraps)
+Z+=title('4',"Calling the top 10 sellers won't fix it: they account for only %s of the %s late orders that were shipped late"%(p0(F('top10_share_of_late_after_late_handoff')),n0(F('late_handoff_late_orders'))),'Seller (anonymized ID), late orders  ·  Click a seller to filter the other charts\nNot a target list: flagged sellers were not late more often afterward',CX[0],r2T,CW,TH+T4)
+Z+=zone_sheet('Sellers',CX[0],r2c+T4,CW,r2h-CLOSE_H-T4,zstyle(margin=2))
 Z+=ztxt([('The other %d sellers account for the remaining %s.'%(N_SELL-10,p0(1-F('top10_share_of_late_after_late_handoff'))),10,False,MID)],CX[0],r2c+r2h-CLOSE_H,CW,CLOSE_H,zstyle(margin=2))
 Z+=title('5','North and northeast run %s late vs %s elsewhere'%(p1(F('nne_late_rate')),p1(F('rest_late_rate'))),'late rate by region  ·  Click a region to filter',CX[1],r2T,CW)
 Z+=zone_sheet('Region',CX[1],r2c,CW,min(r2h,14),zstyle(margin=2))

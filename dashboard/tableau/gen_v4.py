@@ -484,7 +484,7 @@ def seller_title():
     g=grp(SELL)[0]; nm=g['grp'].split(':')[0]; ns=int(g['grp'].split(': ')[1].split()[0].replace(',','')); sh=float(g['share_of_late_shipped_late'])
     if SELL=='size': return ('By seller size: large sellers are %s of the %d sellers behind these late orders and account for %s of the %s that were shipped late'%(p0(ns/N_SELL),N_SELL,p0(sh),NLL),'Late orders that were shipped late, by seller size (sellers with at least one)  \u00b7  Click a bar to filter the other charts')
     if SELL=='state': return ('By seller state: %s are %s of the %d sellers behind these late orders and account for %s of the %s that were shipped late'%(nm.replace('State ','sellers in '),p0(ns/N_SELL),N_SELL,p0(sh),NLL),'Late orders that were shipped late, by seller state (top 5 states)  \u00b7  Click a bar to filter the other charts')
-    if PROTO=='P2': return ('%d sellers (%s of the %d) shipped late in 3 or more months and account for %s of the %s late orders that were shipped late'%(ns,p0(ns/N_SELL),N_SELL,p0(sh),NLL),'by number of months the seller shipped late  \u00b7  Click a bar to filter\nNot a target list: these sellers were not late more often afterward')
+    if PROTO=='P2': return ('%d sellers (%s of the %d) shipped late in 3 or more months and account for %s of the %s late orders that were shipped late'%(ns,p0(ns/N_SELL),N_SELL,p0(sh),NLL),'by number of months the seller shipped late  \u00b7  Click a bar to filter\nNot a target list: sellers flagged this way were not late more often afterward')
     return ('%d sellers (%s of the %d) had late-shipped late orders in 3 or more months, and they account for %s of the %s that were shipped late'%(ns,p0(ns/N_SELL),N_SELL,p0(sh),NLL),'Late orders that were shipped late, by how many months the seller did it  \u00b7  Click a bar to filter the other charts')
 def mk_actions(DASH,srcs):
     def action(cap,src,exclude):
@@ -543,7 +543,7 @@ if need2:
             Z+=title('3','Orders shipped after the ship-by date: %s arrive late, vs %s when shipped by it'%(p1(LH),p1(OK_)),'%s of %s arrived late  \u00b7  %s of all %s late orders'%(n0(F('late_handoff_late_orders')),n0(F('late_handoff_orders')),p1(F('late_handoff_share_of_late')),n0(F('late_orders'))),CX[2],TOP,CW,hc=ACC)
             Z+=zone_sheet('Handoff',CX[2],r1c,CW,r1h,zstyle(margin=4))
             st_,sn_=seller_title(); CLOSE=2.6
-            T4=5.0 if SELL=='repeat' else 0
+            T4=6.6 if SELL=='repeat' else 0   # three-line title, subtitle and the note line, with room for the note to wrap
             Z+=title('4',st_,sn_,CX[0],r2T,CW,TH+T4)
             Z+=zone_sheet('Sellers',CX[0],r2c+T4,CW,r2h-T4-(CLOSE if SELL=='codes' else 0),zstyle(margin=2))
             if SELL=='codes': Z+=ztxt([('The other %d sellers account for the remaining %s.'%(N_SELL-10,p0(1-F('top10_share_of_late_after_late_handoff'))),10,False,MID)],CX[0],r2c+r2h-CLOSE,CW,CLOSE,zstyle(margin=2))
@@ -573,7 +573,7 @@ if need2:
     else:
         DNAME='Diagnosis'
         Z+=ztxt([('Why orders are late, and where to act',20,True,INK),NL,('Orders that sellers ship late are the biggest linked source of lateness',16,True,ACC),NL,('Diagnosis  \u00b7  page 2 of 2  \u00b7  first tab = status board  \u00b7  click a seller, region or month bar to filter the other charts',11,False,MID)],1,0.4,98,13.2)
-        TOP=14.4; TH=9.0; HW=49; X2=51; rowh=38.4; r1c=TOP+TH; r1h=rowh-TH; r2T=TOP+rowh+0.6; r2c=r2T+TH; r2h=rowh-TH
+        TOP=14.4; TH=9.0; HW=49; X2=51; rowh=37.6; r1c=TOP+TH; r1h=rowh-TH; r2T=TOP+rowh+0.6; r2c=r2T+TH; r2h=rowh-TH
         Z+=title('1','Orders shipped after the ship-by date: %s arrive late, vs %s when shipped by it'%(p1(LH),p1(OK_)),'%s of %s arrived late  \u00b7  %s of all %s late orders'%(n0(F('late_handoff_late_orders')),n0(F('late_handoff_orders')),p1(F('late_handoff_share_of_late')),n0(F('late_orders'))),1,TOP,HW,hc=ACC)
         Z+=zone_sheet('Handoff',1,r1c,HW,r1h,zstyle(margin=4))
         st_,sn_=seller_title(); CLOSE=2.6
@@ -584,7 +584,7 @@ if need2:
         Z+=zone_sheet('Region',1,r2c,HW,min(r2h,24),zstyle(margin=2))
         Z+=ztxt([('4  ',12,True,MID),('%s of late orders came in 3 months: %s'%(p1(F('worst3_share_of_late')),SUM['worst3_months_label']),12,True,INK),NL,('those 3 months held %s of all orders (%s of months)'%(p1(F('worst3_share_of_orders')),p0(F('worst3_share_of_months'))),9,False,MID)],X2,r2T,HW,TH)
         Z+=zone_sheet('Months',X2,r2c,HW,r2h,zstyle(margin=2))
-        Z+=ztxt([('Next step (nothing launched yet)',11,True,MID),NL,("Keep building the per-order delivery-date model; launch only once checkout conversion by promised days and a second peak season show the longer date is worth it.      No seller penalty list: flagged sellers did not run late more often.",10,False,MID)],1,93.1,98,6.8,zstyle(border=MID,bstyle='dashed',bw=1,margin=4))
+        Z+=ztxt([('Next step (nothing launched yet)',11,True,MID),NL,(REC_MODEL,10,False,MID),NL,(REC_SELLER,10,False,MID)],1,90.2,98,9.7,zstyle(border=MID,bstyle='dashed',bw=1,margin=4))
         srcs=[('Filter by seller','Sellers'),('Filter by region','Region'),('Filter by month','Months')]
     DASHES.append((DNAME,Z,mk_actions(DNAME,srcs)))
 ACTIONS="  <actions>\n"+''.join(a for _,_,a in DASHES)+"  </actions>\n" if any(a for _,_,a in DASHES) else ''
