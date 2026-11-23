@@ -131,18 +131,17 @@ Both workbooks and both images were regenerated with the commands above and expo
 
 - Bottom strip: the old "Two fixes to test next" (seller ship-by reminders, buffer days) is replaced by the case study's recommendation, on three lines so nothing is cut off. The rows above it are 1.5 points shorter.
 - Title: "biggest linked source" (was "biggest fixable cause", then "biggest linked source of lateness", which did not fit on one line).
-- Sellers panel notes: the six-chart page says "Not a target list: sellers flagged this way were not late more often afterward"; B1 says "Not a target list: flagged sellers were not late more often afterward" under its top-10 title.
+- Sellers panel notes: the six-chart page says "Not a target list: sellers flagged this way were not late more often afterward"; B1 says "Not a target list: flagged sellers were not late more often afterward" under its top-10 title. To make room, B1's seller rows are 15 px (font 11), and all 10 rows now show; before, the 10th was cut off.
 - Review ramp: the line no longer breaks between day 0 and 1 and between day 5 and 6 (`prep.py` repeats the last point of each phase as the first point of the next).
 - Six-chart months chart: the Feb 2018 count (925) is padded left so it no longer touches the Mar 2018 bar (`prep4.py` `tag_pad`).
 - `numbers_check_v4.py` now also checks the header, tile 1, panel 1, 3 and 6 numbers, the ramp labels and bridge rows, the strip and the panel note, and fails if the retired strip wording is in either workbook. It also checks the B1 strip and note: 114 checks, 0 mismatches. On the workbooks before this rebuild it reports 6 mismatches.
 
-**Images not yet re-exported for the panel notes.** `v4_six_chart.png`, `B1_v2.png` and `docs/img/dashboard.png` were exported before the panel notes above were reworded (six-chart) and added (B1). The six-chart image still shows the earlier note, "these sellers were not late more often afterward", and B1 shows no note. The workbooks are current; the images need one more export from Tableau Desktop.
 
 The click tests above were not re-run for this rebuild; the filters, actions and data are unchanged.
 
 ### Not cleanly fixed
 
 - Month and count labels on the months chart are positioned with padding characters, because Tableau offers no per-label offset. On the six-chart page the "Feb 2018" name and count now clear the Mar 2018 bar.
-- B1 (`B1_v2.png`) still has these older layout problems, not fixed in this rebuild: in panel 2 the "Mar" label is clipped at the top, and the what-if, goal and "Aug 2018" labels are crossed by lines; in panel 4 the 10th seller row is cut off; in panel 6 the Feb count (925) touches the Mar 2018 bar. The six-chart page is the one the case study shows.
+- B1 (`B1_v2.png`) still has these older layout problems, not fixed in this rebuild: in panel 2 the "Mar" label is clipped at the top, and the what-if, goal and "Aug 2018" labels are crossed by lines; in panel 6 the Feb count (925) touches the Mar 2018 bar. The six-chart page is the one the case study shows.
 - The label placement is set by hand for this data window (Jan 2017 to Aug 2018); other data would need the padding and fixed axis range revisited.
 - Dual-axis circle marks for the dots were tried and abandoned: Tableau did not accept a hand-written dual axis, so the dots are centred text marks.

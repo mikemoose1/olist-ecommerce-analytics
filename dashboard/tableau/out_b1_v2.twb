@@ -1190,7 +1190,7 @@
             <format attr='display-field-labels' scope='rows' value="false" />
           </style-rule>
           <style-rule element='cell'>
-            <format attr='height' field='[federated.8bef1cc20ada3bef55fdf132cb].[none:seller_label:nk]' value="17" />
+            <format attr='height' field='[federated.8bef1cc20ada3bef55fdf132cb].[none:seller_label:nk]' value="15" />
           </style-rule>
           <style-rule element='gridline'>
             <format attr='line-visibility' scope='cols' value="off" />
@@ -1205,7 +1205,7 @@
           </style-rule>
           <style-rule element='header'>
             <format attr='width' field='[federated.8bef1cc20ada3bef55fdf132cb].[none:seller_label:nk]' value="210" />
-            <format attr='font-size' value="13" />
+            <format attr='font-size' value="11" />
             <format attr='font-weight' value="bold" />
           </style-rule>
         </style>
@@ -1443,9 +1443,9 @@
         <zone h='21600' id='18' name="Trend" show-title='false' w='32000' x='34000' y='34000'><zone-style><format attr='border-style' value='none' /><format attr='margin' value='2' /></zone-style></zone>
         <zone h='9000' id='19' type='text' w='32000' x='67000' y='25000'><formatted-text><run bold='true' fontcolor='#555555' fontsize='12'>3  </run><run bold='true' fontcolor='#D55E00' fontsize='12'>Orders shipped after the ship-by date: 21.2% arrive late, vs 5.4% when shipped by it</run><run>Æ&#10;</run><run bold='false' fontcolor='#555555' fontsize='9'>1,809 of 8,530 arrived late  ·  27.8% of all 6,518 late orders</run></formatted-text><zone-style><format attr='border-style' value='none' /><format attr='margin' value='0' /></zone-style></zone>
         <zone h='21600' id='20' name="Handoff" show-title='false' w='32000' x='67000' y='34000'><zone-style><format attr='border-style' value='none' /><format attr='margin' value='4' /></zone-style></zone>
-        <zone h='12400' id='21' type='text' w='32000' x='1000' y='56200'><formatted-text><run bold='true' fontcolor='#555555' fontsize='12'>4  </run><run bold='true' fontcolor='#222222' fontsize='12'>Calling the top 10 sellers won&apos;t fix it: they account for only 19% of the 1,809 late orders that were shipped late</run><run>Æ&#10;</run><run bold='false' fontcolor='#555555' fontsize='9'>Seller (anonymized ID), late orders  ·  Click a seller to filter the other charts
+        <zone h='10800' id='21' type='text' w='32000' x='1000' y='56200'><formatted-text><run bold='true' fontcolor='#555555' fontsize='12'>4  </run><run bold='true' fontcolor='#222222' fontsize='12'>Calling the top 10 sellers won&apos;t fix it: they account for only 19% of the 1,809 late orders that were shipped late</run><run>Æ&#10;</run><run bold='false' fontcolor='#555555' fontsize='9'>Seller (anonymized ID), late orders  ·  Click a seller to filter the other charts
 Not a target list: flagged sellers were not late more often afterward</run></formatted-text><zone-style><format attr='border-style' value='none' /><format attr='margin' value='0' /></zone-style></zone>
-        <zone h='18300' id='22' name="Sellers" show-title='false' w='32000' x='1000' y='68600'><zone-style><format attr='border-style' value='none' /><format attr='margin' value='2' /></zone-style></zone>
+        <zone h='19900' id='22' name="Sellers" show-title='false' w='32000' x='1000' y='67000'><zone-style><format attr='border-style' value='none' /><format attr='margin' value='2' /></zone-style></zone>
         <zone h='2600' id='23' type='text' w='32000' x='1000' y='86900'><formatted-text><run bold='false' fontcolor='#555555' fontsize='10'>The other 573 sellers account for the remaining 81%.</run></formatted-text><zone-style><format attr='border-style' value='none' /><format attr='margin' value='2' /></zone-style></zone>
         <zone h='9000' id='24' type='text' w='32000' x='34000' y='56200'><formatted-text><run bold='true' fontcolor='#555555' fontsize='12'>5  </run><run bold='true' fontcolor='#222222' fontsize='12'>North and northeast run 12.2% late vs 6.2% elsewhere</run><run>Æ&#10;</run><run bold='false' fontcolor='#555555' fontsize='9'>late rate by region  ·  Click a region to filter</run></formatted-text><zone-style><format attr='border-style' value='none' /><format attr='margin' value='0' /></zone-style></zone>
         <zone h='14000' id='25' name="Region" show-title='false' w='32000' x='34000' y='65200'><zone-style><format attr='border-style' value='none' /><format attr='margin' value='2' /></zone-style></zone>
