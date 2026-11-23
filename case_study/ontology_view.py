@@ -110,7 +110,7 @@ def late_rules(con, onto=None):
     return "\n".join([
         f"Late. {late} It is judged only on the late-rate population, after the filters below.",
         "",
-        f"Late handoff. {handoff} Among the judged orders, {have:,} have a handoff time and {late_n:,} of them were late. {none} judged order has no handoff time and is in neither group.",
+        f"Late handoff. {handoff} Among the judged orders, {have:,} have a handoff time and {late_n:,} of them were handed over late. {none} judged order has no handoff time and is in neither group.",
     ])
 
 

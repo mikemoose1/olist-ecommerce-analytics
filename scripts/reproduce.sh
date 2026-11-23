@@ -17,6 +17,8 @@ recommendation() { "$BIN/python" recommendation/analyze.py; "$BIN/python" recomm
   "$BIN/python" recommendation/check_docs.py; "$BIN/python" recommendation/selftest_docs.py   # retired figures stay out of the untagged docs
   "$BIN/python" recommendation/promise_backtest/check_headlines.py
   "$BIN/python" recommendation/promise_backtest/selftest.py
+  "$BIN/python" recommendation/delivery_date_model/check_headlines.py
+  "$BIN/python" recommendation/delivery_date_model/selftest.py
   story_checks; }   # numbers tied to facts, then proof that check can fail
 story_checks() {   # KPI tree adds up, chart data is fresh, captions are tied to facts; each check proven able to fail; then build the page
   "$BIN/python" story/kpi_tree.py --check; "$BIN/python" story/selftest_kpi_tree.py

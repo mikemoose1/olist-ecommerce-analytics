@@ -1,3 +1,3 @@
 test_id,test_name,readout_metric,unit,test_group_value,no_change_group_value,is_example
-1,Seller ship-by reminder test,handoffs after ship-by,percent,6.1,9.0,true
-2,"Buffer days, north/northeast",average stars,stars,4.05,3.92,true
+1,Per-order delivery date at checkout,checkout conversion,percent,2.9,3.0,true
+2,Per-order delivery date at checkout,average stars,stars,4.12,4.05,true

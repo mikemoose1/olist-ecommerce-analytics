@@ -65,7 +65,7 @@ models:
       - name: region_group
         data_tests: [unique, not_null]
   - name: export_dash_tests_example
-    description: The "are the fixes working" panel. INVENTED EXAMPLE numbers, because the two tests have not run. Never results.
+    description: The "are the fixes working" panel. INVENTED EXAMPLE numbers, because the delivery-date launch test has not run. Never results.
     columns:
       - name: test_id
         data_tests: [unique, not_null]
