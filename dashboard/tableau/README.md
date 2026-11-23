@@ -142,6 +142,6 @@ The click tests above were not re-run for this rebuild; the filters, actions and
 ### Not cleanly fixed
 
 - Month and count labels on the months chart are positioned with padding characters, because Tableau offers no per-label offset. On the six-chart page the "Feb 2018" name and count now clear the Mar 2018 bar.
-- B1 (`B1_v2.png`) still has these older layout problems, not fixed in this rebuild: in panel 2 the "Mar" label is clipped at the top, and the what-if, goal and "Aug 2018" labels are crossed by lines; in panel 6 the Feb count (925) touches the Mar 2018 bar. The six-chart page is the one the case study shows.
+- B1 (`B1_v2.png`) still has these older layout problems, not fixed in this rebuild: in panel 2 the "Mar" label touches the top of the line (the March peak), and the what-if, goal and "Aug 2018" labels are crossed by lines; in panel 6 the Feb count (925) touches the Mar 2018 bar. The six-chart page is the one the case study shows.
 - The label placement is set by hand for this data window (Jan 2017 to Aug 2018); other data would need the padding and fixed axis range revisited.
 - Dual-axis circle marks for the dots were tried and abandoned: Tableau did not accept a hand-written dual axis, so the dots are centred text marks.

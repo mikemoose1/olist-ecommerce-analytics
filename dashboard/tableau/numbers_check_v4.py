@@ -1,7 +1,7 @@
 """Numbers check for the six-chart page. Every figure shown (tiles, titles, labels, seller groups, status) recomputed from the warehouse
 by queries independent of prep3.py/prep4.py, then compared with what is on the image text (from the workbook XML) and the CSVs. Exit 1 on any mismatch."""
 import duckdb,csv,sys,re,glob,os
-DATA=os.environ.get('DATA','data4'); TW=os.environ.get('TWB_DIR','.')   # DATA: prep4.py output folder. TWB_DIR: folder holding out_v4_six_chart.twb
+DATA=os.environ.get('DATA','data4'); TW=os.environ.get('TWB_DIR','.')   # DATA: prep4.py output folder. TWB_DIR: folder holding out_v4_six_chart.twb and out_b1_v2.twb
 con=duckdb.connect(os.environ['OLIST_DB'],read_only=True)   # OLIST_DB: the warehouse file
 q=lambda s: con.execute(s).fetchall()
 S=list(csv.DictReader(open(DATA+'/summary.csv')))[0]; V=list(csv.DictReader(open(DATA+'/v3_scalars.csv')))[0]
