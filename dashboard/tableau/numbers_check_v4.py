@@ -115,16 +115,38 @@ chk('repeat panel: bar values as drawn (late orders that were shipped late)','1,
 chk('repeat panel: sellers in each bar as counted in orders.csv (the numbers in the labels)','117 / 466',' / '.join(N(r[1]) for r in rl))
 chk('repeat panel: the two bars add up to all 1,809','1,809',N(sum(r[2] for r in rl)))
 chk('repeat panel: 1,018 of 1,809 and 791 of 1,809 (warehouse)','1,018 / 791',N(rep[1])+' / '+N(rep[3]))
+# ---- header, tile 1, panel 1, panel 3 and panel 6 subtitles: counts recomputed from the warehouse where the base table allows,
+# the rest read from summary.csv (verification/verify_dash_exports.py ties every summary.csv value to the warehouse and facts.json)
+nlate=q("select sum(is_late::int) from b")[0][0]
+P2=lambda x:'%.2f%%'%(f(x)*100)
+chk('header: delivered orders','94,931',tot[0],N); chk('header: late orders','6,518',nlate,N); chk('header: late rate','6.87%',nlate/tot[0],P2)
+chk('panel 3: orders shipped after the ship-by date','8,530',hl[1][1],N); chk('panel 3: of those, arrived late','1,809',hl[1][2],N)
+chk('tile 1: range low (summary.csv)','2,880',S['extra_range_low_rounded'],N); chk('tile 1: range high (summary.csv)','3,350',S['extra_range_high_rounded'],N)
+chk('tile 1: all 1-2 star reviews (summary.csv)','11,635',S['bad_reviews_all'],N); chk('tile 1: share of them (summary.csv)','26.7%',S['extra_share_of_bad_reviews'],P1)
+chk('panel 1: share up to the promised day (summary.csv)','8.7%',S['ramp_share_up_to_promised_day'],P1); chk('panel 1: share from day 6 (summary.csv)','78%',S['ramp_share_from_day_6'],P0)
+chk('panel 1: points per late day (summary.csv)','11','%d'%round(f(S['ramp_points_per_day'])*100))
+chk('panel 6: worst 3 months share of orders (summary.csv)','21.7%',S['worst3_share_of_orders'],P1); chk('panel 6: share of months (summary.csv)','15%',S['worst3_share_of_months'],P0)
+RL=sorted(r['lab'] for r in csv.DictReader(open(DATA+'/ramp_b.csv',encoding='utf8')) if r['lab'])
+chk('panel 1: ramp labels as drawn (ramp_b.csv)',' / '.join(sorted(['8.7% up to the promised day','+11 points per late day','\u224878% from day 6'])),' / '.join(RL))
+RB_=list(csv.DictReader(open(DATA+'/ramp_b.csv',encoding='utf8')))
+chk('panel 1: line unbroken (day 0 and day 5 bridge rows repeat the next phase)','climbing@0 levelled@5',' '.join('%s@%s'%(r['phase'],r['days_past_promise_capped']) for r in RB_ if (r['days_past_promise_capped'],r['phase']) in (('0','climbing'),('5','levelled'))))
 # ---- text on the workbooks
 need={'out_v4_six_chart':['Goal 4.4%','What-if, not a result: if late-shipped orders were late as rarely as the rest, the rate would be 3.4%.','ABOVE GOAL','under the warning line (8.4%)','gray line = warning line, set for each month','dots = months past it',
       '117 sellers (20% of the 583) shipped late in 3 or more months and account for 56% of the 1,809 late orders that were shipped late','Late rate sits above the 4.4% goal; Nov 2017, Feb 2018 and Mar 2018 went past the warning line',
-      '48.3% of late orders came in 3 months: Nov 2017, Feb 2018 and Mar 2018','North and northeast run 12.2% late vs 6.2% elsewhere','Aug 2018 late rate, 1.9 points over the 4.4% goal']}
+      '48.3% of late orders came in 3 months: Nov 2017, Feb 2018 and Mar 2018','North and northeast run 12.2% late vs 6.2% elsewhere','Aug 2018 late rate, 1.9 points over the 4.4% goal',
+      'Not a target list: these sellers were not late more often afterward',
+      '94,931 delivered orders','6,518 late (6.87%)','range 2,880 to 3,350','26.7% of all 11,635 1-2 star reviews','8.7% are 1-2 stars up to the promised day, about 78% from day 6 late',
+      '1,809 of 8,530 arrived late','27.8% of all 6,518 late orders','those 3 months held 21.7% of all orders (15% of months)','Next step (nothing launched yet)',
+      'Per-order delivery-date model: not adopted yet. Keep building it; launch only once checkout conversion by promised days and a second peak season show the longer date is worth it.',
+      'No seller penalty list: sellers flagged for repeated late shipping were not late more often afterward.']}
 for wb,ts in need.items():
     p=TW+'/%s.twb'%wb
     assert os.path.exists(p),p
     x=open(p,encoding='utf8').read().replace('&apos;',"'")
     for t in ts: chk('%s text: %s'%(wb,t[:46]),'present','present' if t in x else 'MISSING')
-bad=[w for w in ['handoff gap','Handed','alarm line','e.g.','EXAMPLE','invented'] if any(w.lower() in re.sub(r'c Alarm line','',open(p,encoding='utf8').read()).lower() for p in [TW+'/out_v4_six_chart.twb'])]
+# wording retired with the old recommendations (seller ship-by reminders, buffer days, "fixable cause") must be gone too
+OLD_REC=['Two fixes to test','Remind sellers','ship-by date. We','buffer days','fixable cause','test next']
+bad=[w for w in ['handoff gap','Handed','alarm line','e.g.','EXAMPLE','invented']+OLD_REC if any(w.lower() in re.sub(r'c Alarm line','',open(p,encoding='utf8').read()).lower() for p in [TW+'/out_v4_six_chart.twb'])]
 chk('old/invented wording absent from every workbook','none',','.join(bad) or 'none')
 w=max(len(r[0]) for r in rows)
 print('%-*s | %-30s | %-30s | %s'%(w,'item','on image / csv','warehouse','result'))

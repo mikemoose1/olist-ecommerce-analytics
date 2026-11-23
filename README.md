@@ -4,7 +4,7 @@ This project builds a tested data pipeline from about 99,000 real orders of Olis
 
 [![Dashboard of late deliveries, reviews, sellers, regions and months](docs/img/dashboard.png)](docs/img/dashboard.png)
 
-*The dashboard in one view. Click the image for the full-size picture, or see it in [the full case study](docs/CASE_STUDY.md#dashboard). The interactive version is coming. It was built before the current recommendations. Its "Two fixes to test next" panel (seller ship-by reminders and buffer days) was replaced by the recommendation below, its "fixable cause" title rests on a handoff link that was never tested, and its repeat-late shippers panel is not a target list: a later as-of check found that sellers flagged for repeated late handoffs did not have more late orders afterward. The image has not been rebuilt since.*
+*The dashboard in one view. Click the image for the full-size picture, or see it in [the full case study](docs/CASE_STUDY.md#dashboard). The interactive version is coming.*
 
 **Role and tools.** An end-to-end analytics project on a public dataset: data modeling and automated data checks in dbt and DuckDB, the review-cost analysis in Python (pandas and statsmodels), a delivery-date model (scikit-learn), a recommendation memo, a Quarto data story and a Tableau dashboard. GitHub Actions rebuilds and checks all of it.
 

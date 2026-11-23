@@ -12,7 +12,7 @@ Tables for the late-delivery dashboard (layout B: six number tiles over six pane
 | `handoff.csv` | 2 | late or on-time handoff | panel 3 |
 | `sellers.csv` | 2,925 | seller | panel 4; the chart shows `is_top10` |
 | `region.csv` | 2 | north and northeast, rest of Brazil | panel 5 |
-| `tests_example.csv` | 2 | test | not used by the shipped Tableau dashboard (`tableau/`, layout B1), whose bottom strip names two fixes to test and shows no numbers. If a strip with numbers is ever shown, these are **invented example numbers** |
+| `tests_example.csv` | 2 | test | not used by the shipped Tableau dashboards (`tableau/`), whose bottom strip states the recommendation and shows no numbers. If a strip with numbers is ever shown, these are **invented example numbers** |
 
 ## What the numbers mean
 
@@ -39,7 +39,7 @@ Four layers, each proven able to fail:
 
 ## The tests strip is an example
 
-The shipped Tableau dashboard (`tableau/`) no longer shows these numbers; its bottom strip says "Two fixes to test next (nothing run yet)" and holds none. The file stays, still labelled, for any layout that shows a strip with numbers. `seeds/dash_tests_example.csv` holds invented numbers that show the layout. The export marks every row `is_example`, `not run`, "EXAMPLE" in both labels, an asterisk on both values, the banner and a footnote. `assert_dash_tests_are_labelled_example` fails if any row loses one of those. When the tests have run, a results model replaces the seed and that test goes with it.
+The shipped Tableau dashboards (`tableau/`) do not show these numbers. Their bottom strip, "Next step (nothing launched yet)", states the case study's recommendation in words: the per-order delivery-date model is not adopted yet and launches only once checkout conversion by promised days and a second peak season show the longer date is worth it, and there is no seller penalty list. It holds no numbers. The file stays, still labelled, for any layout that shows a strip with numbers. `seeds/dash_tests_example.csv` holds invented numbers that show the layout. The export marks every row `is_example`, `not run`, "EXAMPLE" in both labels, an asterisk on both values, the banner and a footnote. `assert_dash_tests_are_labelled_example` fails if any row loses one of those. When the tests have run, a results model replaces the seed and that test goes with it.
 
 ## Not in these tables
 

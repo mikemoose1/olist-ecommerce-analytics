@@ -423,7 +423,7 @@ if need2:
         tip=['Orders: ',('order_code','cnt'),'\nLate orders: ',('late_n','sum'),'\nLate rate: ',('late','avg')])
     if (PROTO=='P2' and NCH=='6') or PROTO=='P1':
         BK=('month_start','tmn')
-        ows('Months',ORD,[BK],mark='Bar',cols=ORD.q(*BK),rows=ORD.q('late_n','sum'),color=('is_worst3_month','nk'),text=[('tag_m','nk'),('late_tag_n','sum')],runs=[(('tag_m','nk'),8,True,INK),(None,0,0,''),(('late_tag_n','sum'),8,False,MID)] if YEARTAG else [(('month_tag','nk'),8,True,INK),(None,0,0,''),(('late_tag_n','sum'),8,False,MID)],
+        ows('Months',ORD,[BK],mark='Bar',cols=ORD.q(*BK),rows=ORD.q('late_n','sum'),color=('is_worst3_month','nk'),text=[('tag_m','nk'),('late_tag_n','sum')]+([('tag_pad','nk')] if YEARTAG else []),runs=[(('tag_m','nk'),8,True,INK),(None,0,0,''),(('late_tag_n','sum'),8,False,MID),(('tag_pad','nk'),8,False,MID)] if YEARTAG else [(('month_tag','nk'),8,True,INK),(None,0,0,''),(('late_tag_n','sum'),8,False,MID)],
             palette_map=[('true',MID),('false',PALE)],hide_axes=[('late_n','sum')],extra_uses=[('late_n','sum'),('late_tag_n','sum'),BK],
             axis_titles={(BK[0],BK[1],'cols'):'Click a month to filter, click again to clear',('late_n','sum','rows'):''},xspace=(BK,TORIG if YEARTAG else '#2017-01-01#',TICK if YEARTAG else '6.0','months'),datefmts=[('label',TFMT if YEARTAG else '*mmm yyyy',None)],axis_font=(TICKFS if YEARTAG else None),
             tip=['Orders: ',('order_code','cnt'),'\nLate orders: ',('late_n','sum'),'\nLate rate: ',('late','avg')])
@@ -476,12 +476,15 @@ dpts=abs(LR-GP)*100
 LH=F('late_handoff_late_rate'); OK_=F('on_time_handoff_late_rate')
 N_SELL=int(round(F('sellers_with_late_after_late_handoff'))); NLL=n0(F('late_handoff_late_orders'))
 grp=lambda kind:[g for g in SG if g['kind']==kind]
+# The bottom strip states the case study's two recommendations (docs/CASE_STUDY.md, Recommendation); it holds no numbers.
+REC_MODEL="Per-order delivery-date model: not adopted yet. Keep building it; launch only once checkout conversion by promised days and a second peak season show the longer date is worth it."
+REC_SELLER="No seller penalty list: sellers flagged for repeated late shipping were not late more often afterward."
 def seller_title():
     if SELL=='codes': return ('Calling the 10 worst sellers won\'t fix it: they account for only %s of the %s late orders that were shipped late'%(p0(F('top10_share_of_late_after_late_handoff')),NLL),'Seller (anonymized ID), late orders  \u00b7  Click a seller to filter the other charts')
     g=grp(SELL)[0]; nm=g['grp'].split(':')[0]; ns=int(g['grp'].split(': ')[1].split()[0].replace(',','')); sh=float(g['share_of_late_shipped_late'])
     if SELL=='size': return ('By seller size: large sellers are %s of the %d sellers behind these late orders and account for %s of the %s that were shipped late'%(p0(ns/N_SELL),N_SELL,p0(sh),NLL),'Late orders that were shipped late, by seller size (sellers with at least one)  \u00b7  Click a bar to filter the other charts')
     if SELL=='state': return ('By seller state: %s are %s of the %d sellers behind these late orders and account for %s of the %s that were shipped late'%(nm.replace('State ','sellers in '),p0(ns/N_SELL),N_SELL,p0(sh),NLL),'Late orders that were shipped late, by seller state (top 5 states)  \u00b7  Click a bar to filter the other charts')
-    if PROTO=='P2': return ('%d sellers (%s of the %d) shipped late in 3 or more months and account for %s of the %s late orders that were shipped late'%(ns,p0(ns/N_SELL),N_SELL,p0(sh),NLL),'by number of months the seller shipped late  \u00b7  Click a bar to filter')
+    if PROTO=='P2': return ('%d sellers (%s of the %d) shipped late in 3 or more months and account for %s of the %s late orders that were shipped late'%(ns,p0(ns/N_SELL),N_SELL,p0(sh),NLL),'by number of months the seller shipped late  \u00b7  Click a bar to filter\nNot a target list: these sellers were not late more often afterward')
     return ('%d sellers (%s of the %d) had late-shipped late orders in 3 or more months, and they account for %s of the %s that were shipped late'%(ns,p0(ns/N_SELL),N_SELL,p0(sh),NLL),'Late orders that were shipped late, by how many months the seller did it  \u00b7  Click a bar to filter the other charts')
 def mk_actions(DASH,srcs):
     def action(cap,src,exclude):
@@ -520,7 +523,7 @@ if need2:
     zid[0]=10; Z=''
     if PROTO=='P2':
         DNAME='Story (%s charts)'%NCH
-        fin_a='Late deliveries are linked to about %s bad reviews; '%n0(F('extra_bad_reviews_rounded')); fin_b='sellers shipping late is the biggest linked source of lateness'
+        fin_a='Late deliveries are linked to about %s bad reviews; '%n0(F('extra_bad_reviews_rounded')); fin_b='sellers shipping late is the biggest linked source'
         Z+=ztxt([(fin_a,20,True,INK),(fin_b,20,True,ACC),NL,('Orders bought %s to %s  \u00b7  %s delivered orders  \u00b7  %s late (%s)  \u00b7  late = arrived after the promised day'%(SC['first_label'],LAT,n0(F('judged_orders')),n0(F('late_orders')),p2(F('late_rate'))),11,False,MID)],1,0.4,98,9.6)
         Z+=ztxt([('1  COST',10,True,MID),NL,('\u2248'+n0(F('extra_bad_reviews_rounded')),27,True,INK),NL,('1-2 star reviews linked to late delivery',9,False,MID),NL,('estimate, range %s to %s  \u00b7  %s of all %s 1-2 star reviews'%(n0(F('extra_range_low_rounded')),n0(F('extra_range_high_rounded')),p1(F('extra_share_of_bad_reviews')),n0(F('bad_reviews_all'))),9,False,MID)],CX[0],10.2,CW,14.6,zstyle(bg=TILE,margin=4))
         Z+=ztxt([('2  THIS MONTH VS GOAL',10,True,MID),NL,(p1(LR),22,True,INK),NL,('%s %s late rate, %.1f points %s the %s goal'%(arrow,LAT,dpts,'over' if LR>GP else 'under',p1(GP)),9,False,MID)],CX[1],10.2,CW,11.4,zstyle(bg=TILE,margin=4))
@@ -531,7 +534,7 @@ if need2:
         trend_head='Late rate sits above the %s goal; %s went past the warning line'%(p1(GP),SUM['worst3_months_label'])
         foot_t=("What-if: if late-shipped orders were late as rarely",'as the rest, the rate would be %s.'%p1(SP_)) if TREND!='orig' else None
         if NCH=='6':
-            TH=9.0; r1c=TOP+TH; r1h=55.6-r1c; r2T=r1c+r1h+0.6; r2c=r2T+TH; r2h=92.4-r2c
+            TH=9.0; r1c=TOP+TH; r1h=55.6-r1c; r2T=r1c+r1h+0.6; r2c=r2T+TH; r2h=89.5-r2c
             Z+=title('1','Reviews turn bad fast: %s are 1-2 stars up to the promised day, about %s from day 6 late'%(p1(F('ramp_share_up_to_promised_day')),p0(F('ramp_share_from_day_6'))),'share of reviews that are 1-2 stars, by days past the promised day',CX[0],TOP,CW)
             Z+=zone_sheet('Review ramp',CX[0],r1c,CW,r1h,zstyle(margin=2))
             FT=0
@@ -540,7 +543,7 @@ if need2:
             Z+=title('3','Orders shipped after the ship-by date: %s arrive late, vs %s when shipped by it'%(p1(LH),p1(OK_)),'%s of %s arrived late  \u00b7  %s of all %s late orders'%(n0(F('late_handoff_late_orders')),n0(F('late_handoff_orders')),p1(F('late_handoff_share_of_late')),n0(F('late_orders'))),CX[2],TOP,CW,hc=ACC)
             Z+=zone_sheet('Handoff',CX[2],r1c,CW,r1h,zstyle(margin=4))
             st_,sn_=seller_title(); CLOSE=2.6
-            T4=3.4 if SELL=='repeat' else 0
+            T4=5.0 if SELL=='repeat' else 0
             Z+=title('4',st_,sn_,CX[0],r2T,CW,TH+T4)
             Z+=zone_sheet('Sellers',CX[0],r2c+T4,CW,r2h-T4-(CLOSE if SELL=='codes' else 0),zstyle(margin=2))
             if SELL=='codes': Z+=ztxt([('The other %d sellers account for the remaining %s.'%(N_SELL-10,p0(1-F('top10_share_of_late_after_late_handoff'))),10,False,MID)],CX[0],r2c+r2h-CLOSE,CW,CLOSE,zstyle(margin=2))
@@ -548,7 +551,7 @@ if need2:
             Z+=zone_sheet('Region',CX[1],r2c,CW,min(r2h,14),zstyle(margin=2))
             Z+=ztxt([('6  ',12,True,MID),('%s of late orders came in 3 months: %s'%(p1(F('worst3_share_of_late')),SUM['worst3_months_label']),12,True,INK),NL,('those 3 months held %s of all orders (%s of months)'%(p1(F('worst3_share_of_orders')),p0(F('worst3_share_of_months'))),9,False,MID)],CX[2],r2T,CW,TH)
             Z+=zone_sheet('Months',CX[2],r2c,CW,r2h,zstyle(margin=2))
-            BOT=93.1
+            BOT=90.2
         else:
             TH=9.0; HW=49; X2=51; TOP=25.4
             rowh=31.0; rowh2=35.8; r1c=TOP+TH; r1h=rowh-TH; r2T=TOP+rowh+0.6; r2c=r2T+TH; r2h=rowh2-TH-0.4
@@ -565,7 +568,7 @@ if need2:
             Z+=zone_sheet('Region',X2,r2c,HW,min(r2h,24),zstyle(margin=2))
             BOT=93.1
         whatif=('      \u00b7      What-if, not a result: if late-shipped orders were late as rarely as the rest, the rate would be %s.'%p1(SP_)) if foot_t else ''
-        Z+=ztxt([('Next step (nothing launched yet)',11,True,MID),(whatif,10,False,MID),NL,("Keep building the per-order delivery-date model; launch only once checkout conversion by promised days and a second peak season show the longer date is worth it.      No seller penalty list: flagged sellers did not run late more often.",10,False,MID)],1,BOT,98,6.8,zstyle(border=MID,bstyle='dashed',bw=1,margin=4))
+        Z+=ztxt([('Next step (nothing launched yet)',11,True,MID),(whatif,10,False,MID),NL,(REC_MODEL,10,False,MID),NL,(REC_SELLER,10,False,MID)],1,BOT,98,99.9-BOT,zstyle(border=MID,bstyle='dashed',bw=1,margin=4))
         srcs=[('Filter by seller','Sellers'),('Filter by region','Region')]+([('Filter by month','Months')] if NCH=='6' else [])
     else:
         DNAME='Diagnosis'

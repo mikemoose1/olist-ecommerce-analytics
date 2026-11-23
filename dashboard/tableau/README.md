@@ -4,7 +4,7 @@ The late-delivery dashboard as a Tableau Desktop workbook, with the script that 
 
 ![dashboard](B1_v2.png)
 
-The title says the finding: late deliveries are linked to about 3,110 bad reviews, and sellers shipping late is the biggest fixable cause. The wording is deliberately not causal: the 3,110 is an estimate from past orders, not a controlled test. Three tiles (cost, this month against the 4.4% goal, seller ships late 21.2% vs 5.4%), then trend, why, and where. Gray everywhere, orange only for orders shipped after the ship-by date. The strip at the bottom names two fixes to test next, with what each would track; it holds no numbers and nothing has been run.
+The title says the finding: late deliveries are linked to about 3,110 bad reviews, and sellers shipping late is the biggest linked source. The wording is deliberately not causal: the 3,110 is an estimate from past orders, not a controlled test. Three tiles (cost, this month against the 4.4% goal, seller ships late 21.2% vs 5.4%), then trend, why, and where. Gray everywhere, orange only for orders shipped after the ship-by date. The strip at the bottom states the case study's recommendation: the per-order delivery-date model is not adopted yet (launch waits on checkout conversion by promised days and a second peak season), and there is no seller penalty list. It holds no numbers.
 
 The wording is plain on purpose ("seller ships late", "warning line"), after a comparison with well-rated public dashboards. The data tables and the dbt models keep the older names (handoff, alarm line, stretch what-if); only the words on the dashboard changed. Each clickable panel carries its own click hint. Every figure in the text is built from `summary.csv` when the workbook is generated, including the "1.9 points over the goal" in tile 2 (latest month's late rate minus the goal) and the "other 573 sellers, 81%" line under the seller bars (583 sellers with a late-shipped late order, minus 10; one minus the top-10 share). The warning line's note says what it means in a few words; that it moves with each month's order count is not on the dashboard any more (there was no room).
 
@@ -76,7 +76,7 @@ A second page next to B1: one dashboard with six charts instead of the B1 layout
 
 What changed against B1:
 
-- **Sellers panel.** Bars are the number of months a seller shipped late: "3 or more months" (117 sellers, 20% of the 583, 1,018 of the 1,809 late orders that were shipped late) and "1 to 2 months" (466 sellers, 791). The title says the 56%.
+- **Sellers panel.** Marked "Not a target list": sellers flagged as of each month for repeated late handoffs were not late more often afterward (the case study's seller check). Bars are the number of months a seller shipped late: "3 or more months" (117 sellers, 20% of the 583, 1,018 of the 1,809 late orders that were shipped late) and "1 to 2 months" (466 sellers, 791). The title says the 56%.
 - **Four reader fixes on the trend and months charts**
   1. Warning line: its end label (8.4%) and a short note ("warning line: varies by month") sit at the line, and the line is solid.
   2. Months chart: each tagged bar is named with month and year (Nov 2017, Feb 2018, Mar 2018, Aug 2018) and carries its late-order count. The count is a sum over the clicked data, so it follows the click filters.
@@ -90,7 +90,7 @@ What changed against B1:
 | `v4_six_chart.png` | the exported image, full size |
 | `prep3.py`, `prep4.py` | CSVs for this page (step 1 reads the warehouse, step 2 adds the label series and the month tags) |
 | `gen_v4.py` | builds the workbook XML (same control file as B1) |
-| `numbers_check_v4.py` | 82-check number check; output in `evidence/v4/numbers_check_v4.txt` |
+| `numbers_check_v4.py` | 110-check number check; output in `evidence/v4/numbers_check_v4.txt` |
 | `click_expect.py`, `harness/click_probe4.py` | expected values for each click from DuckDB; the Mac click harness for this layout |
 | `evidence/v4/` | click test: `results.md`, `expected.md`, four images (downscaled to 1366 x 768) |
 
@@ -125,8 +125,21 @@ The second `gen_v4.py` argument is the folder written into the workbook as where
 
 The "1 to 2 months" bar was not clicked (expected values are in `evidence/v4/expected.md`).
 
+### Rebuilt 2026-11-23
+
+Both workbooks and both images were regenerated with the commands above and exported from Tableau Desktop 2026.3 on the Mac (`harness/export_dash.py`). Changes:
+
+- Bottom strip: the old "Two fixes to test next" (seller ship-by reminders, buffer days) is replaced by the case study's recommendation, on three lines so nothing is cut off. The rows above it are 1.5 points shorter.
+- Title: "biggest linked source" (was "biggest fixable cause", then "biggest linked source of lateness", which did not fit on one line).
+- Six-chart sellers panel: a second note line, "Not a target list: these sellers were not late more often afterward".
+- Review ramp: the line no longer breaks between day 0 and 1 and between day 5 and 6 (`prep.py` repeats the last point of each phase as the first point of the next).
+- Six-chart months chart: the Feb 2018 count (925) is padded left so it no longer touches the Mar 2018 bar (`prep4.py` `tag_pad`).
+- `numbers_check_v4.py` now also checks the header, tile 1, panel 1, 3 and 6 numbers, the ramp labels and bridge rows, the strip and the panel note, and fails if the retired strip wording is in the workbook: 110 checks, 0 mismatches. On the previous workbook it reports 5 mismatches.
+
+The click tests above were not re-run for this rebuild; the filters, actions and data are unchanged.
+
 ### Not cleanly fixed
 
-- Month and count labels on the months chart are positioned with padding characters, because Tableau offers no per-label offset. The "Feb 2018" name now clears the Mar 2018 bar. Under some click filters the Feb count (for example "147") sits flush against the left edge of the Mar bar.
+- Month and count labels on the months chart are positioned with padding characters, because Tableau offers no per-label offset. On the six-chart page the "Feb 2018" name and count now clear the Mar 2018 bar; on B1 the Feb count still touches it.
 - The label placement is set by hand for this data window (Jan 2017 to Aug 2018); other data would need the padding and fixed axis range revisited.
 - Dual-axis circle marks for the dots were tried and abandoned: Tableau did not accept a hand-written dual axis, so the dots are centred text marks.

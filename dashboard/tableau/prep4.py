@@ -33,12 +33,14 @@ def ren(v):
         if m: return '%s: %s sellers'%(new,m.group(1))
     return v
 for r in rd: r['seller_repeat']=ren(r['seller_repeat'])
-cols=list(rd[0].keys())+['tag_m','tag_y','tag_n']
+# tag_pad: blank fillers printed after the Feb count (the count itself is a live sum, so it cannot be padded) so it clears the Mar bar
+FEBPAD=E_('FEBCH','\u3164')*int(E_('FEBNN','3'))
+cols=list(rd[0].keys())+['tag_m','tag_y','tag_n','tag_pad']
 with open(os.path.join(out,'orders.csv'),'w',newline='',encoding='utf-8') as f:
     w=csv.writer(f,lineterminator='\n'); w.writerow(cols)
     for r in rd:
         t=bool(r['month_tag']); ym=r['year_month']
-        w.writerow([r[c] for c in cols[:-3]]+([tag(ym,mname(ym),PM),ym[:4],tag(ym,format(late[ym],','),PN)] if t else ['','','']))
+        w.writerow([r[c] for c in cols[:-4]]+([tag(ym,mname(ym),PM),ym[:4],tag(ym,format(late[ym],','),PN),FEBPAD if ym=='2018-02' else ''] if t else ['','','','']))
 # ---------------- trend
 T=list(csv.DictReader(open(os.path.join(src,'trend_b.csv'))))
 bym={}

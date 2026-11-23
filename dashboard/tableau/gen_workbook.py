@@ -374,7 +374,7 @@ def ztxt(runs,x,y,w,h,style=''):
     return "        <zone h='%d' id='%d' type='text' w='%d' x='%d' y='%d'><formatted-text>%s</formatted-text>%s</zone>\n"%(P(h),nid(),P(w),P(x),P(y),''.join(rr),style or zstyle())
 NL=('\n',0,0,'')
 fin_a='Late deliveries are linked to about %s bad reviews; '%n0(F('extra_bad_reviews_rounded'))
-fin_b='sellers shipping late is the biggest linked source of lateness'
+fin_b='sellers shipping late is the biggest linked source'
 CX=[1,34,67]; CW=32
 Z=''
 Z+=ztxt([(fin_a,20,True,INK),(fin_b,20,True,ACC),NL,('Orders bought Jan 2017 to Aug 2018  ·  %s delivered orders  ·  %s late (%s)  ·  late = arrived after the promised day'%(n0(F('judged_orders')),n0(F('late_orders')),p2(F('late_rate'))),11,False,MID)],1,0.4,98,9.6)
@@ -399,7 +399,7 @@ def title(n,head,note,x,y,w,hh=TH,hc=INK):
     if note: runs+=[NL,(note,9,False,MID)]
     return ztxt(runs,x,y,w,hh)
 r1c=R1T+TH; r1h=(55.6-r1c)
-r2T=r1c+r1h+0.6; r2c=r2T+TH; r2h=92.4-r2c
+r2T=r1c+r1h+0.6; r2c=r2T+TH; r2h=89.5-r2c
 Z+=title('1','Reviews turn bad fast: %s are 1-2 stars up to the promised day, about %s from day 6 late'%(p1(F('ramp_share_up_to_promised_day')),p0(F('ramp_share_from_day_6'))),'share of reviews that are 1-2 stars, by days past the promised day',CX[0],R1T,CW)
 Z+=zone_sheet('Review ramp',CX[0],r1c,CW,r1h,zstyle(margin=2))
 Z+=title('2','Late rate sits above the %s goal; %s went past the warning line'%(p1(F('goal_late_rate')),SUM['worst3_months_label']),'gray line = warning line: above it is more than random swings',CX[1],R1T,CW)
@@ -415,7 +415,10 @@ Z+=title('5','North and northeast run %s late vs %s elsewhere'%(p1(F('nne_late_r
 Z+=zone_sheet('Region',CX[1],r2c,CW,min(r2h,14),zstyle(margin=2))
 Z+=ztxt([('6  ',12,True,MID),('%s of late orders came in 3 months: %s'%(p1(F('worst3_share_of_late')),SUM['worst3_months_label']),12,True,INK),NL,('those 3 months held %s of all orders (%s of months)'%(p1(F('worst3_share_of_orders')),p0(F('worst3_share_of_months'))),9,False,MID)],CX[2],r2T,CW,TH)
 Z+=zone_sheet('Months',CX[2],r2c,CW,r2h,zstyle(margin=2))
-Z+=ztxt([('Next step (nothing launched yet)',11,True,MID),NL,("Keep building the per-order delivery-date model; launch only once checkout conversion by promised days and a second peak season show the longer date is worth it.      No seller penalty list: flagged sellers did not run late more often.",10,False,MID)],1,93.1,98,6.8,zstyle(border=MID,bstyle='dashed',bw=1,margin=4))
+# The bottom strip states the case study's two recommendations (docs/CASE_STUDY.md, Recommendation); it holds no numbers.
+REC_MODEL="Per-order delivery-date model: not adopted yet. Keep building it; launch only once checkout conversion by promised days and a second peak season show the longer date is worth it."
+REC_SELLER="No seller penalty list: sellers flagged for repeated late shipping were not late more often afterward."
+Z+=ztxt([('Next step (nothing launched yet)',11,True,MID),NL,(REC_MODEL,10,False,MID),NL,(REC_SELLER,10,False,MID)],1,90.2,98,9.7,zstyle(border=MID,bstyle='dashed',bw=1,margin=4))
 ACTIONS=''
 def action(cap,src,exclude):
     return ("    <action caption='%s' name='[Action_%s]'>\n      <activation auto-clear='true' type='on-select' />\n      <source dashboard='%s' type='sheet' worksheet='%s' />\n      <command command='tsc:tsl-filter'>\n        <param name='exclude' value='%s' />\n        <param name='special-fields' value='all' />\n        <param name='target' value='%s' />\n      </command>\n    </action>\n")%(cap,h32(cap)[:16],DASH,src,exclude,DASH)
