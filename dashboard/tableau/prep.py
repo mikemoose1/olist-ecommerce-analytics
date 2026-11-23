@@ -17,8 +17,13 @@ M=rd('monthly'); first,last=M[0]['month_label'],M[-1]['month_label']
 R=rd('review_ramp')
 labs={'-15':'%s up to the promised day'%p1(F('ramp_share_up_to_promised_day')),'3':'+%d points per late day'%round(F('ramp_points_per_day')*100),'18':'≈%s from day 6'%p0(F('ramp_share_from_day_6'))}
 RB=[]
+# Bridge rows: each colour is its own line in Tableau, so the last point of one phase is repeated as the first point of the
+# next (day 0 also starts "climbing", day 5 also starts "levelled"); otherwise the line breaks between day 0 and 1 and day 5 and 6.
+BRIDGE={'0':'climbing','5':'levelled'}
 for r in R:
     r=dict(r); r['lab']=''; RB.append(r)
+    if r['days_past_promise_capped'] in BRIDGE:
+        RB.append(dict(r,phase=BRIDGE[r['days_past_promise_capped']]))
     if r['days_past_promise_capped'] in labs:
         r2=dict(r); r2['phase']='label'; r2['lab']=labs[r['days_past_promise_capped']]; RB.append(r2)
 wr('ramp_b',RB)

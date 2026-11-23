@@ -7082,7 +7082,7 @@
   "verdict": "PROVEN"
  },
  {
-  "rule": "Dashboard exports (fixes panel): a row loses its example flag",
+  "rule": "Dashboard exports (example tests panel): a row loses its example flag",
   "selector": "assert_dash_tests_are_labelled_example",
   "mutation": {
    "sql": [
@@ -7106,7 +7106,7 @@
   "verdict": "PROVEN"
  },
  {
-  "rule": "Dashboard exports (fixes panel): a row's example flag is null",
+  "rule": "Dashboard exports (example tests panel): a row's example flag is null",
   "selector": "assert_dash_tests_are_labelled_example",
   "mutation": {
    "sql": [
@@ -7130,7 +7130,7 @@
   "verdict": "PROVEN"
  },
  {
-  "rule": "Dashboard exports (fixes panel): a value loses its asterisk",
+  "rule": "Dashboard exports (example tests panel): a value loses its asterisk",
   "selector": "assert_dash_tests_are_labelled_example",
   "mutation": {
    "sql": [
@@ -7154,7 +7154,7 @@
   "verdict": "PROVEN"
  },
  {
-  "rule": "Dashboard exports (fixes panel): the banner stops saying the tests have not run",
+  "rule": "Dashboard exports (example tests panel): the banner stops saying the tests have not run",
   "selector": "assert_dash_tests_are_labelled_example",
   "mutation": {
    "sql": [
@@ -7178,7 +7178,7 @@
   "verdict": "PROVEN"
  },
  {
-  "rule": "Dashboard exports (fixes panel): a seed row loses its example flag",
+  "rule": "Dashboard exports (example tests panel): a seed row loses its example flag",
   "selector": "assert_dash_tests_are_labelled_example",
   "mutation": {
    "sql": [
@@ -7202,7 +7202,7 @@
   "verdict": "PROVEN"
  },
  {
-  "rule": "Dashboard exports (fixes panel): a row's status reads passed",
+  "rule": "Dashboard exports (example tests panel): a row's status reads passed",
   "selector": "assert_dash_tests_are_labelled_example",
   "mutation": {
    "sql": [
@@ -7226,7 +7226,7 @@
   "verdict": "PROVEN"
  },
  {
-  "rule": "Dashboard exports (fixes panel): a test label loses the word EXAMPLE",
+  "rule": "Dashboard exports (example tests panel): a test label loses the word EXAMPLE",
   "selector": "assert_dash_tests_are_labelled_example",
   "mutation": {
    "sql": [
@@ -7250,7 +7250,7 @@
   "verdict": "PROVEN"
  },
  {
-  "rule": "Dashboard exports (fixes panel): a row is missing from the export",
+  "rule": "Dashboard exports (example tests panel): a row is missing from the export",
   "selector": "assert_dash_tests_are_labelled_example",
   "mutation": {
    "sql": [

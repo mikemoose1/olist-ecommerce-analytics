@@ -66,6 +66,7 @@
             <column datatype='string' name="tag_m" ordinal='23' />
             <column datatype='integer' name="tag_y" ordinal='24' />
             <column datatype='string' name="tag_n" ordinal='25' />
+            <column datatype='string' name="tag_pad" ordinal='26' />
           </columns>
         </relation>
         <metadata-records>
@@ -448,6 +449,21 @@
             <collation flag='0' name='LEN_RUS' />
             <object-id>[orders.csv_636FA70B721BA2660B5D19CC8382FAC7]</object-id>
           </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>tag_pad</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[tag_pad]</local-name>
+            <parent-name>[orders.csv]</parent-name>
+            <remote-alias>tag_pad</remote-alias>
+            <ordinal>26</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <object-id>[orders.csv_636FA70B721BA2660B5D19CC8382FAC7]</object-id>
+          </metadata-record>
         </metadata-records>
       </connection>
       <aliases enabled='yes' />
@@ -476,6 +492,7 @@
       <column caption="State" datatype='string' name='[state]' role='dimension' type='nominal' />
       <column caption="Tag M" datatype='string' name='[tag_m]' role='dimension' type='nominal' />
       <column caption="Tag N" datatype='string' name='[tag_n]' role='dimension' type='nominal' />
+      <column caption="Tag Pad" datatype='string' name='[tag_pad]' role='dimension' type='nominal' />
       <column caption="Tag Y" datatype='integer' name='[tag_y]' role='measure' type='quantitative' />
       <column caption="Year Month" datatype='string' name='[year_month]' role='dimension' type='nominal' />
       <column-instance column='[handoff_group]' derivation='None' name='[none:handoff_group:nk]' pivot='key' type='nominal' />
@@ -545,6 +562,7 @@
                   <column datatype='string' name="tag_m" ordinal='23' />
                   <column datatype='integer' name="tag_y" ordinal='24' />
                   <column datatype='string' name="tag_n" ordinal='25' />
+                  <column datatype='string' name="tag_pad" ordinal='26' />
                 </columns>
               </relation>
             </properties>
@@ -1427,11 +1445,13 @@
             <column caption="Month Start" datatype='date' name='[month_start]' role='dimension' type='ordinal' />
             <column caption="Order Code" datatype='string' name='[order_code]' role='dimension' type='nominal' />
             <column caption="Tag M" datatype='string' name='[tag_m]' role='dimension' type='nominal' />
+            <column caption="Tag Pad" datatype='string' name='[tag_pad]' role='dimension' type='nominal' />
             <column-instance column='[month_start]' derivation='Month-Trunc' name='[tmn:month_start:qk]' pivot='key' type='quantitative' />
             <column-instance column='[late_n]' derivation='Sum' name='[sum:late_n:qk]' pivot='key' type='quantitative' />
             <column-instance column='[late_tag_n]' derivation='Sum' name='[sum:late_tag_n:qk]' pivot='key' type='quantitative' />
             <column-instance column='[is_worst3_month]' derivation='None' name='[none:is_worst3_month:nk]' pivot='key' type='nominal' />
             <column-instance column='[tag_m]' derivation='None' name='[none:tag_m:nk]' pivot='key' type='nominal' />
+            <column-instance column='[tag_pad]' derivation='None' name='[none:tag_pad:nk]' pivot='key' type='nominal' />
             <column-instance column='[order_code]' derivation='Count' name='[cnt:order_code:qk]' pivot='key' type='quantitative' />
             <column-instance column='[late]' derivation='Avg' name='[avg:late:qk]' pivot='key' type='quantitative' />
           </datasource-dependencies>
@@ -1471,6 +1491,7 @@
               <color column='[federated.8bef1cc20ada3bef55fdf132cb].[none:is_worst3_month:nk]' />
               <text column='[federated.8bef1cc20ada3bef55fdf132cb].[none:tag_m:nk]' />
               <text column='[federated.8bef1cc20ada3bef55fdf132cb].[sum:late_tag_n:qk]' />
+              <text column='[federated.8bef1cc20ada3bef55fdf132cb].[none:tag_pad:nk]' />
               <tooltip column='[federated.8bef1cc20ada3bef55fdf132cb].[cnt:order_code:qk]' />
               <tooltip column='[federated.8bef1cc20ada3bef55fdf132cb].[sum:late_n:qk]' />
               <tooltip column='[federated.8bef1cc20ada3bef55fdf132cb].[avg:late:qk]' />
@@ -1492,6 +1513,7 @@
                 <run bold='true' fontcolor='#222222' fontsize='8'>&lt;[federated.8bef1cc20ada3bef55fdf132cb].[none:tag_m:nk]&gt;</run>
                 <run>Æ&#10;</run>
                 <run bold='false' fontcolor='#555555' fontsize='8'>&lt;[federated.8bef1cc20ada3bef55fdf132cb].[sum:late_tag_n:qk]&gt;</run>
+                <run bold='false' fontcolor='#555555' fontsize='8'>&lt;[federated.8bef1cc20ada3bef55fdf132cb].[none:tag_pad:nk]&gt;</run>
               </formatted-text>
             </customized-label>
             <style>
@@ -1513,7 +1535,7 @@
       <size maxheight='768' maxwidth='1366' minheight='768' minwidth='1366' />
       <zones>
         <zone h='100000' id='4' type='layout-basic' w='100000' x='0' y='0'>
-        <zone h='9600' id='11' type='text' w='98000' x='1000' y='400'><formatted-text><run bold='true' fontcolor='#222222' fontsize='20'>Late deliveries are linked to about 3,110 bad reviews; </run><run bold='true' fontcolor='#D55E00' fontsize='20'>sellers shipping late is the biggest fixable cause</run><run>Æ&#10;</run><run bold='false' fontcolor='#555555' fontsize='11'>Orders bought Jan 2017 to Aug 2018  ·  94,931 delivered orders  ·  6,518 late (6.87%)  ·  late = arrived after the promised day</run></formatted-text><zone-style><format attr='border-style' value='none' /><format attr='margin' value='0' /></zone-style></zone>
+        <zone h='9600' id='11' type='text' w='98000' x='1000' y='400'><formatted-text><run bold='true' fontcolor='#222222' fontsize='20'>Late deliveries are linked to about 3,110 bad reviews; </run><run bold='true' fontcolor='#D55E00' fontsize='20'>sellers shipping late is the biggest linked source</run><run>Æ&#10;</run><run bold='false' fontcolor='#555555' fontsize='11'>Orders bought Jan 2017 to Aug 2018  ·  94,931 delivered orders  ·  6,518 late (6.87%)  ·  late = arrived after the promised day</run></formatted-text><zone-style><format attr='border-style' value='none' /><format attr='margin' value='0' /></zone-style></zone>
         <zone h='14600' id='12' type='text' w='32000' x='1000' y='10200'><formatted-text><run bold='true' fontcolor='#555555' fontsize='10'>1  COST</run><run>Æ&#10;</run><run bold='true' fontcolor='#222222' fontsize='27'>≈3,110</run><run>Æ&#10;</run><run bold='false' fontcolor='#555555' fontsize='9'>1-2 star reviews linked to late delivery</run><run>Æ&#10;</run><run bold='false' fontcolor='#555555' fontsize='9'>estimate, range 2,880 to 3,350  ·  26.7% of all 11,635 1-2 star reviews</run></formatted-text><zone-style><format attr='border-style' value='none' /><format attr='background-color' value='#F2F2F2' /><format attr='margin' value='4' /></zone-style></zone>
         <zone h='11400' id='13' type='text' w='32000' x='34000' y='10200'><formatted-text><run bold='true' fontcolor='#555555' fontsize='10'>2  THIS MONTH VS GOAL</run><run>Æ&#10;</run><run bold='true' fontcolor='#222222' fontsize='22'>6.3%</run><run>Æ&#10;</run><run bold='false' fontcolor='#555555' fontsize='9'>▲ Aug 2018 late rate, 1.9 points over the 4.4% goal</run></formatted-text><zone-style><format attr='border-style' value='none' /><format attr='background-color' value='#F2F2F2' /><format attr='margin' value='4' /></zone-style></zone>
         <zone h='3200' id='14' type='text' w='32000' x='34000' y='21600'><formatted-text><run bold='true' fontcolor='#222222' fontsize='11'>▲ ABOVE GOAL  ·  under the warning line (8.4%)</run></formatted-text><zone-style><format attr='border-style' value='none' /><format attr='background-color' value='#F2B01E' /><format attr='margin' value='4' /></zone-style></zone>
@@ -1524,13 +1546,14 @@
         <zone h='21600' id='19' name="Trend" show-title='false' w='32000' x='34000' y='34000'><zone-style><format attr='border-style' value='none' /><format attr='margin' value='2' /></zone-style></zone>
         <zone h='9000' id='20' type='text' w='32000' x='67000' y='25000'><formatted-text><run bold='true' fontcolor='#555555' fontsize='12'>3  </run><run bold='true' fontcolor='#D55E00' fontsize='12'>Orders shipped after the ship-by date: 21.2% arrive late, vs 5.4% when shipped by it</run><run>Æ&#10;</run><run bold='false' fontcolor='#555555' fontsize='9'>1,809 of 8,530 arrived late  ·  27.8% of all 6,518 late orders</run></formatted-text><zone-style><format attr='border-style' value='none' /><format attr='margin' value='0' /></zone-style></zone>
         <zone h='21600' id='21' name="Handoff" show-title='false' w='32000' x='67000' y='34000'><zone-style><format attr='border-style' value='none' /><format attr='margin' value='4' /></zone-style></zone>
-        <zone h='12400' id='22' type='text' w='32000' x='1000' y='56200'><formatted-text><run bold='true' fontcolor='#555555' fontsize='12'>4  </run><run bold='true' fontcolor='#222222' fontsize='12'>117 sellers (20% of the 583) shipped late in 3 or more months and account for 56% of the 1,809 late orders that were shipped late</run><run>Æ&#10;</run><run bold='false' fontcolor='#555555' fontsize='9'>by number of months the seller shipped late  ·  Click a bar to filter</run></formatted-text><zone-style><format attr='border-style' value='none' /><format attr='margin' value='0' /></zone-style></zone>
-        <zone h='23800' id='23' name="Sellers" show-title='false' w='32000' x='1000' y='68600'><zone-style><format attr='border-style' value='none' /><format attr='margin' value='2' /></zone-style></zone>
+        <zone h='15600' id='22' type='text' w='32000' x='1000' y='56200'><formatted-text><run bold='true' fontcolor='#555555' fontsize='12'>4  </run><run bold='true' fontcolor='#222222' fontsize='12'>117 sellers (20% of the 583) shipped late in 3 or more months and account for 56% of the 1,809 late orders that were shipped late</run><run>Æ&#10;</run><run bold='false' fontcolor='#555555' fontsize='9'>by number of months the seller shipped late  ·  Click a bar to filter
+Not a target list: sellers flagged this way were not late more often afterward</run></formatted-text><zone-style><format attr='border-style' value='none' /><format attr='margin' value='0' /></zone-style></zone>
+        <zone h='17700' id='23' name="Sellers" show-title='false' w='32000' x='1000' y='71800'><zone-style><format attr='border-style' value='none' /><format attr='margin' value='2' /></zone-style></zone>
         <zone h='9000' id='24' type='text' w='32000' x='34000' y='56200'><formatted-text><run bold='true' fontcolor='#555555' fontsize='12'>5  </run><run bold='true' fontcolor='#222222' fontsize='12'>North and northeast run 12.2% late vs 6.2% elsewhere</run><run>Æ&#10;</run><run bold='false' fontcolor='#555555' fontsize='9'>late rate by region  ·  Click a region to filter</run></formatted-text><zone-style><format attr='border-style' value='none' /><format attr='margin' value='0' /></zone-style></zone>
         <zone h='14000' id='25' name="Region" show-title='false' w='32000' x='34000' y='65200'><zone-style><format attr='border-style' value='none' /><format attr='margin' value='2' /></zone-style></zone>
         <zone h='9000' id='26' type='text' w='32000' x='67000' y='56200'><formatted-text><run bold='true' fontcolor='#555555' fontsize='12'>6  </run><run bold='true' fontcolor='#222222' fontsize='12'>48.3% of late orders came in 3 months: Nov 2017, Feb 2018 and Mar 2018</run><run>Æ&#10;</run><run bold='false' fontcolor='#555555' fontsize='9'>those 3 months held 21.7% of all orders (15% of months)</run></formatted-text><zone-style><format attr='border-style' value='none' /><format attr='margin' value='0' /></zone-style></zone>
-        <zone h='27200' id='27' name="Months" show-title='false' w='32000' x='67000' y='65200'><zone-style><format attr='border-style' value='none' /><format attr='margin' value='2' /></zone-style></zone>
-        <zone h='6800' id='28' type='text' w='98000' x='1000' y='93100'><formatted-text><run bold='true' fontcolor='#555555' fontsize='11'>Two fixes to test next (nothing run yet)</run><run bold='false' fontcolor='#555555' fontsize='10'>      ·      What-if, not a result: if late-shipped orders were late as rarely as the rest, the rate would be 3.4%.</run><run>Æ&#10;</run><run bold='false' fontcolor='#555555' fontsize='10'>1) Remind sellers of the ship-by date. We&apos;ll track the share of orders shipped late.      2) Add buffer days to promised dates in the north and northeast. We&apos;ll track late rate and average stars.</run></formatted-text><zone-style><format attr='border-color' value='#555555' /><format attr='border-style' value='dashed' /><format attr='border-width' value='1' /><format attr='margin' value='4' /></zone-style></zone>
+        <zone h='24300' id='27' name="Months" show-title='false' w='32000' x='67000' y='65200'><zone-style><format attr='border-style' value='none' /><format attr='margin' value='2' /></zone-style></zone>
+        <zone h='9700' id='28' type='text' w='98000' x='1000' y='90200'><formatted-text><run bold='true' fontcolor='#555555' fontsize='11'>Next step (nothing launched yet)</run><run bold='false' fontcolor='#555555' fontsize='10'>      ·      What-if, not a result: if late-shipped orders were late as rarely as the rest, the rate would be 3.4%.</run><run>Æ&#10;</run><run bold='false' fontcolor='#555555' fontsize='10'>Per-order delivery-date model: not adopted yet. Keep building it; launch only once checkout conversion by promised days and a second peak season show the longer date is worth it.</run><run>Æ&#10;</run><run bold='false' fontcolor='#555555' fontsize='10'>No seller penalty list: sellers flagged for repeated late shipping were not late more often afterward.</run></formatted-text><zone-style><format attr='border-color' value='#555555' /><format attr='border-style' value='dashed' /><format attr='border-width' value='1' /><format attr='margin' value='4' /></zone-style></zone>
         </zone>
       </zones>
       <simple-id uuid='{1D9BDA9F-A774-D668-EB7B-75B66C2536FF}' />

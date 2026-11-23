@@ -20,8 +20,7 @@ import ontology_view
 
 README = ROOT / "README.md"                      # the short summary
 FULL = ROOT / "docs" / "CASE_STUDY.md"           # the full case study; docs/index.md (Pages) is built from it
-DEFINITION_PHRASES = ["one- and two-star", "one or two stars", "one- or two-star", "Test 1", "test 1",
-                      '"Two fixes to test next"']  # review_score <= 2, the Test 1 label, and a panel title quoted from the dashboard image
+DEFINITION_PHRASES = ["one- and two-star", "one or two stars", "one- or two-star", "Test 1", "test 1"]  # review_score <= 2 and the Test 1 label
 
 
 def pct(x, d=1):

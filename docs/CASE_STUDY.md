@@ -6,7 +6,7 @@ This project builds a tested data pipeline from about 99,000 real orders of Olis
 
 [![Dashboard of late deliveries, reviews, sellers, regions and months](img/dashboard.png)](img/dashboard.png)
 
-*The dashboard in one view. Click the image for the full-size picture. The interactive version is coming. It was built before the current recommendations. Its "Two fixes to test next" panel (seller ship-by reminders and buffer days) was replaced by the recommendation below, its "fixable cause" title rests on a handoff link that was never tested, and its repeat-late shippers panel is not a target list: a later as-of check found that sellers flagged for repeated late handoffs did not have more late orders afterward. The image has not been rebuilt since.*
+*The dashboard in one view. Click the image for the full-size picture. The interactive version is coming.*
 
 **Role and tools.** An end-to-end analytics project on a public dataset: data modeling and automated data checks in dbt and DuckDB, the review-cost analysis in Python (pandas and statsmodels), a delivery-date model (scikit-learn), a recommendation memo, a Quarto data story and a Tableau dashboard. GitHub Actions rebuilds and checks all of it.
 
@@ -233,7 +233,7 @@ This page uses its labels the same way throughout. An estimated effect comes fro
 | The star penalty holds over time | Smaller recently | It was 1.56 stars in the last four months, against 2.05 earlier. |
 | The delivery-date model uses only facts known at checkout | Small known gap | Its seller handoff-speed input counts only orders that were eventually delivered, which is not fully known at checkout. Fixing it would mean scoring the holdout again, so it is disclosed instead. |
 
-The dashboard title says "linked to" for the first row and "fixable cause" for the handoff. Read the first as the estimated effect above and the second as the untested link in the handoff row. The dashboard was built before the current recommendations; see the note under it at the top of this page.
+The dashboard title says "linked to" in both halves. Read the first as the estimated effect above, and the second, sellers shipping late as the biggest linked source, as the untested link in the handoff row. Its panel of repeat late-shipping sellers is marked as not a target list, for the reason in the recommendation.
 
 Olist's commission and conversion are not in the data, so the case for fixing lateness rests on ratings, not on money. Sales values are in the orders; late orders in the last 12 months of the window carried R$1.0 million of sales.
 

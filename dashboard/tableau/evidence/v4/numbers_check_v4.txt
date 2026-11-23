@@ -69,6 +69,22 @@ repeat panel: bar values as drawn (late orders that were shipped late)          
 repeat panel: sellers in each bar as counted in orders.csv (the numbers in the labels)                        | 117 / 466                      | 117 / 466                      | OK
 repeat panel: the two bars add up to all 1,809                                                                | 1,809                          | 1,809                          | OK
 repeat panel: 1,018 of 1,809 and 791 of 1,809 (warehouse)                                                     | 1,018 / 791                    | 1,018 / 791                    | OK
+header: delivered orders                                                                                      | 94,931                         | 94,931                         | OK
+header: late orders                                                                                           | 6,518                          | 6,518                          | OK
+header: late rate                                                                                             | 6.87%                          | 6.87%                          | OK
+panel 3: orders shipped after the ship-by date                                                                | 8,530                          | 8,530                          | OK
+panel 3: of those, arrived late                                                                               | 1,809                          | 1,809                          | OK
+tile 1: range low (summary.csv)                                                                               | 2,880                          | 2,880                          | OK
+tile 1: range high (summary.csv)                                                                              | 3,350                          | 3,350                          | OK
+tile 1: all 1-2 star reviews (summary.csv)                                                                    | 11,635                         | 11,635                         | OK
+tile 1: share of them (summary.csv)                                                                           | 26.7%                          | 26.7%                          | OK
+panel 1: share up to the promised day (summary.csv)                                                           | 8.7%                           | 8.7%                           | OK
+panel 1: share from day 6 (summary.csv)                                                                       | 78%                            | 78%                            | OK
+panel 1: points per late day (summary.csv)                                                                    | 11                             | 11                             | OK
+panel 6: worst 3 months share of orders (summary.csv)                                                         | 21.7%                          | 21.7%                          | OK
+panel 6: share of months (summary.csv)                                                                        | 15%                            | 15%                            | OK
+panel 1: ramp labels as drawn (ramp_b.csv)                                                                    | +11 points per late day / 8.7% up to the promised day / ≈78% from day 6 | +11 points per late day / 8.7% up to the promised day / ≈78% from day 6 | OK
+panel 1: line unbroken (day 0 and day 5 bridge rows repeat the next phase)                                    | climbing@0 levelled@5          | climbing@0 levelled@5          | OK
 out_v4_six_chart text: Goal 4.4%                                                                              | present                        | present                        | OK
 out_v4_six_chart text: What-if, not a result: if late-shipped orders                                          | present                        | present                        | OK
 out_v4_six_chart text: ABOVE GOAL                                                                             | present                        | present                        | OK
@@ -80,6 +96,22 @@ out_v4_six_chart text: Late rate sits above the 4.4% goal; Nov 2017,            
 out_v4_six_chart text: 48.3% of late orders came in 3 months: Nov 201                                         | present                        | present                        | OK
 out_v4_six_chart text: North and northeast run 12.2% late vs 6.2% els                                         | present                        | present                        | OK
 out_v4_six_chart text: Aug 2018 late rate, 1.9 points over the 4.4% g                                         | present                        | present                        | OK
+out_v4_six_chart text: Not a target list: sellers flagged this way we                                         | present                        | present                        | OK
+out_v4_six_chart text: 94,931 delivered orders                                                                | present                        | present                        | OK
+out_v4_six_chart text: 6,518 late (6.87%)                                                                     | present                        | present                        | OK
+out_v4_six_chart text: range 2,880 to 3,350                                                                   | present                        | present                        | OK
+out_v4_six_chart text: 26.7% of all 11,635 1-2 star reviews                                                   | present                        | present                        | OK
+out_v4_six_chart text: 8.7% are 1-2 stars up to the promised day, abo                                         | present                        | present                        | OK
+out_v4_six_chart text: 1,809 of 8,530 arrived late                                                            | present                        | present                        | OK
+out_v4_six_chart text: 27.8% of all 6,518 late orders                                                         | present                        | present                        | OK
+out_v4_six_chart text: those 3 months held 21.7% of all orders (15% o                                         | present                        | present                        | OK
+out_v4_six_chart text: Next step (nothing launched yet)                                                       | present                        | present                        | OK
+out_v4_six_chart text: Per-order delivery-date model: not adopted yet                                         | present                        | present                        | OK
+out_v4_six_chart text: No seller penalty list: sellers flagged for re                                         | present                        | present                        | OK
+out_b1_v2 text: Next step (nothing launched yet)                                                              | present                        | present                        | OK
+out_b1_v2 text: Not a target list: flagged sellers were not la                                                | present                        | present                        | OK
+out_b1_v2 text: Per-order delivery-date model: not adopted yet                                                | present                        | present                        | OK
+out_b1_v2 text: No seller penalty list: sellers flagged for re                                                | present                        | present                        | OK
 old/invented wording absent from every workbook                                                               | none                           | none                           | OK
 
-82 checks, 0 mismatches
+114 checks, 0 mismatches
