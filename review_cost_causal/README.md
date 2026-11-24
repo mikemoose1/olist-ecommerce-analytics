@@ -33,3 +33,15 @@ Numbers below come from `evidence/review_cost_causal_report.json`; the dbt model
 
 The two-break fit of review score on days late puts the breaks at day -1 and day 6. Those are point estimates on a
 whole-day grid. A bootstrap "95% interval" for them collapsed to a single value, so no interval is claimed.
+
+## Stress tests (pre-registered)
+
+Pass rules in [docs/preregistration_v2.md](../docs/preregistration_v2.md), written before the runs.
+
+- **Planted answer in the real orders.** Planting a known effect into a copy of the real orders, the preferred estimate
+  finds it within 0.2% every time, but its 95% interval covers the planted number in only 88% of draws, so one pass rule
+  failed. Quote the range across specifications, not that interval.
+- **Hidden confounder.** Halving the estimate would need a hidden factor with a risk ratio of 5.1 on both lateness and
+  bad reviews (E-value), or hidden factors 3.5 times as important as everything measured (Oster bound).
+
+Details: [stress/SENSITIVITY_AND_KNOWN_ANSWER.md](stress/SENSITIVITY_AND_KNOWN_ANSWER.md).
