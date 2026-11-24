@@ -12,3 +12,4 @@ __pycache__/
 .user.yml
 build/
 story/build/
+.venv-range/
