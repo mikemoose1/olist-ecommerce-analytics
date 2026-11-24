@@ -78,6 +78,16 @@
    "extra_on_6366_reviewed_late": 3016.3619265740663
   }
  },
+ "differential_bounds": {
+  "upper_late_bad_on_time_not_bad": {
+   "extra_on_all_judged_late": 3245.998459468934,
+   "extra_on_6366_reviewed_late": 3159.77840519508
+  },
+  "lower_late_not_bad_on_time_bad": {
+   "extra_on_all_judged_late": 3051.0040315786136,
+   "extra_on_6366_reviewed_late": 2969.9631268786043
+  }
+ },
  "pass_rules": [
   {
    "id": "A-1 IPW estimate within 5% of 3,110 and inside the six-specification range",

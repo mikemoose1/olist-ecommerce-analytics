@@ -104,7 +104,7 @@ if __name__ == "__main__":
                                   "real_abs_shift": abs(shift), "real_shift_beyond_p95": bool(abs(shift) > np.quantile(shifts, 0.95))},
         "W-3 trimmed weights": {"extra": trimmed["extra"], "pct_diff": 100 * (trimmed["extra"] / ipw["extra"] - 1),
                                 "pass": bool(abs(trimmed["extra"] / ipw["extra"] - 1) <= 0.01)}}
-    # 4. worst-case bounds: every unreviewed order counted as bad, then as not bad
+    # 4. all-bad and none-bad scenarios: every unreviewed order counted as bad, then as not bad
     U = A.copy(); bounds = {}
     for name, val in (("all_unreviewed_bad", 1.0), ("all_unreviewed_not_bad", 0.0)):
         U["y"] = np.where(rv, A.y, val)
@@ -112,7 +112,17 @@ if __name__ == "__main__":
         bins = np.array([r_all["bins"][n] for *_, n in E.BINS])
         comparable = float(E.late_bins(R.x)[R.late.to_numpy() == 1].sum(0) @ bins)   # same 6,366 reviewed late orders
         bounds[name] = {"extra_on_all_judged_late": r_all["extra"], "extra_on_6366_reviewed_late": comparable}
-    out["worst_case_bounds"] = bounds
+    out["worst_case_bounds"] = bounds                                   # the pre-registered A-2 scenarios: all bad, none bad
+    # 5. differential bounds (reported, no pass rule): unreviewed late orders bad and unreviewed on-time orders not bad,
+    # which pushes the estimate up most, then the reverse, which pushes it down most
+    diff = {}
+    for name, late_val, on_time_val in (("upper_late_bad_on_time_not_bad", 1.0, 0.0), ("lower_late_not_bad_on_time_bad", 0.0, 1.0)):
+        U["y"] = np.where(rv, A.y, np.where(A.late == 1, late_val, on_time_val))
+        r_all = E.fe_lpm_att(U, **V2)
+        bins = np.array([r_all["bins"][n] for *_, n in E.BINS])
+        comparable = float(E.late_bins(R.x)[R.late.to_numpy() == 1].sum(0) @ bins)
+        diff[name] = {"extra_on_all_judged_late": r_all["extra"], "extra_on_6366_reviewed_late": comparable}
+    out["differential_bounds"] = diff
     lo_r, hi_r = pub_range = published()["headline"]["range_across_specifications"]
     within5 = abs(ipw["extra"] / pub["extra"] - 1) <= 0.05
     out["pass_rules"] = [
@@ -126,4 +136,4 @@ if __name__ == "__main__":
     else:
         out["interpretation"] = "no material missing-review bias"
     json.dump(out, open(os.path.join(ROOT, "evidence", "missing_reviews_report.json"), "w"), indent=1, default=float)
-    print(json.dumps({k: out[k] for k in ("population", "review_rate", "weights", "v2_ipw", "artifact_checks", "worst_case_bounds", "pass_rules", "interpretation")}, indent=1, default=float))
+    print(json.dumps({k: out[k] for k in ("population", "review_rate", "weights", "v2_ipw", "artifact_checks", "worst_case_bounds", "differential_bounds", "pass_rules", "interpretation")}, indent=1, default=float))
