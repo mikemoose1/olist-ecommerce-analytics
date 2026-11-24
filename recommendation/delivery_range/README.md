@@ -86,8 +86,20 @@ little lower near the guardrail. The route p95 date cuts about as many as tau 0.
 | Rule | Result |
 |---|---|
 | D-1. Picked model beats the route-history baseline on holdout CRPS, paired bootstrap 2.5th percentile above 0 | **Pass** (0.18 days better, 0.16 to 0.20) |
-| D-2. Picked model's holdout calibration error at most 3 points | **Fail** (14.8 points) |
+| D-2. Picked model's holdout calibration error at most 3 points | **Fail**, 14.8 points. See the finding below. |
 | D-3. (Finding, not a launch decision) some point inside the guardrail cuts extra bad reviews, bootstrap 2.5th percentile above 0 | **Yes**: tau 0.90 and lambda 0.004, 0.005, 0.006 |
+
+## Finding: rule D-2 failed
+
+- **The range is not a calibrated promise.** The calibration error is 14.8 points against a limit of 3. On the tune months, which hold two peak months, orders arrived slower than
+  predicted, and 78.7% arrived within the 90% quantile. On the holdout they arrived faster, and 64.8% arrived within the 50% quantile. A model
+  retrained each month on older orders lags behind changes in delivery speed in both directions.
+- **It is not ready to ship.** "The 90% date" does not mean 90% of orders arrive by it. The decision-layer results above
+  are measured on what actually happened, so they still hold as a comparison. They do not show that the model's stated levels hold. A launch would first need recalibration on recent deliveries, tested on months it was not
+  built on.
+- **The holdout was not fresh.** Earlier models in this repo already scored March to August 2018, so these results were
+  shaped by earlier looks at the same months.
+- The rule was set before the run and has not been changed. This is recorded as a fail.
 
 ## Left to decide (not by this analysis)
 
@@ -96,8 +108,7 @@ little lower near the guardrail. The route p95 date cuts about as many as tau 0.
 
 ## Limits
 
-- Calibration failed (D-2). Any launch would need recalibration on recent deliveries, and that would have to be tested
-  on months it was not built on.
+- Calibration failed (D-2); see the finding above.
 - The holdout months were seen by earlier models in this repo.
 - The bad-review effects come from the whole window, holdout included, and are treated as fixed. The bootstrap only
   reflects which orders happened to fall in the holdout, not uncertainty in the effects.
