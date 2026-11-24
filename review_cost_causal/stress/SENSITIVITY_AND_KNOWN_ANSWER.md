@@ -46,11 +46,14 @@ actual delivery time) is 2.3% low; the rest are within 0.7%.
 | C-2. V2, log-odds scenario: mean within 10% | **Pass** (+0.1%) |
 | C-3. An estimator that always returns 0 fails where the planted number is not 0 | **Pass** |
 
-**What the fail means.** The point estimate lands on the planted number in every scenario (within 0.2%). The 95%
-interval is what falls short: across the three scenarios with a coverage rule it covered 53 of 60 draws (88%), not the
-95% it claims. So the narrow interval on the preferred specification (3,025 to 3,195) is somewhat too narrow, which is
-one more reason to quote the range across specifications (2,880 to 3,350), as the README already does. The pass bar
-was not changed.
+### Finding: rule C-1 failed
+
+- **The estimate is accurate.** In every scenario the preferred estimate lands within 0.2% of the planted number.
+- **The 95% interval is too narrow.** Across the three scenarios with a coverage rule it covered the planted number in
+  53 of 60 draws, or 88%, not the 95% it claims. The half-effect scenario covered 16 of 20 draws. The rule needed 17.
+- **What to quote.** Use the range across specifications, 2,880 to 3,350, not the 3,025 to 3,195 interval on the
+  preferred specification alone. The README already quotes the range.
+- The rule was set before the run and has not been changed. This is recorded as a fail.
 
 **What this does not test.** The planted confounding is only as strong as the real seller differences among on-time
 orders. A hidden cause that sits only inside late orders is part (b).

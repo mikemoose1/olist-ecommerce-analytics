@@ -38,9 +38,10 @@ whole-day grid. A bootstrap "95% interval" for them collapsed to a single value,
 
 Pass rules in [docs/preregistration_v2.md](../docs/preregistration_v2.md), written before the runs.
 
-- **Planted answer in the real orders.** Planting a known effect into a copy of the real orders, the preferred estimate
-  finds it within 0.2% every time, but its 95% interval covers the planted number in only 88% of draws, so one pass rule
-  failed. Quote the range across specifications, not that interval.
+- **Planted answer in the real orders. One rule failed.** Planting a known effect into a copy of the real orders, the
+  preferred estimate finds it within 0.2% every time. Its 95% interval covers the planted number in only 88% of draws,
+  so rule C-1 failed. Finding: the estimate is accurate but the interval is too narrow, so quote the 2,880 to 3,350
+  range, not the interval.
 - **Hidden confounder.** Halving the estimate would need a hidden factor with a risk ratio of 5.1 on both lateness and
   bad reviews (E-value), or hidden factors 3.5 times as important as everything measured (Oster bound).
 
