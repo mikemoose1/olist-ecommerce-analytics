@@ -6290,7 +6290,7 @@
     "replace": [
      [
       "t.goal_late_rate,",
-      "0.03036 as goal_late_rate,"
+      "0.03036::double as goal_late_rate,"
      ]
     ],
     "rebuild": "export_dash_monthly"

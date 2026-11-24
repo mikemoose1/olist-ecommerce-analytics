@@ -29,7 +29,26 @@ Numbers below come from `evidence/review_cost_causal_report.json`; the dbt model
   Reproduce it: `python review_cost_causal/label_agreement.py` (labels and order IDs in
   `evidence/review_text_labels_sample200.csv`; the review text is public Kaggle data keyed by `order_id`, not copied here).
 
+- **Missing reviews.** 629 judged orders have no review, and late orders are reviewed 1.8 points less often. Reweighting
+  for that gives 3,109, which holds if reviewing depends only on what the data records. Without that assumption, counting
+  unreviewed late orders as bad and unreviewed on-time orders as not bad, or the reverse, gives 2,970 to 3,160, still
+  inside the range. Details: [stress/MISSING_REVIEWS.md](stress/MISSING_REVIEWS.md).
+
 ## Break-point wording
 
 The two-break fit of review score on days late puts the breaks at day -1 and day 6. Those are point estimates on a
 whole-day grid. A bootstrap "95% interval" for them collapsed to a single value, so no interval is claimed.
+
+## Stress tests (pre-registered)
+
+Pass rules in [docs/preregistration_v2.md](../docs/preregistration_v2.md), written before the runs.
+
+- **Planted answer in the real orders. One rule failed.** Planting a known effect into a copy of the real orders, the
+  preferred estimate finds it on average within 0.2% in every scenario. Single draws were off by up to 8%. Its 95%
+  interval covers the planted number in only 88% of draws, so rule C-1 failed. Finding: the average estimate is accurate
+  but the interval is too narrow. Do not quote the interval as a 95% range. The 2,880 to 3,350 range across
+  specifications is a sensitivity band, and this test did not show that it covers the true number either.
+- **Hidden confounder.** Halving the estimate would need a hidden factor with a risk ratio of 5.1 on both lateness and
+  bad reviews (E-value), or hidden factors 3.5 times as important as everything measured (Oster bound).
+
+Details: [stress/SENSITIVITY_AND_KNOWN_ANSWER.md](stress/SENSITIVITY_AND_KNOWN_ANSWER.md).

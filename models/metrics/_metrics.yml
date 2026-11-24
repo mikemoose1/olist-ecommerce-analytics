@@ -15,13 +15,22 @@ models:
           - dbt_expectations.expect_column_values_to_be_between: {arguments: {min_value: "'2017-01'", max_value: "'2018-08'"}}
   - name: metric_late_rate_orders
     description: The one definition of the late-rate population and of "late" (C1 rule applied).
+    config: {contract: {enforced: true}}   # the Tableau dashboard reads it directly (dashboard/tableau/export_orders.py, prep3.py)
     columns:
       - name: order_id
+        data_type: varchar
         data_tests:
           - unique
           - not_null
           - relationships: {arguments: {to: ref('fct_orders'), field: order_id}}
+      - {name: purchase_date, data_type: date}
+      - {name: delivery_state, data_type: varchar}
+      - {name: delivery_evidence, data_type: varchar}
+      - {name: ship_to_state, data_type: varchar}
+      - {name: review_score, data_type: integer}
+      - {name: review_before_delivery, data_type: boolean}
       - name: is_late
+        data_type: boolean
         data_tests: [not_null]
   - name: metric_repeat_rate_90d_people
     description: The one definition of the 90-day repeat population (people eligible for a full 90 days) and of "came back" (C6 rule applied).
