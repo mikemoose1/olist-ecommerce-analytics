@@ -508,7 +508,7 @@ CASES = [
      {"sql": ["update exports.export_dash_summary set stretch_whatif_late_rate = 0.03"]}),
     ("Dashboard exports (trend): the monthly goal line uses the safe goal (3.04%) instead of the median (4.43%)",
      "assert_dash_monthly_reconciles",
-     {"model_edit": {"file": "models/exports/export_dash_monthly.sql", "replace": [("t.goal_late_rate,", "0.03036 as goal_late_rate,")], "rebuild": "export_dash_monthly"}}),
+     {"model_edit": {"file": "models/exports/export_dash_monthly.sql", "replace": [("t.goal_late_rate,", "0.03036::double as goal_late_rate,")], "rebuild": "export_dash_monthly"}}),
     ("Dashboard exports (trend): the stretch line in the summary is off by a point",
      "assert_dash_monthly_reconciles",
      {"sql": ["update exports.export_dash_summary set stretch_whatif_late_rate = stretch_whatif_late_rate + 0.01"]}),
