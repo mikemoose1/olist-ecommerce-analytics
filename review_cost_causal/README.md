@@ -29,6 +29,10 @@ Numbers below come from `evidence/review_cost_causal_report.json`; the dbt model
   Reproduce it: `python review_cost_causal/label_agreement.py` (labels and order IDs in
   `evidence/review_text_labels_sample200.csv`; the review text is public Kaggle data keyed by `order_id`, not copied here).
 
+- **Missing reviews.** 629 judged orders have no review, and late orders are reviewed 1.8 points less often. Reweighting
+  for that gives 3,109; even if every unreviewed order had been a bad review, or none had, the estimate stays inside the
+  range. Details: [stress/MISSING_REVIEWS.md](stress/MISSING_REVIEWS.md).
+
 ## Break-point wording
 
 The two-break fit of review score on days late puts the breaks at day -1 and day 6. Those are point estimates on a

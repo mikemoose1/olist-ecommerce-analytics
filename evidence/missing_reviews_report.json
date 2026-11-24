@@ -1,0 +1,110 @@
+{
+ "population": {
+  "orders_in_raw_csv": 99441,
+  "judged_orders": 94931,
+  "not_judged_no_delivery_or_promise": 4510,
+  "judged_reviewed": 94302,
+  "judged_unreviewed": 629,
+  "late_judged": 6518,
+  "late_unreviewed": 152
+ },
+ "review_rate": {
+  "late_pct": 97.66799631788892,
+  "on_time_pct": 99.46048658002783,
+  "gap_pp": -1.7924902621389016,
+  "gap_ci95_pp": [
+   -2.162038276517052,
+   -1.4229422477607512
+  ],
+  "within_seller_category_month_gap_pp": -1.7428796920212575,
+  "within_ci95_pp": [
+   -2.1112365011032295,
+   -1.3745228829392857
+  ]
+ },
+ "weights": {
+  "min": 1.0004561209380995,
+  "max": 1.1365854718568804,
+  "mean": 1.0067028987916296,
+  "effective_sample_size": 94297.64963670864,
+  "propensity_min": 0.8769918895628801,
+  "propensity_mean": 0.993342129255531
+ },
+ "v2_unweighted": {
+  "extra": 3109.9162567454173,
+  "lo": 3024.869983347068,
+  "hi": 3194.962530143767
+ },
+ "v2_ipw": {
+  "extra": 3109.4568783553527,
+  "lo": 3024.3723152063435,
+  "hi": 3194.541441504362,
+  "bins": {
+   "late_d1": 0.07016110833286841,
+   "late_d2": 0.2175427900108764,
+   "late_d3": 0.3691088749505483,
+   "late_d4_6": 0.5225986137405606,
+   "late_d7_13": 0.6408115755822384,
+   "late_d14p": 0.645496621585084
+  },
+  "late_rows_counted": 6366
+ },
+ "artifact_checks": {
+  "W-1 unit weights reproduce V2": {
+   "extra": 3109.9162567454173,
+   "diff": 0.0,
+   "pass": true
+  },
+  "W-2 shuffled weights": {
+   "n": 50,
+   "abs_shift_p95": 0.4629239024152639,
+   "abs_shift_max": 0.8835250890474526,
+   "real_abs_shift": 0.4593783900645576,
+   "real_shift_beyond_p95": false
+  },
+  "W-3 trimmed weights": {
+   "extra": 3109.7254156981344,
+   "pct_diff": 0.008636149439822383,
+   "pass": true
+  }
+ },
+ "worst_case_bounds": {
+  "all_unreviewed_bad": {
+   "extra_on_all_judged_late": 3198.465960458391,
+   "extra_on_6366_reviewed_late": 3113.3796054996187
+  },
+  "all_unreviewed_not_bad": {
+   "extra_on_all_judged_late": 3098.5365305891573,
+   "extra_on_6366_reviewed_late": 3016.3619265740663
+  }
+ },
+ "pass_rules": [
+  {
+   "id": "A-1 IPW estimate within 5% of 3,110 and inside the six-specification range",
+   "pass": true,
+   "observed": {
+    "ipw": 3109.4568783553527,
+    "pct_shift": -0.014771407077864703,
+    "range": [
+     2880.4599647367017,
+     3352.6633196859902
+    ]
+   }
+  },
+  {
+   "id": "A-2 both worst-case bounds inside the six-specification range",
+   "pass": true,
+   "observed": {
+    "all_unreviewed_bad": {
+     "extra_on_all_judged_late": 3198.465960458391,
+     "extra_on_6366_reviewed_late": 3113.3796054996187
+    },
+    "all_unreviewed_not_bad": {
+     "extra_on_all_judged_late": 3098.5365305891573,
+     "extra_on_6366_reviewed_late": 3016.3619265740663
+    }
+   }
+  }
+ ],
+ "interpretation": "no material missing-review bias"
+}
