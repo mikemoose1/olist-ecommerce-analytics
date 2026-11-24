@@ -2,44 +2,85 @@ version: 2
 models:
   - name: fct_orders
     description: One row per order with delivery, payment, review and location facts.
+    config: {contract: {enforced: true}}   # the Tableau dashboard reads it directly (dashboard/tableau/export_orders.py, prep3.py)
     data_tests:
       - dbt_expectations.expect_table_row_count_to_equal_other_table: {arguments: {compare_model: "ref('stg_orders')"}}
     columns:
       - name: order_id
+        data_type: varchar
         data_tests: [unique, not_null]
       - name: customer_unique_id
+        data_type: varchar
         data_tests:
           - not_null
           - relationships: {arguments: {to: ref('dim_customer'), field: customer_unique_id}}
       - name: purchase_date
+        data_type: date
         data_tests:
           - relationships: {arguments: {to: ref('dim_date'), field: date_day}}
+      - {name: purchased_at, data_type: timestamp}
+      - {name: order_status, data_type: varchar}
       - name: delivery_state
+        data_type: varchar
         data_tests:
           - not_null
           - accepted_values: {arguments: {values: [not_delivered, status_date_conflict, delivered_on_time, delivered_late]}}
+      - {name: delivery_evidence, data_type: varchar}
+      - {name: n_parcels, data_type: bigint}
+      - {name: delivered_to_carrier_at, data_type: timestamp}
+      - {name: delivered_to_customer_at, data_type: timestamp}
+      - {name: estimated_delivery_date, data_type: date}
+      - {name: last_shipping_limit_at, data_type: timestamp}
+      - {name: days_past_promise, data_type: bigint}
+      - {name: promised_days, data_type: bigint}
+      - {name: n_items, data_type: bigint}
+      - {name: amount_due, data_type: "decimal(38,2)"}
+      - {name: amount_paid, data_type: "decimal(38,2)"}
+      - {name: paid_minus_due, data_type: "decimal(38,2)"}
+      - {name: max_installments, data_type: integer}
       - name: recon_status
+        data_type: varchar
         data_tests:
           - not_null
           - accepted_values: {arguments: {values: [match, minor, overpaid, underpaid, no_items, no_payment]}}
+      - {name: ship_to_zip_code_prefix, data_type: varchar}
+      - {name: ship_to_city, data_type: varchar}
+      - {name: ship_to_state, data_type: varchar}
+      - {name: ship_to_lat, data_type: double}
+      - {name: ship_to_lng, data_type: double}
+      - {name: is_qualifying_order, data_type: boolean}
+      - {name: customer_qualifying_order_seq, data_type: bigint}
+      - {name: review_id, data_type: varchar}
       - name: review_score
+        data_type: integer
         data_tests:
           - dbt_expectations.expect_column_values_to_be_between: {arguments: {min_value: 1, max_value: 5}}
+      - {name: review_before_delivery, data_type: boolean}
+      - {name: in_analysis_window, data_type: boolean}
   - name: fct_order_items
     description: One row per item line.
+    config: {contract: {enforced: true}}   # the Tableau dashboard reads it directly (dashboard/tableau/export_orders.py, prep3.py)
     data_tests:
       - dbt_expectations.expect_table_row_count_to_equal_other_table: {arguments: {compare_model: "ref('stg_order_items')"}}
       - dbt_utils.unique_combination_of_columns: {arguments: {combination_of_columns: [order_id, order_item_id]}}
     columns:
       - name: order_id
+        data_type: varchar
         data_tests:
           - relationships: {arguments: {to: ref('fct_orders'), field: order_id}}
+      - {name: order_item_id, data_type: integer}
+      - {name: parcel_key, data_type: varchar}
       - name: product_id
+        data_type: varchar
         data_tests:
           - relationships: {arguments: {to: ref('dim_product'), field: product_id}}
       - name: seller_id
+        data_type: varchar
         data_tests:
           - relationships: {arguments: {to: ref('dim_seller'), field: seller_id}}
+      - {name: shipping_limit_at, data_type: timestamp}
+      - {name: price, data_type: "decimal(12,2)"}
+      - {name: freight_value, data_type: "decimal(12,2)"}
   - name: fct_payments
     data_tests:
       - dbt_expectations.expect_table_row_count_to_equal_other_table: {arguments: {compare_model: "ref('stg_payments')"}}
@@ -62,11 +103,18 @@ models:
       - name: customer_unique_id
         data_tests: [unique, not_null]
   - name: dim_seller
+    config: {contract: {enforced: true}}   # the Tableau dashboard reads it directly (dashboard/tableau/prep3.py)
     data_tests:
       - dbt_expectations.expect_table_row_count_to_equal_other_table: {arguments: {compare_model: "ref('stg_sellers')"}}
     columns:
       - name: seller_id
+        data_type: varchar
         data_tests: [unique, not_null]
+      - {name: zip_code_prefix, data_type: varchar}
+      - {name: city, data_type: varchar}
+      - {name: state, data_type: varchar}
+      - {name: lat, data_type: double}
+      - {name: lng, data_type: double}
   - name: dim_product
     data_tests:
       - dbt_expectations.expect_table_row_count_to_equal_other_table: {arguments: {compare_model: "ref('stg_products')"}}

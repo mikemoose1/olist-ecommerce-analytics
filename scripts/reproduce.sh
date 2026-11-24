@@ -46,12 +46,14 @@ targets()     { "$BIN/python" late_rate_targets/selftest.py; "$BIN/python" late_
 dashboard_checks() {   # the CSVs Tableau reads match the warehouse, every dashboard number ties to the analysis, and each check is proven able to fail
   "$BIN/python" dashboard/export_csv.py --check
   "$BIN/python" verification/verify_dash_exports.py; "$BIN/python" verification/selftest_dash_exports.py
-  "$BIN/python" verification/column_sweep.py --check; }   # every column of every export: one wrong cell at a time, something must fail
+  "$BIN/python" verification/column_sweep.py --check   # every column of every export: one wrong cell at a time, something must fail
+  "$BIN/python" verification/check_dashboard_contracts.py   # every table the dashboard reads has an enforced contract and is in its exposure
+  "$BIN/python" verification/dashboard_semantic_audit.py --check; }   # which dashboard numbers the semantic layer defines (dashboard/SEMANTIC_LAYER.md)
 dashboard()   { "$BIN/python" dashboard/export_csv.py; "$BIN/python" verification/verify_dash_exports.py --json; dashboard_checks; }   # write dashboard/data/*.csv for Tableau (needs make build)
 case_study_checks() {   # every number on README.md and docs/CASE_STUDY.md and every key in its ERD matches the data, docs/index.md is current, and each check is proven able to fail
   "$BIN/python" case_study/check_case_study.py; "$BIN/python" case_study/selftest_check.py; }
 case_study()  { "$BIN/python" case_study/build_figures.py; "$BIN/python" case_study/build_pages.py; case_study_checks; }   # redraw docs/img figures and docs/index.md, then check (needs make build, make recommendation)
-prove_tests() { "$BIN/python" scripts/prove_tests_fail.py; }
+prove_tests() { "$BIN/python" scripts/prove_tests_fail.py; "$BIN/python" verification/check_dashboard_contracts.py --prove; }
 experiments() { "$BIN/python" experiments/run_experiments.py; }
 docs()        { "$BIN/dbt" docs generate --quiet; "$BIN/python" scripts/lineage_mermaid.py; }
 clean()       { rm -rf target dbt_packages logs olist.duckdb; }
