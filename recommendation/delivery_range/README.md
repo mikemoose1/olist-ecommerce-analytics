@@ -13,12 +13,18 @@ and "extra bad reviews" on the other. **No point is picked here.** Which one to 
 limit, are business calls.
 
 The pass rules were written before the run, in [docs/preregistration_v2.md](../../docs/preregistration_v2.md) (part d).
-Results: `evidence/delivery_range_report.json`. Rerun (about 16 minutes on 8 cores, needs `make build`):
+Results: `evidence/delivery_range_report.json`. Rerun (about 16 minutes on 8 cores, needs `make build`) in a separate
+virtual environment, installing both requirement files in one command so pip keeps pandas at 3.1.1:
 
 ```bash
-pip install -r recommendation/delivery_range/requirements.txt   # LightGBM and NGBoost, on top of requirements.txt
-python recommendation/delivery_range/run.py
+python -m venv .venv-range
+.venv-range/bin/pip install -r requirements.txt -r recommendation/delivery_range/requirements.txt
+.venv-range/bin/python recommendation/delivery_range/run.py
 ```
+
+The committed results come from pandas 3.1.1, numpy 2.5.5, scikit-learn 1.9.1, LightGBM 4.7.0 and NGBoost 0.6.1. A
+clean rerun with those versions and no cached predictions gave the same numbers and the same plot. Only the run times
+differed.
 
 ## Set-up
 
@@ -50,9 +56,9 @@ NGBoost scored better; the pick was not changed.
 
 **The ranges are not well calibrated.** On the tune block, which holds two peak months, orders arrived slower than
 predicted: only 78.7% arrived within the 90% quantile. On the holdout, after the March peak, they arrived faster: 64.8%
-arrived within the 50% quantile. A model retrained each month on older orders lags behind shifts in delivery speed in
-both directions. So "the 90% date" is not a 90% promise. The decision layer below is judged on what actually happened,
-not on the stated levels.
+arrived within the 50% quantile. A model retrained each month on older orders probably lags
+behind shifts in delivery speed in both directions. This was not tested. So "the 90% date" is not a 90% promise. The decision layer below is
+scored on actual delivery days, not on the stated levels.
 
 ## Decision layer
 
@@ -61,11 +67,12 @@ not on the stated levels.
   days promised. Lambda is the price of a promise day in bad reviews. At lambda = 0.004, one bad review avoided is worth
   250 extra promise days spread over all orders. A long range gets a later date and a tight one an earlier date.
 
-Holdout, 38,511 orders, extra late-delivery bad reviews counted on reviewed orders with the V2 effects. Olist's printed
+Holdout, 38,511 orders. Extra late-delivery bad reviews are projected from actual delivery days and the V2 effects, on
+reviewed orders. They are not observed reviews under a new date. Olist's printed
 date gives 1,275 extra bad reviews, with a mean promise of 22.5 days and a median of 22. Selected points (the full
 sweep is in the report):
 
-| Rule | Mean days vs Olist | Median promise | On time | Extra bad reviews | Fewer than Olist (95% bootstrap) | March 2018 (Olist 658) |
+| Rule | Mean days vs Olist | Median promise | On time | Projected extra bad reviews | Fewer than Olist, projected (95% bootstrap) | March 2018, projected (Olist 658) |
 |---|---|---|---|---|---|---|
 | T, tau 0.90 | -2.1 | 20 | 93.3% | 1,144 | 131 (99 to 167) | 662 |
 | C, lambda 0.006 | -1.4 | 21 | 94.0% | 1,036 | 239 (206 to 274) | 602 |
@@ -77,8 +84,8 @@ sweep is in the report):
 ![trade-off](tradeoff.png)
 
 Within the 1-day guardrail (mean at most 1.0 day longer than Olist's promise, median at most 1 day longer), the best
-point is rule C at lambda 0.004: 502 fewer extra bad reviews (39%) for 0.6 more days on average. At lambda 0.005 the
-promise is shorter than Olist's on average and still cuts 384. Rules T and C give nearly the same curve, with C a
+point is rule C at lambda 0.004: a projected 502 fewer extra bad reviews (39%) for 0.6 more days on average. At lambda
+0.005 the promise is shorter than Olist's on average and the projected cut is 384. Rules T and C give nearly the same curve, with C a
 little lower near the guardrail. The route p95 date cuts about as many as tau 0.95 but needs 4.3 days.
 
 ## Pass rules
@@ -91,12 +98,14 @@ little lower near the guardrail. The route p95 date cuts about as many as tau 0.
 
 ## Finding: rule D-2 failed
 
-- **The range is not a calibrated promise.** The calibration error is 14.8 points against a limit of 3. On the tune months, which hold two peak months, orders arrived slower than
-  predicted, and 78.7% arrived within the 90% quantile. On the holdout they arrived faster, and 64.8% arrived within the 50% quantile. A model
-  retrained each month on older orders lags behind changes in delivery speed in both directions.
+- **The range is not a calibrated promise.** The calibration error is 14.8 points against a limit of 3. On the tune
+  months, which hold two peak months, orders arrived slower than predicted, and 78.7% arrived within the 90% quantile.
+  On the holdout they arrived faster, and 64.8% arrived within the 50% quantile. The probable cause is that a model
+  retrained each month on older orders lags behind changes in delivery speed. This was not tested.
 - **It is not ready to ship.** "The 90% date" does not mean 90% of orders arrive by it. The decision-layer results above
-  are measured on what actually happened, so they still hold as a comparison. They do not show that the model's stated levels hold. A launch would first need recalibration on recent deliveries, tested on months it was not
-  built on.
+  are projected from actual delivery days and the V2 effects, so they still work as a comparison between rules. They do
+  not show that the model's stated levels hold. A launch would first need recalibration on recent deliveries, tested on
+  months it was not built on.
 - **The holdout was not fresh.** Earlier models in this repo already scored March to August 2018, so these results were
   shaped by earlier looks at the same months.
 - The rule was set before the run and has not been changed. This is recorded as a fail.
@@ -112,6 +121,8 @@ little lower near the guardrail. The route p95 date cuts about as many as tau 0.
 - The holdout months were seen by earlier models in this repo.
 - The bad-review effects come from the whole window, holdout included, and are treated as fixed. The bootstrap only
   reflects which orders happened to fall in the holdout, not uncertainty in the effects.
+- The projection assumes reviews respond only to how many days late an order arrives, not to the date printed at
+  checkout. If a later printed date itself lowers satisfaction, the projected cuts are too high.
 - A shorter or longer date may change who buys. There is no checkout data here, so that cost is not counted.
 - No settings were tuned for this comparison. LightGBM and scikit-learn reuse the earlier model's setting, and NGBoost
   used one untuned setting.

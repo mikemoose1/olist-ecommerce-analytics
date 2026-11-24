@@ -5,7 +5,7 @@
 3. Score every candidate once on the locked holdout (Mar - Aug 2018): CRPS and calibration.
 4. Decision layer (decide.py) on the picked candidate's holdout quantiles: sweep rule T (tau) and rule C (lambda); for each
    point, extra late-delivery bad reviews vs Olist's printed date and the days added. No point is picked.
-Writes evidence/delivery_range_report.json and recommendation/delivery_range/tradeoff.png. About 20-30 minutes on 8 cores.
+Writes evidence/delivery_range_report.json and recommendation/delivery_range/tradeoff.png. About 16 minutes on 8 cores.
 Needs: make build, and the packages in recommendation/delivery_range/requirements.txt.
 Set DELIVERY_RANGE_CACHE=<folder> to keep the predictions between runs.
 """
