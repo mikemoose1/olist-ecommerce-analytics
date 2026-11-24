@@ -4,73 +4,274 @@ version: 2
 models:
   - name: export_dash_summary
     description: One row, every number the dashboard prints in a tile or a label, plus the goal and alarm lines.
+    config: {contract: {enforced: true}}
     data_tests:
       - dbt_expectations.expect_table_row_count_to_equal: {arguments: {value: 1}}
     columns:
+      - name: judged_orders
+        data_type: hugeint
+      - name: late_orders
+        data_type: hugeint
+      - name: late_rate
+        data_type: double
       - name: extra_bad_reviews
+        data_type: double
         description: Extra 1-2 star reviews linked to late delivery (about 3,110). Compares each late order with the same seller's on-time orders in the same category and month; an estimate, not a controlled test.
         data_tests: [not_null]
+      - name: extra_bad_reviews_rounded
+        data_type: double
+      - name: reviewed_late_orders
+        data_type: hugeint
+      - name: bad_reviews_all
+        data_type: hugeint
+      - name: extra_share_of_bad_reviews
+        data_type: double
+      - name: extra_range_low
+        data_type: double
+      - name: extra_range_high
+        data_type: double
+      - name: extra_range_low_rounded
+        data_type: double
+      - name: extra_range_high_rounded
+        data_type: double
+      - name: ramp_share_up_to_promised_day
+        data_type: double
+      - name: ramp_share_from_day_6
+        data_type: double
+      - name: ramp_points_per_day
+        data_type: double
+      - name: latest_month
+        data_type: varchar
+      - name: latest_month_label
+        data_type: varchar
+      - name: latest_month_late_rate
+        data_type: double
+      - name: latest_month_own_alarm_line_late_rate
+        data_type: double
+      - name: typical_month_orders
+        data_type: double
+      - name: typical_month_alarm_line_late_rate
+        data_type: double
+      - name: goal_late_rate
+        data_type: double
+      - name: stretch_whatif_late_rate
+        data_type: double
+      - name: stretch_whatif_label
+        data_type: varchar
+      - name: alarm_months
+        data_type: bigint
+      - name: alarm_months_list
+        data_type: varchar
+      - name: late_handoff_orders
+        data_type: bigint
+      - name: late_handoff_late_orders
+        data_type: bigint
+      - name: late_handoff_late_rate
+        data_type: double
+      - name: on_time_handoff_late_rate
+        data_type: double
+      - name: late_handoff_share_of_late
+        data_type: double
+      - name: sellers_with_late_after_late_handoff
+        data_type: bigint
+      - name: top10_late_after_late_handoff_orders
+        data_type: hugeint
+      - name: top10_share_of_late_after_late_handoff
+        data_type: double
+      - name: top_seller_code
+        data_type: varchar
+      - name: top_seller_late_after_late_handoff_orders
+        data_type: bigint
+      - name: nne_late_rate
+        data_type: double
+      - name: rest_late_rate
+        data_type: double
+      - name: nne_share_of_late
+        data_type: double
+      - name: worst3_share_of_late
+        data_type: double
+      - name: worst3_share_of_orders
+        data_type: double
+      - name: worst3_share_of_months
+        data_type: double
       - name: worst3_months_label
+        data_type: varchar
         description: The three months with the most late orders, in date order, written for the chart ("Nov 2017, Feb 2018 and Mar 2018").
         data_tests: [not_null]
   - name: export_dash_review_ramp
     description: Share of 1-2 star reviews by days past the promised day, capped at -30 and +30.
+    config: {contract: {enforced: true}}
     data_tests:
       - dbt_expectations.expect_table_row_count_to_equal: {arguments: {value: 61}}
     columns:
       - name: days_past_promise_capped
+        data_type: bigint
         data_tests:
           - unique
           - not_null
           - dbt_expectations.expect_column_values_to_be_between: {arguments: {min_value: -30, max_value: 30}}
       - name: phase
+        data_type: varchar
         data_tests:
           - not_null
           - accepted_values: {arguments: {values: ['up to the promised day', 'climbing', 'levelled']}}
+      - name: orders
+        data_type: bigint
+      - name: reviewed_orders
+        data_type: bigint
+      - name: bad_reviews
+        data_type: bigint
+      - name: bad_review_share
+        data_type: double
   - name: export_dash_monthly
     description: One row per purchase month. Late rate, that month's own alarm line (own_month_alarm_line_late_rate), the goal line and the stretch what-if line (stretch_whatif_late_rate, a what-if, not a target), and the late-order bars with the three worst months flagged.
+    config: {contract: {enforced: true}}
     data_tests:
       - dbt_expectations.expect_table_row_count_to_equal: {arguments: {value: 20}}
     columns:
       - name: year_month
+        data_type: varchar
         data_tests: [unique, not_null]
+      - name: month_start
+        data_type: date
       - name: month_label
+        data_type: varchar
         data_tests: [unique, not_null]
+      - name: orders
+        data_type: bigint
+      - name: late_orders
+        data_type: bigint
+      - name: late_rate
+        data_type: double
+      - name: late_rate_if_handoffs_ok
+        data_type: double
+      - name: is_stable_month
+        data_type: boolean
+      - name: own_month_alarm_line_late_rate
+        data_type: double
+      - name: is_alarm_month
+        data_type: boolean
+      - name: is_thin_month
+        data_type: boolean
+      - name: late_handoff_orders
+        data_type: bigint
+      - name: late_handoff_late_orders
+        data_type: bigint
+      - name: on_time_handoff_orders
+        data_type: bigint
+      - name: on_time_handoff_late_orders
+        data_type: bigint
+      - name: share_of_all_late
+        data_type: double
       - name: late_orders_rank
+        data_type: bigint
         data_tests: [unique, not_null]
+      - name: is_worst3_late_month
+        data_type: boolean
+      - name: typical_month_alarm_line_late_rate
+        data_type: double
+      - name: goal_late_rate
+        data_type: double
+      - name: stretch_whatif_late_rate
+        data_type: double
   - name: export_dash_handoff
     description: Late rate after a late handoff and after an on-time handoff (two rows).
+    config: {contract: {enforced: true}}
     data_tests:
       - dbt_expectations.expect_table_row_count_to_equal: {arguments: {value: 2}}
     columns:
       - name: handoff_group
+        data_type: varchar
         data_tests: [unique, not_null]
+      - name: is_late_handoff
+        data_type: boolean
+      - name: orders
+        data_type: bigint
+      - name: late_orders
+        data_type: bigint
+      - name: late_rate
+        data_type: double
+      - name: share_of_all_late
+        data_type: double
   - name: export_dash_sellers
     description: One row per seller, with late orders that followed a late handoff, ranked. The dashboard shows the top 10.
+    config: {contract: {enforced: true}}
     columns:
       - name: seller_id
+        data_type: varchar
         data_tests:
           - unique
           - not_null
           - relationships: {arguments: {to: ref('dim_seller'), field: seller_id}}
       - name: seller_code
+        data_type: varchar
         data_tests: [unique, not_null]
+      - name: orders
+        data_type: bigint
+      - name: late_handoff_orders
+        data_type: bigint
+      - name: late_after_late_handoff_orders
+        data_type: bigint
+      - name: late_orders
+        data_type: bigint
+      - name: late_handoff_rate
+        data_type: double
+      - name: late_rate
+        data_type: double
       - name: rank_by_late_after_late_handoff
+        data_type: bigint
         data_tests: [unique, not_null]
+      - name: is_top10
+        data_type: boolean
+      - name: share_of_late_after_late_handoff
+        data_type: double
   - name: export_dash_region
     description: Late rate in the north and northeast against the rest of Brazil (two rows).
+    config: {contract: {enforced: true}}
     data_tests:
       - dbt_expectations.expect_table_row_count_to_equal: {arguments: {value: 2}}
     columns:
       - name: region_group
+        data_type: varchar
         data_tests: [unique, not_null]
+      - name: states
+        data_type: bigint
+      - name: orders
+        data_type: bigint
+      - name: late_orders
+        data_type: bigint
+      - name: late_rate
+        data_type: double
+      - name: share_of_all_late
+        data_type: double
   - name: export_dash_tests_example
     description: The "are the fixes working" panel. INVENTED EXAMPLE numbers, because the delivery-date launch test has not run. Never results.
+    config: {contract: {enforced: true}}
     columns:
       - name: test_id
+        data_type: integer
         data_tests: [unique, not_null]
+      - name: test_label
+        data_type: varchar
+      - name: readout_label
+        data_type: varchar
+      - name: test_group_value
+        data_type: double
+      - name: no_change_group_value
+        data_type: double
+      - name: test_group_display
+        data_type: varchar
+      - name: no_change_group_display
+        data_type: varchar
       - name: is_example
+        data_type: boolean
         data_tests: [not_null]
+      - name: status
+        data_type: varchar
+      - name: banner
+        data_type: varchar
+      - name: footnote
+        data_type: varchar
 seeds:
   - name: dash_region_map
     description: The 27 Brazilian states, each in one region group. North and northeast = the 16 states in story/story_data.py NNE (checked by verification/verify_dash_exports.py).
@@ -87,3 +288,23 @@ seeds:
     description: INVENTED EXAMPLE results for the two fix tests in the memo, only to show the layout of panel 6. is_example must be true on every row.
     config:
       column_types: {test_id: integer, test_name: varchar, readout_metric: varchar, unit: varchar, test_group_value: double, no_change_group_value: double, is_example: boolean}
+exposures:
+  - name: tableau_late_delivery_dashboard
+    label: Tableau late-delivery dashboard
+    type: dashboard
+    maturity: medium
+    description: The Tableau dashboard (six-chart page and seller page B1). Tableau Desktop reads the CSVs that dashboard/export_csv.py writes from the seven export models, and the order-level CSV that dashboard/tableau/export_orders.py and prep3.py build from metric_late_rate_orders, fct_orders, fct_order_items and dim_seller; the published images are docs/img/dashboard.png and the files in dashboard/tableau/.
+    depends_on:
+      - ref('export_dash_summary')
+      - ref('export_dash_review_ramp')
+      - ref('export_dash_monthly')
+      - ref('export_dash_handoff')
+      - ref('export_dash_sellers')
+      - ref('export_dash_region')
+      - ref('export_dash_tests_example')
+      - ref('metric_late_rate_orders')
+      - ref('fct_order_items')
+      - ref('fct_orders')
+      - ref('dim_seller')
+    owner:
+      name: Mike Moossa
