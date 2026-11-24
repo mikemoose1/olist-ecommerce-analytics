@@ -1,6 +1,6 @@
 """(b) How strong would a hidden confounder have to be to halve the ~3,110 estimate? (pre-registered in
 docs/preregistration_v2.md). E-value (VanderWeele and Ding 2017) and an Oster (2019) style bound.
-Writes evidence/sensitivity_report.json. About 1 minute.
+Writes evidence/sensitivity_report.json. About 10 seconds.
 Usage: python review_cost_causal/stress/sensitivity.py
 """
 import json, math, os, sys

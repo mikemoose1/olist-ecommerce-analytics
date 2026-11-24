@@ -12,7 +12,8 @@ The existing harness (`review_cost_causal/harness.py`) does this on fully invent
 outcome is replaced:
 
 - Each order's baseline chance of a bad review comes from a model fitted on the real on-time orders (seller, category
-  and month effects plus price, freight and promised days), clipped to 1% to 95%. Because seller effects are in it, late
+  and month effects plus price, freight and promised days), clipped to 1% to 95%. The 1% floor clipped 8,713 of the
+  94,302 baseline chances (9.2%). Because seller effects are in it, late
   orders start with a higher baseline (10.5%) than on-time ones (8.9%), as in the real data. A method that ignores
   sellers should come out too high.
 - Late orders then get a planted effect by days-late bin. Four scenarios: none; half the published V2 effects; the full
@@ -34,7 +35,7 @@ Run: `python review_cost_causal/stress/known_answer_real.py` (about 16 minutes o
 **All six specifications, bias as a share of the planted number (full effect)**: V2 +0.2%, V1 +0.4%, V3 +0.3%,
 V4 +0.2%, V5 +0.2%, and V0 (no seller matching) +1.9%. With no planted effect, V0 finds +45 and the plain late vs
 on-time gap finds +96; the seller-matched specifications find between -5 and -13. On the log-odds scenario V4 (same
-actual delivery time) is 2.3% low; the rest are within 0.7%.
+actual delivery time) is 2.3% low, the other seller-matched specifications are within 0.7%, and V0 is 1.3% high.
 
 **Pass rules**
 
@@ -48,11 +49,14 @@ actual delivery time) is 2.3% low; the rest are within 0.7%.
 
 ### Finding: rule C-1 failed
 
-- **The estimate is accurate.** In every scenario the preferred estimate lands within 0.2% of the planted number.
+- **The average estimate is accurate.** In every scenario the preferred estimate lands on average within 0.2% of the
+  planted number. Single draws were off by up to 8%, in the half-effect scenario.
 - **The 95% interval is too narrow.** Across the three scenarios with a coverage rule it covered the planted number in
   53 of 60 draws, or 88%, not the 95% it claims. The half-effect scenario covered 16 of 20 draws. The rule needed 17.
-- **What to quote.** Use the range across specifications, 2,880 to 3,350, not the 3,025 to 3,195 interval on the
-  preferred specification alone. The README already quotes the range.
+- **What to quote.** Do not quote the 3,025 to 3,195 interval on the preferred specification as a 95% range. The README
+  quotes the range across specifications, 2,880 to 3,350. That range is a sensitivity band, not a confidence interval,
+  and this test did not check its coverage. In these draws the spread of the six estimates contained the planted
+  number in only 10 to 16 of 20 draws per scenario, so it is not shown to do better than the interval.
 - The rule was set before the run and has not been changed. This is recorded as a fail.
 
 **What this does not test.** The planted confounding is only as strong as the real seller differences among on-time
