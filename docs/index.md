@@ -238,15 +238,16 @@ The analysis also replayed history with a per-route delivery date, updated as or
 
 - Each headline number is recalculated straight from the raw files and matches ([evidence/verification_report.md](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/evidence/verification_report.md)).
 - The keys and links of the nine source tables pass 51 of 51 checks against the raw files, including that every column marked FK has a unique parent and no orphans ([case_study/erd.py](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/case_study/erd.py)).
-- Every data check was shown to fail on planted bad data. All 248 rules in the check suite are proven this way ([evidence/mutation_report.md](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/evidence/mutation_report.md)).
+- For each rule in the mutation report, a bad change was planted in a copy of the data and at least one of the rule's tests failed on it. All 248 rules in the mutation report are proven this way ([evidence/mutation_report.md](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/evidence/mutation_report.md)).
 - The delivery-date model's holdout results are rebuilt from the warehouse on every run and must match its locked results ([recommendation/delivery_date_model/check_headlines.py](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/recommendation/delivery_date_model/check_headlines.py)).
 - Every number in the memo is tied to the analysis output, and a script fails if one drifts ([recommendation/memo_check.py](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/recommendation/memo_check.py)).
 - Every number on this page is checked against the warehouse by [case_study/check_case_study.py](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/case_study/check_case_study.py).
+- [How I check AI-written analytics](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/docs/HOW_I_CHECK_AI_WORK.md) puts these checks on one page, with an example of one that caught a problem.
 - GitHub Actions rebuilds the project and reruns all checks on every change. One command, `make`, reproduces everything ([docs/REPRODUCE.md](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/docs/REPRODUCE.md)).
 
 ## Stress tests
 
-The rules for these stress tests were committed in [docs/preregistration_v2.md](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/docs/preregistration_v2.md) before any of them ran. The planted-effect test and the delivery-range calibration missed their rules, and both are reported as fails.
+The rules for these stress tests were committed in [docs/preregistration_v2.md](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/docs/preregistration_v2.md) before any test results were committed. The planted-effect test and the delivery-range calibration missed their rules, and both are reported as fails.
 
 | Test | Result | Rule | Outcome |
 |---|---|---|---|

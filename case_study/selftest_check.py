@@ -1,4 +1,4 @@
-"""Prove check_case_study.py and erd.py can fail: the real README.md and docs/CASE_STUDY.md pass, and each planted error is caught."""
+"""Prove check_case_study.py and erd.py can fail: the real README.md, docs/CASE_STUDY.md and docs/HOW_I_CHECK_AI_WORK.md pass, and each planted error is caught."""
 import pathlib
 import shutil
 import sys
@@ -11,6 +11,7 @@ from common import connect
 
 README = C.FULL.read_text()          # the full case study; the cases below plant errors in it
 SHORT = C.README.read_text()         # the short README.md
+WRITEUP = C.WRITEUP.read_text()      # docs/HOW_I_CHECK_AI_WORK.md
 CLAIMS = C.build_claims(connect())
 ERD = erd.mermaid()
 SECTION = ontology_view.case_study_section(connect())
@@ -65,6 +66,17 @@ SHORT_CASES = [
     ("README.md: a new number nobody checked", sub("## The short version\n", "## The short version\n\nThe study covers 12,345 sellers.\n", SHORT), True),
 ]
 CARD = C.MODEL_CARD.read_text()
+WRITEUP_CASES = [
+    ("the real docs/HOW_I_CHECK_AI_WORK.md", WRITEUP, False),
+    ("write-up: the mutation count changed (248 to 284)", sub("All 248 rules", "All 284 rules", WRITEUP), True),
+    ("write-up: the planted-answer miss shown as a pass (16 to 18 of 20)", sub("covered it in 16 of 20 draws", "covered it in 18 of 20 draws", WRITEUP), True),
+    ("write-up: the stress-test outcome changed (two missed to one missed)", sub("Two met every pre-registered rule. Two missed one:", "Three met every pre-registered rule. One missed one:", WRITEUP), True),
+    ("write-up: the overall coverage changed (53 to 58 of 60)", sub("in 53 of 60", "in 58 of 60", WRITEUP), True),
+    ("write-up: the pre-registered limit changed (17 to 16 of 20)", sub("at least 17 of 20 draws", "at least 16 of 20 draws", WRITEUP), True),
+    ("write-up: the interval changed (3,025 to 3,195 to 3,000 to 3,200)", sub("quote 3,025 to 3,195", "quote 3,000 to 3,200", WRITEUP), True),
+    ("write-up: a new number nobody checked", sub("## The checks that can fail\n", "## The checks that can fail\n\nThe agents wrote 12,345 lines.\n", WRITEUP), True),
+]
+
 CARD_CASES = [
     ("the real delivery-range model card", CARD, False),
     ("model card: the calibration error changed (14.8 to 4.8)", sub("a calibration error of 14.8 points", "a calibration error of 4.8 points", CARD), True),
@@ -83,6 +95,10 @@ for name, text, want in CASES:
     print(("PASS " if ok else "FAIL ") + name)
 for name, text, want in SHORT_CASES:
     ok = caught(text, which="s") == want
+    bad += not ok
+    print(("PASS " if ok else "FAIL ") + name)
+for name, text, want in WRITEUP_CASES:
+    ok = caught(text, which="w") == want
     bad += not ok
     print(("PASS " if ok else "FAIL ") + name)
 for name, text, want in CARD_CASES:
