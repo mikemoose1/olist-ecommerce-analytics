@@ -332,7 +332,7 @@ def build_claims(con):
     sp = dr["split"]
     add(f"tuned on {n_months[sp['tune_months'][0]]} to {n_months[sp['tune_months'][-1]]}, scored once on {n_months[sp['holdout_months'][0]]} to {n_months[sp['holdout_months'][-1]]}", "report", "d")
     add(f"Holdout CRPS {lgb['crps_days']:.3f} days, against {base['crps_days']:.3f} for the route-history baseline" if d1["pass"] else "D1_MISMATCH", "report", "d")
-    add(f"on the holdout, {100 * lgb['coverage'][worst]:.1f}% of orders arrived by the date labelled {100 * float(worst):.0f}%, a calibration error of {d2_err} points, against a pre-registered limit of {d2_max}", "report", "df")
+    add(f"{100 * lgb['coverage'][worst]:.1f}% of orders arrived by the date labelled {100 * float(worst):.0f}%, a calibration error of {d2_err} points, against a pre-registered limit of {d2_max}", "report", "df")
     add(f"Late delivery is the estimated cause of about {caused_r:,} of the {total_bad:,} one- and two-star reviews on delivered orders ({100 * caused / total_bad:.0f}%)", "warehouse", "s")
     add(f"Reweighting for missing reviews gives {ipw}, and a hidden confounder would need an E-value of {e_half} to halve it", "report", "s")
     add(f"failed its own calibration rule: a calibration error of {d2_err} points, against a limit of {d2_max}", "report", "s")
@@ -370,7 +370,7 @@ def build_claims(con):
     in_ci = sum(cov[k] for k in ("S0_null", "S1_half", "S2_full"))
     add(f"Across the no, half and full effect draws, the preferred method's 95% interval covered the planted number in {in_ci} of {len(planted)} draws ({100 * in_ci / len(planted):.0f}%), so do not quote {round(ci_lo):,} to {round(ci_hi):,} as a 95% range", "report")
     spread = {sc: sum(min(r[k]["extra"] for k in specs) <= r["truth"] <= max(r[k]["extra"] for k in specs) for r in planted if r["scenario"] == sc) for sc in ("S0_null", "S1_half", "S2_full")}
-    add(f"in the same draws the spread of the {words[len(specs)]} estimates covered the planted number in only {spread['S0_null']}, {spread['S1_half']} and {spread['S2_full']} of {c1_seeds}", "report")
+    add(f"in the same draws the spread of the {words[len(specs)]} estimates covered the planted number in only {spread['S0_null']}, {spread['S1_half']} and {spread['S2_full']} of {c1_seeds} (no, half and full effect)", "report")
     guard = float(re.search(r"mean at most ([\d.]+) day", prereg).group(1))
     pts = [v for k, v in dr["decision_points"].items() if k != "olist" and v.get("within_guardrail")]
     best = max(pts, key=lambda v: v["reduction_vs_olist"])
