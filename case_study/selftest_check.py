@@ -53,6 +53,9 @@ SHORT_CASES = [
     ("README.md: the late rate changed (6.87% to 6.78%)", sub("6.87% of delivered orders", "6.78% of delivered orders", SHORT), True),
     ("README.md: the dashboard what-if changed (3.4% to 3.9%)", sub("The what-if rate of 3.4%", "The what-if rate of 3.9%", SHORT), True),
     ("README.md: the warning line changed (8.4% to 8.9%)", sub("the warning line, 8.4%,", "the warning line, 8.9%,", SHORT), True),
+    ("README.md: the E-value changed (5.1 to 5.9)", sub("an E-value of 5.1", "an E-value of 5.9", SHORT), True),
+    ("README.md: the failed planted-effect row shown as passing (16 to 18 of 20)", sub("in 16 of 20 draws", "in 18 of 20 draws", SHORT), True),
+    ("README.md: the calibration error changed in the table (14.8 to 4.8)", sub("| 14.8 points (rule", "| 4.8 points (rule", SHORT), True),
     ("README.md: a new number nobody checked", sub("## The short version\n", "## The short version\n\nThe study covers 12,345 sellers.\n", SHORT), True),
 ]
 ERD_CASES = [

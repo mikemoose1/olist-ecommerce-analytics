@@ -301,6 +301,32 @@ def build_claims(con):
     add(f"In tuning, the model met {n_months[tm[0]]} with no earlier November to learn from" if tm[0].endswith("-11") else "NOV_MISMATCH", "report")
     novembers = one("select count(distinct year_month) from marts.dim_date where in_analysis_window and year_month like '%-11'")[0]
     add("The window holds a single November peak" if novembers == 1 and "2017-11" in flagged else "PEAK_MISMATCH", "warehouse")
+
+    # README top: the stress tests and the delivery-range rule, read from their evidence files; each rule's limit is
+    # read from the pre-registration (or from the rule's own id), so a changed result or a changed rule changes the text
+    ev = lambda name: json.loads((ROOT / "evidence" / f"{name}.json").read_text())
+    rule = lambda rep, prefix: next(r for r in rep["pass_rules"] if r["id"].startswith(prefix))
+    prereg = (ROOT / "docs" / "preregistration_v2.md").read_text()
+    mr, sens, ka, dr = ev("missing_reviews_report"), ev("sensitivity_report"), ev("known_answer_real_report"), ev("delivery_range_report")
+    a1, b1, c1, d2 = rule(mr, "A-1"), rule(sens, "B-1"), rule(ka, "C-1 S1_half"), rule(dr, "D-2")
+    b1_min = re.search(r">= ([\d.]+)", b1["id"]).group(1)
+    c1_min, c1_of = map(int, re.search(r"covers the planted truth in at least (\d+) of (\d+) seeds", prereg).groups())
+    c1_seeds = ka["summary"]["S1_half"]["V2_preferred"]["seeds"]
+    d2_max = int(re.search(r"calibration error at most (\d+) points", d2["id"]).group(1))
+    c1_cov = c1["observed"]["covered"]
+    if c1_seeds != c1_of or not (a1["pass"] and b1["pass"] and not c1["pass"] and c1_cov < c1_min and not d2["pass"] and d2["observed"] > d2_max):
+        raise SystemExit("a stress-test outcome changed; the README top says A-1 and B-1 pass, C-1 and D-2 fail")
+    ipw = f"{a1['observed']['ipw']:,.0f}"
+    e_half = f"{b1['observed']:.1f}"
+    d2_err = f"{d2['observed']:.1f}"
+    add(f"Late delivery is the estimated cause of about {caused_r:,} of the {total_bad:,} one- and two-star reviews on delivered orders ({100 * caused / total_bad:.0f}%)", "warehouse", "s")
+    add(f"Reweighting for missing reviews gives {ipw}, and a hidden confounder would need an E-value of {e_half} to halve it", "report", "s")
+    add(f"failed its own calibration rule: a calibration error of {d2_err} points, against a limit of {d2_max}", "report", "s")
+    add(f"| about {caused_r:,} of {total_bad:,} ({100 * caused / total_bad:.0f}%), range", "warehouse", "s")   # the range itself is the "fs" fragment above
+    add(f"| {ipw} |", "report", "s")
+    add(f"| {e_half} (rule: at least {b1_min}) |", "report", "s")
+    add(f"| the 95% interval covered the planted number in {c1_cov} of {c1_seeds} draws at half effect (rule: at least {c1_min}) |", "report", "s")
+    add(f"| {d2_err} points (rule: at most {d2_max}) |", "report", "s")
     return out
 
 

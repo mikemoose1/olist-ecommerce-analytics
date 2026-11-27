@@ -1,5 +1,21 @@
 # Late deliveries and bad reviews at Olist
 
+- **What late delivery costs.** Late delivery is the estimated cause of about 3,110 of the 11,635 one- and two-star reviews on delivered orders (27%). Reweighting for missing reviews gives 3,109, and a hidden confounder would need an E-value of 5.1 to halve it. A planted-effect test missed its coverage rule, and that is reported as a fail.
+- **What to do about it.** A delivery-range model beat the no-model baseline but failed its own calibration rule: a calibration error of 14.8 points, against a limit of 3. It is not ready to ship, and Olist's printed promise stays.
+- **How the numbers are checked.** Every number on this page is recomputed from the warehouse or the saved evidence files by [case_study/check_case_study.py](case_study/check_case_study.py), the pass rules were written before the stress tests ran, and every data check is proven able to fail on planted bad data.
+
+**[Dashboard](docs/CASE_STUDY.md#dashboard)** · **[Case study](docs/CASE_STUDY.md)** · **[Code](models/)** · **[Reproduce](docs/REPRODUCE.md)**
+
+| Result | Number | Status |
+|---|---|---|
+| Bad reviews caused by late delivery | about 3,110 of 11,635 (27%), range 2,880 to 3,350 | Estimate from past orders, not a randomized test |
+| Same estimate, reweighted for missing reviews (inverse probability weighting) | 3,109 | Pass |
+| How strong a hidden confounder must be to halve it (E-value) | 5.1 (rule: at least 2.0) | Pass |
+| Planted-effect test on the real orders | the 95% interval covered the planted number in 16 of 20 draws at half effect (rule: at least 17) | Fail, reported |
+| Delivery-range model, calibration error | 14.8 points (rule: at most 3) | Fail, not ready to ship |
+
+## Summary
+
 This project builds a tested data pipeline from about 99,000 real orders of Olist, a Brazilian online marketplace, and uses it to estimate what late delivery costs. The analysis found an estimated effect of late delivery on about 3,110 of the 11,635 one- and two-star reviews on 94,931 delivered orders, about 27%, with a range of 2,880 to 3,350. It is an estimate from past orders, not a randomized test, so it is not proven cause. There is too little repeat buying in the data to tell whether late delivery lowers it. The star penalty for a late order was smaller in the last four months of the window: 1.56 stars, against 2.05 earlier. The lead recommendation is a per-order delivery-date model. Scored once on held-out orders from March to August 2018, it would have cut extra late-delivery bad reviews by about 64% (about 811 of 1,275), but only by printing dates 4.5 days longer than Olist's on average, so it failed its pass bar and is not adopted now. Olist's printed promise stays. The model is worth rebuilding, with the length cap built in, once Olist's checkout data, which this dataset does not have, shows whether a longer date is worth it.
 
 [![Dashboard of late deliveries, reviews, sellers, regions and months](docs/img/dashboard.png)](docs/img/dashboard.png)
@@ -10,7 +26,14 @@ This project builds a tested data pipeline from about 99,000 real orders of Olis
 
 **Code.** This repository. The main folders are [models/](models/) (the dbt layers), [tests/](tests/) (data checks), [review_cost_causal/](review_cost_causal/README.md) (the estimate), [recommendation/](recommendation/MEMO.md) (the memo), [dashboard/](dashboard/tableau/README.md) (the Tableau workbook and its data) and [case_study/](case_study/) (the checks behind these pages).
 
-**Read more.** [The full case study](docs/CASE_STUDY.md) has the charts, the data model and the verification record. [docs/REPRODUCE.md](docs/REPRODUCE.md) has setup and the one command that reproduces everything.
+## How this was built
+
+The pass rules for the stress tests were committed in [docs/preregistration_v2.md](docs/preregistration_v2.md) before any of them ran. Each change then went in as a small pull request with its own evidence: a rerun that reproduces the numbers, the full check suite in CI, and a review by a second AI model before merge.
+
+- [Contracts and the dashboard exposure](https://github.com/mikemoose1/olist-ecommerce-analytics/pull/8): enforced dbt contracts on every table the dashboard reads, and [dashboard/SEMANTIC_LAYER.md](dashboard/SEMANTIC_LAYER.md).
+- [Missing reviews](https://github.com/mikemoose1/olist-ecommerce-analytics/pull/10): inverse probability weighting and worst-case bounds ([review_cost_causal/stress/MISSING_REVIEWS.md](review_cost_causal/stress/MISSING_REVIEWS.md)).
+- [Planted answer and hidden confounder](https://github.com/mikemoose1/olist-ecommerce-analytics/pull/9): the known-answer test, the E-value and the Oster bound ([review_cost_causal/stress/SENSITIVITY_AND_KNOWN_ANSWER.md](review_cost_causal/stress/SENSITIVITY_AND_KNOWN_ANSWER.md)).
+- [Delivery range and decision rule](https://github.com/mikemoose1/olist-ecommerce-analytics/pull/11): a predicted range kept apart from the rule that picks the printed date, with a model card ([recommendation/delivery_range/README.md](recommendation/delivery_range/README.md)).
 
 ## The short version
 
