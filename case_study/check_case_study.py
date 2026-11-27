@@ -327,6 +327,29 @@ def build_claims(con):
     add(f"| {e_half} (rule: at least {b1_min}) |", "report", "s")
     add(f"| the 95% interval covered the planted number in {c1_cov} of {c1_seeds} draws at half effect (rule: at least {c1_min}) |", "report", "s")
     add(f"| {d2_err} points (rule: at most {d2_max}) |", "report", "s")
+
+    # docs/CASE_STUDY.md, Stress tests: the same four reports, with every rule limit read from the rule or the pre-registration
+    four = [mr["worst_case_bounds"][k][b] for k in ("all_unreviewed_bad", "all_unreviewed_not_bad")
+            for b in ("extra_on_all_judged_late", "extra_on_6366_reviewed_late")]
+    add(f"| {ipw}, against {mr['v2_unweighted']['extra']:,.0f} unweighted; the {words[len(four)]} all-bad and none-bad scenarios give {min(four):,.0f} to {max(four):,.0f} |", "report")
+    ev_pt = sens["e_value_point"]
+    add(f"| a hidden confounder would need an E-value of {e_half} to halve the estimate and {ev_pt['e_value_explain_away']:.1f} to explain it away | at least {b1_min} to halve | Pass |", "report")
+    b2 = rule(sens, "B-2")
+    b2_rmax, b2_min = re.search(r"Rmax = ([\d.]+) R_c\) >= (\d+)", b2["id"]).groups()
+    osd = sens["oster"]
+    if not (b2["pass"] and abs(osd["rmax_1.3x"]["delta_to_halve"] - b2["observed"]["delta"]) < 1e-9 and b2_rmax == "1.3"):
+        raise SystemExit("Oster rule or result changed")
+    add(f"| the Oster delta to halve it is {osd['rmax_1.3x']['delta_to_halve']:.2f} with Rmax at {b2_rmax} times the controlled R², and {osd['rmax_1']['delta_to_halve']:.2f} with Rmax at 1 | at least {b2_min} | Pass |", "report")
+    cov = {r["id"].split()[1]: r["observed"]["covered"] for r in ka["pass_rules"] if r["id"].startswith("C-1 ")}
+    add(f"| the preferred estimate's 95% interval covered the planted number in {cov['S0_null']}, {cov['S1_half']} and {cov['S2_full']} of {c1_seeds} draws with no, half and full effect | at least {c1_min} of {c1_of} in each | Fail |", "report")
+    lgb, base = dr["holdout"][dr["selected_on_tune"]], dr["holdout"]["route_history"]
+    if abs(lgb["max_gap_0.5_to_0.95_pp"] - d2["observed"]) > 1e-9:
+        raise SystemExit("delivery-range calibration error changed")
+    add(f"| holdout calibration error {d2_err} points; holdout CRPS {lgb['crps_days']:.3f} days, against {base['crps_days']:.3f} for the route-history baseline | at most {d2_max} points | Fail |", "report")
+    guard = float(re.search(r"mean at most ([\d.]+) day", prereg).group(1))
+    pts = [v for k, v in dr["decision_points"].items() if k != "olist" and v.get("within_guardrail")]
+    best = max(pts, key=lambda v: v["reduction_vs_olist"])
+    add(f"Within the {guard:.0f}-day guardrail, the best decision rule is projected to cut {best['reduction_vs_olist']:.0f} extra late-delivery bad reviews against Olist's date (95% bootstrap range {best['reduction_p025']:.0f} to {best['reduction_p975']:.0f}) for {best['mean_days_added_vs_olist']:.1f} more promise days on average", "report")
     return out
 
 

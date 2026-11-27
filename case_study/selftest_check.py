@@ -44,6 +44,9 @@ CASES = [
     ("the check count changed (51 of 51)", sub("pass 51 of 51", "pass 50 of 51"), True),
     ("the holdout figure changed (1.56 to 1.65)", sub("It was 1.56 stars", "It was 1.65 stars"), True),
     ("the late definition counts same-day arrival as late", sub("Late. Delivered on a later calendar day than the promised date. Same-day delivery is on time.", "Late. Arriving on the promised day counts as late."), True),
+    ("the stress-test E-value to explain away changed (8.7 to 9.7)", sub("and 8.7 to explain it away", "and 9.7 to explain it away"), True),
+    ("the failed planted-effect coverage shown as passing (16 to 18)", sub("in 20, 16 and 17 of 20 draws", "in 20, 18 and 17 of 20 draws"), True),
+    ("the projected delivery-range cut changed (502 to 602)", sub("projected to cut 502 extra", "projected to cut 602 extra"), True),
     ("the late-rate population includes multi-seller orders", sub("Single-seller orders only", "All orders, including those with several sellers"), True),
 ]
 
