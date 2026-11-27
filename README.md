@@ -28,6 +28,8 @@ This project builds a tested data pipeline from about 99,000 real orders of Olis
 
 ## How this was built
 
+AI coding agents wrote most of the code and analysis. [How I check AI-written analytics](docs/HOW_I_CHECK_AI_WORK.md) explains how each piece was checked before it merged, with an example of a check that caught a problem.
+
 The pass rules for the stress tests were committed in [docs/preregistration_v2.md](docs/preregistration_v2.md) before any of them ran. Each change then went in as a small pull request with its own evidence: the scripts that produce its numbers were rerun to reproduce them, and the full check suite ran in CI before merge.
 
 - [Contracts and the dashboard exposure](https://github.com/mikemoose1/olist-ecommerce-analytics/pull/8): enforced dbt contracts on every table the dashboard reads, and [dashboard/SEMANTIC_LAYER.md](dashboard/SEMANTIC_LAYER.md).

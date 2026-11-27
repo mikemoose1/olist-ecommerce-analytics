@@ -217,6 +217,7 @@ The analysis also replayed history with a per-route delivery date, updated as or
 - The delivery-date model's holdout results are rebuilt from the warehouse on every run and must match its locked results ([recommendation/delivery_date_model/check_headlines.py](../recommendation/delivery_date_model/check_headlines.py)).
 - Every number in the memo is tied to the analysis output, and a script fails if one drifts ([recommendation/memo_check.py](../recommendation/memo_check.py)).
 - Every number on this page is checked against the warehouse by [case_study/check_case_study.py](../case_study/check_case_study.py).
+- [How I check AI-written analytics](HOW_I_CHECK_AI_WORK.md) puts these checks on one page, with an example of one that caught a problem.
 - GitHub Actions rebuilds the project and reruns all checks on every change. One command, `make`, reproduces everything ([docs/REPRODUCE.md](REPRODUCE.md)).
 
 ## Stress tests

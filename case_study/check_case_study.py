@@ -1,9 +1,9 @@
-"""Check every number in README.md (the short summary), docs/CASE_STUDY.md (the full case study) and the Model card
-section of recommendation/delivery_range/README.md against the data.
+"""Check every number in README.md (the short summary), docs/CASE_STUDY.md (the full case study), docs/HOW_I_CHECK_AI_WORK.md
+and the Model card section of recommendation/delivery_range/README.md against the data.
 
 Each CLAIM is a sentence fragment as the page prints it, rebuilt here from a query on the warehouse (source "warehouse"),
 from the analysis report (source "report", numbers that the recommendation analysis produces and `make verify` already
-reconciles) or from another repo file (source "repo"). A claim names the pages it must appear in ("f" full, "s" short).
+reconciles) or from another repo file (source "repo"). A claim names the pages it must appear in ("f" full, "s" short, "d" model card, "w" the checks write-up).
 The check fails when
   - a fragment is missing from a page it belongs to, or differs from what the data gives,
   - any number or number word left in a page's prose is not inside a checked fragment,
@@ -21,6 +21,7 @@ import ontology_view
 
 README = ROOT / "README.md"                      # the short summary
 MODEL_CARD = ROOT / "recommendation" / "delivery_range" / "README.md"   # only its Model card section is checked (page "d")
+WRITEUP = ROOT / "docs" / "HOW_I_CHECK_AI_WORK.md"   # how the AI-written work is checked (page "w")
 FULL = ROOT / "docs" / "CASE_STUDY.md"           # the full case study; docs/index.md (Pages) is built from it
 DEFINITION_PHRASES = ["one- and two-star", "one or two stars", "one- or two-star", "Test 1", "test 1"]  # review_score <= 2 and the Test 1 label
 
@@ -32,7 +33,7 @@ def pct(x, d=1):
 def build_claims(con):
     F = facts()
     one = lambda q: row(con, q)
-    out = []   # (fragment, source, pages): pages is "f" (full case study), "s" (short README) or "fs" (both)
+    out = []   # (fragment, source, pages): pages holds "f" (full case study), "s" (short README), "d" (model card), "w" (checks write-up)
 
     def add(fragment, source, pages="f"):
         out.append((fragment, source, pages))
@@ -375,6 +376,18 @@ def build_claims(con):
     pts = [v for k, v in dr["decision_points"].items() if k != "olist" and v.get("within_guardrail")]
     best = max(pts, key=lambda v: v["reduction_vs_olist"])
     add(f"Within the {guard:.0f}-day guardrail, the best decision rule is projected to cut {best['reduction_vs_olist']:.0f} extra late-delivery bad reviews against Olist's date (95% bootstrap range {best['reduction_p025']:.0f} to {best['reduction_p975']:.0f}) for {best['mean_days_added_vs_olist']:.1f} more promise days on average", "report")
+
+    # docs/HOW_I_CHECK_AI_WORK.md (page "w"): the stress-test count and outcomes, the mutation count and the planted-answer miss
+    outcomes = [a1["pass"], b1["pass"], c1["pass"], d2["pass"]]
+    add(f"The pass rules for the {words[len(outcomes)]} stress tests", "repo", "w")
+    add(f"reports all {words[len(outcomes)]} tests", "repo", "w")
+    add("Two passed and two failed" if sum(outcomes) == 2 else "PASSFAIL_MISMATCH", "report", "w")
+    add(f"All {proven} rules in the check suite pass this test" if proven == len(mut) else "MUTATION_MISMATCH", "repo", "w")
+    add(f"95% interval must cover the planted number in at least {c1_min} of {c1_of} draws", "repo", "w")
+    add(f"With the effect at half size, the interval covered it in {cov['S1_half']} of {c1_seeds} draws", "report", "w")
+    add(f"Without a rule fixed in advance, {cov['S1_half']} of {c1_seeds} is easy", "report", "w")
+    add(f"Across the draws with no, half and full effect it covered the planted number in {in_ci} of {len(planted)}", "report", "w")
+    add(f"no longer calls {round(ci_lo):,} to {round(ci_hi):,} a 95% range", "report", "w")
     return out
 
 
@@ -433,6 +446,7 @@ def main():
     full_text = FULL.read_text()
     found = [f"[README.md] {p}" for p in problems(README.read_text(), claims, "s")]
     found += [f"[recommendation/delivery_range/README.md] {p}" for p in problems(model_card(), claims, "d")]
+    found += [f"[docs/HOW_I_CHECK_AI_WORK.md] {p}" for p in problems(WRITEUP.read_text(), claims, "w")]
     found += [f"[docs/CASE_STUDY.md] {p}" for p in problems(full_text, claims, "f", erd.mermaid(), ontology_view.case_study_section(con))]
     found += pages_problems(current, build_pages.render(full_text, build_pages.embedded_url(current)))
     for p in found:
@@ -441,7 +455,7 @@ def main():
     for d in erd_bad:
         print("FAIL  ERD:", d)
     n = len(claims)
-    print(f"{'FAIL' if found or erd_bad else 'PASS'}  case study: {n} fragments checked against the data on README.md, docs/CASE_STUDY.md and the delivery-range model card, {len(found)} problems, {len(erd_bad)} ERD check failures")
+    print(f"{'FAIL' if found or erd_bad else 'PASS'}  case study: {n} fragments checked against the data on README.md, docs/CASE_STUDY.md, docs/HOW_I_CHECK_AI_WORK.md and the delivery-range model card, {len(found)} problems, {len(erd_bad)} ERD check failures")
     sys.exit(1 if found or erd_bad else 0)
 
 
