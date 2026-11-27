@@ -46,6 +46,9 @@ CASES = [
     ("the late definition counts same-day arrival as late", sub("Late. Delivered on a later calendar day than the promised date. Same-day delivery is on time.", "Late. Arriving on the promised day counts as late."), True),
     ("the stress-test E-value to explain away changed (8.7 to 9.7)", sub("and 8.7 to explain it away", "and 9.7 to explain it away"), True),
     ("the failed planted-effect coverage shown as passing (16 to 18)", sub("in 20, 16 and 17 of 20 draws", "in 20, 18 and 17 of 20 draws"), True),
+    ("the interval coverage changed (53 to 58 of 60)", sub("in 53 of 60 draws", "in 58 of 60 draws"), True),
+    ("the six-specification spread coverage changed (10 to 18)", sub("only 16, 10 and 12 of 20", "only 16, 18 and 12 of 20"), True),
+    ("the holdout calibration direction changed (64.8% to 35.2%)", sub("64.8% of orders arrived by the date labelled 50%", "35.2% of orders arrived by the date labelled 50%"), True),
     ("the projected delivery-range cut changed (502 to 602)", sub("projected to cut 502 extra", "projected to cut 602 extra"), True),
     ("the late-rate population includes multi-seller orders", sub("Single-seller orders only", "All orders, including those with several sellers"), True),
 ]
