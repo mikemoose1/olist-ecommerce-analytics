@@ -1,4 +1,5 @@
-"""Check every number in README.md (the short summary) and docs/CASE_STUDY.md (the full case study) against the data.
+"""Check every number in README.md (the short summary), docs/CASE_STUDY.md (the full case study) and the Model card
+section of recommendation/delivery_range/README.md against the data.
 
 Each CLAIM is a sentence fragment as the page prints it, rebuilt here from a query on the warehouse (source "warehouse"),
 from the analysis report (source "report", numbers that the recommendation analysis produces and `make verify` already
@@ -19,6 +20,7 @@ import erd
 import ontology_view
 
 README = ROOT / "README.md"                      # the short summary
+MODEL_CARD = ROOT / "recommendation" / "delivery_range" / "README.md"   # only its Model card section is checked (page "d")
 FULL = ROOT / "docs" / "CASE_STUDY.md"           # the full case study; docs/index.md (Pages) is built from it
 DEFINITION_PHRASES = ["one- and two-star", "one or two stars", "one- or two-star", "Test 1", "test 1"]  # review_score <= 2 and the Test 1 label
 
@@ -319,10 +321,22 @@ def build_claims(con):
     ipw = f"{a1['observed']['ipw']:,.0f}"
     e_half = f"{b1['observed']:.1f}"
     d2_err = f"{d2['observed']:.1f}"
+    # recommendation/delivery_range/README.md, Model card (page "d"): read from the same delivery-range report
+    lgb, base = dr["holdout"][dr["selected_on_tune"]], dr["holdout"]["route_history"]
+    gaps = {lv: abs(100 * c - 100 * float(lv)) for lv, c in lgb["coverage"].items() if 0.5 <= float(lv) <= 0.95}
+    worst = max(gaps, key=gaps.get)
+    if abs(gaps[worst] - d2["observed"]) > 1e-9 or abs(lgb["max_gap_0.5_to_0.95_pp"] - d2["observed"]) > 1e-9:
+        raise SystemExit("delivery-range calibration error changed")
+    d1 = rule(dr, "D-1")
+    sp = dr["split"]
+    add(f"tuned on {n_months[sp['tune_months'][0]]} to {n_months[sp['tune_months'][-1]]}, scored once on {n_months[sp['holdout_months'][0]]} to {n_months[sp['holdout_months'][-1]]}", "report", "d")
+    add(f"Holdout CRPS {lgb['crps_days']:.3f} days, against {base['crps_days']:.3f} for the route-history baseline" if d1["pass"] else "D1_MISMATCH", "report", "d")
+    add(f"on the holdout, {100 * lgb['coverage'][worst]:.1f}% of orders arrived by the date labelled {100 * float(worst):.0f}%, a calibration error of {d2_err} points, against a pre-registered limit of {d2_max}", "report", "d")
     add(f"Late delivery is the estimated cause of about {caused_r:,} of the {total_bad:,} one- and two-star reviews on delivered orders ({100 * caused / total_bad:.0f}%)", "warehouse", "s")
     add(f"Reweighting for missing reviews gives {ipw}, and a hidden confounder would need an E-value of {e_half} to halve it", "report", "s")
     add(f"failed its own calibration rule: a calibration error of {d2_err} points, against a limit of {d2_max}", "report", "s")
-    add(f"| about {caused_r:,} of {total_bad:,} ({100 * caused / total_bad:.0f}%), range", "warehouse", "s")   # the range itself is the "fs" fragment above
+    add(f"| about {caused_r:,} of {total_bad:,} ({100 * caused / total_bad:.0f}%); range across {words[6]} specifications", "warehouse", "s")   # the range itself is the "fs" fragment above
+    add(", not a confidence interval |", "repo", "s")
     add(f"| {ipw} |", "report", "s")
     add(f"| {e_half} (rule: at least {b1_min}) |", "report", "s")
     add(f"| the 95% interval covered the planted number in {c1_cov} of {c1_seeds} draws at half effect (rule: at least {c1_min}) |", "report", "s")
@@ -366,6 +380,12 @@ def problems(page_text, claims, which, erd_text=None, ontology_section=None):
     return out
 
 
+def model_card(text=None):
+    """The Model card section of recommendation/delivery_range/README.md, the part of that page this check covers."""
+    text = MODEL_CARD.read_text() if text is None else text
+    return re.search(r"(?ms)^## Model card\n.*?(?=^## )", text).group(0)
+
+
 def pages_problems(index_text, pages_text):
     return [] if index_text == pages_text else ["docs/index.md is stale: run python case_study/build_pages.py"]
 
@@ -378,6 +398,7 @@ def main():
     current = index.read_text() if index.exists() else ""
     full_text = FULL.read_text()
     found = [f"[README.md] {p}" for p in problems(README.read_text(), claims, "s")]
+    found += [f"[recommendation/delivery_range/README.md] {p}" for p in problems(model_card(), claims, "d")]
     found += [f"[docs/CASE_STUDY.md] {p}" for p in problems(full_text, claims, "f", erd.mermaid(), ontology_view.case_study_section(con))]
     found += pages_problems(current, build_pages.render(full_text, build_pages.embedded_url(current)))
     for p in found:
@@ -386,7 +407,7 @@ def main():
     for d in erd_bad:
         print("FAIL  ERD:", d)
     n = len(claims)
-    print(f"{'FAIL' if found or erd_bad else 'PASS'}  case study: {n} fragments checked against the data on README.md and docs/CASE_STUDY.md, {len(found)} problems, {len(erd_bad)} ERD check failures")
+    print(f"{'FAIL' if found or erd_bad else 'PASS'}  case study: {n} fragments checked against the data on README.md, docs/CASE_STUDY.md and the delivery-range model card, {len(found)} problems, {len(erd_bad)} ERD check failures")
     sys.exit(1 if found or erd_bad else 0)
 
 

@@ -30,13 +30,13 @@ differed.
 
 | | |
 |---|---|
-| **What it is** | LightGBM quantile models: for each order, a range of likely delivery times (quantiles from 5% to 99%), from checkout-time features only. |
+| **What it is** | LightGBM quantile models: for each order, a range of likely delivery times, from checkout-time features only. |
 | **Intended use** | Input to the decision layer, which turns the range into a printed date. A comparison between date rules, not a launched promise. |
-| **Not for** | Printing "the 90% date" as a 90% promise. The stated levels are not calibrated (see D-2). |
-| **Trained and scored on** | Walk-forward from January 2017, tuned on November 2017 to February 2018, scored on March to August 2018. The holdout is locked, not fresh. |
-| **How well it predicts** | Holdout CRPS 3.601 days, against 3.784 for the route-history baseline (D-1: pass). |
-| **Known failure** | D-2 failed: holdout calibration error 14.8 points, against a pre-registered limit of 3. Recalibration on recent deliveries, tested on months it was not built on, comes before any launch. |
-| **Decision results** | Projected from actual delivery days and the V2 effects, not observed reviews under a new date. |
+| **Not for** | Treating a date labelled with a level as a promise that that share of orders arrives by it. The levels are not calibrated (see `D-2`). |
+| **Trained and scored on** | Walk-forward training on earlier orders, tuned on November 2017 to February 2018, scored once on March 2018 to August 2018. The holdout is locked, not fresh. |
+| **How well it predicts** | Holdout CRPS 3.601 days, against 3.784 for the route-history baseline (`D-1`: pass). |
+| **Known failure** | `D-2` failed: on the holdout, 64.8% of orders arrived by the date labelled 50%, a calibration error of 14.8 points, against a pre-registered limit of 3. Recalibration on recent deliveries, tested on months it was not built on, comes before any launch. |
+| **Decision results** | Projected from actual delivery days and the `V2` effects, not observed reviews under a new date. |
 
 ## Set-up
 
