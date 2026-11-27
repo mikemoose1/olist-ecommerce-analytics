@@ -26,6 +26,18 @@ The committed results come from pandas 3.1.1, numpy 2.5.5, scikit-learn 1.9.1, L
 clean rerun with those versions and no cached predictions gave the same numbers and the same plot. Only the run times
 differed.
 
+## Model card
+
+| | |
+|---|---|
+| **What it is** | LightGBM quantile models: for each order, a range of likely delivery times, from checkout-time features only. |
+| **Intended use** | Input to the decision layer, which turns the range into a printed date. A comparison between date rules, not a launched promise. |
+| **Not for** | Treating the date labelled with a level as a promise that this share of orders arrives by it. The levels are not calibrated (see `D-2`). |
+| **Trained and scored on** | Walk-forward training on earlier orders, tuned on November 2017 to February 2018, scored once on March 2018 to August 2018. The holdout is locked, not fresh. |
+| **How well it predicts** | Holdout CRPS 3.601 days, against 3.784 for the route-history baseline (`D-1`: pass). |
+| **Known failure** | `D-2` failed: on the holdout, 64.8% of orders arrived by the date labelled 50%, a calibration error of 14.8 points, against a pre-registered limit of 3. Recalibration on recent deliveries, tested on months it was not built on, comes before any launch. |
+| **Decision results** | Projected from actual delivery days and the `V2` effects, not observed reviews under a new date. |
+
 ## Set-up
 
 - **Same split as the earlier model.** Walk-forward from January 2017 (each month retrained on orders delivered before

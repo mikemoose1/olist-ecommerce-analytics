@@ -1,4 +1,5 @@
-"""Check every number in README.md (the short summary) and docs/CASE_STUDY.md (the full case study) against the data.
+"""Check every number in README.md (the short summary), docs/CASE_STUDY.md (the full case study) and the Model card
+section of recommendation/delivery_range/README.md against the data.
 
 Each CLAIM is a sentence fragment as the page prints it, rebuilt here from a query on the warehouse (source "warehouse"),
 from the analysis report (source "report", numbers that the recommendation analysis produces and `make verify` already
@@ -19,6 +20,7 @@ import erd
 import ontology_view
 
 README = ROOT / "README.md"                      # the short summary
+MODEL_CARD = ROOT / "recommendation" / "delivery_range" / "README.md"   # only its Model card section is checked (page "d")
 FULL = ROOT / "docs" / "CASE_STUDY.md"           # the full case study; docs/index.md (Pages) is built from it
 DEFINITION_PHRASES = ["one- and two-star", "one or two stars", "one- or two-star", "Test 1", "test 1"]  # review_score <= 2 and the Test 1 label
 
@@ -158,6 +160,7 @@ def build_claims(con):
     add("the nine source tables" if manifest_n == 9 else "NINE_MISMATCH", "repo")
     add(f"pass {erd_ok} of {len(erd_res)} checks against the raw files, including that every column marked FK has a unique parent and no orphans", "warehouse")
     add(f"All {proven} rules in the check suite", "repo" if proven == len(mut) else "MUTATION_MISMATCH")
+    add(f"all {proven} rules in the check suite are proven able to fail on planted bad data" if proven == len(mut) else "MUTATION_MISMATCH", "repo", "s")
     # the six named methods in the case study must match the specifications in the causal report
     SPEC_PHRASES = (
         ("V2_preferred", "just-on-time baseline"),
@@ -301,6 +304,44 @@ def build_claims(con):
     add(f"In tuning, the model met {n_months[tm[0]]} with no earlier November to learn from" if tm[0].endswith("-11") else "NOV_MISMATCH", "report")
     novembers = one("select count(distinct year_month) from marts.dim_date where in_analysis_window and year_month like '%-11'")[0]
     add("The window holds a single November peak" if novembers == 1 and "2017-11" in flagged else "PEAK_MISMATCH", "warehouse")
+
+    # README top: the stress tests and the delivery-range rule, read from their evidence files; each rule's limit is
+    # read from the pre-registration (or from the rule's own id), so a changed result or a changed rule changes the text
+    ev = lambda name: json.loads((ROOT / "evidence" / f"{name}.json").read_text())
+    rule = lambda rep, prefix: next(r for r in rep["pass_rules"] if r["id"].startswith(prefix))
+    prereg = (ROOT / "docs" / "preregistration_v2.md").read_text()
+    mr, sens, ka, dr = ev("missing_reviews_report"), ev("sensitivity_report"), ev("known_answer_real_report"), ev("delivery_range_report")
+    a1, b1, c1, d2 = rule(mr, "A-1"), rule(sens, "B-1"), rule(ka, "C-1 S1_half"), rule(dr, "D-2")
+    b1_min = re.search(r">= ([\d.]+)", b1["id"]).group(1)
+    c1_min, c1_of = map(int, re.search(r"covers the planted truth in at least (\d+) of (\d+) seeds", prereg).groups())
+    c1_seeds = ka["summary"]["S1_half"]["V2_preferred"]["seeds"]
+    d2_max = int(re.search(r"calibration error at most (\d+) points", d2["id"]).group(1))
+    c1_cov = c1["observed"]["covered"]
+    if c1_seeds != c1_of or not (a1["pass"] and b1["pass"] and not c1["pass"] and c1_cov < c1_min and not d2["pass"] and d2["observed"] > d2_max):
+        raise SystemExit("a stress-test outcome changed; the README top says A-1 and B-1 pass, C-1 and D-2 fail")
+    ipw = f"{a1['observed']['ipw']:,.0f}"
+    e_half = f"{b1['observed']:.1f}"
+    d2_err = f"{d2['observed']:.1f}"
+    # recommendation/delivery_range/README.md, Model card (page "d"): read from the same delivery-range report
+    lgb, base = dr["holdout"][dr["selected_on_tune"]], dr["holdout"]["route_history"]
+    gaps = {lv: abs(100 * c - 100 * float(lv)) for lv, c in lgb["coverage"].items() if 0.5 <= float(lv) <= 0.95}
+    worst = max(gaps, key=gaps.get)
+    if abs(gaps[worst] - d2["observed"]) > 1e-9 or abs(lgb["max_gap_0.5_to_0.95_pp"] - d2["observed"]) > 1e-9:
+        raise SystemExit("delivery-range calibration error changed")
+    d1 = rule(dr, "D-1")
+    sp = dr["split"]
+    add(f"tuned on {n_months[sp['tune_months'][0]]} to {n_months[sp['tune_months'][-1]]}, scored once on {n_months[sp['holdout_months'][0]]} to {n_months[sp['holdout_months'][-1]]}", "report", "d")
+    add(f"Holdout CRPS {lgb['crps_days']:.3f} days, against {base['crps_days']:.3f} for the route-history baseline" if d1["pass"] else "D1_MISMATCH", "report", "d")
+    add(f"on the holdout, {100 * lgb['coverage'][worst]:.1f}% of orders arrived by the date labelled {100 * float(worst):.0f}%, a calibration error of {d2_err} points, against a pre-registered limit of {d2_max}", "report", "d")
+    add(f"Late delivery is the estimated cause of about {caused_r:,} of the {total_bad:,} one- and two-star reviews on delivered orders ({100 * caused / total_bad:.0f}%)", "warehouse", "s")
+    add(f"Reweighting for missing reviews gives {ipw}, and a hidden confounder would need an E-value of {e_half} to halve it", "report", "s")
+    add(f"failed its own calibration rule: a calibration error of {d2_err} points, against a limit of {d2_max}", "report", "s")
+    add(f"| about {caused_r:,} of {total_bad:,} ({100 * caused / total_bad:.0f}%); range across {words[6]} specifications", "warehouse", "s")   # the range itself is the "fs" fragment above
+    add(", not a confidence interval |", "repo", "s")
+    add(f"| {ipw} |", "report", "s")
+    add(f"| {e_half} (rule: at least {b1_min}) |", "report", "s")
+    add(f"| the 95% interval covered the planted number in {c1_cov} of {c1_seeds} draws at half effect (rule: at least {c1_min}) |", "report", "s")
+    add(f"| {d2_err} points (rule: at most {d2_max}) |", "report", "s")
     return out
 
 
@@ -340,6 +381,12 @@ def problems(page_text, claims, which, erd_text=None, ontology_section=None):
     return out
 
 
+def model_card(text=None):
+    """The Model card section of recommendation/delivery_range/README.md, the part of that page this check covers."""
+    text = MODEL_CARD.read_text() if text is None else text
+    return re.search(r"(?ms)^## Model card\n.*?(?=^## )", text).group(0)
+
+
 def pages_problems(index_text, pages_text):
     return [] if index_text == pages_text else ["docs/index.md is stale: run python case_study/build_pages.py"]
 
@@ -352,6 +399,7 @@ def main():
     current = index.read_text() if index.exists() else ""
     full_text = FULL.read_text()
     found = [f"[README.md] {p}" for p in problems(README.read_text(), claims, "s")]
+    found += [f"[recommendation/delivery_range/README.md] {p}" for p in problems(model_card(), claims, "d")]
     found += [f"[docs/CASE_STUDY.md] {p}" for p in problems(full_text, claims, "f", erd.mermaid(), ontology_view.case_study_section(con))]
     found += pages_problems(current, build_pages.render(full_text, build_pages.embedded_url(current)))
     for p in found:
@@ -360,7 +408,7 @@ def main():
     for d in erd_bad:
         print("FAIL  ERD:", d)
     n = len(claims)
-    print(f"{'FAIL' if found or erd_bad else 'PASS'}  case study: {n} fragments checked against the data on README.md and docs/CASE_STUDY.md, {len(found)} problems, {len(erd_bad)} ERD check failures")
+    print(f"{'FAIL' if found or erd_bad else 'PASS'}  case study: {n} fragments checked against the data on README.md, docs/CASE_STUDY.md and the delivery-range model card, {len(found)} problems, {len(erd_bad)} ERD check failures")
     sys.exit(1 if found or erd_bad else 0)
 
 

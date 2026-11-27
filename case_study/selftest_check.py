@@ -53,7 +53,17 @@ SHORT_CASES = [
     ("README.md: the late rate changed (6.87% to 6.78%)", sub("6.87% of delivered orders", "6.78% of delivered orders", SHORT), True),
     ("README.md: the dashboard what-if changed (3.4% to 3.9%)", sub("The what-if rate of 3.4%", "The what-if rate of 3.9%", SHORT), True),
     ("README.md: the warning line changed (8.4% to 8.9%)", sub("the warning line, 8.4%,", "the warning line, 8.9%,", SHORT), True),
+    ("README.md: the E-value changed (5.1 to 5.9)", sub("an E-value of 5.1", "an E-value of 5.9", SHORT), True),
+    ("README.md: the failed planted-effect row shown as passing (16 to 18 of 20)", sub("in 16 of 20 draws", "in 18 of 20 draws", SHORT), True),
+    ("README.md: the calibration error changed in the table (14.8 to 4.8)", sub("| 14.8 points (rule", "| 4.8 points (rule", SHORT), True),
     ("README.md: a new number nobody checked", sub("## The short version\n", "## The short version\n\nThe study covers 12,345 sellers.\n", SHORT), True),
+]
+CARD = C.MODEL_CARD.read_text()
+CARD_CASES = [
+    ("the real delivery-range model card", CARD, False),
+    ("model card: the calibration error changed (14.8 to 4.8)", sub("a calibration error of 14.8 points", "a calibration error of 4.8 points", CARD), True),
+    ("model card: the holdout CRPS changed (3.601 to 3.501)", sub("Holdout CRPS 3.601 days", "Holdout CRPS 3.501 days", CARD), True),
+    ("model card: a new number nobody checked", sub("## Model card\n", "## Model card\n\nIt was trained on 12,345 orders.\n", CARD), True),
 ]
 ERD_CASES = [
     ("the ERD drawn with a wrong cardinality", README, ERD.replace("customers ||--|| orders", "customers ||--o{ orders")),
@@ -67,6 +77,10 @@ for name, text, want in CASES:
     print(("PASS " if ok else "FAIL ") + name)
 for name, text, want in SHORT_CASES:
     ok = caught(text, which="s") == want
+    bad += not ok
+    print(("PASS " if ok else "FAIL ") + name)
+for name, text, want in CARD_CASES:
+    ok = bool(C.problems(C.model_card(text), CLAIMS, "d")) == want
     bad += not ok
     print(("PASS " if ok else "FAIL ") + name)
 for name, text, erd_text in ERD_CASES:
@@ -131,6 +145,6 @@ erd.RELATIONS[:] = copy.deepcopy(REL_BAK)
 bad += not ok
 print(("PASS " if ok else "FAIL ") + "ERD data check catches a wrong orders-to-items cardinality")
 
-total = len(CASES) + len(SHORT_CASES) + len(ERD_CASES) + len(DATA_CASES) + len(MARK_CASES) + 1
+total = len(CASES) + len(SHORT_CASES) + len(CARD_CASES) + len(ERD_CASES) + len(DATA_CASES) + len(MARK_CASES) + 1
 print(f"{'FAIL' if bad else 'PASS'}  case study selftest: {total - bad}/{total} cases behave")
 sys.exit(1 if bad else 0)
