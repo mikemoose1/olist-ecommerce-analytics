@@ -12,11 +12,11 @@ AI coding agents wrote most of the code and analysis in this project. I set the 
 
 **An independent recount.** [verification/verify_headlines.py](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/verification/verify_headlines.py) recomputes the repeat-purchase rates, the late rate, the average review score and the raw review gap between late and on-time orders straight from the raw CSV files, without the dbt models, and the results must agree ([evidence/verification_report.md](https://github.com/mikemoose1/olist-ecommerce-analytics/blob/main/evidence/verification_report.md)). It does not recount the 3,110 estimate.
 
-**Stress tests on the main estimate.** The [Stress tests](CASE_STUDY.md#stress-tests) section of the case study reports all four tests. Two met every rule. Two missed one rule each.
+**Stress tests on the main estimate.** The [Stress tests](CASE_STUDY.md#stress-tests) section of the case study reports all four tests. Two met every pre-registered rule. Two missed one: the planted-answer test at half effect and the delivery-range calibration.
 
 ## Review by a different AI family
 
-I ask a model from a different family than the one that wrote a change to review it, and I fix its findings before the change merges. The reviews and the model names are not stored here, so this is my practice, not evidence in the repo. It is not one of the checks above, because a review cannot be shown to catch a planted mistake.
+I ask a model from a different family than the one that wrote a change to review it, and I fix its findings before the change merges. The reviews and the model names are not stored here, so this is my practice, not evidence in the repo. It is not one of the checks above, because a review has not been shown to catch a planted mistake.
 
 ## One check that caught something
 

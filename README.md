@@ -2,7 +2,7 @@
 
 - **What late delivery costs.** Late delivery is the estimated cause of about 3,110 of the 11,635 one- and two-star reviews on delivered orders (27%). Reweighting for missing reviews gives 3,109, and a hidden confounder would need an E-value of 5.1 to halve it. A planted-effect test missed its coverage rule, and that is reported as a fail.
 - **What to do about it.** A delivery-range model beat the no-model baseline but failed its own calibration rule: a calibration error of 14.8 points, against a limit of 3. It is not ready to ship, and Olist's printed promise stays.
-- **How the numbers are checked.** Every number on this page is recomputed from the warehouse or the saved evidence files by [case_study/check_case_study.py](case_study/check_case_study.py), the pass rules were written before the stress tests ran, and all 248 rules in the check suite are proven able to fail on planted bad data ([evidence/mutation_report.md](evidence/mutation_report.md)).
+- **How the numbers are checked.** Every number on this page is recomputed from the warehouse or the saved evidence files by [case_study/check_case_study.py](case_study/check_case_study.py), the pass rules were written before the stress tests ran, and all 248 rules in the mutation report are proven able to fail on planted bad data ([evidence/mutation_report.md](evidence/mutation_report.md)).
 
 **[Dashboard](docs/CASE_STUDY.md#dashboard)** · **[Case study](docs/CASE_STUDY.md)** · **[Code](models/)** · **[Reproduce](docs/REPRODUCE.md)**
 
@@ -28,9 +28,9 @@ This project builds a tested data pipeline from about 99,000 real orders of Olis
 
 ## How this was built
 
-AI coding agents wrote most of the code and analysis. [How I check AI-written analytics](docs/HOW_I_CHECK_AI_WORK.md) explains how each piece was checked before it merged, with an example of a check that caught a problem.
+AI coding agents wrote most of the code and analysis. [How I check AI-written analytics](docs/HOW_I_CHECK_AI_WORK.md) explains how the work is checked, with an example of a check that caught a problem.
 
-The pass rules for the stress tests were committed in [docs/preregistration_v2.md](docs/preregistration_v2.md) before any of them ran. Each change then went in as a small pull request with its own evidence: the scripts that produce its numbers were rerun to reproduce them, and the full check suite ran in CI before merge.
+The pass rules for the stress tests were committed in [docs/preregistration_v2.md](docs/preregistration_v2.md) before any test results were committed. Each change then went in as a small pull request with its own evidence: the scripts that produce its numbers were rerun to reproduce them, and the full check suite ran in CI before merge.
 
 - [Contracts and the dashboard exposure](https://github.com/mikemoose1/olist-ecommerce-analytics/pull/8): enforced dbt contracts on every table the dashboard reads, and [dashboard/SEMANTIC_LAYER.md](dashboard/SEMANTIC_LAYER.md).
 - [Missing reviews](https://github.com/mikemoose1/olist-ecommerce-analytics/pull/10): inverse probability weighting and worst-case bounds ([review_cost_causal/stress/MISSING_REVIEWS.md](review_cost_causal/stress/MISSING_REVIEWS.md)).

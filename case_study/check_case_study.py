@@ -160,8 +160,8 @@ def build_claims(con):
     add("Three problems in the tables" if len([l for l in after.splitlines() if l.startswith("- ")]) == 3 else "THREE_MISMATCH", "repo")
     add("the nine source tables" if manifest_n == 9 else "NINE_MISMATCH", "repo")
     add(f"pass {erd_ok} of {len(erd_res)} checks against the raw files, including that every column marked FK has a unique parent and no orphans", "warehouse")
-    add(f"All {proven} rules in the check suite", "repo" if proven == len(mut) else "MUTATION_MISMATCH")
-    add(f"all {proven} rules in the check suite are proven able to fail on planted bad data" if proven == len(mut) else "MUTATION_MISMATCH", "repo", "s")
+    add(f"All {proven} rules in the mutation report", "repo" if proven == len(mut) else "MUTATION_MISMATCH")
+    add(f"all {proven} rules in the mutation report are proven able to fail on planted bad data" if proven == len(mut) else "MUTATION_MISMATCH", "repo", "s")
     # the six named methods in the case study must match the specifications in the causal report
     SPEC_PHRASES = (
         ("V2_preferred", "just-on-time baseline"),
@@ -382,7 +382,8 @@ def build_claims(con):
     add(f"The pass rules for the {words[len(outcomes)]} statistical stress tests", "repo", "w")
     add(f"reports all {words[len(outcomes)]} tests", "repo", "w")
     missed = [sum(not r["pass"] for r in report["pass_rules"]) for report in (mr, sens, ka, dr)]
-    add("Two met every rule. Two missed one rule each." if sorted(missed) == [0, 0, 1, 1] else "PASSFAIL_MISMATCH", "report", "w")
+    add("Two met every pre-registered rule. Two missed one: the planted-answer test at half effect and the delivery-range calibration."
+        if sorted(missed) == [0, 0, 1, 1] and not c1["pass"] and not d2["pass"] else "PASSFAIL_MISMATCH", "report", "w")
     add(f"All {proven} rules in the mutation report pass this test" if proven == len(mut) else "MUTATION_MISMATCH", "repo", "w")
     add(f"It does not recount the {caused_r:,} estimate", "warehouse", "w")
     add(f"95% interval must cover the planted number in at least {c1_min} of {c1_of} draws", "repo", "w")
