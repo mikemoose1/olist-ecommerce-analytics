@@ -219,6 +219,23 @@ The analysis also replayed history with a per-route delivery date, updated as or
 - Every number on this page is checked against the warehouse by [case_study/check_case_study.py](../case_study/check_case_study.py).
 - GitHub Actions rebuilds the project and reruns all checks on every change. One command, `make`, reproduces everything ([docs/REPRODUCE.md](REPRODUCE.md)).
 
+## Stress tests
+
+The rules for these stress tests were committed in [docs/preregistration_v2.md](preregistration_v2.md) before any of them ran. The planted-effect test and the delivery-range calibration missed their rules, and both are reported as fails.
+
+| Test | Result | Rule | Outcome |
+|---|---|---|---|
+| Missing reviews, reweighted by inverse probability weighting ([write-up](../review_cost_causal/stress/MISSING_REVIEWS.md)) | 3,109, against 3,110 unweighted; the four all-bad and none-bad scenarios give 3,016 to 3,198 | Within 5% of 3,110 and inside the published range | Pass |
+| Hidden confounder, E-value ([write-up](../review_cost_causal/stress/SENSITIVITY_AND_KNOWN_ANSWER.md)) | a hidden confounder would need an E-value of 5.1 to halve the estimate and 8.7 to explain it away | at least 2.0 to halve | Pass |
+| Hidden confounder, Oster bound | the Oster delta to halve it is 3.53 with Rmax at 1.3 times the controlled R², and 0.30 with Rmax at 1 | at least 1 | Pass |
+| Planted effect in a copy of the real orders | the preferred estimate's 95% interval covered the planted number in 20, 16 and 17 of 20 draws with no, half and full effect | at least 17 of 20 in each | Fail (half effect: 16 of 20) |
+| Delivery-range model ([write-up and model card](../recommendation/delivery_range/README.md)) | holdout calibration error 14.8 points; holdout CRPS 3.601 days, against 3.784 for the route-history baseline | at most 3 points | Fail |
+
+What the fails mean:
+
+- **The planted-effect miss.** Across the no, half and full effect draws, the preferred method's 95% interval covered the planted number in 53 of 60 draws (88%), so do not quote 3,025 to 3,195 as a 95% range. The 2,880 to 3,350 range is the spread of six comparison methods, not a confidence interval. It is a sensitivity band, and it covered the planted number less often than the interval did: in the same draws the spread of the six estimates covered the planted number in only 16, 10 and 12 of 20 (no, half and full effect).
+- **The calibration miss.** The delivery-range model predicts better than route history, but its stated levels are not promises. On the holdout, 64.8% of orders arrived by the date labelled 50%, a calibration error of 14.8 points, against a pre-registered limit of 3. Within the 1-day guardrail, the best decision rule is projected to cut 502 extra late-delivery bad reviews against Olist's date (95% bootstrap range 468 to 539) for 0.6 more promise days on average. That is projected from actual delivery days, not observed reviews under a new date, and the model needs recalibration on recent deliveries before any launch.
+
 ## Limits: what is causal and what is only linked
 
 This page uses its labels the same way throughout. An estimated effect comes from comparing past orders and adjusting for seller, category and month. It is a reasonable estimate, not proven cause. Linked means seen together, with no cause claimed. Not shown means the data cannot tell.

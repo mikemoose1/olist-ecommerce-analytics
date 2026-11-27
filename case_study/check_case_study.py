@@ -332,7 +332,7 @@ def build_claims(con):
     sp = dr["split"]
     add(f"tuned on {n_months[sp['tune_months'][0]]} to {n_months[sp['tune_months'][-1]]}, scored once on {n_months[sp['holdout_months'][0]]} to {n_months[sp['holdout_months'][-1]]}", "report", "d")
     add(f"Holdout CRPS {lgb['crps_days']:.3f} days, against {base['crps_days']:.3f} for the route-history baseline" if d1["pass"] else "D1_MISMATCH", "report", "d")
-    add(f"on the holdout, {100 * lgb['coverage'][worst]:.1f}% of orders arrived by the date labelled {100 * float(worst):.0f}%, a calibration error of {d2_err} points, against a pre-registered limit of {d2_max}", "report", "d")
+    add(f"{100 * lgb['coverage'][worst]:.1f}% of orders arrived by the date labelled {100 * float(worst):.0f}%, a calibration error of {d2_err} points, against a pre-registered limit of {d2_max}", "report", "df")
     add(f"Late delivery is the estimated cause of about {caused_r:,} of the {total_bad:,} one- and two-star reviews on delivered orders ({100 * caused / total_bad:.0f}%)", "warehouse", "s")
     add(f"Reweighting for missing reviews gives {ipw}, and a hidden confounder would need an E-value of {e_half} to halve it", "report", "s")
     add(f"failed its own calibration rule: a calibration error of {d2_err} points, against a limit of {d2_max}", "report", "s")
@@ -342,6 +342,39 @@ def build_claims(con):
     add(f"| {e_half} (rule: at least {b1_min}) |", "report", "s")
     add(f"| the 95% interval covered the planted number in {c1_cov} of {c1_seeds} draws at half effect (rule: at least {c1_min}) |", "report", "s")
     add(f"| {d2_err} points (rule: at most {d2_max}) |", "report", "s")
+
+    # docs/CASE_STUDY.md, Stress tests: the same four reports, with every rule limit read from the rule or the pre-registration
+    four = [mr["worst_case_bounds"][k][b] for k in ("all_unreviewed_bad", "all_unreviewed_not_bad")
+            for b in ("extra_on_all_judged_late", "extra_on_6366_reviewed_late")]
+    add(f"| {ipw}, against {mr['v2_unweighted']['extra']:,.0f} unweighted; the {words[len(four)]} all-bad and none-bad scenarios give {min(four):,.0f} to {max(four):,.0f} |", "report")
+    a1_pct, a1_of = re.search(r"A-1 .*?within (\d+)% of ([\d,]+)", prereg).groups()
+    if a1_of != f"{caused_r:,}" or not rule(mr, "A-2")["pass"]:
+        raise SystemExit("A-1 or A-2 changed")
+    add(f"Within {a1_pct}% of {a1_of} and inside the published range | Pass |", "repo")
+    ev_pt = sens["e_value_point"]
+    add(f"| a hidden confounder would need an E-value of {e_half} to halve the estimate and {ev_pt['e_value_explain_away']:.1f} to explain it away | at least {b1_min} to halve | Pass |", "report")
+    b2 = rule(sens, "B-2")
+    b2_rmax, b2_min = re.search(r"Rmax = ([\d.]+) R_c\) >= (\d+)", b2["id"]).groups()
+    osd = sens["oster"]
+    if not (b2["pass"] and abs(osd["rmax_1.3x"]["delta_to_halve"] - b2["observed"]["delta"]) < 1e-9 and b2_rmax == "1.3"):
+        raise SystemExit("Oster rule or result changed")
+    add(f"| the Oster delta to halve it is {osd['rmax_1.3x']['delta_to_halve']:.2f} with Rmax at {b2_rmax} times the controlled R², and {osd['rmax_1']['delta_to_halve']:.2f} with Rmax at 1 | at least {b2_min} | Pass |", "report")
+    cov = {r["id"].split()[1]: r["observed"]["covered"] for r in ka["pass_rules"] if r["id"].startswith("C-1 ")}
+    add(f"| the preferred estimate's 95% interval covered the planted number in {cov['S0_null']}, {cov['S1_half']} and {cov['S2_full']} of {c1_seeds} draws with no, half and full effect | at least {c1_min} of {c1_of} in each | Fail (half effect: {cov['S1_half']} of {c1_seeds}) |", "report")
+    add(f"| holdout calibration error {d2_err} points; holdout CRPS {lgb['crps_days']:.3f} days, against {base['crps_days']:.3f} for the route-history baseline | at most {d2_max} points | Fail |", "report")
+    # the planted-effect miss: the preferred interval over the no, half and full effect draws, and the spread of the six specifications
+    planted = [r for r in ka["runs"] if r["scenario"] in ("S0_null", "S1_half", "S2_full")]
+    specs = [k for k in planted[0] if isinstance(planted[0][k], dict) and "extra" in planted[0][k]]
+    if len(specs) != 6 or sum(cov[k] for k in ("S0_null", "S1_half", "S2_full")) != sum(r["V2_preferred"]["lo"] <= r["truth"] <= r["V2_preferred"]["hi"] for r in planted):
+        raise SystemExit("known-answer runs changed")
+    in_ci = sum(cov[k] for k in ("S0_null", "S1_half", "S2_full"))
+    add(f"Across the no, half and full effect draws, the preferred method's 95% interval covered the planted number in {in_ci} of {len(planted)} draws ({100 * in_ci / len(planted):.0f}%), so do not quote {round(ci_lo):,} to {round(ci_hi):,} as a 95% range", "report")
+    spread = {sc: sum(min(r[k]["extra"] for k in specs) <= r["truth"] <= max(r[k]["extra"] for k in specs) for r in planted if r["scenario"] == sc) for sc in ("S0_null", "S1_half", "S2_full")}
+    add(f"in the same draws the spread of the {words[len(specs)]} estimates covered the planted number in only {spread['S0_null']}, {spread['S1_half']} and {spread['S2_full']} of {c1_seeds} (no, half and full effect)", "report")
+    guard = float(re.search(r"mean at most ([\d.]+) day", prereg).group(1))
+    pts = [v for k, v in dr["decision_points"].items() if k != "olist" and v.get("within_guardrail")]
+    best = max(pts, key=lambda v: v["reduction_vs_olist"])
+    add(f"Within the {guard:.0f}-day guardrail, the best decision rule is projected to cut {best['reduction_vs_olist']:.0f} extra late-delivery bad reviews against Olist's date (95% bootstrap range {best['reduction_p025']:.0f} to {best['reduction_p975']:.0f}) for {best['mean_days_added_vs_olist']:.1f} more promise days on average", "report")
     return out
 
 
