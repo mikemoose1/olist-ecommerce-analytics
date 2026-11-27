@@ -2,7 +2,7 @@
 
 - **What late delivery costs.** Late delivery is the estimated cause of about 3,110 of the 11,635 one- and two-star reviews on delivered orders (27%). Reweighting for missing reviews gives 3,109, and a hidden confounder would need an E-value of 5.1 to halve it. A planted-effect test missed its coverage rule, and that is reported as a fail.
 - **What to do about it.** A delivery-range model beat the no-model baseline but failed its own calibration rule: a calibration error of 14.8 points, against a limit of 3. It is not ready to ship, and Olist's printed promise stays.
-- **How the numbers are checked.** Every number on this page is recomputed from the warehouse or the saved evidence files by [case_study/check_case_study.py](case_study/check_case_study.py), the pass rules were written before the stress tests ran, and every dbt data check is proven able to fail on planted bad data ([evidence/mutation_report.md](evidence/mutation_report.md)).
+- **How the numbers are checked.** Every number on this page is recomputed from the warehouse or the saved evidence files by [case_study/check_case_study.py](case_study/check_case_study.py), the pass rules were written before the stress tests ran, and all 248 rules in the check suite are proven able to fail on planted bad data ([evidence/mutation_report.md](evidence/mutation_report.md)).
 
 **[Dashboard](docs/CASE_STUDY.md#dashboard)** · **[Case study](docs/CASE_STUDY.md)** · **[Code](models/)** · **[Reproduce](docs/REPRODUCE.md)**
 

@@ -160,6 +160,7 @@ def build_claims(con):
     add("the nine source tables" if manifest_n == 9 else "NINE_MISMATCH", "repo")
     add(f"pass {erd_ok} of {len(erd_res)} checks against the raw files, including that every column marked FK has a unique parent and no orphans", "warehouse")
     add(f"All {proven} rules in the check suite", "repo" if proven == len(mut) else "MUTATION_MISMATCH")
+    add(f"all {proven} rules in the check suite are proven able to fail on planted bad data" if proven == len(mut) else "MUTATION_MISMATCH", "repo", "s")
     # the six named methods in the case study must match the specifications in the causal report
     SPEC_PHRASES = (
         ("V2_preferred", "just-on-time baseline"),
