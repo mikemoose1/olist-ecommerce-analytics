@@ -2,13 +2,13 @@
 
 - **What late delivery costs.** Late delivery is the estimated cause of about 3,110 of the 11,635 one- and two-star reviews on delivered orders (27%). Reweighting for missing reviews gives 3,109, and a hidden confounder would need an E-value of 5.1 to halve it. A planted-effect test missed its coverage rule, and that is reported as a fail.
 - **What to do about it.** A delivery-range model beat the no-model baseline but failed its own calibration rule: a calibration error of 14.8 points, against a limit of 3. It is not ready to ship, and Olist's printed promise stays.
-- **How the numbers are checked.** Every number on this page is recomputed from the warehouse or the saved evidence files by [case_study/check_case_study.py](case_study/check_case_study.py), the pass rules were written before the stress tests ran, and every data check is proven able to fail on planted bad data.
+- **How the numbers are checked.** Every number on this page is recomputed from the warehouse or the saved evidence files by [case_study/check_case_study.py](case_study/check_case_study.py), the pass rules were written before the stress tests ran, and every dbt data check is proven able to fail on planted bad data ([evidence/mutation_report.md](evidence/mutation_report.md)).
 
 **[Dashboard](docs/CASE_STUDY.md#dashboard)** · **[Case study](docs/CASE_STUDY.md)** · **[Code](models/)** · **[Reproduce](docs/REPRODUCE.md)**
 
 | Result | Number | Status |
 |---|---|---|
-| Bad reviews caused by late delivery | about 3,110 of 11,635 (27%), range 2,880 to 3,350 | Estimate from past orders, not a randomized test |
+| Bad reviews caused by late delivery | about 3,110 of 11,635 (27%); range across six specifications 2,880 to 3,350, not a confidence interval | Estimate from past orders, not a randomized test |
 | Same estimate, reweighted for missing reviews (inverse probability weighting) | 3,109 | Pass |
 | How strong a hidden confounder must be to halve it (E-value) | 5.1 (rule: at least 2.0) | Pass |
 | Planted-effect test on the real orders | the 95% interval covered the planted number in 16 of 20 draws at half effect (rule: at least 17) | Fail, reported |
@@ -28,7 +28,7 @@ This project builds a tested data pipeline from about 99,000 real orders of Olis
 
 ## How this was built
 
-The pass rules for the stress tests were committed in [docs/preregistration_v2.md](docs/preregistration_v2.md) before any of them ran. Each change then went in as a small pull request with its own evidence: a rerun that reproduces the numbers, the full check suite in CI, and a review by a second AI model before merge.
+The pass rules for the stress tests were committed in [docs/preregistration_v2.md](docs/preregistration_v2.md) before any of them ran. Each change then went in as a small pull request with its own evidence: the scripts that produce its numbers were rerun to reproduce them, and the full check suite ran in CI before merge.
 
 - [Contracts and the dashboard exposure](https://github.com/mikemoose1/olist-ecommerce-analytics/pull/8): enforced dbt contracts on every table the dashboard reads, and [dashboard/SEMANTIC_LAYER.md](dashboard/SEMANTIC_LAYER.md).
 - [Missing reviews](https://github.com/mikemoose1/olist-ecommerce-analytics/pull/10): inverse probability weighting and worst-case bounds ([review_cost_causal/stress/MISSING_REVIEWS.md](review_cost_causal/stress/MISSING_REVIEWS.md)).
