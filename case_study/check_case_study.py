@@ -379,15 +379,17 @@ def build_claims(con):
 
     # docs/HOW_I_CHECK_AI_WORK.md (page "w"): the stress-test count and outcomes, the mutation count and the planted-answer miss
     outcomes = [a1["pass"], b1["pass"], c1["pass"], d2["pass"]]
-    add(f"The pass rules for the {words[len(outcomes)]} stress tests", "repo", "w")
+    add(f"The pass rules for the {words[len(outcomes)]} statistical stress tests", "repo", "w")
     add(f"reports all {words[len(outcomes)]} tests", "repo", "w")
-    add("Two passed and two failed" if sum(outcomes) == 2 else "PASSFAIL_MISMATCH", "report", "w")
-    add(f"All {proven} rules in the check suite pass this test" if proven == len(mut) else "MUTATION_MISMATCH", "repo", "w")
+    missed = [sum(not r["pass"] for r in report["pass_rules"]) for report in (mr, sens, ka, dr)]
+    add("Two met every rule. Two missed one rule each." if sorted(missed) == [0, 0, 1, 1] else "PASSFAIL_MISMATCH", "report", "w")
+    add(f"All {proven} rules in the mutation report pass this test" if proven == len(mut) else "MUTATION_MISMATCH", "repo", "w")
+    add(f"It does not recount the {caused_r:,} estimate", "warehouse", "w")
     add(f"95% interval must cover the planted number in at least {c1_min} of {c1_of} draws", "repo", "w")
     add(f"With the effect at half size, the interval covered it in {cov['S1_half']} of {c1_seeds} draws", "report", "w")
     add(f"Without a rule fixed in advance, {cov['S1_half']} of {c1_seeds} is easy", "report", "w")
     add(f"Across the draws with no, half and full effect it covered the planted number in {in_ci} of {len(planted)}", "report", "w")
-    add(f"no longer calls {round(ci_lo):,} to {round(ci_hi):,} a 95% range", "report", "w")
+    add(f"tells readers not to quote {round(ci_lo):,} to {round(ci_hi):,} as a 95% range", "report", "w")
     return out
 
 

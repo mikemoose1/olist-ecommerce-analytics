@@ -70,8 +70,11 @@ WRITEUP_CASES = [
     ("the real docs/HOW_I_CHECK_AI_WORK.md", WRITEUP, False),
     ("write-up: the mutation count changed (248 to 284)", sub("All 248 rules", "All 284 rules", WRITEUP), True),
     ("write-up: the planted-answer miss shown as a pass (16 to 18 of 20)", sub("covered it in 16 of 20 draws", "covered it in 18 of 20 draws", WRITEUP), True),
-    ("write-up: the stress-test outcome changed (two failed to one failed)", sub("Two passed and two failed", "Three passed and one failed", WRITEUP), True),
-    ("write-up: a new number nobody checked", sub("## The checks\n", "## The checks\n\nThe agents wrote 12,345 lines.\n", WRITEUP), True),
+    ("write-up: the stress-test outcome changed (two missed to one missed)", sub("Two met every rule. Two missed one rule each.", "Three met every rule. One missed one rule.", WRITEUP), True),
+    ("write-up: the overall coverage changed (53 to 58 of 60)", sub("in 53 of 60", "in 58 of 60", WRITEUP), True),
+    ("write-up: the pre-registered limit changed (17 to 16 of 20)", sub("at least 17 of 20 draws", "at least 16 of 20 draws", WRITEUP), True),
+    ("write-up: the interval changed (3,025 to 3,195 to 3,000 to 3,200)", sub("quote 3,025 to 3,195", "quote 3,000 to 3,200", WRITEUP), True),
+    ("write-up: a new number nobody checked", sub("## The checks that can fail\n", "## The checks that can fail\n\nThe agents wrote 12,345 lines.\n", WRITEUP), True),
 ]
 
 CARD_CASES = [
